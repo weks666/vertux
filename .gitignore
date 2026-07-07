@@ -1,0 +1,28 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# Env / secrets
+.env
+.env.*
+
+# Vercel
+.vercel
+
+.vercel
+
+# internal design drafts (not part of the live site)
+font-test.html
+naming.html
+vertux.html
+vertux-v3.html

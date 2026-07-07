@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertux — сайты и виджеты, которые продают</title>
+<meta name="description" content="Делаю конверсионные сайты и умные виджеты сбора заявок. Сайт - лицо бизнеса, виджет - менеджер 24/7. Примеры, тарифы, бесплатный триал.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=12">
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <a href="#" class="logo"><span class="logo-mark">V</span><span class="logo-name">Vertux</span></a>
+  <nav class="nav-links">
+    <a href="#examples" data-i18n="nav.examples">Примеры</a>
+    <a href="#widget" data-i18n="nav.widget">Виджет</a>
+    <a href="#sites" data-i18n="nav.sites">Сайты</a>
+    <a href="#package" data-i18n="nav.pricing">Тарифы</a>
+  </nav>
+  <div class="nav-right">
+    <button class="lang-toggle" id="langToggle">
+      <span class="lang-ru active">RU</span><span class="lang-sep">/</span><span class="lang-en">EN</span>
+    </button>
+    <a href="#contact" class="btn btn-primary magnetic" data-magnetic data-i18n="nav.cta">Обсудить проект <span class="arr">→</span></a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas class="hero-shader" id="heroShader" aria-hidden="true"></canvas>
+  <div class="hero-shader-veil" aria-hidden="true"></div>
+
+  <div class="container hero-inner">
+    <div class="hero-left">
+      <div class="hero-kicker mono reveal">
+        <span class="pulse-dot"></span> <span data-i18n="hero.kicker">ВЕБ-СТУДИЯ · САЙТ + AI-ВИДЖЕТ ПОД КЛЮЧ</span>
+      </div>
+      <h1 class="hero-title reveal" data-i18n-html="hero.title">
+        Больше клиентов<br>из вашего сайта<br><span class="accent-word">с AI 24/7</span>
+      </h1>
+      <p class="hero-sub reveal" data-i18n="hero.sub">
+        Делаю сайт, который вызывает доверие, и встраиваю AI-менеджера: он отвечает клиентам и ловит заявки круглосуточно — даже пока вы спите. Сайт + виджет под ключ за 3-4 дня.
+      </p>
+      <div class="hero-ctas reveal">
+        <a href="#examples" class="btn btn-primary btn-lg magnetic" data-magnetic data-i18n="hero.cta1">Смотреть работы <span class="arr">→</span></a>
+        <a href="#contact" class="btn btn-ghost btn-lg" data-i18n="hero.cta2">Обсудить мой проект</a>
+      </div>
+    </div>
+
+    <!-- CINEMATIC SCENE: site -> cursor -> widget -> telegram -->
+    <div class="hero-right reveal">
+      <div class="scene" id="scene">
+        <div class="scene-glow" aria-hidden="true"></div>
+
+        <div class="scene-site">
+          <div class="ss-bar"><span class="ss-dot"></span><span class="ss-dot"></span><span class="ss-dot"></span><span class="ss-url mono" data-i18n="hero.siteUrl">your-business.ru</span></div>
+          <div class="ss-body">
+            <div class="ss-nav"><span class="ss-logo"></span><span class="ss-spacer"></span><span class="ss-link"></span><span class="ss-link"></span><span class="ss-pill"></span></div>
+            <div class="ss-hero">
+              <div class="ss-eyebrow"></div>
+              <div class="ss-h1"></div><div class="ss-h1 w70"></div>
+              <div class="ss-text"></div><div class="ss-text w80"></div>
+              <div class="ss-cta"></div>
+            </div>
+            <div class="ss-cards"><span></span><span></span><span></span></div>
+          </div>
+
+          <!-- chat launcher on the site -->
+          <button class="scene-bubble" id="sceneBubble" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </button>
+
+          <!-- chat panel -->
+          <div class="scene-chat" id="sceneChat" aria-hidden="true">
+            <div class="sc-head"><span class="sc-dot"></span><span class="sc-title" data-i18n="hero.demoTitle">Виджет на сайте</span></div>
+            <div class="sc-body" id="sceneBody"></div>
+          </div>
+        </div>
+
+        <!-- fake cursor -->
+        <div class="scene-cursor" id="sceneCursor" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="#fff" stroke="#0A0A0C" stroke-width="1.2"><path d="M4 2l16 7-6.5 2.5L11 18z"/></svg>
+        </div>
+
+        <!-- telegram notification -->
+        <div class="scene-tg" id="sceneTg" aria-hidden="true">
+          <div class="tg-ico">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.5 4.3 2.8 11.4c-.9.3-.9 1.6 0 1.9l4.6 1.4 1.7 5.3c.2.7 1.1.9 1.6.3l2.5-2.6 4.8 3.5c.6.4 1.4 0 1.5-.7l3-14.6c.2-.9-.7-1.6-1.5-1.3z"/></svg>
+          </div>
+          <div class="tg-txt"><strong>Telegram</strong><span id="tgMsg" data-i18n="hero.tgMsg">Новая заявка с сайта</span></div>
+          <span class="tg-badge">1</span>
+        </div>
+      </div>
+      <div class="hero-stats hero-stats-right reveal">
+        <div class="hstat">
+          <span class="hstat-num accent-stat" data-i18n="hero.stat1num">≈3 дня</span>
+          <span class="hstat-label mono" data-i18n="hero.stat1">средний срок сдачи проекта</span>
+        </div>
+        <div class="hstat">
+          <span class="hstat-num" data-counter="24" data-suffix="/7">0</span>
+          <span class="hstat-label mono" data-i18n="hero.stat2">заявки без сна и выходных</span>
+        </div>
+        <div class="hstat">
+          <span class="hstat-num" data-i18n="hero.stat3num">7 дней</span>
+          <span class="hstat-label mono" data-i18n="hero.stat3">триал виджета бесплатно</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<section class="marquee-sec">
+  <div class="marquee">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+</section>
+
+<!-- EXAMPLES (honest: concepts) -->
+<section class="section examples" id="examples">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 01 / <span data-i18n="ex.num">ГОТОВЫЕ ПРОЕКТЫ</span> ]</span>
+      <h2 class="sec-title" data-i18n="ex.title">Готовые проекты</h2>
+      <p class="sec-lede" data-i18n="ex.lede">Боевые сайты для реальных клиентов. Каждый - живой бизнес с заявками. Список пополняется по мере сдачи новых проектов.</p>
+    </div>
+
+    <div class="ready-row">
+      <!-- placeholder: your future project (always first / left) -->
+      <a href="#contact" class="future-card reveal">
+        <div class="future-plus">+</div>
+        <div class="future-title" data-i18n="ex.future.t">Здесь будет ваш проект</div>
+        <div class="future-sub" data-i18n="ex.future.d">Через неделю это место может занять ваш сайт - живой, с заявками и в этой витрине.</div>
+        <div class="future-cta" data-i18n="ex.future.cta">Обсудить мой проект →</div>
+      </a>
+
+      <!-- REAL: KovroСити -->
+      <article class="ready-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">www.kovrocity.ru</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/kovrocity.jpg" alt="КовроСити" loading="lazy">
+            <a href="http://www.kovrocity.ru" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.openSite">Открыть сайт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono"><span class="work-real" data-i18n="ex.real">★ РЕАЛЬНЫЙ ПРОЕКТ</span> · <span data-i18n="ex.0.cat">B2B · ГРЯЗЕЗАЩИТНЫЕ ПОКРЫТИЯ</span></div>
+          <h3 class="cc-title">КовроСити</h3>
+          <p class="cc-desc" data-i18n="ex.0.desc">Боевой сайт для производителя грязезащитных покрытий: износостойкие ковры и алюминиевые решётки для бизнес-центров. Строгий B2B-дизайн, каталог, галерея, калькулятор расчёта и заявки прямо в мессенджеры.</p>
+          <div class="cc-tags">
+            <span class="wtag" data-i18n="ex.0.t1">Каталог</span><span class="wtag" data-i18n="ex.0.t2">Калькулятор</span><span class="wtag" data-i18n="ex.0.t3">Заявки в мессенджеры</span>
+          </div>
+          <a href="http://www.kovrocity.ru" target="_blank" rel="noopener" class="work-link" data-i18n="ex.openSiteLink">Открыть сайт <span class="arr">→</span></a>
+          <a href="case.html?id=kovrocity" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="concepts-hint reveal">
+      <span class="ch-arrow">→</span><span class="mono" data-i18n="ex.more">здесь появляются новые клиентские проекты</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPTS (separate ribbon, live previews) -->
+<section class="section concepts" id="concepts">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 02 / <span data-i18n="cn.num">КОНЦЕПТЫ</span> ]</span>
+      <h2 class="sec-title" data-i18n="cn.title">Концепты под разные ниши</h2>
+      <p class="sec-lede" data-i18n="cn.lede">Витрины под разные ниши, собранные с нуля - чтобы показать стиль и возможности под любой бизнес. Листай ленту, а по клику откроется живой сайт.</p>
+    </div>
+
+    <div class="concept-row">
+      <article class="concept-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">v-forma · концепт</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/shot-vforma.jpg" alt="V/FORMA" loading="lazy" draggable="false">
+            <a href="https://vladimir-fitness-nine.vercel.app" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.open">Открыть концепт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono" data-i18n="ex.1.cat">ФИТНЕС-ТРЕНЕР · ЛЕНДИНГ + КВИЗ-ВИДЖЕТ</div>
+          <h3 class="cc-title">V/FORMA</h3>
+          <p class="cc-desc" data-i18n="ex.1.desc">Тёмный энергичный лендинг под фитнес-эксперта. Крупная типографика, анимации, spotlight за курсором. Виджет-квиз ведёт клиента по вопросам и собирает заявку на тренировку.</p>
+          <div class="cc-tags">
+            <span class="wtag">Dark UI</span><span class="wtag" data-i18n="ex.1.t2">Анимации</span><span class="wtag" data-i18n="ex.1.t3">Квиз-виджет</span>
+          </div>
+          <a href="case.html?id=vforma" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+
+      <article class="concept-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">yadro · концепт</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/shot-yadro.jpg" alt="ЯДРО" loading="lazy" draggable="false">
+            <a href="https://yadro-restaurant.vercel.app" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.open">Открыть концепт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono" data-i18n="ex.2.cat">РЕСТОРАН · ЛЕНДИНГ + БУКИНГ-ВИДЖЕТ</div>
+          <h3 class="cc-title">ЯДРО</h3>
+          <p class="cc-desc" data-i18n="ex.2.desc">Спокойный editorial-сайт для ресторана: тёплая палитра, акцент на еде и атмосфере, сетка блюд с фото. Виджет брони стола собирает дату, время и гостей и отправляет заявку.</p>
+          <div class="cc-tags">
+            <span class="wtag">Editorial</span><span class="wtag" data-i18n="ex.2.t2">Меню с фото</span><span class="wtag" data-i18n="ex.2.t3">Букинг-виджет</span>
+          </div>
+          <a href="case.html?id=yadro" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+
+      <article class="concept-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">pulse · концепт</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/shot-pulse.jpg" alt="PULSE" loading="lazy" draggable="false">
+            <a href="https://pulse-saas-ivory.vercel.app" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.open">Открыть концепт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono" data-i18n="ex.3.cat">SAAS-СЕРВИС · EN/RU · ЧАТ-ВИДЖЕТ</div>
+          <h3 class="cc-title">PULSE</h3>
+          <p class="cc-desc" data-i18n="ex.3.desc">Светлый продуктовый лендинг с анимированным фоном и живым интерфейсом-демо. Двуязычность EN/RU в один клик. Чат-виджет квалифицирует и записывает в лист ожидания.</p>
+          <div class="cc-tags">
+            <span class="wtag">SaaS</span><span class="wtag" data-i18n="ex.3.t2">Анимация</span><span class="wtag">EN / RU</span>
+          </div>
+          <a href="case.html?id=pulse" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+
+      <article class="concept-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">slowpour · концепт</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/shot-slowpour.jpg" alt="SLOWPOUR" loading="lazy" draggable="false">
+            <a href="https://slowpour-zeta.vercel.app" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.open">Открыть концепт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono" data-i18n="ex.4.cat">КОФЕЙНЯ · ЛЕНДИНГ + ВИДЖЕТ ЗАКАЗА</div>
+          <h3 class="cc-title">SLOWPOUR</h3>
+          <p class="cc-desc" data-i18n="ex.4.desc">Тёплый лендинг для камерной кофейни третьей волны. Акцент на ритуале медленного заваривания, фото зёрен и атмосфера уюта. Виджет принимает предзаказ — кофе ждёт клиента к приходу.</p>
+          <div class="cc-tags">
+            <span class="wtag" data-i18n="ex.4.t1">Cozy</span><span class="wtag" data-i18n="ex.4.t2">Меню</span><span class="wtag" data-i18n="ex.4.t3">Предзаказ</span>
+          </div>
+          <a href="case.html?id=slowpour" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+
+      <article class="concept-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">stroy-master · концепт</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/shot-stroy-master.jpg" alt="STROY-MASTER" loading="lazy" draggable="false">
+            <a href="https://stroy-master-kohl.vercel.app" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.open">Открыть концепт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono" data-i18n="ex.5.cat">B2B · КАПРЕМОНТ + КАЛЬКУЛЯТОР</div>
+          <h3 class="cc-title">STROY-MASTER</h3>
+          <p class="cc-desc" data-i18n="ex.5.desc">B2B-лендинг компании капремонта. Серьёзная стальная палитра (Blueprint Steel), сильные офферы под бизнес-заказчика. Калькулятор сметы считает стоимость прямо на сайте и доводит до заявки.</p>
+          <div class="cc-tags">
+            <span class="wtag" data-i18n="ex.5.t1">B2B</span><span class="wtag" data-i18n="ex.5.t2">Калькулятор сметы</span><span class="wtag" data-i18n="ex.5.t3">Industrial</span>
+          </div>
+          <a href="case.html?id=stroy-master" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+
+      <article class="concept-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">muza · концепт</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/shot-muza.jpg" alt="MUZA" loading="lazy" draggable="false">
+            <a href="https://muza-salon.vercel.app" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.open">Открыть концепт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono" data-i18n="ex.6.cat">САЛОН КРАСОТЫ · ЛЕНДИНГ + ЗАПИСЬ</div>
+          <h3 class="cc-title">MUZA</h3>
+          <p class="cc-desc" data-i18n="ex.6.desc">Премиальный лендинг для салона «Муза». Палитра Noir Couture (чёрный с золотом), редкое УТП — обслуживание «в 4 руки». Виджет берёт запись на конкретного мастера и время.</p>
+          <div class="cc-tags">
+            <span class="wtag" data-i18n="ex.6.t1">Noir Couture</span><span class="wtag" data-i18n="ex.6.t2">Премиум</span><span class="wtag" data-i18n="ex.6.t3">Запись</span>
+          </div>
+          <a href="case.html?id=muza" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+
+      <article class="concept-card reveal">
+        <div class="browser-frame">
+          <div class="browser-bar">
+            <span class="bdot"></span><span class="bdot"></span><span class="bdot"></span>
+            <span class="browser-url mono">ферро-лазер · концепт</span>
+          </div>
+          <div class="iframe-wrap shot-wrap">
+            <img src="assets/shot-ferro-laser.jpg" alt="ФЕРРО ЛАЗЕР" loading="lazy" draggable="false">
+            <a href="https://weks666.github.io/ferro-lazer/" target="_blank" rel="noopener" class="iframe-overlay">
+              <span class="open-btn" data-i18n="ex.open">Открыть концепт <span class="arr">↗</span></span>
+            </a>
+          </div>
+        </div>
+        <div class="cc-body">
+          <div class="cc-meta mono" data-i18n="ex.7.cat">B2B · ЛАЗЕРНАЯ РЕЗКА + КАЛЬКУЛЯТОР</div>
+          <h3 class="cc-title">ФЕРРО ЛАЗЕР</h3>
+          <p class="cc-desc" data-i18n="ex.7.desc">B2B-лендинг производства лазерной резки, маркировки и сварки металла. Тёмная тема с красным акцентом и техно-эстетикой (серийники, штрих-коды). Калькулятор считает стоимость по материалу и задаче и доводит до заявки.</p>
+          <div class="cc-tags">
+            <span class="wtag" data-i18n="ex.7.t1">B2B</span><span class="wtag" data-i18n="ex.7.t2">Калькулятор</span><span class="wtag" data-i18n="ex.7.t3">Tech-noir</span>
+          </div>
+          <a href="case.html?id=ferro-laser" class="cc-case-link" data-i18n="ex.case">Разбор проекта →</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="concepts-hint reveal">
+      <span class="ch-arrow">→</span><span class="mono" data-i18n="cn.hint">листай вбок · концептов будет больше</span>
+    </div>
+  </div>
+</section>
+
+<!-- WIDGET DEMO -->
+<section class="section widget-demo" id="widget">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 03 / <span data-i18n="wd.num">ВИДЖЕТ</span> ]</span>
+      <h2 class="sec-title" data-i18n="wd.title">Потрогай виджет вживую</h2>
+      <p class="sec-lede" data-i18n="wd.lede">Виджет работает в двух режимах: чёткий квиз с кнопками или живой AI-диалог словами. Переключай и пройди сам - именно так это будет у твоих клиентов.</p>
+    </div>
+
+    <div class="demo-wrap reveal">
+      <div class="demo-left">
+        <!-- ai capabilities (single live chat) -->
+        <div class="demo-panel">
+          <div class="dl-label mono" data-i18n="wd.aiLabel">AI-виджет умеет:</div>
+          <div class="cap-list">
+            <div class="cap"><span class="cap-ico">✦</span><div><strong data-i18n="wd.cap1t">Отвечать на любые вопросы</strong><span data-i18n="wd.cap1d">знает всё о товарах, ценах, условиях - как живой менеджер</span></div></div>
+            <div class="cap"><span class="cap-ico">✦</span><div><strong data-i18n="wd.cap2t">Подбирать и советовать</strong><span data-i18n="wd.cap2d">помогает выбрать продукт под задачу клиента</span></div></div>
+            <div class="cap"><span class="cap-ico">✦</span><div><strong data-i18n="wd.cap3t">Собирать заявку по ходу</strong><span data-i18n="wd.cap3d">общается и незаметно квалифицирует лид</span></div></div>
+          </div>
+          <div class="ai-note mono" data-i18n="wd.aiNote">Это реальный бот - отвечает живой моделью под базу знаний студии. Попробуй спросить про цены или сроки.</div>
+        </div>
+
+        <div class="demo-note">
+          <div class="dn-row"><span class="dn-check">✓</span> <span data-i18n="wd.note1">Лид падает в Telegram через секунду</span></div>
+          <div class="dn-row"><span class="dn-check">✓</span> <span data-i18n="wd.note2">Сценарий и стиль настраиваются под тебя</span></div>
+          <div class="dn-row"><span class="dn-check">✓</span> <span data-i18n="wd.note3">Открой консоль (F12) - увидишь собранные данные</span></div>
+        </div>
+      </div>
+
+      <div class="demo-right">
+        <div class="demo-phone">
+          <div class="dp-chat-header">
+            <span class="dp-dot"></span>
+            <span class="dp-title" id="demoTitle">Vertux · бот</span>
+          </div>
+          <div class="dp-body" id="demoBody"></div>
+          <form class="dp-input" id="demoForm" style="display:none;">
+            <input type="text" id="demoInput" placeholder="Сообщение..." autocomplete="off">
+            <button type="submit" class="dp-send">→</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-cta-wrap reveal">
+      <p class="demo-cta-note" data-i18n="wd.ctaNote">Хочешь такой виджет на свой сайт?</p>
+      <a href="#package" class="btn btn-primary btn-lg magnetic" data-magnetic data-i18n="wd.cta">Хочу виджет - узнать цену <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE / AFTER -->
+<section class="section ba-sec" id="transform">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 04 / <span data-i18n="ba.num">БЫЛО / СТАЛО</span> ]</span>
+      <h2 class="sec-title" data-i18n="ba.title">Старый сайт против нового</h2>
+      <p class="sec-lede" data-i18n="ba.lede">Потяни ползунок. Слева - типовой сайт «как у всех»: системный шрифт, ноль воздуха, ничего не цепляет. Справа - то, что делаю я.</p>
+    </div>
+
+    <div class="ba-wrap reveal" id="baWrap">
+
+      <!-- NEW (full, behind) - premium Pulse-style with clickable widget -->
+      <div class="ba-pane ba-pane-new">
+        <div class="ba-mock mock-new">
+          <span class="ba-tag ba-tag-new" data-i18n="ba.new">СТАЛО</span>
+          <div class="mn2-glow" aria-hidden="true"></div>
+          <nav class="mn2-nav">
+            <span class="mn2-logo">Aura<b>.</b></span>
+            <div class="mn2-links"><span>Продукт</span><span>Возможности</span><span>Тарифы</span><span>Кейсы</span></div>
+            <span class="mn2-cta" data-i18n="ba.new.cta">Получить доступ</span>
+          </nav>
+          <div class="mn2-hero">
+            <div class="mn2-copy">
+              <div class="mn2-eyebrow"><span class="mn2-eb-dot"></span><span data-i18n="ba.new.eyebrow">AI-ПЛАТФОРМА · 2026</span></div>
+              <h3 data-i18n-html="ba.new.h">Аналитика, которая<br>работает <span class="mn-ac">за вас</span></h3>
+              <p data-i18n="ba.new.p">Подключите данные за минуту и получайте готовые решения. AI находит точки роста, пока вы заняты делом.</p>
+              <div class="mn2-btns">
+                <span class="mn2-btn" data-i18n="ba.new.btn">Начать бесплатно →</span>
+                <span class="mn2-btn2" data-i18n="ba.new.btn2">Смотреть демо</span>
+              </div>
+              <div class="mn2-logos"><span>NOVA</span><span>BYTE</span><span>FLUX</span><span>VERA</span></div>
+            </div>
+            <div class="mn2-app" aria-hidden="true">
+              <div class="mn2-app-head"><span class="mn2-d"></span><span class="mn2-d"></span><span class="mn2-d"></span><em>dashboard</em></div>
+              <div class="mn2-app-body">
+                <div class="mn2-kpi">
+                  <span class="mn2-kpi-l">Выручка за месяц</span>
+                  <span class="mn2-kpi-v">₽1 248 900</span>
+                  <span class="mn2-kpi-up">▲ 47% к прошлому месяцу</span>
+                </div>
+                <div class="mn2-chart"><i style="--h:38%"></i><i style="--h:60%"></i><i style="--h:46%"></i><i style="--h:78%"></i><i style="--h:56%"></i><i style="--h:90%"></i><i style="--h:68%"></i></div>
+                <div class="mn2-tiles">
+                  <div class="mn2-tile"><b>2 480</b><span>лидов</span></div>
+                  <div class="mn2-tile"><b>18%</b><span>конверсия</span></div>
+                  <div class="mn2-tile"><b>4.9</b><span>оценка</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mn2-notif"><span class="mn2-notif-dot"></span><span data-i18n="ba.new.live">+3 заявки сегодня</span></div>
+          <!-- clickable widget -->
+          <button class="mn-bubble" id="mnBubble" type="button" aria-label="chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </button>
+          <div class="mn-chat" id="mnChat">
+            <div class="mn-chat-head"><span class="mn-chat-dot"></span><span data-i18n="ba.new.chatTitle">Аура · бот</span></div>
+            <div class="mn-chat-body" id="mnChatBody"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OLD (clipped, on top) - dated, populated -->
+      <div class="ba-pane ba-pane-old" id="baOld">
+        <div class="ba-mock mock-old">
+          <span class="ba-tag ba-tag-old" data-i18n="ba.old">БЫЛО</span>
+          <div class="mo-top"><span data-i18n="ba.old.phone">☎ 8 (495) 123-45-67</span><span data-i18n="ba.old.hours">Пн-Пт 9:00-18:00</span><span class="mo-cart" data-i18n="ba.old.cart">Личный кабинет</span></div>
+          <div class="mo-nav">
+            <span class="mo-logo" data-i18n="ba.old.logo">ООО «Аура»</span>
+            <span class="mo-sp"></span>
+            <span class="mo-link" data-i18n="ba.old.n1">Главная</span><span class="mo-link" data-i18n="ba.old.n2">О компании</span><span class="mo-link" data-i18n="ba.old.n3">Услуги</span><span class="mo-link" data-i18n="ba.old.n4">Отчёты</span><span class="mo-link" data-i18n="ba.old.n5">Новости</span><span class="mo-link" data-i18n="ba.old.n6">Контакты</span>
+          </div>
+          <div class="mo-body">
+            <div class="mo-main">
+              <h3 data-i18n="ba.old.h">Добро пожаловать на сайт компании «Аура»!</h3>
+              <p data-i18n="ba.old.p1">Наша компания более 15 лет занимается анализом данных и подготовкой отчётности для бизнеса. Предлагаем широкий спектр аналитических услуг по доступным ценам для юридических лиц.</p>
+              <ul class="mo-list">
+                <li data-i18n="ba.old.l1">Сбор и обработка статистики</li>
+                <li data-i18n="ba.old.l2">Готовые отчёты в Excel по запросу</li>
+                <li data-i18n="ba.old.l3">Консультации специалиста по телефону</li>
+              </ul>
+              <span class="mo-btn" data-i18n="ba.old.btn">Подробнее »</span>
+              <div class="mo-img" data-i18n="ba.old.img">[ график ]</div>
+            </div>
+            <div class="mo-side">
+              <div class="mo-box"><div class="mo-box-h" data-i18n="ba.old.news">Новости</div><p data-i18n="ba.old.news1">01.03 - Обновление прайс-листа на услуги</p><p data-i18n="ba.old.news2">15.02 - Изменение графика работы отдела</p></div>
+              <div class="mo-box mo-counter"><span data-i18n="ba.old.online">Посетителей онлайн: 3</span><br><span data-i18n="ba.old.counter">Всего визитов: 14 285</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ba-handle" id="baHandle"><div class="ba-knob">⇆</div></div>
+    </div>
+
+    <div class="ba-hint reveal"><span class="mono" data-i18n="ba.hint">↔ потяни ползунок, чтобы сравнить</span></div>
+  </div>
+</section>
+
+<!-- VALUE: why a site + why a widget (merged) -->
+<section class="section value-sec value-merged" id="sites">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 05 / <span data-i18n="val.num">ЗАЧЕМ</span> ]</span>
+      <h2 class="sec-title" data-i18n="val.title">Сайт приводит — виджет не упускает</h2>
+      <p class="sec-lede" data-i18n="val.lede">Две части одной системы: сайт создаёт доверие и приводит людей, а виджет ловит заявку и не даёт клиенту уйти.</p>
+    </div>
+
+    <div class="value-duo reveal">
+      <div class="value-col">
+        <span class="vcol-tag mono" data-i18n="st.cardLabel">САЙТ</span>
+        <h3 class="vcol-title" data-i18n="st.title">Сайт - это лицо бизнеса</h3>
+        <p class="vcol-lede" data-i18n="st.lede">Хороший сайт говорит за тебя ещё до первого слова: видно, что компании можно доверять, что она живая и растёт. Это выход в онлайн, охват и масштаб, которого не даёт ни визитка, ни один аккаунт в соцсетях.</p>
+        <div class="value-points">
+          <div class="vp"><div class="vp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l2.5 6.5L21 9l-5 4 1.5 7L12 16l-5.5 4L8 13 3 9l6.5-.5z"/></svg></div><div><strong data-i18n="st.p1t">Доверие с первого взгляда</strong><span data-i18n="st.p1d">дорогой сайт = серьёзная компания</span></div></div>
+          <div class="vp"><div class="vp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div><div><strong data-i18n="st.p2t">Онлайн и масштаб</strong><span data-i18n="st.p2d">тебя находят и днём, и ночью</span></div></div>
+          <div class="vp"><div class="vp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg></div><div><strong data-i18n="st.p3t">Ведёт к заявке</strong><span data-i18n="st.p3d">структура работает на результат, не просто красиво</span></div></div>
+        </div>
+      </div>
+
+      <div class="value-col">
+        <span class="vcol-tag mono vcol-tag-accent" data-i18n="wg.cardLabel">ВИДЖЕТ</span>
+        <h3 class="vcol-title" data-i18n="wg.title">Виджет - менеджер 24/7</h3>
+        <p class="vcol-lede" data-i18n="wg.lede">Виджет встречает клиента, отвечает на вопросы и собирает заявку в любое время - даже ночью и в выходные. Один менеджер стоит от 30 000 ₽ в месяц и устаёт. Виджет работает без перерыва и стоит в разы дешевле.</p>
+        <div class="value-points">
+          <div class="vp"><div class="vp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong data-i18n="wg.p1t">Работает 24/7</strong><span data-i18n="wg.p1d">не спит, не болеет, не уходит в отпуск</span></div></div>
+          <div class="vp"><div class="vp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><strong data-i18n="wg.p2t">Экономит на зарплате</strong><span data-i18n="wg.p2d">7 000 ₽/мес вместо 30 000 ₽ за менеджера</span></div></div>
+          <div class="vp"><div class="vp-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></div><div><strong data-i18n="wg.p3t">Не теряет клиентов</strong><span data-i18n="wg.p3d">ловит заявку в момент интереса</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="value-merged-cta reveal">
+      <a href="#package" class="btn btn-primary btn-lg magnetic" data-magnetic data-i18n="val.cta">Смотреть тарифы <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGE / PRICING (main offer) -->
+<section class="section package-sec" id="package">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 06 / <span data-i18n="pk.num">ПАКЕТ</span> ]</span>
+      <h2 class="sec-title" data-i18n="pk.title">Лучшее решение - пакетом</h2>
+      <p class="sec-lede" data-i18n="pk.lede">Сайт ловит внимание, виджет ловит заявку. Вместе - система, которая приводит клиентов и не теряет их. Выгоднее брать пакетом, но можно и по отдельности.</p>
+    </div>
+
+    <div class="pkg-grid reveal">
+      <!-- highlighted package -->
+      <div class="pkg-card pkg-card-hl">
+        <div class="pkg-badge mono" data-i18n="pk.badge">★ ВЫГОДНО · ПОД КЛЮЧ</div>
+        <div class="pkg-name" data-i18n="pk.name">Сайт + AI-виджет</div>
+        <div class="pkg-desc" data-i18n="pk.desc">Готовая связка под ключ за 3-4 дня</div>
+        <div class="pkg-price">
+          <span class="pkg-pf mono" data-i18n="pk.priceFrom">сайт от</span> <b>20 000 ₽</b>
+          <span class="pkg-pf mono" data-i18n="pk.pricePlus">+ виджет от</span> <b>7 000 ₽/мес</b>
+        </div>
+        <ul class="pkg-list">
+          <li data-i18n="pk.f1">Индивидуальный сайт под нишу</li>
+          <li data-i18n="pk.f2">AI-виджет ловит заявки 24/7</li>
+          <li data-i18n="pk.f3">Заявки сразу в Telegram</li>
+          <li class="pkg-accent" data-i18n="pk.f4">Первые 7 дней виджета бесплатно</li>
+          <li data-i18n="pk.f5">Запуск под ключ за 3-4 дня</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary btn-full magnetic" data-magnetic data-i18n="pk.cta">Хочу пакет →</a>
+      </div>
+
+      <!-- separate options -->
+      <div class="pkg-side">
+        <div class="pkg-or mono" data-i18n="pk.or">или по отдельности</div>
+        <div class="pkg-card pkg-card-sm">
+          <div class="pkg-name-sm" data-i18n="pk.siteName">Только сайт</div>
+          <div class="pkg-tiers">
+            <div class="pkg-tier">
+              <div class="pt-top"><span class="pt-name" data-i18n="pk.st1name">Без поддержки</span><span class="pt-price">от 20 000 ₽</span></div>
+              <span class="pt-note" data-i18n="pk.st1note">разово · сайт твой навсегда</span>
+            </div>
+            <div class="pkg-tier pkg-tier-hl">
+              <div class="pt-top"><span class="pt-name" data-i18n="pk.st2name">С поддержкой</span><span class="pt-price">20 000 ₽ + 5 000 ₽/мес</span></div>
+              <span class="pt-note" data-i18n="pk.st2note">хостинг, правки и мониторинг - на мне</span>
+            </div>
+          </div>
+          <a href="#contact" class="btn btn-ghost btn-full" data-i18n="pk.siteCta">Только сайт</a>
+        </div>
+        <div class="pkg-card pkg-card-sm">
+          <div class="pkg-name-sm" data-i18n="pk.wName">Только виджет</div>
+          <div class="pkg-tiers">
+            <div class="pkg-tier">
+              <div class="pt-top"><span class="pt-name" data-i18n="pk.t1name">Базовый</span><span class="pt-price">5 000 ₽ + 7 000 ₽/мес</span></div>
+              <span class="pt-note" data-i18n="pk.t1note">токены нейросети - на тебе</span>
+            </div>
+            <div class="pkg-tier pkg-tier-hl">
+              <div class="pt-top"><span class="pt-name" data-i18n="pk.t2name">Под ключ</span><span class="pt-price">7 000 ₽ + 15 000 ₽/мес</span></div>
+              <span class="pt-note" data-i18n="pk.t2note">токены, хостинг и поддержка - на мне</span>
+            </div>
+          </div>
+          <a href="#contact" class="btn btn-ghost btn-full" data-i18n="pk.wCta">Только виджет</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="pkg-foot mono" data-i18n="pk.foot">Поддержка и хостинг сайта на мне - опция +5 000 ₽/мес (через Cloudflare).</p>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section process" id="process">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 07 / <span data-i18n="pr.num">ПРОЦЕСС</span> ]</span>
+      <h2 class="sec-title" data-i18n="pr.title">Работаем напрямую</h2>
+      <p class="sec-lede" data-i18n="pr.lede">Ты общаешься с тем, кто реально делает проект. Без менеджеров-прокладок и испорченного телефона. Разбираю каждую задачу лично.</p>
+    </div>
+    <div class="proc-grid">
+      <div class="proc-step reveal"><div class="proc-num">01</div><h3 data-i18n="pr.s1t">Разбор задачи</h3><p data-i18n="pr.s1d">Созвон или переписка: твой бизнес, цель, клиенты. Подскажу, что реально нужно, а на чём не стоит тратиться.</p></div>
+      <div class="proc-step reveal"><div class="proc-num">02</div><h3 data-i18n="pr.s2t">Направление</h3><p data-i18n="pr.s2d">Покажу варианты стиля. Выбираешь то, что нравится - дальше делаю в этом направлении.</p></div>
+      <div class="proc-step reveal"><div class="proc-num">03</div><h3 data-i18n="pr.s3t">Сборка</h3><p data-i18n="pr.s3d">Делаю и показываю по ходу. Правим вместе, пока не станет так, как нужно.</p></div>
+      <div class="proc-step reveal"><div class="proc-num">04</div><h3 data-i18n="pr.s4t">Запуск</h3><p data-i18n="pr.s4d">Публикую сайт, подключаю виджет и заявки в Telegram. Дальше на связи и помогаю.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section faq" id="faq">
+  <div class="container faq-container">
+    <div class="sec-head reveal">
+      <span class="mono sec-num">[ 08 / FAQ ]</span>
+      <h2 class="sec-title" data-i18n="faq.title">Частые вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item"><button class="faq-q"><span data-i18n="faq.q1">Сколько занимает по времени?</span><span class="faq-t">+</span></button><div class="faq-a"><p data-i18n="faq.a1">Сайт и виджет вместе - 3-4 дня. Отдельно сайт или отдельно виджет - 1-2 дня, максимум 3, если проект сложный. Срок зависит от того, как быстро присылаешь материалы, и от объёма проекта.</p></div></div>
+      <div class="faq-item"><button class="faq-q"><span data-i18n="faq.q2">Почему виджет - это подписка?</span><span class="faq-t">+</span></button><div class="faq-a"><p data-i18n="faq.a2">Виджет нужно хостить, обновлять и поддерживать, чтобы он стабильно работал и ловил заявки. Подписка покрывает это и стоит в разы дешевле живого менеджера. Сайт - другая история, он разовый и остаётся твоим.</p></div></div>
+      <div class="faq-item"><button class="faq-q"><span data-i18n="faq.q3">Правда можно протестировать виджет бесплатно?</span><span class="faq-t">+</span></button><div class="faq-a"><p data-i18n="faq.a3">Да. Ставлю виджет на твой сайт на 7 дней. Смотришь, как падают заявки в Telegram. Понравилось - продолжаем по подписке. Нет - снимаю без вопросов.</p></div></div>
+      <div class="faq-item"><button class="faq-q"><span data-i18n="faq.q4">Чем отличается подписка за 7 000 и за 15 000 ₽?</span><span class="faq-t">+</span></button><div class="faq-a"><p data-i18n="faq.a4">За 7 000 ₽/мес виджет работает на твоих ключах: токены нейросети оплачиваешь сам, поддержка базовая. За 15 000 ₽/мес всё под ключ на мне - токены, хостинг, обновления и полная поддержка, тебе вообще ни о чём не думать. Дешевле или без забот - выбираешь сам.</p></div></div>
+      <div class="faq-item"><button class="faq-q"><span data-i18n="faq.q5">А если нужно что-то нестандартное?</span><span class="faq-t">+</span></button><div class="faq-a"><p data-i18n="faq.a5">Напиши - обсудим. Магазин, мультистраничник, интеграции, особая анимация. Разберём задачу лично и посчитаю.</p></div></div>
+      <div class="faq-item"><button class="faq-q"><span data-i18n="faq.q6">Кто владеет сайтом?</span><span class="faq-t">+</span></button><div class="faq-a"><p data-i18n="faq.a6">В большинстве случаев - ты: отдаю доступ, домен и исходники оформляю на тебя. Если хочешь, чтобы сайт вёл и поддерживал я (хостинг через Cloudflare, правки, мониторинг) - это опция за 5 000 ₽/мес.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section contact" id="contact">
+  <canvas class="contact-shader" id="contactShader" aria-hidden="true"></canvas>
+  <div class="contact-veil" aria-hidden="true"></div>
+  <div class="container contact-inner reveal">
+    <span class="mono sec-num">[ 09 / <span data-i18n="ct.num">КОНТАКТ</span> ]</span>
+    <h2 class="contact-title" data-i18n-html="ct.title">Разберём твою задачу<br><span class="accent-word">лично</span></h2>
+    <p class="contact-sub" data-i18n="ct.sub">Опиши в двух словах, что нужно - вернусь с идеей и цифрой в течение дня. Можно просто потыкать виджет внизу справа: он тоже собирает заявки.</p>
+
+    <form class="contact-form" id="contactForm">
+      <div class="cf-row">
+        <div class="cf-field"><label class="mono" data-i18n="ct.name">Как тебя зовут</label><input type="text" name="name" placeholder="Имя" data-i18n-ph="ct.ph.name" required></div>
+        <div class="cf-field"><label class="mono" data-i18n="ct.contact">Telegram или телефон</label><input type="text" name="contact" placeholder="@username или +7..." data-i18n-ph="ct.ph.contact" required></div>
+      </div>
+      <div class="cf-field">
+        <label class="mono" data-i18n="ct.need">Что нужно</label>
+        <div class="cf-chips" id="cfChips">
+          <button type="button" class="cf-chip" data-val="Сайт" data-i18n="ct.chip1">Сайт</button>
+          <button type="button" class="cf-chip" data-val="Виджет" data-i18n="ct.chip2">Виджет</button>
+          <button type="button" class="cf-chip" data-val="Сайт и виджет" data-i18n="ct.chip3">Сайт и виджет</button>
+          <button type="button" class="cf-chip" data-val="Пока не знаю" data-i18n="ct.chip4">Пока не знаю</button>
+        </div>
+        <input type="hidden" name="service" id="cfService">
+      </div>
+      <div class="cf-field"><label class="mono" data-i18n="ct.brief">Пара слов о задаче (опционально)</label><textarea name="brief" rows="3" placeholder="Например: сайт для студии маникюра + виджет записи" data-i18n-ph="ct.ph.brief"></textarea></div>
+      <button type="submit" class="btn btn-primary btn-lg btn-full magnetic" data-magnetic data-i18n="ct.send">Отправить заявку <span class="arr">→</span></button>
+      <div class="cf-result" id="cfResult"></div>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-grid">
+    <div class="foot-brand">
+      <div class="logo logo-foot"><span class="logo-mark">V</span><span class="logo-name">Vertux</span></div>
+      <p class="foot-tag" data-i18n="ft.tag">Сайты и виджеты, которые продают.</p>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label mono" data-i18n="ft.nav">Навигация</div>
+      <a href="#examples" data-i18n="nav.examples">Примеры</a>
+      <a href="#sites" data-i18n="nav.sites">Сайты</a>
+      <a href="#package" data-i18n="nav.pricing">Тарифы</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label mono" data-i18n="ft.contact">Связь</div>
+      <a href="https://t.me/" target="_blank" rel="noopener">Telegram</a>
+      <a href="#contact" data-i18n="ft.leave">Оставить заявку</a>
+      <a href="mailto:hello@vertux.studio">hello@vertux.studio</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label mono" data-i18n="ft.examples">Концепты вживую</div>
+      <a href="https://vladimir-fitness-nine.vercel.app" target="_blank" rel="noopener">V/FORMA</a>
+      <a href="https://yadro-restaurant.vercel.app" target="_blank" rel="noopener">ЯДРО</a>
+      <a href="https://pulse-saas-ivory.vercel.app" target="_blank" rel="noopener">PULSE</a>
+      <a href="https://slowpour-zeta.vercel.app" target="_blank" rel="noopener">SLOWPOUR</a>
+      <a href="https://stroy-master-kohl.vercel.app" target="_blank" rel="noopener">STROY-MASTER</a>
+      <a href="https://muza-salon.vercel.app" target="_blank" rel="noopener">MUZA</a>
+      <a href="https://weks666.github.io/ferro-lazer/" target="_blank" rel="noopener">ФЕРРО ЛАЗЕР</a>
+    </div>
+  </div>
+  <div class="container footer-bottom mono">© 2026 Vertux · <span data-i18n="ft.made">собрано вручную</span></div>
+</footer>
+
+<!-- CHAT WIDGET -->
+<button class="chat-toggle" id="chatToggle" aria-label="Открыть чат">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+<div class="chat-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-title"><span class="chat-title-dot"></span><span data-i18n="chat.title">Vertux · бот</span></div>
+    <button class="chat-close" id="chatClose" aria-label="Закрыть">✕</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <form class="chat-input-form" id="chatForm" style="display:none;">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Ответ..." autocomplete="off">
+    <button type="submit" class="chat-send">→</button>
+  </form>
+</div>
+
+<script src="script.js?v=12"></script>
+</body>
+</html>
