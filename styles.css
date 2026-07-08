@@ -633,6 +633,9 @@ a { color: inherit; }
 .lang-toggle:hover { border-color: var(--accent); }
 .lang-toggle .active { color: var(--accent-2); }
 .lang-sep { opacity: 0.4; }
+.nav-tg { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: var(--radius-pill); background: rgba(255,255,255,0.03); border: 1px solid var(--hairline-2); color: var(--muted); transition: border-color 0.2s, color 0.2s; }
+.nav-tg:hover { border-color: var(--accent); color: var(--accent-2); }
+.nav-tg svg { width: 18px; height: 18px; }
 
 /* HERO -> split layout */
 .hero-inner {
