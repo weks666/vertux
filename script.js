@@ -1,5 +1,5 @@
 // ===== CONFIG =====
-console.log('%c Vertux build v12 — marquee=static-clones+translateX ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
+console.log('%c Vertux build v13 — marquee=static-clones+translateX ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
 const N8N_WEBHOOK_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-lead';
 const VERTUX_BOT_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-widget';
 
@@ -52,6 +52,7 @@ const T = {
     'ct.ph.name':'Имя','ct.ph.contact':'@username или +7...','ct.ph.brief':'Например: сайт для студии маникюра + виджет записи','ct.ph.email':'',
     'ex.real':'★ КЛИЕНТСКИЙ ПРОЕКТ','ex.openSite':'Открыть сайт ↗','ex.openSiteLink':'Открыть сайт →',
     'ex.0.cat':'B2B · ГРЯЗЕЗАЩИТНЫЕ ПОКРЫТИЯ','ex.0.desc':'Боевой сайт для производителя грязезащитных покрытий: износостойкие ковры и алюминиевые решётки для бизнес-центров. Строгий B2B-дизайн, каталог, галерея, калькулятор расчёта и заявки прямо в мессенджеры (WhatsApp, Telegram).','ex.0.t1':'Каталог','ex.0.t2':'Калькулятор','ex.0.t3':'Заявки в мессенджеры',
+    'ex.av.cat':'СТРОИТЕЛЬСТВО · ГОТОВЫЕ ДОМА','ex.av.desc':'Боевой сайт застройщика готовых домов под ключ в Ленинградской области. «Белый чертёж»: реальные фото построенных домов, планировки, оплата через семейную ипотеку и заявки прямо с сайта.','ex.av.t1':'Готовые дома','ex.av.t2':'Планировки','ex.av.t3':'Ипотека',
     'ex.1.cat':'ФИТНЕС-ТРЕНЕР · ЛЕНДИНГ + КВИЗ-ВИДЖЕТ','ex.1.desc':'Тёмный энергичный лендинг под фитнес-эксперта. Крупная типографика, анимации, spotlight за курсором. Виджет-квиз ведёт клиента по вопросам и собирает заявку на тренировку.','ex.1.t2':'Анимации','ex.1.t3':'Квиз-виджет',
     'ex.2.cat':'РЕСТОРАН · ЛЕНДИНГ + БУКИНГ-ВИДЖЕТ','ex.2.desc':'Спокойный editorial-сайт для ресторана: тёплая палитра, акцент на еде и атмосфере, сетка блюд с фото. Виджет брони стола собирает дату, время и гостей и отправляет заявку.','ex.2.t2':'Меню с фото','ex.2.t3':'Букинг-виджет',
     'ex.3.cat':'SAAS-СЕРВИС · EN/RU · ЧАТ-ВИДЖЕТ','ex.3.desc':'Светлый продуктовый лендинг с анимированным фоном и живым интерфейсом-демо. Двуязычность EN/RU в один клик. Чат-виджет квалифицирует и записывает в лист ожидания.','ex.3.t2':'Анимация',
@@ -131,6 +132,7 @@ const T = {
     'ct.ph.name':'Name','ct.ph.contact':'@username or +1...','ct.ph.brief':'e.g. a site for a nail studio + booking widget','ct.ph.email':'',
     'ex.real':'★ CLIENT PROJECT','ex.openSite':'Open site ↗','ex.openSiteLink':'Open site →',
     'ex.0.cat':'B2B · DIRT-BARRIER MATTING','ex.0.desc':'A live site for a manufacturer of dirt-barrier matting: wear-resistant carpets and aluminum grates for business centers. Clean B2B design, catalog, gallery, a price calculator and leads straight to messengers (WhatsApp, Telegram).','ex.0.t1':'Catalog','ex.0.t2':'Calculator','ex.0.t3':'Messenger leads',
+    'ex.av.cat':'CONSTRUCTION · READY-BUILT HOMES','ex.av.desc':'A live site for a developer of turnkey ready-built homes in the Leningrad region. "White blueprint": real photos of finished houses, floor plans, payment via family mortgage and requests straight from the site.','ex.av.t1':'Ready homes','ex.av.t2':'Floor plans','ex.av.t3':'Mortgage',
     'ex.1.cat':'FITNESS COACH · LANDING + QUIZ WIDGET','ex.1.desc':'A bold dark landing for a fitness expert. Big typography, animations, cursor spotlight. The quiz widget walks the client through questions and collects a booking request.','ex.1.t2':'Animations','ex.1.t3':'Quiz widget',
     'ex.2.cat':'RESTAURANT · LANDING + BOOKING WIDGET','ex.2.desc':'A calm editorial site for a restaurant: warm palette, focus on food and atmosphere, a dish grid with photos. The booking widget collects date, time and guests and sends the request.','ex.2.t2':'Photo menu','ex.2.t3':'Booking widget',
     'ex.3.cat':'SAAS PRODUCT · EN/RU · CHAT WIDGET','ex.3.desc':'A light product landing with an animated background and a live UI demo. EN/RU in one click. The chat widget qualifies and signs users to the waitlist.','ex.3.t2':'Animation',
