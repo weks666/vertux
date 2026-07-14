@@ -1,5 +1,5 @@
 // ===== CONFIG =====
-console.log('%c Vertux build v13 — marquee=static-clones+translateX ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
+console.log('%c Vertux build v14 — marquee=static-clones+translateX ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
 const N8N_WEBHOOK_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-lead';
 const VERTUX_BOT_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-widget';
 
@@ -282,13 +282,13 @@ document.querySelectorAll('.faq-item').forEach(item => item.querySelector('.faq-
 
 // ===== LEAD SEND =====
 async function sendLead(data) {
-  /* PROD:
-  const res = await fetch(N8N_WEBHOOK_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({...data, url:location.href, ts:new Date().toISOString()}) });
-  if (!res.ok) throw new Error('HTTP '+res.status); return res.json();
-  */
-  console.log('[LEAD] →', data);
-  await new Promise(r => setTimeout(r, 600));
-  return { ok: true };
+  const res = await fetch(N8N_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...data, url: location.href, ts: new Date().toISOString() })
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json().catch(() => ({ ok: true }));
 }
 
 // ===== CONTACT FORM =====
