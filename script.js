@@ -1,5 +1,5 @@
 // ===== CONFIG =====
-console.log('%c Vertux build v14 — marquee=static-clones+translateX ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
+console.log('%c Vertux build v15 — marquee=static-clones+translateX ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
 const N8N_WEBHOOK_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-lead';
 const VERTUX_BOT_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-widget';
 
