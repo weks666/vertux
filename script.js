@@ -1,5 +1,5 @@
 // ===== CONFIG =====
-console.log('%c Vertux build v15 — marquee=static-clones+translateX ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
+console.log('%c Vertux build v16 — Nexus launch ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
 const N8N_WEBHOOK_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-lead';
 const VERTUX_BOT_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-widget';
 
@@ -32,6 +32,7 @@ async function vertuxBot(message, sessionKey) {
 const T = {
   ru: {
     'nav.examples':'Примеры','nav.widget':'Виджет','nav.sites':'Сайты','nav.pricing':'Тарифы','nav.cta':'Обсудить проект →',
+    'nexus.new':'НОВОЕ','nexus.hero':'Рабочие приложения под процессы бизнеса','nexus.footer':'Рабочие приложения для бизнеса',
     'hero.kicker':'ВЕБ-СТУДИЯ · САЙТ + AI-ВИДЖЕТ ПОД КЛЮЧ',
     'hero.title':'Больше клиентов<br>из вашего сайта<br><span class="accent-word">с AI 24/7</span>',
     'hero.sub':'Делаю сайт, который вызывает доверие, и встраиваю AI-менеджера: он отвечает клиентам и ловит заявки круглосуточно — даже пока вы спите. Сайт + виджет под ключ за 3-4 дня.',
@@ -112,6 +113,7 @@ const T = {
   },
   en: {
     'nav.examples':'Examples','nav.widget':'Widget','nav.sites':'Sites','nav.pricing':'Pricing','nav.cta':'Discuss a project →',
+    'nexus.new':'NEW','nexus.hero':'Workspaces built around your business processes','nexus.footer':'Business workspaces, built around you',
     'hero.kicker':'WEB STUDIO · SITE + AI WIDGET, TURNKEY',
     'hero.title':'More clients<br>from your site<br><span class="accent-word">with AI 24/7</span>',
     'hero.sub':'I build a site that earns trust and embed an AI manager: it answers clients and catches leads around the clock — even while you sleep. Site + widget, turnkey in 3-4 days.',

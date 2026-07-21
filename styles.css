@@ -1430,3 +1430,140 @@ html[lang="en"] .cc-title { font-style: italic; }
   .case-step { grid-template-columns: 1fr; gap: var(--s3); }
   .case-step-num { font-size: 22px; }
 }
+
+/* ============================================================
+   VERTUX NEXUS PRODUCT SIGNAL
+   ============================================================ */
+.nexus-launch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  min-height: 42px;
+  margin-bottom: 12px;
+  padding: 6px 7px 6px 8px;
+  overflow: hidden;
+  border: 1px solid rgba(151, 126, 255, 0.42);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(110deg, rgba(124,92,255,0.18), rgba(255,255,255,0.025) 58%, rgba(124,92,255,0.10));
+  box-shadow: 0 14px 38px -24px rgba(124,92,255,0.95), inset 0 1px 0 rgba(255,255,255,0.07);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .25s ease;
+}
+.nexus-launch::before {
+  content: '';
+  position: absolute;
+  inset: -80% 35% -80% -25%;
+  background: radial-gradient(circle, rgba(185,166,255,0.20), transparent 65%);
+  pointer-events: none;
+}
+.nexus-launch:hover {
+  transform: translateY(-2px);
+  border-color: rgba(185,166,255,0.72);
+  background: linear-gradient(110deg, rgba(124,92,255,0.25), rgba(255,255,255,0.035) 58%, rgba(124,92,255,0.14));
+  box-shadow: 0 18px 44px -22px rgba(124,92,255,0.9), inset 0 1px 0 rgba(255,255,255,0.10);
+}
+.nexus-launch-status {
+  position: relative;
+  z-index: 1;
+  padding: 5px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .13em;
+  line-height: 1;
+}
+.nexus-launch-brand {
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+.nexus-launch-brand b { color: var(--accent-2); font-weight: 800; }
+.nexus-launch-divider { position: relative; z-index: 1; width: 1px; height: 16px; background: var(--hairline-2); }
+.nexus-launch-copy {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nexus-launch-arrow {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  color: var(--accent-2);
+  transition: transform .25s ease, background .25s ease;
+}
+.nexus-launch:hover .nexus-launch-arrow { transform: rotate(8deg); background: rgba(124,92,255,0.22); }
+
+.foot-product {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 10px;
+  max-width: 270px;
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid var(--hairline-2);
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(124,92,255,0.11), rgba(255,255,255,0.018));
+  color: var(--text);
+  text-decoration: none;
+  transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+.foot-product:hover {
+  transform: translateY(-2px);
+  border-color: rgba(124,92,255,0.55);
+  background: linear-gradient(120deg, rgba(124,92,255,0.18), rgba(255,255,255,0.028));
+}
+.foot-product-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #fff;
+  color: #0A0A0C;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-weight: 800;
+  box-shadow: 0 8px 20px -8px rgba(124,92,255,0.85), 0 0 0 2px rgba(124,92,255,0.16);
+}
+.foot-product-copy { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.foot-product-copy b { font-size: 13px; letter-spacing: -.01em; }
+.foot-product-copy small {
+  overflow: hidden;
+  color: var(--faint);
+  font-size: 9px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.foot-product-arrow { color: var(--accent-2); font-size: 14px; }
+
+@media (max-width: 560px) {
+  .nexus-launch-copy, .nexus-launch-divider { display: none; }
+  .nexus-launch { gap: 8px; }
+  .nexus-launch-arrow { margin-left: 2px; }
+}
