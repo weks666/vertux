@@ -20,8 +20,8 @@
         <div class="download-card-top"><span class="platform-icon"><svg viewBox="0 0 24 24"><path d="m3 5 8-1v7H3V5Zm10-1 8-1v8h-8V4ZM3 13h8v7l-8-1v-6Zm10 0h8v8l-8-1v-7Z"/></svg></span><span class="release-chip"><i aria-hidden="true"></i><span data-i18n="download.testBuild">TEST BUILD / X64</span></span></div>
         <h2 data-i18n="download.cardt">Nexus для Windows</h2>
         <p data-i18n="download.cardd">Локальный клиент, защищённый доступ к продуктам и Local Node для систем, которые остаются на компьютере компании.</p>
-        <!-- Set data-endpoint only after the server-side ticket API is live. Never put a password or EXE URL here. -->
-        <section class="download-gate" data-download-gate data-endpoint="" data-artifact="vertux-nexus-windows-x64" aria-labelledby="downloadGateTitle">
+        <!-- The browser receives only a short-lived one-time ticket. Never put a password or EXE URL here. -->
+        <section class="download-gate" data-download-gate data-endpoint="https://downloads.vertux.online/v1/download-tickets" data-artifact="vertux-nexus-windows-x64" aria-labelledby="downloadGateTitle">
           <div class="download-gate-head">
             <div><p class="section-code" data-i18n="download.gateKicker">ВРЕМЕННЫЙ ДОСТУП</p><h3 id="downloadGateTitle" data-i18n="download.gateTitle">Скачать по коду</h3></div>
             <span class="server-check"><i aria-hidden="true"></i><span data-i18n="download.serverCheck">SERVER CHECK</span></span>
