@@ -108,7 +108,7 @@
         if (!busy && statusCode !== 'ready') setStatus('ready');
       });
 
-      form.addEventListener('submit', async function (event) {
+      async function requestDownload(event) {
         event.preventDefault();
         if (!endpoint || busy) return;
 
@@ -180,6 +180,12 @@
           if (timeout) win.clearTimeout(timeout);
           setBusy(false);
         }
+      }
+
+      form.addEventListener('submit', requestDownload);
+      submit.addEventListener('click', function (event) {
+        event.preventDefault();
+        void requestDownload(event);
       });
 
       var languageObserver = new MutationObserver(function () {
