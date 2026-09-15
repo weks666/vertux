@@ -1126,17 +1126,8 @@ h1 em, .section-heading h2 em, .final-inner h2 em { color: var(--violet-light); 
 .route-workspace-history .active > i { border-color: var(--violet-light); background: var(--violet); box-shadow: 0 0 10px rgba(124,92,255,.55); }
 .route-workspace-history .active time { color: var(--violet-light); }
 
-.final-energy { position: absolute; z-index: 0; inset: 0; pointer-events: none; opacity: .72; mask-image: radial-gradient(ellipse at center,#000 15%,rgba(0,0,0,.86) 54%,transparent 92%); }
-.final-energy svg { width: 100%; height: 100%; overflow: visible; }
-.final-energy .energy-bolt path { fill: none; stroke: url(#finalEnergyStroke); stroke-width: 2.2; stroke-dasharray: 118 24; stroke-dashoffset: 0; vector-effect: non-scaling-stroke; animation: energyTrace 5.2s linear infinite; }
-.final-energy .energy-bolt .energy-branch { stroke-width: 1.2; stroke-dasharray: 42 18; animation-duration: 3.8s; }
-.final-energy .bolt-a { animation: energyFlicker 6.5s ease-in-out infinite; }
-.final-energy .bolt-b { opacity: .52; animation: energyFlicker 7.4s -2.2s ease-in-out infinite reverse; }
-.final-energy .bolt-b path { animation-delay: -2.6s; }
 .final-v,.final-light { z-index: 1; }
 .final-light { animation: finalEnergyBreath 5.8s ease-in-out infinite; }
-@keyframes energyTrace { to { stroke-dashoffset: -426; } }
-@keyframes energyFlicker { 0%,100% { opacity:.22; } 9% { opacity:.82; } 13% { opacity:.36; } 18% { opacity:.72; } 52% { opacity:.38; } 58% { opacity:.7; } }
 @keyframes finalEnergyBreath { 50% { opacity:.72; transform:translate(-50%,-50%) scale(1.08); } }
 
 @media (max-width: 860px) {
@@ -1166,7 +1157,6 @@ h1 em, .section-heading h2 em, .final-inner h2 em { color: var(--violet-light); 
   .route-workspace-history > span { min-height: 62px; padding: 9px 5px; border-right: 1px solid rgba(255,255,255,.055); border-bottom: 0; }
   .route-workspace-history > span:last-child { border-right: 0; }
   .route-workspace-history > span b { font-size: 8px; }
-  .final-energy { inset: 8% -28%; opacity: .58; }
 }
 
 /* Temporary server-verified Windows download gate */
