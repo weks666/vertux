@@ -11,7 +11,7 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/site.css?v=7">
-  <link rel="stylesheet" href="assets/landing.css?v=20260915">
+  <link rel="stylesheet" href="assets/landing.css?v=20260915b">
 </head>
 <body class="nexus-home" data-page="home">
   <a class="skip-link" href="#content" data-i18n="a11y.skip">К содержанию</a>
@@ -63,6 +63,7 @@
           <div class="invest-copy">
             <h3 data-i18n="invest.title">Весь портфель.<br>В поле зрения.</h3>
             <p data-i18n="invest.lede">Личное рабочее пространство инвестора: история операций, аналитика и план действий рядом. Единый продукт со своим счётом и настройками.</p>
+            <div class="invest-quick-links"><a href="#invest-tour" data-i18n="tour.try">Попробовать пример</a><a href="#invest-plan" data-i18n="tour.toPrice">Рассчитать подписку</a></div>
             <dl class="invest-features">
               <div><dt data-i18n="invest.f1title">Понимать результат</dt><dd data-i18n="invest.f1body">Стоимость портфеля, история операций, комиссии и динамика за выбранный период.</dd></div>
               <div><dt data-i18n="invest.f2title">Держать план перед глазами</dt><dd data-i18n="invest.f2body">Инструменты, календарь, напоминания и торговый план в одном рабочем пространстве.</dd></div>
@@ -77,7 +78,78 @@
           </figure>
         </div>
 
-        <div class="invest-subscription" aria-labelledby="invest-plan-title">
+        <div class="invest-tour" id="invest-tour" aria-labelledby="tour-title">
+          <div class="tour-heading">
+            <div><h3 id="tour-title" data-i18n="tour.title">Попробуйте на примере</h3><p data-i18n="tour.intro">Посмотрите, как читать портфель, находить операции и понимать, где находятся ваши данные.</p></div>
+            <span class="tour-sample" data-i18n="tour.sample">Учебные значения</span>
+          </div>
+          <div class="tour-tabs" data-tour-tabs role="tablist" aria-label="Примеры Invest Workspace" data-i18n-aria="tour.tabsAria" hidden>
+            <button type="button" id="tour-tab-portfolio" role="tab" aria-selected="true" aria-controls="tour-panel-portfolio" data-tour-tab="portfolio" data-i18n="tour.portfolio">Портфель</button>
+            <button type="button" id="tour-tab-operations" role="tab" aria-selected="false" aria-controls="tour-panel-operations" tabindex="-1" data-tour-tab="operations" data-i18n="tour.operations">Операции</button>
+            <button type="button" id="tour-tab-data" role="tab" aria-selected="false" aria-controls="tour-panel-data" tabindex="-1" data-tour-tab="data" data-i18n="tour.data">Где мои данные</button>
+          </div>
+
+          <section id="tour-panel-portfolio" class="tour-panel" data-tour-panel="portfolio" aria-labelledby="portfolio-example-title">
+            <div class="tour-explanation">
+              <h4 id="portfolio-example-title" data-i18n="tour.portfolioTitle">Рост суммы на счёте — ещё не прибыль</h4>
+              <p data-i18n="tour.portfolioBody">В начале периода было 1 000 000 ₽, в конце стало 1 240 000 ₽. Часть разницы могла появиться из-за пополнения. Измените его сумму и посмотрите, что останется после вычета внесённых денег.</p>
+              <p class="tour-footnote" data-i18n="tour.mathNote">Упрощённый пример: без выводов и отдельных денежных выплат. Показывает денежную разницу, а не процент доходности.</p>
+            </div>
+            <div class="portfolio-example">
+              <dl class="example-values"><div><dt data-i18n="tour.start">В начале</dt><dd>1 000 000 ₽</dd></div><div><dt data-i18n="tour.end">В конце</dt><dd>1 240 000 ₽</dd></div></dl>
+              <div class="contribution-control" data-interactive-control hidden>
+                <label for="demo-contribution"><span data-i18n="tour.contribution">Пополнения за период</span><output id="contribution-value" for="demo-contribution">200 000 ₽</output></label>
+                <input type="range" id="demo-contribution" min="0" max="300000" step="10000" value="200000" aria-describedby="contribution-help">
+                <div class="range-limits" aria-hidden="true"><span>0 ₽</span><span>300 000 ₽</span></div>
+                <p id="contribution-help" data-i18n="tour.sliderHelp">Двигайте ползунок или используйте стрелки на клавиатуре.</p>
+              </div>
+              <div class="example-result" aria-live="polite" aria-atomic="true">
+                <span data-i18n="tour.resultLabel">Изменение без пополнений</span>
+                <output id="portfolio-result" for="demo-contribution">+40 000 ₽</output>
+                <p id="portfolio-equation">1 240 000 − 1 000 000 − 200 000 = 40 000 ₽</p>
+                <p id="portfolio-explanation" data-i18n="tour.defaultResult">200 000 ₽ внесены вами. Оставшиеся 40 000 ₽ — изменение стоимости без этого пополнения.</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="tour-panel-operations" class="tour-panel" data-tour-panel="operations" aria-labelledby="operations-example-title">
+            <div class="tour-explanation">
+              <h4 id="operations-example-title" data-i18n="tour.operationsTitle">Найдите, из чего сложилась сумма</h4>
+              <p data-i18n="tour.operationsBody">Пополнение, покупка и комиссия означают разные вещи. Покупка меняет состав портфеля, пополнение добавляет ваши деньги, комиссия уменьшает денежный остаток.</p>
+              <p class="tour-footnote" data-i18n="tour.operationsNote">Это отдельная учебная история. Выберите тип, чтобы оставить только нужные операции.</p>
+            </div>
+            <div class="operations-example">
+              <div class="operation-filters" data-operation-filters role="group" aria-label="Тип операций" data-i18n-aria="tour.filterAria" hidden>
+                <button type="button" data-operation-filter="all" aria-pressed="true" data-i18n="tour.all">Все</button>
+                <button type="button" data-operation-filter="deposit" aria-pressed="false" data-i18n="tour.deposits">Пополнения</button>
+                <button type="button" data-operation-filter="fee" aria-pressed="false" data-i18n="tour.fees">Комиссии</button>
+              </div>
+              <table class="example-operations"><caption class="visually-hidden" data-i18n="tour.tableCaption">Учебная история операций</caption><thead><tr><th scope="col" data-i18n="tour.operation">Операция</th><th scope="col" data-i18n="tour.amount">Сумма</th></tr></thead><tbody>
+                <tr data-operation-kind="deposit"><td><span data-i18n="tour.deposit">Пополнение</span><small data-i18n="tour.date1">2 сентября</small></td><td>+150 000 ₽</td></tr>
+                <tr data-operation-kind="purchase"><td><span data-i18n="tour.purchase">Покупка бумаг</span><small data-i18n="tour.date2">3 сентября</small></td><td>−40 000 ₽</td></tr>
+                <tr data-operation-kind="fee"><td><span data-i18n="tour.fee">Комиссия</span><small data-i18n="tour.date2">3 сентября</small></td><td>−35 ₽</td></tr>
+                <tr data-operation-kind="deposit"><td><span data-i18n="tour.deposit">Пополнение</span><small data-i18n="tour.date3">8 сентября</small></td><td>+50 000 ₽</td></tr>
+                <tr data-operation-kind="fee"><td><span data-i18n="tour.fee">Комиссия</span><small data-i18n="tour.date4">10 сентября</small></td><td>−85 ₽</td></tr>
+              </tbody></table>
+              <p class="operation-summary" id="operation-summary" aria-live="polite" data-i18n="tour.allSummary">Показаны все 5 операций. Сумма движений денег не равна прибыли портфеля.</p>
+            </div>
+          </section>
+
+          <section id="tour-panel-data" class="tour-panel" data-tour-panel="data" aria-labelledby="data-example-title">
+            <div class="tour-explanation">
+              <h4 id="data-example-title" data-i18n="tour.dataTitle">Nexus и Workspace отвечают за разное</h4>
+              <p data-i18n="tour.dataBody">Nexus — общий вход, доступ к продуктам и обновления. Invest Workspace — место, где вы работаете со своим инвестиционным портфелем.</p>
+              <p class="tour-footnote" data-i18n="tour.dataNote">Вход в Nexus с другого устройства сам по себе не переносит туда локальный портфель.</p>
+            </div>
+            <dl class="data-locations">
+              <div><dt data-i18n="tour.localTitle">На вашем Windows-компьютере</dt><dd data-i18n="tour.localBody">Портфель, история и ключ подключения к брокеру. Ключ вводится в защищённом системном окне.</dd></div>
+              <div><dt data-i18n="tour.nexusTitle">В Nexus</dt><dd data-i18n="tour.nexusBody">Учётная запись, разрешённые продукты, устройства, версия приложения и сопровождение.</dd></div>
+              <div><dt data-i18n="tour.brokerTitle">У брокера</dt><dd data-i18n="tour.brokerBody">Ваш брокерский счёт. Invest получает данные для просмотра; сделки и переводы вы совершаете у брокера.</dd></div>
+            </dl>
+          </section>
+        </div>
+
+        <div class="invest-subscription" id="invest-plan" aria-labelledby="invest-plan-title">
           <div class="invest-plan-copy">
             <h3 id="invest-plan-title" data-i18n="invest.planTitle">Один план. Выбираете срок.</h3>
             <p data-i18n="invest.planBody">Планируемая подписка с одинаковыми возможностями на месяц, три месяца или год.</p>
@@ -87,6 +159,18 @@
             <div><dt data-i18n="invest.quarter">3 месяца</dt><dd>3 990 <span>₽</span><small data-i18n="invest.quarterRate">1 330 ₽ / месяц</small></dd></div>
             <div><dt data-i18n="invest.year">1 год</dt><dd>14 900 <span>₽</span><small data-i18n="invest.yearRate">≈ 1 242 ₽ / месяц</small></dd></div>
           </dl>
+          <div class="subscription-calculator" id="subscription-calculator" hidden>
+            <fieldset class="term-selector"><legend data-i18n="calc.choose">Выберите срок для расчёта</legend>
+              <label><input type="radio" id="term-1" name="invest-term" value="1" checked><span data-i18n="invest.month">1 месяц</span></label>
+              <label><input type="radio" id="term-3" name="invest-term" value="3"><span data-i18n="invest.quarter">3 месяца</span></label>
+              <label><input type="radio" id="term-12" name="invest-term" value="12"><span data-i18n="invest.year">1 год</span></label>
+            </fieldset>
+            <div class="term-result" aria-live="polite" aria-atomic="true">
+              <div class="term-total"><span id="term-duration" data-i18n="calc.monthTotal">Всего за 1 месяц</span><output id="term-total" for="term-1 term-3 term-12">1 490 ₽</output></div>
+              <dl class="term-breakdown"><div><dt data-i18n="calc.perMonth">В пересчёте на месяц</dt><dd id="term-monthly">1 490 ₽</dd></div><div><dt data-i18n="calc.saving">Экономия к оплате помесячно</dt><dd id="term-saving">0 ₽</dd></div></dl>
+              <p id="term-explanation" data-i18n="calc.defaultNote">Месячный вариант без скидки за срок. Во всех вариантах одинаковые возможности.</p>
+            </div>
+          </div>
           <div class="invest-launch">
             <p data-i18n="invest.launchNote">Продажи ещё не открыты. Условия на 3 месяца и год предварительные; дату запуска и состав AI-функций сообщим отдельно.</p>
             <a class="pill pill-primary" href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer" data-i18n="invest.contact">Обсудить ранний доступ</a>
@@ -94,6 +178,7 @@
         </div>
 
         <div class="invest-questions">
+          <details><summary data-i18n="invest.q4">Как будет устроено начало работы?</summary><ol class="invest-start"><li data-i18n="invest.start1">После открытия продаж — выбрать срок подписки и получить свой доступ к продукту.</li><li data-i18n="invest.start2">Установить Nexus на Windows и открыть свой Invest Workspace.</li><li data-i18n="invest.start3">Подключить свой брокерский счёт в режиме просмотра через защищённое системное окно.</li><li data-i18n="invest.start4">Выполнить первую синхронизацию, проверить состав данных и настроить рабочее пространство.</li></ol><p data-i18n="invest.startNote">Сейчас самостоятельная покупка и выдача доступа ещё готовятся. Обсудить ранний доступ можно с Vertux.</p></details>
           <details><summary data-i18n="invest.q1">Какие брокеры будут поддерживаться?</summary><p data-i18n="invest.a1">Первую версию готовим с подключением к Т-Инвестициям для просмотра данных своего счёта. Интеграции с другими брокерами исследуем; готовых подключений к ним пока нет.</p></details>
           <details><summary data-i18n="invest.q2">Что с AI-анализом и пробным периодом?</summary><p data-i18n="invest.a2">Планируем анализ компаний, работу с новостями и 30-дневный пробный период. Сейчас выбираем AI-провайдера и лимиты: эти функции и пробный доступ ещё не запущены.</p></details>
           <details><summary data-i18n="invest.q3">Можно ли пользоваться с телефона?</summary><p data-i18n="invest.a3">Первую версию готовим для Windows. Общий облачный портфель и доступ к нему с телефона пока не входят в заявленные возможности.</p></details>
@@ -105,6 +190,14 @@
       <div class="shell business-heading">
         <div><h2 id="business-title" data-i18n="business.title">Workspace по логике<br>вашей компании.</h2><p data-i18n="business.lede">Для задач бизнеса создаём индивидуальные системы: ваши процессы, роли и интеграции. Состав, стоимость и сопровождение определяем после знакомства с задачей.</p></div>
         <a class="pill pill-ghost" href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer" data-i18n="business.contact">Обсудить задачу</a>
+      </div>
+      <div class="shell workspace-comparison">
+        <details><summary data-i18n="compare.choice">Чем индивидуальный Workspace отличается от Invest?</summary>
+          <div class="workspace-comparison-grid">
+            <div><h3>Invest Workspace</h3><p data-i18n="compare.invest">Общий продукт для личного инвестиционного портфеля. Вы подключаете свой счёт и меняете настройки; набор возможностей развивается вместе с продуктом.</p><p class="comparison-term" data-i18n="compare.investPrice">Планируемая подписка: 1 490 ₽ за месяц.</p><a class="text-link" href="#invest" data-i18n="compare.toInvest">Вернуться к Invest</a></div>
+            <div><h3 data-i18n="compare.businessTitle">Workspace для компании</h3><p data-i18n="compare.business">Отдельный проект под ваш процесс: свои сущности, этапы, роли сотрудников и интеграции. Сначала разбираем задачу, затем согласуем состав и разработку.</p><p class="comparison-term" data-i18n="compare.businessPrice">Стоимость и сопровождение рассчитываются под задачу.</p><a class="text-link" href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer" data-i18n="business.contact">Обсудить задачу</a></div>
+          </div>
+        </details>
       </div>
 
       <div class="shell product-stage reveal" id="product">
@@ -320,6 +413,7 @@
     <div class="shell footer-bottom"><span>© 2026 VERTUX NEXUS</span><a class="studio-credit" href="https://vertux.online" target="_blank" rel="noopener noreferrer"><img src="assets/vertux-mark.png" alt=""><span data-i18n-html="footer.made">Сделано в студии <b>Vertux</b></span></a><span>SPB / RU</span></div>
   </footer>
 
-  <script src="assets/site.js?v=20260915"></script>
+  <script src="assets/site.js?v=20260915b"></script>
+  <script src="assets/landing-interactions.js?v=20260915b"></script>
 </body>
 </html>

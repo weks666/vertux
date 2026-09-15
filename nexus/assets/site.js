@@ -237,6 +237,95 @@
     'footer.homeNote':'Workspaces for business and personal investing.'
   });
 
+  Object.assign(translations.ru, {
+    'tour.try':'Попробовать пример', 'tour.toPrice':'Рассчитать подписку',
+    'tour.title':'Попробуйте на примере',
+    'tour.intro':'Посмотрите, как читать портфель, находить операции и понимать, где находятся ваши данные.',
+    'tour.sample':'Учебные значения', 'tour.tabsAria':'Примеры Invest Workspace',
+    'tour.portfolio':'Портфель', 'tour.operations':'Операции', 'tour.data':'Где мои данные',
+    'tour.portfolioTitle':'Рост суммы на счёте — ещё не прибыль',
+    'tour.portfolioBody':'В начале периода было 1 000 000 ₽, в конце стало 1 240 000 ₽. Часть разницы могла появиться из-за пополнения. Измените его сумму и посмотрите, что останется после вычета внесённых денег.',
+    'tour.mathNote':'Упрощённый пример: без выводов и отдельных денежных выплат. Показывает денежную разницу, а не процент доходности.',
+    'tour.start':'В начале', 'tour.end':'В конце', 'tour.contribution':'Пополнения за период',
+    'tour.sliderHelp':'Двигайте ползунок или используйте стрелки на клавиатуре.',
+    'tour.resultLabel':'Изменение без пополнений',
+    'tour.defaultResult':'200 000 ₽ внесены вами. Оставшиеся 40 000 ₽ — изменение стоимости без этого пополнения.',
+    'tour.operationsTitle':'Найдите, из чего сложилась сумма',
+    'tour.operationsBody':'Пополнение, покупка и комиссия означают разные вещи. Покупка меняет состав портфеля, пополнение добавляет ваши деньги, комиссия уменьшает денежный остаток.',
+    'tour.operationsNote':'Это отдельная учебная история. Выберите тип, чтобы оставить только нужные операции.',
+    'tour.filterAria':'Тип операций', 'tour.all':'Все', 'tour.deposits':'Пополнения', 'tour.fees':'Комиссии',
+    'tour.tableCaption':'Учебная история операций', 'tour.operation':'Операция', 'tour.amount':'Сумма',
+    'tour.deposit':'Пополнение', 'tour.purchase':'Покупка бумаг', 'tour.fee':'Комиссия',
+    'tour.date1':'2 сентября', 'tour.date2':'3 сентября', 'tour.date3':'8 сентября', 'tour.date4':'10 сентября',
+    'tour.allSummary':'Показаны все 5 операций. Сумма движений денег не равна прибыли портфеля.',
+    'tour.dataTitle':'Nexus и Workspace отвечают за разное',
+    'tour.dataBody':'Nexus — общий вход, доступ к продуктам и обновления. Invest Workspace — место, где вы работаете со своим инвестиционным портфелем.',
+    'tour.dataNote':'Вход в Nexus с другого устройства сам по себе не переносит туда локальный портфель.',
+    'tour.localTitle':'На вашем Windows-компьютере',
+    'tour.localBody':'Портфель, история и ключ подключения к брокеру. Ключ вводится в защищённом системном окне.',
+    'tour.nexusTitle':'В Nexus', 'tour.nexusBody':'Учётная запись, разрешённые продукты, устройства, версия приложения и сопровождение.',
+    'tour.brokerTitle':'У брокера', 'tour.brokerBody':'Ваш брокерский счёт. Invest получает данные для просмотра; сделки и переводы вы совершаете у брокера.',
+    'calc.choose':'Выберите срок для расчёта', 'calc.monthTotal':'Всего за 1 месяц',
+    'calc.perMonth':'В пересчёте на месяц', 'calc.saving':'Экономия к оплате помесячно',
+    'calc.defaultNote':'Месячный вариант без скидки за срок. Во всех вариантах одинаковые возможности.',
+    'invest.q4':'Как будет устроено начало работы?',
+    'invest.start1':'После открытия продаж — выбрать срок подписки и получить свой доступ к продукту.',
+    'invest.start2':'Установить Nexus на Windows и открыть свой Invest Workspace.',
+    'invest.start3':'Подключить свой брокерский счёт в режиме просмотра через защищённое системное окно.',
+    'invest.start4':'Выполнить первую синхронизацию, проверить состав данных и настроить рабочее пространство.',
+    'invest.startNote':'Сейчас самостоятельная покупка и выдача доступа ещё готовятся. Обсудить ранний доступ можно с Vertux.',
+    'compare.choice':'Чем индивидуальный Workspace отличается от Invest?',
+    'compare.invest':'Общий продукт для личного инвестиционного портфеля. Вы подключаете свой счёт и меняете настройки; набор возможностей развивается вместе с продуктом.',
+    'compare.investPrice':'Планируемая подписка: 1 490 ₽ за месяц.', 'compare.toInvest':'Вернуться к Invest',
+    'compare.businessTitle':'Workspace для компании',
+    'compare.business':'Отдельный проект под ваш процесс: свои сущности, этапы, роли сотрудников и интеграции. Сначала разбираем задачу, затем согласуем состав и разработку.',
+    'compare.businessPrice':'Стоимость и сопровождение рассчитываются под задачу.'
+  });
+  Object.assign(translations.en, {
+    'tour.try':'Try an example', 'tour.toPrice':'Calculate the subscription',
+    'tour.title':'Try it with an example',
+    'tour.intro':'Explore how to read a portfolio, find transactions and understand where your data lives.',
+    'tour.sample':'Sample values', 'tour.tabsAria':'Invest Workspace examples',
+    'tour.portfolio':'Portfolio', 'tour.operations':'Transactions', 'tour.data':'Where data lives',
+    'tour.portfolioTitle':'A larger account total does not always mean profit',
+    'tour.portfolioBody':'The period starts at RUB 1,000,000 and ends at RUB 1,240,000. Deposits may explain part of the difference. Change the amount added to see what remains after subtracting your deposits.',
+    'tour.mathNote':'Simplified example with no withdrawals or separate cash payouts. It shows a cash difference, not a rate of return.',
+    'tour.start':'At the start', 'tour.end':'At the end', 'tour.contribution':'Deposits during the period',
+    'tour.sliderHelp':'Move the slider or use the arrow keys.',
+    'tour.resultLabel':'Change excluding deposits',
+    'tour.defaultResult':'You added RUB 200,000. The remaining RUB 40,000 is the change in value excluding that deposit.',
+    'tour.operationsTitle':'See what the total consists of',
+    'tour.operationsBody':'Deposits, purchases and fees mean different things. A purchase changes the portfolio composition, a deposit adds your money, and a fee reduces your cash balance.',
+    'tour.operationsNote':'This is a separate sample history. Choose a type to show only the transactions you need.',
+    'tour.filterAria':'Transaction type', 'tour.all':'All', 'tour.deposits':'Deposits', 'tour.fees':'Fees',
+    'tour.tableCaption':'Sample transaction history', 'tour.operation':'Transaction', 'tour.amount':'Amount',
+    'tour.deposit':'Deposit', 'tour.purchase':'Securities purchase', 'tour.fee':'Fee',
+    'tour.date1':'2 September', 'tour.date2':'3 September', 'tour.date3':'8 September', 'tour.date4':'10 September',
+    'tour.allSummary':'All 5 transactions are shown. Adding cash movements together does not give portfolio profit.',
+    'tour.dataTitle':'Nexus and your workspace have different roles',
+    'tour.dataBody':'Nexus provides your sign-in, product access and updates. Invest Workspace is where you work with your investment portfolio.',
+    'tour.dataNote':'Signing in to Nexus on another device does not automatically transfer your local portfolio to it.',
+    'tour.localTitle':'On your Windows computer',
+    'tour.localBody':'Your portfolio, history and broker connection key. The key is entered in a secure system window.',
+    'tour.nexusTitle':'In Nexus', 'tour.nexusBody':'Your account, permitted products, devices, app version and support.',
+    'tour.brokerTitle':'With your broker', 'tour.brokerBody':'Your brokerage account. Invest reads data; you place trades and make transfers with your broker.',
+    'calc.choose':'Choose a duration to calculate', 'calc.monthTotal':'Total for 1 month',
+    'calc.perMonth':'Monthly equivalent', 'calc.saving':'Savings compared with monthly payments',
+    'calc.defaultNote':'The monthly option has no term discount. Every duration includes the same features.',
+    'invest.q4':'How will getting started work?',
+    'invest.start1':'Once sales open, choose a subscription duration and receive your own product access.',
+    'invest.start2':'Install Nexus on Windows and open your Invest Workspace.',
+    'invest.start3':'Connect your own brokerage account in read-only mode through a secure system window.',
+    'invest.start4':'Run the first sync, check the available data and configure your workspace.',
+    'invest.startNote':'Self-service purchasing and access provisioning are still being prepared. You can discuss early access with Vertux.',
+    'compare.choice':'How is a custom workspace different from Invest?',
+    'compare.invest':'A shared product for your personal investment portfolio. Connect your own account and adjust the settings; features evolve with the product.',
+    'compare.investPrice':'Planned subscription: RUB 1,490 per month.', 'compare.toInvest':'Back to Invest',
+    'compare.businessTitle':'A workspace for your company',
+    'compare.business':'A separate project for your process: custom records, stages, team roles and integrations. We discuss your needs before agreeing the scope and development.',
+    'compare.businessPrice':'Pricing and support are scoped to your project.'
+  });
+
   var language = 'ru';
   try { language = localStorage.getItem('vertux-nexus-lang') || 'ru'; } catch (error) { language = 'ru'; }
   if (!translations[language]) language = 'ru';
@@ -282,6 +371,7 @@
       account:{ru:'Вход — Vertux Nexus',en:'Sign in — Vertux Nexus'}
     };
     if (titles[page]) document.title = titles[page][language];
+    document.dispatchEvent(new CustomEvent('nexus:language-change'));
   }
 
   document.querySelectorAll('[data-lang-toggle]').forEach(function (button) {
