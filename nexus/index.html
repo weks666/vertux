@@ -4,15 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#07070a">
-  <meta name="description" content="Vertux Nexus превращает разрозненные процессы, данные и сервисы компании в персональную рабочую систему." data-i18n-content="meta.homeDescription">
-  <meta property="og:title" content="Vertux Nexus - ваш процесс, собранный в систему" data-i18n-content="meta.homeTitle">
-  <meta property="og:description" content="Индивидуальный рабочий контур с понятными статусами, AI в контексте задач и нужными интеграциями." data-i18n-content="meta.homeOgDescription">
-  <title>Vertux Nexus - ваш процесс, собранный в систему</title>
+  <meta name="description" content="Рабочие пространства Vertux Nexus: системы под задачи бизнеса и Invest Workspace для личного портфеля. Готовим подписку Invest от 1 490 ₽ в месяц." data-i18n-content="meta.homeDescription">
+  <meta property="og:title" content="Vertux Nexus — рабочие пространства для бизнеса и инвестиций" data-i18n-content="meta.homeTitle">
+  <meta property="og:description" content="Индивидуальные Workspace для компаний и Invest Workspace для инвестора. Возможности, интерфейс и условия будущего запуска." data-i18n-content="meta.homeOgDescription">
+  <title>Vertux Nexus — рабочие пространства для бизнеса и инвестиций</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/site.css?v=7">
+  <link rel="stylesheet" href="assets/landing.css?v=20260915">
 </head>
-<body>
+<body class="nexus-home" data-page="home">
   <a class="skip-link" href="#content" data-i18n="a11y.skip">К содержанию</a>
   <div class="noise" aria-hidden="true"></div>
   <div class="pointer-light" aria-hidden="true"></div>
@@ -24,9 +25,9 @@
         <span class="brand-name"><b>Vertux</b><small>NEXUS</small></span>
       </a>
       <nav class="main-nav" id="mainNav" aria-label="Главная навигация" data-i18n-aria="aria.mainNav">
-        <a href="#product" data-i18n="nav.product">Продукт</a>
-        <a href="#solutions" data-i18n="nav.solutions">Возможности</a>
-        <a href="#deployment" data-i18n="nav.deployment">Размещение</a>
+        <a href="#invest">Invest Workspace</a>
+        <a href="#business" data-i18n="nav.business">Для бизнеса</a>
+        <a href="#deployment" data-i18n="nav.platform">Платформа</a>
         <a href="updates.html" data-i18n="nav.updates">Обновления</a>
       </nav>
       <div class="nav-actions">
@@ -40,24 +41,70 @@
 
   <main id="content">
     <section class="hero" id="top">
-      <div class="hero-grid" aria-hidden="true"></div>
-      <div class="hero-beam beam-a" aria-hidden="true"></div>
-      <div class="hero-beam beam-b" aria-hidden="true"></div>
       <div class="hero-ghost" aria-hidden="true">NEXUS</div>
       <div class="shell hero-copy">
-        <p class="product-kicker reveal"><span></span><b data-i18n="hero.kicker">NEXUS / ПЕРСОНАЛЬНАЯ СИСТЕМА ДЛЯ БИЗНЕСА</b></p>
-        <h1 class="reveal" data-i18n-html="hero.title">Ваш процесс.<br><em>Собран в Nexus.</em></h1>
-        <p class="hero-lede reveal" data-i18n="hero.lede">Не ещё одна готовая CRM. Мы превращаем логику вашей компании в единое рабочее пространство с нужными статусами, AI и интеграциями.</p>
+        <h1 data-i18n-html="hero.title">Ваши задачи.<br><em>Собраны в Nexus.</em></h1>
+        <p class="hero-lede" data-i18n="hero.lede">Рабочие пространства для бизнеса и личных инвестиций. Создаём системы под процессы компаний и готовим Invest Workspace к запуску по подписке.</p>
         <div class="hero-actions reveal">
-          <a class="pill pill-primary pill-large magnetic" href="#product"><span class="live-dot"></span><span data-i18n="hero.primary">Посмотреть продукт</span></a>
-          <a class="pill pill-ghost pill-large magnetic" href="download.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg><span data-i18n="hero.secondary">Nexus для Windows</span></a>
+          <a class="pill pill-primary pill-large" href="#invest"><span data-i18n="hero.primary">Изучить Invest Workspace</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6"/></svg></a>
+          <a class="pill pill-ghost pill-large" href="#business" data-i18n="hero.secondary">Workspace для бизнеса</a>
         </div>
-        <p class="hero-note reveal" data-i18n="hero.note">ДОСТУП ПО ПРИГЛАШЕНИЮ · WINDOWS + WEB · УПРАВЛЯЕМОЕ ОБСЛУЖИВАНИЕ</p>
-        <div class="hero-status reveal" aria-label="Ключевые возможности Nexus" data-i18n-aria="aria.capabilities">
-          <span><i>01</i><b data-i18n="hero.layer1">Рабочий процесс</b><small data-i18n="hero.status1">ПО ЛОГИКЕ КОМПАНИИ</small></span>
-          <span><i>02</i><b data-i18n="hero.layer2">AI и знания</b><small data-i18n="hero.status2">В КОНТЕКСТЕ ЗАДАЧ</small></span>
-          <span><i>03</i><b data-i18n="hero.layer3">Интеграции</b><small data-i18n="hero.status3">ОБЛАКО + ЛОКАЛЬНЫЕ ДАННЫЕ</small></span>
+        <p class="hero-note" data-i18n="hero.note">Одна платформа. Разные задачи. Свой Workspace.</p>
+      </div>
+    </section>
+
+    <section class="invest-section" id="invest" aria-labelledby="invest-title">
+      <div class="shell">
+        <div class="invest-heading">
+          <h2 id="invest-title">Invest Workspace</h2>
+          <span class="launch-status" data-i18n="invest.status">Готовим к запуску</span>
         </div>
+        <div class="invest-intro">
+          <div class="invest-copy">
+            <h3 data-i18n="invest.title">Весь портфель.<br>В поле зрения.</h3>
+            <p data-i18n="invest.lede">Личное рабочее пространство инвестора: история операций, аналитика и план действий рядом. Единый продукт со своим счётом и настройками.</p>
+            <dl class="invest-features">
+              <div><dt data-i18n="invest.f1title">Понимать результат</dt><dd data-i18n="invest.f1body">Стоимость портфеля, история операций, комиссии и динамика за выбранный период.</dd></div>
+              <div><dt data-i18n="invest.f2title">Держать план перед глазами</dt><dd data-i18n="invest.f2body">Инструменты, календарь, напоминания и торговый план в одном рабочем пространстве.</dd></div>
+              <div><dt data-i18n="invest.f3title">Работать со своими данными</dt><dd data-i18n="invest.f3body">Портфель и ключ брокера хранятся на вашем Windows-компьютере. Подключение работает в режиме просмотра.</dd></div>
+            </dl>
+          </div>
+          <figure class="invest-preview">
+            <a href="assets/invest-workspace-preview.png" aria-label="Открыть скриншот Invest Workspace крупнее" data-i18n-aria="invest.previewAria">
+              <img src="assets/invest-workspace-preview.png" width="1440" height="1814" loading="lazy" decoding="async" alt="Invest Workspace: обзор портфеля, кривая капитала и операции на учебных данных" data-i18n-alt="invest.previewAlt">
+            </a>
+            <figcaption><span data-i18n="invest.previewNote">Интерфейс приложения · учебные данные</span><a href="assets/invest-workspace-preview.png" data-i18n="invest.previewOpen">Открыть крупнее</a></figcaption>
+          </figure>
+        </div>
+
+        <div class="invest-subscription" aria-labelledby="invest-plan-title">
+          <div class="invest-plan-copy">
+            <h3 id="invest-plan-title" data-i18n="invest.planTitle">Один план. Выбираете срок.</h3>
+            <p data-i18n="invest.planBody">Планируемая подписка с одинаковыми возможностями на месяц, три месяца или год.</p>
+          </div>
+          <dl class="invest-prices">
+            <div><dt data-i18n="invest.month">1 месяц</dt><dd>1 490 <span>₽</span><small data-i18n="invest.monthRate">1 490 ₽ / месяц</small></dd></div>
+            <div><dt data-i18n="invest.quarter">3 месяца</dt><dd>3 990 <span>₽</span><small data-i18n="invest.quarterRate">1 330 ₽ / месяц</small></dd></div>
+            <div><dt data-i18n="invest.year">1 год</dt><dd>14 900 <span>₽</span><small data-i18n="invest.yearRate">≈ 1 242 ₽ / месяц</small></dd></div>
+          </dl>
+          <div class="invest-launch">
+            <p data-i18n="invest.launchNote">Продажи ещё не открыты. Условия на 3 месяца и год предварительные; дату запуска и состав AI-функций сообщим отдельно.</p>
+            <a class="pill pill-primary" href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer" data-i18n="invest.contact">Обсудить ранний доступ</a>
+          </div>
+        </div>
+
+        <div class="invest-questions">
+          <details><summary data-i18n="invest.q1">Какие брокеры будут поддерживаться?</summary><p data-i18n="invest.a1">Первую версию готовим с подключением к Т-Инвестициям для просмотра данных своего счёта. Интеграции с другими брокерами исследуем; готовых подключений к ним пока нет.</p></details>
+          <details><summary data-i18n="invest.q2">Что с AI-анализом и пробным периодом?</summary><p data-i18n="invest.a2">Планируем анализ компаний, работу с новостями и 30-дневный пробный период. Сейчас выбираем AI-провайдера и лимиты: эти функции и пробный доступ ещё не запущены.</p></details>
+          <details><summary data-i18n="invest.q3">Можно ли пользоваться с телефона?</summary><p data-i18n="invest.a3">Первую версию готовим для Windows. Общий облачный портфель и доступ к нему с телефона пока не входят в заявленные возможности.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="business-section" id="business" aria-labelledby="business-title">
+      <div class="shell business-heading">
+        <div><h2 id="business-title" data-i18n="business.title">Workspace по логике<br>вашей компании.</h2><p data-i18n="business.lede">Для задач бизнеса создаём индивидуальные системы: ваши процессы, роли и интеграции. Состав, стоимость и сопровождение определяем после знакомства с задачей.</p></div>
+        <a class="pill pill-ghost" href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer" data-i18n="business.contact">Обсудить задачу</a>
       </div>
 
       <div class="shell product-stage reveal" id="product">
@@ -165,7 +212,7 @@
             </div>
           </div>
         </div>
-          <div class="stage-caption"><span data-i18n="demo.caption">Прокручивайте или выберите раздел внутри интерфейса</span><i></i></div>
+          <div class="stage-caption"><span data-i18n="demo.caption">Пример Workspace для бизнеса · выберите раздел внутри интерфейса</span><i></i></div>
         </div>
       </div>
     </section>
@@ -265,14 +312,14 @@
 
   <footer class="site-footer">
     <div class="shell footer-grid">
-      <div><a class="brand footer-brand" href="index.html"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a><p data-i18n="footer.note">Персональные бизнес-системы Vertux.</p></div>
-      <nav><span data-i18n="footer.product">ПРОДУКТ</span><a href="#product" data-i18n="nav.product">Продукт</a><a href="#solutions" data-i18n="nav.solutions">Возможности</a><a href="#deployment" data-i18n="nav.deployment">Размещение</a></nav>
+      <div><a class="brand footer-brand" href="index.html"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a><p data-i18n="footer.homeNote">Рабочие пространства для бизнеса и личных инвестиций.</p></div>
+      <nav><span data-i18n="footer.product">ПРОДУКТ</span><a href="#invest">Invest Workspace</a><a href="#business" data-i18n="nav.business">Для бизнеса</a><a href="#deployment" data-i18n="nav.platform">Платформа</a></nav>
       <nav><span data-i18n="footer.access">ДОСТУП</span><a href="download.html" data-i18n="footer.windows">Windows</a><a href="account.html" data-i18n="nav.account">Кабинет</a><a href="updates.html" data-i18n="nav.updates">Обновления</a></nav>
-      <nav><span data-i18n="footer.contact">СВЯЗЬ</span><a href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer">Telegram</a><a href="mailto:vertux.studio@gmail.com">Email</a><a href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux Studio</a></nav>
+      <nav><span data-i18n="footer.contact">СВЯЗЬ</span><a href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer">Telegram</a><a class="contact-email" href="mailto:vertux.studio@gmail.com">vertux.studio@gmail.com</a><a href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux Studio</a></nav>
     </div>
     <div class="shell footer-bottom"><span>© 2026 VERTUX NEXUS</span><a class="studio-credit" href="https://vertux.online" target="_blank" rel="noopener noreferrer"><img src="assets/vertux-mark.png" alt=""><span data-i18n-html="footer.made">Сделано в студии <b>Vertux</b></span></a><span>SPB / RU</span></div>
   </footer>
 
-  <script src="assets/site.js?v=7"></script>
+  <script src="assets/site.js?v=20260915"></script>
 </body>
 </html>

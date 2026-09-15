@@ -159,6 +159,84 @@
   translations.ru['calls.added'] = 'Добавлено в заметку ✓';
   translations.en['calls.added'] = 'Added to note ✓';
 
+  // Public landing: the standard Invest edition is a preview, not an active offer.
+  Object.assign(translations.ru, {
+    'meta.homeDescription':'Рабочие пространства Vertux Nexus: системы под задачи бизнеса и Invest Workspace для личного портфеля. Готовим подписку Invest от 1 490 ₽ в месяц.',
+    'meta.homeTitle':'Vertux Nexus — рабочие пространства для бизнеса и инвестиций',
+    'meta.homeOgDescription':'Индивидуальные Workspace для компаний и Invest Workspace для инвестора. Возможности, интерфейс и условия будущего запуска.',
+    'nav.business':'Для бизнеса', 'nav.platform':'Платформа',
+    'hero.title':'Ваши задачи.<br><em>Собраны в Nexus.</em>',
+    'hero.lede':'Рабочие пространства для бизнеса и личных инвестиций. Создаём системы под процессы компаний и готовим Invest Workspace к запуску по подписке.',
+    'hero.primary':'Изучить Invest Workspace', 'hero.secondary':'Workspace для бизнеса',
+    'hero.note':'Одна платформа. Разные задачи. Свой Workspace.',
+    'invest.status':'Готовим к запуску', 'invest.title':'Весь портфель. В поле зрения.',
+    'invest.lede':'Личное рабочее пространство инвестора: история операций, аналитика и план действий рядом. Единый продукт со своим счётом и настройками.',
+    'invest.f1title':'Понимать результат',
+    'invest.f1body':'Стоимость портфеля, история операций, комиссии и динамика за выбранный период.',
+    'invest.f2title':'Держать план перед глазами',
+    'invest.f2body':'Инструменты, календарь, напоминания и торговый план в одном рабочем пространстве.',
+    'invest.f3title':'Работать со своими данными',
+    'invest.f3body':'Портфель и ключ брокера хранятся на вашем Windows-компьютере. Подключение работает в режиме просмотра.',
+    'invest.previewAria':'Открыть скриншот Invest Workspace крупнее',
+    'invest.previewAlt':'Invest Workspace: обзор портфеля, кривая капитала и операции на учебных данных',
+    'invest.previewNote':'Интерфейс приложения · учебные данные', 'invest.previewOpen':'Открыть крупнее',
+    'invest.planTitle':'Один план. Выбираете срок.',
+    'invest.planBody':'Планируемая подписка с одинаковыми возможностями на месяц, три месяца или год.',
+    'invest.month':'1 месяц', 'invest.quarter':'3 месяца', 'invest.year':'1 год',
+    'invest.monthRate':'1 490 ₽ / месяц', 'invest.quarterRate':'1 330 ₽ / месяц', 'invest.yearRate':'≈ 1 242 ₽ / месяц',
+    'invest.launchNote':'Продажи ещё не открыты. Условия на 3 месяца и год предварительные; дату запуска и состав AI-функций сообщим отдельно.',
+    'invest.contact':'Обсудить ранний доступ',
+    'invest.q1':'Какие брокеры будут поддерживаться?',
+    'invest.a1':'Первую версию готовим с подключением к Т-Инвестициям для просмотра данных своего счёта. Интеграции с другими брокерами исследуем; готовых подключений к ним пока нет.',
+    'invest.q2':'Что с AI-анализом и пробным периодом?',
+    'invest.a2':'Планируем анализ компаний, работу с новостями и 30-дневный пробный период. Сейчас выбираем AI-провайдера и лимиты: эти функции и пробный доступ ещё не запущены.',
+    'invest.q3':'Можно ли пользоваться с телефона?',
+    'invest.a3':'Первую версию готовим для Windows. Общий облачный портфель и доступ к нему с телефона пока не входят в заявленные возможности.',
+    'business.title':'Workspace по логике вашей компании.',
+    'business.lede':'Для задач бизнеса создаём индивидуальные системы: ваши процессы, роли и интеграции. Состав, стоимость и сопровождение определяем после знакомства с задачей.',
+    'business.contact':'Обсудить задачу',
+    'demo.caption':'Пример Workspace для бизнеса · выберите раздел внутри интерфейса',
+    'footer.homeNote':'Рабочие пространства для бизнеса и личных инвестиций.'
+  });
+  Object.assign(translations.en, {
+    'meta.homeDescription':'Vertux Nexus workspaces: custom business systems and Invest Workspace for your portfolio. Preparing an Invest subscription from RUB 1,490 per month.',
+    'meta.homeTitle':'Vertux Nexus — workspaces for business and investing',
+    'meta.homeOgDescription':'Custom workspaces for companies and Invest Workspace for individual investors. Features, interface and planned launch terms.',
+    'nav.business':'For business', 'nav.platform':'Platform',
+    'hero.title':'Your work.<br><em>Together in Nexus.</em>',
+    'hero.lede':'Workspaces for business and personal investing. We build systems around company processes and are preparing Invest Workspace for a subscription launch.',
+    'hero.primary':'Explore Invest Workspace', 'hero.secondary':'A workspace for business',
+    'hero.note':'One platform. Different needs. Your own workspace.',
+    'invest.status':'Preparing for launch', 'invest.title':'Your portfolio. A clearer view.',
+    'invest.lede':'A personal workspace for investors: transaction history, analytics and your action plan, side by side. A shared product with your own account and settings.',
+    'invest.f1title':'Understand the result',
+    'invest.f1body':'Portfolio value, transaction history, fees and performance over a selected period.',
+    'invest.f2title':'Keep your plan in view',
+    'invest.f2body':'Instruments, a calendar, reminders and a trading plan in one workspace.',
+    'invest.f3title':'Work with your own data',
+    'invest.f3body':'Your portfolio and broker key stay on your Windows computer. The connection is read-only.',
+    'invest.previewAria':'Open a larger Invest Workspace screenshot',
+    'invest.previewAlt':'Invest Workspace portfolio overview, equity chart and transactions using sample data; interface shown in Russian',
+    'invest.previewNote':'App interface in Russian · sample data', 'invest.previewOpen':'View larger',
+    'invest.planTitle':'One plan. Choose the duration.',
+    'invest.planBody':'A planned subscription with the same features for one month, three months or a year.',
+    'invest.month':'1 month', 'invest.quarter':'3 months', 'invest.year':'1 year',
+    'invest.monthRate':'RUB 1,490 / month', 'invest.quarterRate':'RUB 1,330 / month', 'invest.yearRate':'≈ RUB 1,242 / month',
+    'invest.launchNote':'Sales are not open yet. Quarterly and annual terms are provisional; we will announce the launch date and AI features separately.',
+    'invest.contact':'Discuss early access',
+    'invest.q1':'Which brokers will be supported?',
+    'invest.a1':'We are preparing the first version with a read-only T-Invest connection for your own account. We are researching other brokers; those connections are not available yet.',
+    'invest.q2':'What about AI analysis and a trial?',
+    'invest.a2':'Company analysis, news features and a 30-day trial are planned. We are selecting an AI provider and usage limits; these features and the trial have not launched yet.',
+    'invest.q3':'Can I use it on my phone?',
+    'invest.a3':'The first version is being prepared for Windows. A shared cloud portfolio and mobile access are not part of the announced features yet.',
+    'business.title':'A workspace built around your company.',
+    'business.lede':'For business needs, we build custom systems with your processes, roles and integrations. Scope, pricing and support are agreed after we discuss your needs.',
+    'business.contact':'Discuss your project',
+    'demo.caption':'Example business workspace · choose a section inside the interface',
+    'footer.homeNote':'Workspaces for business and personal investing.'
+  });
+
   var language = 'ru';
   try { language = localStorage.getItem('vertux-nexus-lang') || 'ru'; } catch (error) { language = 'ru'; }
   if (!translations[language]) language = 'ru';
@@ -179,6 +257,10 @@
       var value = translations[language][node.getAttribute('data-i18n-aria')];
       if (value != null) node.setAttribute('aria-label', value);
     });
+    document.querySelectorAll('[data-i18n-alt]').forEach(function (node) {
+      var value = translations[language][node.getAttribute('data-i18n-alt')];
+      if (value != null) node.setAttribute('alt', value);
+    });
     document.querySelectorAll('[data-i18n-content]').forEach(function (node) {
       var value = translations[language][node.getAttribute('data-i18n-content')];
       if (value != null) node.setAttribute('content', value);
@@ -194,7 +276,7 @@
     }
     var page = document.body.getAttribute('data-page') || 'home';
     var titles = {
-      home:{ru:'Vertux Nexus - ваш процесс, собранный в систему',en:'Vertux Nexus - your process, built into a system'},
+      home:{ru:translations.ru['meta.homeTitle'],en:translations.en['meta.homeTitle']},
       updates:{ru:'Обновления — Vertux Nexus',en:'Updates — Vertux Nexus'},
       download:{ru:'Nexus для Windows — Vertux Nexus',en:'Nexus for Windows — Vertux Nexus'},
       account:{ru:'Вход — Vertux Nexus',en:'Sign in — Vertux Nexus'}
@@ -214,6 +296,11 @@
   updateHeader();
   window.addEventListener('scroll', updateHeader, {passive:true});
   if (menuButton && nav) {
+    function closeMenu() {
+      nav.classList.remove('open');
+      document.body.classList.remove('menu-open');
+      menuButton.setAttribute('aria-expanded','false');
+    }
     menuButton.addEventListener('click', function () {
       var open = nav.classList.toggle('open');
       document.body.classList.toggle('menu-open', open);
@@ -221,8 +308,17 @@
     });
     nav.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
-        nav.classList.remove('open'); document.body.classList.remove('menu-open'); menuButton.setAttribute('aria-expanded','false');
+        closeMenu();
       });
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && nav.classList.contains('open')) {
+        closeMenu();
+        menuButton.focus();
+      }
+    });
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 1100) closeMenu();
     });
   }
 
