@@ -1,3 +1,11 @@
+/* Inter 4.1, SIL Open Font License; Latin and Cyrillic, served locally. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(InterVariable.woff2) format('woff2');
+}
 /* cyrillic */
 @font-face {
   font-family: 'JetBrains Mono';

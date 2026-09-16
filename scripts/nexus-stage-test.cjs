@@ -1,0 +1,30 @@
+// Exercise the actual tab and scroll handlers with a small DOM fixture.
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const code=fs.readFileSync(require('node:path').join(__dirname,'../nexus/assets/site.js'),'utf8');
+const names=['overview','process','knowledge','integrations'];
+function node(attrs={}){const classes=new Set(),listeners={};return {attrs,style:{setProperty(){}},parentElement:null,classList:{contains:v=>classes.has(v),toggle(v,on){on?classes.add(v):classes.delete(v)},add:(...v)=>v.forEach(x=>classes.add(x))},setAttribute(k,v){attrs[k]=v},hasAttribute:k=>k in attrs,getAttribute:k=>attrs[k],addEventListener(k,v){listeners[k]=v},click(){listeners.click?.()},focus(){},key(key){listeners.keydown?.({key,preventDefault(){}})}};}
+const buttons=names.map(name=>node({'data-demo-tab':name}));buttons[0].classList.add('active');
+const panels=names.map(name=>node({'data-demo-panel':name}));
+const chapters=names.map(name=>node({'data-stage-chapter':name}));
+let scrollCalls=0;
+const document={querySelectorAll(s){return ({'[data-demo-tab]':buttons,'[data-demo-panel]':panels,'[data-stage-chapter]':chapters})[s]||[]}};
+const window={scrollY:0,innerWidth:1440,innerHeight:900,scrollTo(){scrollCalls++}};
+const context=vm.createContext({document,window});
+const begin=code.indexOf('  function activateGroup('),end=code.indexOf("  activateGroup('[data-world-tab]'",begin);
+vm.runInContext(code.slice(begin,end),context);
+const stage=node();stage.offsetHeight=2000;stage.getBoundingClientRect=()=>({top:-window.scrollY});
+context.stage=stage;context.productWindow=node();
+const animStart=code.indexOf('    function animateStage()'),animEnd=code.indexOf('\n    animateStage();',animStart);
+vm.runInContext(code.slice(animStart,animEnd),context);
+const active=()=>panels.filter(p=>p.classList.contains('active')).map(p=>p.attrs['data-demo-panel']);
+context.animateStage();assert.deepEqual(active(),['overview']);
+buttons[2].click();assert.deepEqual(active(),['knowledge']);assert.equal(scrollCalls,0);
+for(let i=0;i<10;i++)context.animateStage();assert.deepEqual(active(),['knowledge']);
+window.scrollY=4;context.animateStage();assert.deepEqual(active(),['knowledge']);
+buttons[3].click();context.animateStage();assert.deepEqual(active(),['integrations']);
+buttons[3].key('ArrowLeft');context.animateStage();assert.deepEqual(active(),['knowledge']);
+assert.equal(buttons[2].attrs['aria-selected'],'true');assert.equal(buttons[2].attrs.tabindex,'0');
+window.scrollY=400;context.animateStage();assert.deepEqual(active(),['process']);
+window.scrollY=900;context.animateStage();assert.deepEqual(active(),['integrations']);
+window.innerWidth=390;buttons[0].click();window.scrollY=1200;context.animateStage();assert.deepEqual(active(),['overview']);
+assert.equal(scrollCalls,0);console.log('PASS: direct selection never scrolls or bounces; keyboard selection and subsequent user scrolling work');

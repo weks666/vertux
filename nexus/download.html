@@ -2,63 +2,46 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07070a">
-  <meta name="description" content="Защищённая выдача тестовой Windows-версии Vertux Nexus и информация о Web Access." data-i18n-content="meta.downloadDescription"><title>Nexus для Windows — Vertux Nexus</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/fonts/fonts.css"><link rel="stylesheet" href="assets/site.css?v=8">
+  <meta name="description" content="Nexus для Windows и личный кабинет в браузере." data-i18n-content="meta.downloadDescription"><title>Nexus для Windows — Vertux Nexus</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/fonts/fonts.css?v=20260916a"><link rel="stylesheet" href="assets/site.css?v=8">
+<link rel="stylesheet" href="assets/site-refinement.css?v=20260916d">  <link rel="stylesheet" href="assets/fonts/rubik.css?v=20260916d">
 </head>
 <body data-page="download">
   <div class="noise" aria-hidden="true"></div><div class="pointer-light" aria-hidden="true"></div>
-  <header class="site-header" id="siteHeader"><div class="nav-wrap">
-    <a class="brand" href="index.html"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a>
-    <nav class="main-nav" id="mainNav" aria-label="Главная навигация" data-i18n-aria="aria.mainNav"><a href="index.html#product" data-i18n="nav.product">Продукт</a><a href="index.html#solutions" data-i18n="nav.solutions">Возможности</a><a href="index.html#deployment" data-i18n="nav.deployment">Размещение</a><a href="updates.html" data-i18n="nav.updates">Обновления</a></nav>
-    <div class="nav-actions"><button class="language" type="button" data-lang-toggle aria-label="Сменить язык" data-i18n-aria="aria.language"><span data-lang="ru">RU</span><i></i><span data-lang="en">EN</span></button><a class="nav-login" href="account.html" data-i18n="nav.account">Кабинет</a><a class="pill pill-primary nav-cta" href="download.html" data-i18n="nav.get">Получить Nexus</a></div>
-    <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Открыть меню" data-i18n-aria="aria.menu"><span></span><span></span></button>
-  </div></header>
+  <header class="site-header" id="siteHeader">
+    <div class="nav-wrap">
+      <a class="brand" href="index.html" aria-label="Vertux Nexus"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a>
+      <nav class="main-nav" id="mainNav" aria-label="Главная навигация" data-i18n-aria="aria.mainNav">
+        <details class="nav-product"><summary><span data-i18n="newnav.product">Продукт</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3"/></svg></summary>
+          <div class="nav-dropdown">
+            <a href="index.html#invest"><b>Invest Workspace</b><span data-i18n="newnav.invest">Портфель, аналитика и ваш план</span></a>
+            <a href="index.html#business"><b data-i18n="newnav.business">Workspace для бизнеса</b><span data-i18n="newnav.businessNote">Система под процессы компании</span></a>
+            <a class="nav-download" href="download.html" data-i18n="newnav.desktop">Приложение Nexus для Windows ↗</a>
+          </div>
+        </details>
+        <a href="index.html#invest-plan" data-i18n="nav.subscription">Подписка</a>
+        <a href="security.html" data-i18n="newnav.security">Безопасность</a>
+        <a href="updates.html" data-i18n="nav.updates">Обновления</a>
+        <a class="mobile-nav-account" href="account.html" data-i18n="newnav.login">Войти</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="language" type="button" data-lang-toggle aria-label="Сменить язык" data-i18n-aria="aria.language"><span data-lang="ru">RU</span><i></i><span data-lang="en">EN</span></button>
+        <a class="nav-login" href="account.html" data-i18n="newnav.login">Войти</a>
+        <a class="pill pill-primary nav-cta" href="register.html" data-i18n="newnav.start">Начать</a>
+      </div>
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Открыть меню" data-i18n-aria="aria.menu"><span></span><span></span></button>
+    </div>
+  </header>
   <main class="subpage"><div class="shell">
-    <header class="subpage-heading reveal"><p class="section-code" data-i18n="download.kicker">NEXUS / WINDOWS</p><h1 data-i18n-html="download.title">Nexus там,<br><em>где работает команда.</em></h1><p data-i18n="download.lede">Windows-версия устанавливает защищённый Nexus. Доступ к конкретному workspace выдаётся отдельным кодом и подключается после проверки продукта.</p><div class="subpage-actions"><a class="pill pill-ghost" href="index.html" data-i18n="download.back">К продукту</a><a class="pill pill-ghost" href="updates.html" data-i18n="download.changelog">Что нового</a></div></header>
-    <section class="download-grid">
-      <article class="download-card primary-card download-access-card reveal">
-        <div class="download-card-top"><span class="platform-icon"><svg viewBox="0 0 24 24"><path d="m3 5 8-1v7H3V5Zm10-1 8-1v8h-8V4ZM3 13h8v7l-8-1v-6Zm10 0h8v8l-8-1v-7Z"/></svg></span><span class="release-chip"><i aria-hidden="true"></i><span data-i18n="download.testBuild">TEST BUILD / X64</span></span></div>
-        <h2 data-i18n="download.cardt">Nexus для Windows</h2>
-        <p data-i18n="download.cardd">Локальный клиент, защищённый доступ к продуктам и Local Node для систем, которые остаются на компьютере компании.</p>
-        <!-- The browser receives only a short-lived one-time ticket. Never put a password or EXE URL here. -->
-        <section class="download-gate" data-download-gate data-endpoint="https://downloads.vertux.online/v1/download-tickets" data-artifact="vertux-nexus-windows-x64" aria-labelledby="downloadGateTitle">
-          <div class="download-gate-head">
-            <div><p class="section-code" data-i18n="download.gateKicker">ВРЕМЕННЫЙ ДОСТУП</p><h3 id="downloadGateTitle" data-i18n="download.gateTitle">Скачать по коду</h3></div>
-            <span class="server-check"><i aria-hidden="true"></i><span data-i18n="download.serverCheck">SERVER CHECK</span></span>
-          </div>
-          <form class="download-gate-form" data-download-form novalidate>
-            <label for="downloadAccessCode" data-i18n="download.codeLabel">Код доступа Vertux</label>
-            <div class="download-gate-field">
-              <input id="downloadAccessCode" name="access_code" type="password" minlength="8" maxlength="128" autocomplete="off" autocapitalize="none" spellcheck="false" disabled aria-describedby="downloadGateHint downloadGateStatus">
-              <button class="download-code-toggle" type="button" data-download-code-toggle disabled aria-controls="downloadAccessCode" aria-pressed="false" data-i18n-aria="download.showCodeAria"><span data-i18n="download.showCode">Показать</span></button>
-            </div>
-            <p class="download-gate-hint" id="downloadGateHint" data-i18n="download.codeHint">Код не хранится на сайте и отправляется только в защищённый сервис выдачи.</p>
-            <button class="pill pill-primary pill-large download-gate-submit" type="submit" data-download-submit disabled><span data-download-submit-label data-i18n="download.downloadButton">Скачать Windows-версию</span><span class="download-submit-arrow" aria-hidden="true">↘</span></button>
-          </form>
-          <p class="download-gate-status" id="downloadGateStatus" data-download-status data-status-code="unconfigured" role="status" aria-live="polite" aria-atomic="true" data-i18n="download.gateUnconfigured">Защищённая выдача ещё подключается. Пока установщик не публикуется в открытом доступе.</p>
-          <noscript><p class="download-gate-noscript">Для защищённой выдачи требуется JavaScript. Прямая ссылка на установщик намеренно не публикуется.</p></noscript>
-          <div class="download-gate-copy" hidden aria-hidden="true">
-            <span data-gate-copy="unconfigured" data-i18n="download.gateUnconfigured">Защищённая выдача ещё подключается. Пока установщик не публикуется в открытом доступе.</span>
-            <span data-gate-copy="ready" data-i18n="download.gateReady">Введите выданный код. После серверной проверки откроется одноразовая ссылка.</span>
-            <span data-gate-copy="empty" data-i18n="download.gateEmpty">Введите код доступа.</span>
-            <span data-gate-copy="requesting" data-i18n="download.gateRequesting">Проверяем код и готовим одноразовую ссылку…</span>
-            <span data-gate-copy="invalid" data-i18n="download.gateInvalid">Код не подошёл или уже отозван. Проверьте ввод.</span>
-            <span data-gate-copy="limited" data-i18n="download.gateLimited">Слишком много попыток. Подождите и попробуйте позже.</span>
-            <span data-gate-copy="unavailable" data-i18n="download.gateUnavailable">Сервис выдачи временно недоступен. Установщик не был раскрыт.</span>
-            <span data-gate-copy="invalid-response" data-i18n="download.gateInvalidResponse">Сервер не выдал безопасный короткоживущий ticket. Загрузка остановлена.</span>
-            <span data-gate-copy="success" data-i18n="download.gateSuccess">Код принят. Одноразовая загрузка началась.</span>
-            <span data-gate-copy="show-code" data-i18n="download.showCode">Показать</span>
-            <span data-gate-copy="hide-code" data-i18n="download.hideCode">Скрыть</span>
-            <span data-gate-copy="show-code-aria" data-i18n="download.showCodeAria">Показать код доступа</span>
-            <span data-gate-copy="hide-code-aria" data-i18n="download.hideCodeAria">Скрыть код доступа</span>
-          </div>
-        </section>
-        <a class="download-code-request" href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer" data-i18n="download.requestCode">Нет кода? Запросить тестовый доступ</a>
-      </article>
-      <article class="download-card reveal"><p class="section-code" data-i18n="download.req">Системные требования</p><div class="requirements"><div><span data-i18n="download.os">Система</span><b>Windows 10 / 11</b></div><div><span data-i18n="download.arch">Архитектура</span><b>x64</b></div><div><span data-i18n="download.ram">Память</span><b>8 GB RAM</b></div><div><span data-i18n="download.net">Соединение</span><b>TLS / HTTPS</b></div></div><p class="access-note" data-i18n="download.note">Установка выдаётся после настройки продукта: универсального файла без лицензии и контура компании нет. Это защищает клиентские данные и сам Nexus.</p></article>
-      <article class="download-card reveal"><span class="platform-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span><h2 data-i18n="download.webt">Web Access</h2><p data-i18n="download.webd">Для сотрудников, которым нужен браузерный доступ без установки. Адрес выдаётся вместе с приглашением в компанию.</p><a class="pill pill-ghost pill-large" href="account.html" data-i18n="download.account">Открыть кабинет</a></article>
-    </section>
-  </div></main>
+<header class="subpage-heading reveal"><h1 data-i18n-html="download.newTitle">Ваш Workspace.<br><em>На вашем компьютере.</em></h1><p data-i18n="download.newLede">Установите Nexus и войдите в свой аккаунт. Портфель и брокерский ключ остаются на вашем Windows-компьютере.</p></header>
+<section class="download-grid">
+<article class="download-card primary-card reveal"><div class="download-card-top"><span class="release-chip">WINDOWS · X64</span></div><h2 data-i18n="download.cardt">Nexus для Windows</h2><p data-i18n="download.newBody">Один установщик для Nexus. Подписка и доступ к вашему Invest проверяются после входа.</p>
+<a id="publicDownload" class="pill pill-primary pill-large" href="https://nexus.vertux.online/api/desktop/download" hidden data-i18n="download.newAction">Скачать Nexus</a>
+<p id="publicDownloadStatus" class="access-note" role="status" data-i18n="download.publicPending">Проверяем доступность установщика…</p>
+<a class="download-code-request" href="account.html" data-i18n="download.account">Открыть кабинет</a></article>
+<article class="download-card reveal"><h2 data-i18n="download.requirementsTitle">Для личного компьютера</h2><div class="requirements"><div><span data-i18n="download.os">Система</span><b>Windows 10 / 11</b></div><div><span data-i18n="download.arch">Архитектура</span><b>x64</b></div><div><span data-i18n="download.ram">Память</span><b>8 GB RAM</b></div><div><span data-i18n="download.connection">Подключение</span><b data-i18n="download.internet">Интернет</b></div></div><p class="access-note" data-i18n="download.personalNote">Личный Invest рассчитан на три ваших устройства. Заменить старый компьютер можно в кабинете.</p></article>
+<article class="download-card reveal"><h2 data-i18n="download.webAccount">Кабинет в браузере</h2><p data-i18n="download.webAccountBody">Проверяйте подписку, управляйте устройствами и настройками профиля с компьютера или телефона.</p><a class="pill pill-ghost pill-large" href="account.html" data-i18n="download.account">Открыть кабинет</a></article>
+</section></div></main>
   <footer class="site-footer"><div class="shell footer-bottom"><span>© 2026 VERTUX NEXUS</span><a class="studio-credit" href="https://vertux.online" target="_blank" rel="noopener noreferrer"><img src="assets/vertux-mark.png" alt=""><span data-i18n-html="footer.made">Сделано в студии <b>Vertux</b></span></a><span>SPB / RU</span></div></footer>
-  <script src="assets/site.js?v=8"></script><script src="assets/download-gate.js?v=2"></script>
+  <script src="assets/site.js?v=20260916d"></script><script src="assets/public-download.js?v=20260916a"></script>
 </body></html>

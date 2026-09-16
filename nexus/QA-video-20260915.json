@@ -1,0 +1,28 @@
+{
+  "nexus-hero-film.mp4": {
+    "bytes": 12464200,
+    "width": 1920,
+    "height": 1080,
+    "frames": 546,
+    "duration": 22.75,
+    "fps": "24",
+    "audio_tracks": 0,
+    "seam_mean_pixel_difference_0_255": 0.875,
+    "min_frame_luma": 34.09,
+    "sha256": "3c44886c817294b69015f158db24502499eb51f5b5cab35ae3c44c2aed6c6af8",
+    "faststart": true
+  },
+  "nexus-hero-film-mobile.mp4": {
+    "bytes": 2484728,
+    "width": 960,
+    "height": 540,
+    "frames": 546,
+    "duration": 22.75,
+    "fps": "24",
+    "audio_tracks": 0,
+    "seam_mean_pixel_difference_0_255": 0.901,
+    "min_frame_luma": 33.93,
+    "sha256": "60c6eb4f1264c9b63d03c6aa321f6f5810c3f4815cce4ec86f3983a7ad490891",
+    "faststart": true
+  }
+}

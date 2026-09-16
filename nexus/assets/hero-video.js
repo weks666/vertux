@@ -1,85 +1,77 @@
 (() => {
   'use strict';
-  const video = document.getElementById('heroVideo');
-  if (!video) return;
-  const hero = video.closest('.hero');
-  const toggle = hero.querySelector('.hero-video-toggle');
-  const label = toggle.querySelector('span');
+  const film = document.getElementById('heroVideo');
+  const intro = document.getElementById('heroIntroVideo');
+  if (!film) return;
+  const hero = film.closest('.hero');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const connection = navigator.connection;
+  const clips = [intro, film].filter(Boolean);
+  const pending = new Set();
+  let stage = intro ? 'intro' : 'film';
   let inView = hero.getBoundingClientRect().bottom > 0;
-  let userPaused = false;
   let failed = false;
-  let loading = false;
-  let attempt = 0;
-  video.muted = true;
-  video.defaultMuted = true;
-  const staticMode = () => reduced.matches || Boolean(connection && connection.saveData);
-  const canPlay = () => !staticMode() && inView && !document.hidden && !userPaused && !failed;
-  const updateLabel = () => {
-    const english = document.documentElement.lang === 'en';
-    toggle.dataset.paused = String(userPaused);
-    label.textContent = userPaused ? (english ? 'Play video' : 'Продолжить') : (english ? 'Pause' : 'Пауза');
-    toggle.setAttribute('aria-label', userPaused
-      ? (english ? 'Play background video' : 'Воспроизвести фоновое видео')
-      : (english ? 'Pause background video' : 'Приостановить фоновое видео'));
-  };
-  const sync = () => {
-    hero.classList.toggle('is-static-film', staticMode());
-    toggle.hidden = staticMode() || failed || (!hero.classList.contains('has-playing-film') && !userPaused);
-    if (!canPlay()) {
-      attempt += 1;
-      loading = false;
-      video.pause();
-      return;
-    }
-    if (!video.getAttribute('src')) {
-      video.src = window.matchMedia('(max-width: 767px)').matches ? video.dataset.mobileSrc : video.dataset.desktopSrc;
-    }
-    if (!video.paused || loading) return;
-    loading = true;
-    const id = ++attempt;
-    const playback = video.play();
-    if (playback) playback.then(() => {
-      if (id !== attempt) return;
-      loading = false;
-      if (!canPlay()) video.pause();
-    }).catch(() => {
-      if (id !== attempt) return;
-      loading = false;
-      if (canPlay()) {
-        userPaused = true;
-        toggle.hidden = false;
-        updateLabel();
-      }
-    });
-  };
-  video.addEventListener('playing', () => {
-    if (!canPlay()) { video.pause(); return; }
-    hero.classList.add('has-playing-film');
-    toggle.hidden = false;
-  });
-  video.addEventListener('error', () => {
+  const staticMode = () => reduced.matches || Boolean(connection?.saveData);
+  const canPlay = () => !staticMode() && inView && !document.hidden && !failed;
+  const wanted = clip => clip === film ? stage !== 'intro' : stage !== 'film';
+  clips.forEach(clip => { clip.muted = true; clip.defaultMuted = true; });
+  function load(clip) {
+    if (clip.getAttribute('src')) return;
+    clip.src = window.matchMedia('(max-width:767px)').matches ? clip.dataset.mobileSrc : clip.dataset.desktopSrc;
+  }
+  function filmFailed() {
     failed = true;
-    hero.classList.remove('has-playing-film');
-    toggle.hidden = true;
-    video.pause();
-  });
-  toggle.addEventListener('click', () => {
-    userPaused = !userPaused;
-    updateLabel();
+    clips.forEach(clip => clip.pause());
+    hero.classList.remove('has-playing-film', 'has-playing-intro');
+  }
+  function continueFilm() {
+    stage = 'film';
+    intro?.pause();
     sync();
+  }
+  function play(clip) {
+    load(clip);
+    if (!clip.paused || pending.has(clip)) return;
+    pending.add(clip);
+    Promise.resolve(clip.play()).then(() => {
+      pending.delete(clip);
+      if (!canPlay() || !wanted(clip)) clip.pause();
+    }).catch(() => {
+      pending.delete(clip);
+      if (!canPlay()) return;
+      if (clip === intro) continueFilm();
+      else filmFailed();
+    });
+  }
+  function sync() {
+    hero.classList.toggle('is-static-film', staticMode());
+    if (!canPlay()) { clips.forEach(clip => clip.pause()); return; }
+    clips.forEach(clip => {
+      if (wanted(clip) && !clip.ended) play(clip);
+      else clip.pause();
+    });
+  }
+  intro?.addEventListener('timeupdate', () => {
+    // Dissolve before the clip ends, while its camera is still moving.
+    if (stage === 'intro' && Number.isFinite(intro.duration) && intro.duration > 0 &&
+        intro.currentTime >= Math.max(0, intro.duration - 1.35)) {
+      stage = 'crossfade';
+      sync();
+    }
   });
+  intro?.addEventListener('ended', continueFilm);
+  intro?.addEventListener('error', continueFilm);
+  clips.forEach(clip => clip.addEventListener('playing', () => {
+    if (!canPlay() || !wanted(clip)) { clip.pause(); return; }
+    hero.classList.add(clip === film ? 'has-playing-film' : 'has-playing-intro');
+    if (clip === intro) { film.preload = 'auto'; load(film); }
+  }));
+  film.addEventListener('error', filmFailed);
   document.addEventListener('visibilitychange', sync);
   reduced.addEventListener('change', sync);
-  if (connection && connection.addEventListener) connection.addEventListener('change', sync);
-  new MutationObserver(updateLabel).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(entries => {
-      inView = entries[0].isIntersecting;
-      sync();
-    }, { threshold: 0.01 }).observe(hero);
-  }
-  updateLabel();
+  connection?.addEventListener?.('change', sync);
+  if ('IntersectionObserver' in window) new IntersectionObserver(entries => {
+    inView = entries[0].isIntersecting; sync();
+  }, {threshold:.01}).observe(hero);
   sync();
 })();

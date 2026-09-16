@@ -1,0 +1,44 @@
+{
+  "date": "2026-09-16",
+  "status": "LOCAL-VERIFIED",
+  "published": false,
+  "generation": {
+    "provider": "fal.ai",
+    "model": "minimax/h3-max/reference-to-video",
+    "requestId": "01a0a837-4582-7e13-94a1-c0126cb9be39",
+    "sourceUrl": "https://v3b.fal.media/files/b/0aaa9a9b/eQZ8AQzhGUxGLXitOf4AP_minimax-h3.mp4",
+    "approvedBudgetUsd": 0.8,
+    "observedChargeUsd": 0.8,
+    "successfulGenerations": 1,
+    "priorValidationFailureCharged": false,
+    "settings": { "durationSeconds": 5, "resolution": "1080P", "aspectRatio": "16:9", "expansion": "balanced" },
+    "reference": "Synthetic Invest UI, invest-reference.png; no customer data",
+    "promptBrief": "Photorealistic unbranded graphite laptop opens on a black reflective stage. Thin neutral-lilac dawn horizon behind it, subtle forward camera, laptop center-right, dark copy-safe left area. Invest reference guides screen colors. No floating UI, captions or manual screen replacement.",
+    "source": { "width": 1920, "height": 1080, "fps": 24, "frames": 124, "durationSeconds": 5.1667, "bytes": 5813815, "audioStreams": 1 }
+  },
+  "preparation": "First 120 frames, 24 fps, H.264 yuv420p faststart, audio removed. Full decode validated. Poster from frame 96. scripts/nexus-intro-prepare.py",
+  "intro": [
+    { "file": "assets/videos/nexus-laptop-intro.mp4", "width": 1920, "height": 1080, "frames": 120, "durationSeconds": 5, "audioStreams": 0, "bytes": 1841680, "sha256": "b249cb98b0f72bf5ebc23954741715c53580a23d0e3caff9c21ca6d72cdefc49" },
+    { "file": "assets/videos/nexus-laptop-intro-mobile.mp4", "width": 960, "height": 540, "frames": 120, "durationSeconds": 5, "audioStreams": 0, "bytes": 349212, "sha256": "e498c8668ae273e6c17077e86759104838c6ac938ce8259546f8d86c8d428ca5" }
+  ],
+  "restoredFilm": {
+    "sourceDirectory": "E:/Nexus-promo-2026-09-15/minimax-variants/",
+    "replacementOverlays": false,
+    "fps": 24,
+    "frames": 666,
+    "durationSeconds": 27.75,
+    "audioStreams": 0,
+    "files": [
+      { "file": "assets/videos/nexus-hero-film.mp4", "bytes": 12083354, "sha256": "535b2589ec504aeb9d7f4337f39fd9578323355c8189ed22ceadc813fc3d8837" },
+      { "file": "assets/videos/nexus-hero-film-mobile.mp4", "bytes": 3338195, "sha256": "5f98030ced39bb82598c2c9c22a49b31989bf4ec44ef36a5e0815b31f8ce3165" }
+    ]
+  },
+  "verification": {
+    "contactSheetReviewed": true,
+    "browserIntroThenFilm": true,
+    "heroTextVisibleFromStart": true,
+    "mobileSource": true,
+    "offscreenPause": true,
+    "automatedControllerTests": "PASS: sequence, viewport/visibility resume, reduced-motion, Save-Data, autoplay/media failures, pending-play race"
+  }
+}

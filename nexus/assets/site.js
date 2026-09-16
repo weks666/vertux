@@ -326,6 +326,136 @@
     'compare.businessPrice':'Pricing and support are scoped to your project.'
   });
 
+  Object.assign(translations.ru,{"hero.title": "Ваши инвестиции.<br><em>В одном Workspace.</em>", "hero.lede": "Портфель, сделки и аналитика в личном рабочем пространстве. Откройте Invest и посмотрите, как он устроен.", "hero.secondary": "Личный кабинет", "hero.note": "Ваш портфель. Ваши настройки. Ваш Invest.", "nav.subscription": "Подписка", "accountEntry.title": "Ваш аккаунт.<br><em>Всё необходимое.</em>", "accountEntry.body": "Срок подписки, выбранный план и ваши устройства. Один аккаунт для сайта и приложения Nexus.", "accountEntry.action": "Открыть личный кабинет", "final.title": "Всё начинается<br><em>с вашего портфеля.</em>", "final.lede": "Изучите Invest на учебных данных или перейдите в свой личный кабинет.", "final.contact": "Открыть кабинет"});
+  Object.assign(translations.en,{"hero.title": "Your investments.<br><em>One Workspace.</em>", "hero.lede": "Your portfolio, transactions and analytics in a personal workspace. Explore Invest and see how it works.", "hero.secondary": "My account", "hero.note": "Your portfolio. Your preferences. Your Invest.", "nav.subscription": "Subscription", "accountEntry.title": "Your account.<br><em>Everything you need.</em>", "accountEntry.body": "Your subscription period, plan and devices. One account for the website and the Nexus app.", "accountEntry.action": "Open my account", "final.title": "It starts with<br><em>your portfolio.</em>", "final.lede": "Explore Invest with sample data or open your personal account.", "final.contact": "Open my account"});
+  Object.assign(translations.ru,{"meta.accountDescription": "Личный кабинет Vertux Nexus: подписка, устройства и профиль.", "meta.downloadDescription": "Nexus для Windows и личный кабинет в браузере.", "portal.title": "Ваш аккаунт.<br><em>Ваш Invest.</em>", "portal.lede": "Управляйте подпиской, сроком доступа и устройствами. Вход на сайте и в приложении — с одной почтой.", "portal.login": "Войти в кабинет", "portal.register": "Создать личный аккаунт", "portal.note": "Личный Invest — для одного владельца. Код приглашения нужен только для присоединения к Workspace компании.", "download.newTitle": "Ваш Workspace.<br><em>На вашем компьютере.</em>", "download.newLede": "Установите Nexus и войдите в свой аккаунт. Портфель и брокерский ключ остаются на вашем Windows-компьютере.", "download.newBody": "Один установщик для Nexus. Подписка и доступ к вашему Invest проверяются после входа.", "download.newAction": "Скачать Nexus", "download.publicPending": "Проверяем доступность установщика…", "download.requirementsTitle": "Для личного компьютера", "download.connection": "Подключение", "download.internet": "Интернет", "download.personalNote": "Личный Invest рассчитан на три ваших устройства. Заменить старый компьютер можно в кабинете.", "download.webAccount": "Кабинет в браузере", "download.webAccountBody": "Проверяйте подписку, управляйте устройствами и настройками профиля с компьютера или телефона."});
+  Object.assign(translations.en,{"meta.accountDescription": "Your Vertux Nexus account: subscription, devices and profile.", "meta.downloadDescription": "Nexus for Windows and your browser account.", "portal.title": "Your account.<br><em>Your Invest.</em>", "portal.lede": "Manage your plan, access period and devices. Use the same email for the website and the app.", "portal.login": "Sign in", "portal.register": "Create a personal account", "portal.note": "Personal Invest is for one owner. An invitation code is only needed to join a company Workspace.", "download.newTitle": "Your Workspace.<br><em>On your computer.</em>", "download.newLede": "Install Nexus and sign in. Your portfolio and broker key stay on your Windows computer.", "download.newBody": "One installer for Nexus. Your subscription and access to Invest are checked after sign-in.", "download.newAction": "Download Nexus", "download.publicPending": "Checking installer availability…", "download.requirementsTitle": "For your personal computer", "download.connection": "Connection", "download.internet": "Internet", "download.personalNote": "Personal Invest supports three of your devices. Replace an old computer in your account.", "download.webAccount": "Your browser account", "download.webAccountBody": "Check your subscription, manage devices and update your profile from a computer or phone."});
+  // September 2026 public-site copy.
+  Object.assign(translations.ru,{
+  "newnav.product": "Продукт",
+  "newnav.invest": "Портфель, аналитика и ваш план",
+  "newnav.business": "Workspace для бизнеса",
+  "newnav.businessNote": "Система под процессы компании",
+  "newnav.desktop": "Приложение Nexus для Windows ↗",
+  "newnav.security": "Безопасность",
+  "newnav.login": "Войти",
+  "newnav.start": "Начать",
+  "hero.secondary": "Посмотреть демо",
+  "hero.note": "Invest Workspace · Windows · готовим к запуску",
+  "invest.lede": "От первой операции до общей картины. Портфель, сделки, аналитика и план в одном личном рабочем пространстве.",
+  "summary.title": "Меньше разрозненных цифр.<br><em>Больше понимания.</em>",
+  "summary.resultTitle": "Из чего сложился результат",
+  "summary.resultBody": "Сделки, выплаты и комиссии за выбранный период. Видно, что повлияло на портфель и как менялась его стоимость.",
+  "summary.planTitle": "У каждого решения есть план",
+  "summary.planBody": "Сохраняйте торговые идеи, следите за событиями и ставьте напоминания. Возвращайтесь к решениям вместе с их контекстом.",
+  "summary.period": "Результат за месяц",
+  "summary.sample": "Учебный пример",
+  "summary.trades": "Сделки",
+  "summary.income": "Выплаты",
+  "summary.fees": "Комиссии",
+  "summary.total": "Итого за период",
+  "summary.agenda": "События и мой план",
+  "summary.month": "СЕН",
+  "summary.planA": "Проверить распределение портфеля",
+  "summary.personal": "Личное напоминание · 10:00",
+  "summary.planB": "Вернуться к инвестиционной идее",
+  "summary.draft": "Торговый план · черновик",
+  "privacy.title": "Личный портфель остаётся личным.",
+  "privacy.body": "Брокерский ключ и рабочие данные — на вашем компьютере. Invest подключается к счёту для просмотра и не отправляет торговые поручения.",
+  "privacy.action": "Как защищены данные ↗",
+  "project.title": "У вашей компании свой способ работать.",
+  "project.body": "Обсудим, что стоит объединить в одном Workspace: процессы, данные и инструменты команды.",
+  "project.action": "Обсудить свой Workspace ↗",
+  "demo.caption": "Пример Workspace для бизнеса · учебные данные",
+  "final.contact": "Начать с Invest",
+  "security.title": "Ваши данные. Понятные границы доступа.",
+  "security.lede": "У личного Invest и кабинета Nexus разные задачи. Рабочие данные портфеля обрабатывает ваше приложение, а кабинет управляет аккаунтом и подпиской.",
+  "security.localTitle": "Портфель на вашем компьютере",
+  "security.localBody": "История операций, рабочая база и брокерский ключ остаются в локальном Invest. Ключ вводится в защищённом системном окне Windows, а не в форме на сайте.",
+  "security.readTitle": "Подключение для просмотра",
+  "security.readBody": "Первую версию готовим с Т-Инвестициями. Invest получает данные счёта и не исполняет сделки. Используйте брокерский ключ с правами только на чтение.",
+  "security.accountTitle": "Один аккаунт, ваши устройства",
+  "security.accountBody": "Личный Invest рассчитан на одного владельца и три устройства. Кабинет показывает подключённые компьютеры и позволяет отозвать их доступ. Смена сети не считается новым устройством.",
+  "security.cloudTitle": "Что хранит Nexus",
+  "security.cloudBody": "Профиль, состояние подписки и сведения об устройствах нужны для входа, проверки доступа и сопровождения. Облачная синхронизация всего портфеля в текущий продукт не входит.",
+  "security.aiTitle": "Отдельно об AI",
+  "security.aiBody": "AI-анализ готовится к запуску. Провайдер, состав передаваемых данных и лимиты будут описаны до его включения. Сейчас публичное демо работает только с учебными данными.",
+  "security.note": "Публичный запуск ещё готовится. Эта страница описывает устройство продукта и не заменяет политику обработки персональных данных или договор.",
+  "security.back": "Посмотреть Invest",
+  "security.contact": "Задать вопрос",
+  "security.description": "Где хранятся данные Invest, как устроен доступ к счёту и управление устройствами.",
+  "register.title": "Начните со своего<br><em>Invest Workspace.</em>",
+  "register.lede": "Создайте аккаунт по почте, подтвердите адрес и продолжите в приложении Nexus для Windows. Код приглашения для личного Invest не нужен.",
+  "register.step1": "Аккаунт",
+  "register.step2": "Подтверждение почты",
+  "register.step3": "Приложение Nexus",
+  "register.login": "У меня уже есть аккаунт",
+  "register.note": "Готовим публичный запуск. Регистрация и загрузка появятся здесь, когда самостоятельный доступ к приложению будет открыт. Планируемый пробный период — 30 дней, без привязки карты."
+});
+  Object.assign(translations.en,{
+  "newnav.product": "Product",
+  "newnav.invest": "Your portfolio, analytics and plan",
+  "newnav.business": "Business Workspace",
+  "newnav.businessNote": "Built around your company workflows",
+  "newnav.desktop": "Nexus app for Windows ↗",
+  "newnav.security": "Security",
+  "newnav.login": "Log in",
+  "newnav.start": "Get started",
+  "hero.secondary": "Explore the demo",
+  "hero.note": "Invest Workspace · Windows · preparing for launch",
+  "invest.lede": "From the first transaction to the full picture. Your portfolio, trades, analytics and plan in one personal workspace.",
+  "summary.title": "Fewer scattered numbers.<br><em>A clearer picture.</em>",
+  "summary.resultTitle": "Understand what drove the result",
+  "summary.resultBody": "Trades, income and fees over your chosen period. See what affected the portfolio and how its value changed.",
+  "summary.planTitle": "Every decision has a plan",
+  "summary.planBody": "Save investment ideas, follow events and set reminders. Return to your decisions with their context intact.",
+  "summary.period": "Monthly result",
+  "summary.sample": "Illustrative sample",
+  "summary.trades": "Trades",
+  "summary.income": "Income",
+  "summary.fees": "Fees",
+  "summary.total": "Period total",
+  "summary.agenda": "Events and my plan",
+  "summary.month": "SEP",
+  "summary.planA": "Review portfolio allocation",
+  "summary.personal": "Personal reminder · 10:00",
+  "summary.planB": "Revisit an investment idea",
+  "summary.draft": "Trading plan · draft",
+  "privacy.title": "Your personal portfolio stays personal.",
+  "privacy.body": "Your broker key and working data stay on your computer. Invest reads your account and does not submit trading orders.",
+  "privacy.action": "How your data is handled ↗",
+  "project.title": "Your company has its own way of working.",
+  "project.body": "Let’s discuss the workflows, data and team tools that belong in your Workspace.",
+  "project.action": "Discuss your Workspace ↗",
+  "demo.caption": "Business Workspace example · sample data",
+  "final.contact": "Start with Invest",
+  "security.title": "Your data. Clear access boundaries.",
+  "security.lede": "Personal Invest and the Nexus account have different jobs. Your app processes portfolio data, while your account manages identity and subscriptions.",
+  "security.localTitle": "A portfolio on your computer",
+  "security.localBody": "Your transaction history, working database and broker key stay in local Invest. Enter the key through a protected Windows system dialog, never a form on this website.",
+  "security.readTitle": "Read-only account access",
+  "security.readBody": "We are preparing the first release with T-Investments. Invest retrieves account data and does not place trades. Use a broker key with read-only permissions.",
+  "security.accountTitle": "One account, your devices",
+  "security.accountBody": "Personal Invest is designed for one owner and three devices. Your account lists connected computers and lets you revoke access. Changing networks does not use another device slot.",
+  "security.cloudTitle": "What Nexus stores",
+  "security.cloudBody": "Your profile, subscription state and device information support sign-in, access checks and service. Cloud synchronization of your entire portfolio is not part of the current product.",
+  "security.aiTitle": "About AI features",
+  "security.aiBody": "AI analysis is being prepared for launch. The provider, shared data and usage limits will be described before activation. The public demo currently uses sample data only.",
+  "security.note": "The public launch is still in preparation. This page explains the product architecture; it does not replace a privacy policy or agreement.",
+  "security.back": "Explore Invest",
+  "security.contact": "Ask a question",
+  "security.description": "Where Invest data is stored, read-only broker access and device management.",
+  "register.title": "Start with your own<br><em>Invest Workspace.</em>",
+  "register.lede": "Create an email account, verify your address and continue in Nexus for Windows. Personal Invest does not require an invitation code.",
+  "register.step1": "Your account",
+  "register.step2": "Verify email",
+  "register.step3": "Nexus app",
+  "register.login": "I already have an account",
+  "register.note": "We are preparing the public launch. Registration and downloads will become available when self-service app access opens. A 30-day trial without a payment card is planned."
+});
+  document.querySelectorAll('.brand-name small').forEach(function (badge) {
+    if (!badge.querySelector('span')) { var text = document.createElement('span'); text.textContent = badge.textContent; badge.replaceChildren(text); }
+  });
   var language = 'ru';
   try { language = localStorage.getItem('vertux-nexus-lang') || 'ru'; } catch (error) { language = 'ru'; }
   if (!translations[language]) language = 'ru';
@@ -368,7 +498,9 @@
       home:{ru:translations.ru['meta.homeTitle'],en:translations.en['meta.homeTitle']},
       updates:{ru:'Обновления — Vertux Nexus',en:'Updates — Vertux Nexus'},
       download:{ru:'Nexus для Windows — Vertux Nexus',en:'Nexus for Windows — Vertux Nexus'},
-      account:{ru:'Вход — Vertux Nexus',en:'Sign in — Vertux Nexus'}
+      account:{ru:'Вход — Vertux Nexus',en:'Sign in — Vertux Nexus'},
+      register:{ru:'Начать — Vertux Nexus',en:'Get started — Vertux Nexus'},
+      security:{ru:'Безопасность — Vertux Nexus',en:'Security — Vertux Nexus'}
     };
     if (titles[page]) document.title = titles[page][language];
     document.dispatchEvent(new CustomEvent('nexus:language-change'));
@@ -402,7 +534,7 @@
       });
     });
     document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && nav.classList.contains('open')) {
+      if (event.key === 'Escape' && nav.classList.contains('open') && !nav.querySelector('.nav-product[open]')) {
         closeMenu();
         menuButton.focus();
       }
@@ -411,6 +543,15 @@
       if (window.innerWidth > 1100) closeMenu();
     });
   }
+
+  document.querySelectorAll('.nav-product').forEach(function (menu) {
+    menu.querySelectorAll('a').forEach(function (link) { link.addEventListener('click', function () { menu.open = false; }); });
+    document.addEventListener('click', function (event) { if (!menu.contains(event.target)) menu.open = false; });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); }
+    });
+    menu.addEventListener('focusout', function () { setTimeout(function () { if (!menu.contains(document.activeElement)) menu.open = false; }, 0); });
+  });
 
   var revealNodes = document.querySelectorAll('.reveal');
   var revealObserver = null;
@@ -484,14 +625,17 @@
     return activate;
   }
   var stage;
-  var syncingStage = false;
+  var manualStageY = null;
   var demoNames = ['overview','process','knowledge','integrations'];
+  function highlightChapter(target) {
+    document.querySelectorAll('[data-stage-chapter]').forEach(function (chapter) {
+      chapter.classList.toggle('active', chapter.getAttribute('data-stage-chapter') === target);
+    });
+  }
   var activateDemo = activateGroup('[data-demo-tab]','[data-demo-panel]','data-demo-tab', function (target, source) {
-    if (!source || syncingStage || !stage || window.innerWidth <= 1100 || reduced) return;
-    var index = demoNames.indexOf(target);
-    var stageTop = window.scrollY + stage.getBoundingClientRect().top;
-    var distance = Math.max(1, stage.offsetHeight - window.innerHeight);
-    window.scrollTo({top: stageTop + distance * (index / (demoNames.length - 1)), behavior:'smooth'});
+    // A direct choice must not start a scroll that selects intermediate panels.
+    if (source) manualStageY = window.scrollY;
+    highlightChapter(target);
   });
   activateGroup('[data-world-tab]','[data-world-panel]','data-world-tab');
 
@@ -532,14 +676,10 @@
       stage.classList.toggle('motion-2', progress > .27);
       stage.classList.toggle('motion-3', progress > .52);
       stage.classList.toggle('motion-4', progress > .77);
-      if (window.innerWidth > 1100) {
+      if (manualStageY !== null && Math.abs(window.scrollY - manualStageY) > 8) manualStageY = null;
+      if (window.innerWidth > 1100 && manualStageY === null) {
         var index = Math.min(demoNames.length - 1, Math.floor(progress * demoNames.length));
-        syncingStage = true;
         activateDemo(demoNames[index]);
-        syncingStage = false;
-        document.querySelectorAll('[data-stage-chapter]').forEach(function (chapter) {
-          chapter.classList.toggle('active', chapter.getAttribute('data-stage-chapter') === demoNames[index]);
-        });
       }
       stageTicking = false;
     }

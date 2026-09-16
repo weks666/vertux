@@ -1,0 +1,57 @@
+/* Extend the existing Operate world: readable working text, ordinary controls and scoped lists. */
+:root[data-text-size="large"] { --type-caption: 14px; --type-label: 16px; --type-body: 17px; --type-heading: 22px; }
+:root[data-text-size="extra-large"] { --type-caption: 16px; --type-label: 18px; --type-body: 19px; --type-heading: 24px; }
+:root[data-density="compact"] :is(td,th), :root[data-density="compact"] .positions-surface td { padding-block: 9px; }
+:root[data-density="compact"] .nav-item { min-height: 44px; padding-block: 8px; }
+:root[data-density="compact"] .personal-rows > li { padding-block: 10px; }
+.personal-status { color: var(--muted); font-size: var(--type-caption); line-height: 1.6; }
+.personal-digest-banner { margin: 18px 0 24px; padding: 18px 20px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.personal-digest-banner p { margin: 4px 0 0; color: var(--muted); font-size: var(--type-caption); }
+.personal-actions, .personal-list-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.personal-actions button { min-height: 44px; }
+.personal-inline-form { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; margin-block: 20px; }
+.personal-inline-form > label { flex: 1 1 240px; max-width: 500px; }
+:is(.personal-inline-form,.personal-list-toolbar,.personal-settings) label, .personal-search-label { display: grid; gap: 8px; font-size: var(--type-label); }
+:is(.personal-inline-form,.personal-list-toolbar,.personal-settings) :is(input:not([type="checkbox"]),select), .personal-search-label input { background-color: var(--surface); border: 1px solid var(--line-strong); border-radius: 9px; padding: 10px 12px; min-height: 46px; min-width: 0; width: 100%; font-size: var(--type-label); }
+.personal-list-toolbar { padding: 18px 0; border-top: 1px solid var(--line); }
+.personal-list-toolbar > label { flex: 1 1 200px; max-width: 460px; }
+.personal-list-toolbar > span { color: var(--muted); font-size: var(--type-caption); }
+.personal-rename { margin: 8px 0 24px; }
+.personal-rename summary { cursor: pointer; width: fit-content; padding-block: 8px; color: var(--vertux-soft); }
+.personal-search-label { max-width: 620px; }
+.personal-search-results { display: grid; gap: 6px; max-width: 760px; margin-bottom: 20px; }
+.personal-search-results > button { display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; padding: 12px; min-height: 48px; border: 1px solid var(--line); background: var(--surface); border-radius: 9px; }
+.personal-search-results > button:hover { background: var(--surface-strong); }
+.personal-search-results small { color: var(--vertux-soft); }
+.personal-rows { list-style: none; margin: 0; padding: 0; }
+.personal-rows > li { border-bottom: 1px solid var(--line); padding: 18px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.personal-rows > li > div { min-width: 0; }
+.personal-rows strong, .personal-rows p, .personal-search-results span { overflow-wrap: anywhere; }
+.personal-rows p { margin: 4px 0; color: var(--muted); font-size: var(--type-caption); }
+.personal-rows .instrument-link { max-width: 100%; }
+.personal-rows .button { flex-shrink: 0; }
+.personal-empty { color: var(--muted); padding: 20px 0; }
+.personal-settings { max-width: 820px; }
+.personal-settings fieldset { border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; margin: 0 0 24px; }
+.personal-settings legend { font-weight: 700; font-size: var(--type-heading); padding: 0 8px; }
+.personal-settings-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.personal-preview { font-size: var(--type-body); line-height: 1.65; margin: 22px 0 0; padding-top: 20px; border-top: 1px solid var(--line); }
+.personal-settings .personal-toggle { display: flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 16px; }
+.personal-toggle input { width: 20px; height: 20px; accent-color: var(--action-fill); }
+#personalDigestTime { max-width: 180px; }
+.personal-digest-section { margin-block: 26px; padding: 0 0 22px; border-bottom: 1px solid var(--line); }
+.personal-digest-section h3 { font-size: var(--type-heading); margin: 0 0 8px; }
+.personal-position-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.personal-position-links button { min-height: 44px; }
+@media (max-width: 650px) {
+ .personal-digest-banner { align-items: flex-start; flex-direction: column; padding: 16px; }
+ .personal-settings-grid { grid-template-columns: 1fr; }
+ .personal-settings fieldset { padding: 16px; }
+ .personal-rows > li { align-items: flex-start; gap: 10px; }
+ .personal-rows > li > .button { padding-inline: 10px; }
+ .personal-list-toolbar { align-items: end; }
+}
+#watchlistDeleteDialog { padding: 24px; }
+#watchlistDeleteDialog h2 { margin-top: 0; font-size: var(--type-heading); }
+
+#personalTextSize, #personalDensity, #watchlistSelect { padding-right: 38px; }
