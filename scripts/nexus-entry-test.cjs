@@ -4,8 +4,9 @@ function run({url='https://vertux.online/nexus/register.html',page='register',pr
  const location=new URL(url);let redirected;
  location.replace=value=>{redirected=value};
  const links=[{href:'https://nexus.vertux.online/account.html?register=1'},{href:'https://nexus.vertux.online/account.html'}];
- const document={body:{dataset:{page}},querySelector:()=>preview?{content:preview}:null,querySelectorAll:()=>links};
- vm.runInNewContext(code,{URL,location,document});return {redirected,links};
+ let ready;
+ const document={documentElement:{dataset:{page}},querySelector:()=>preview?{content:preview}:null,querySelectorAll:()=>links,addEventListener(name,fn){if(name==='DOMContentLoaded')ready=fn}};
+ vm.runInNewContext(code,{URL,location,document});ready();return {redirected,links};
 }
 assert.equal(run().redirected,'https://nexus.vertux.online/account.html?register=1');
 assert.equal(run({page:'account'}).redirected,'https://nexus.vertux.online/account.html');
@@ -15,4 +16,12 @@ assert.equal(run({page:'security'}).redirected,undefined);
 assert.equal(run({preview:'http://127.0.0.1:49733'}).redirected,'https://nexus.vertux.online/account.html?register=1');
 assert.equal(run({url:'http://127.0.0.1:8768/nexus/register.html?plan=month',preview:'http://127.0.0.1:49733'}).redirected,'http://127.0.0.1:49733/account.html?register=1&plan=month');
 for(const preview of ['https://untrusted.test','not a URL','http://192.168.1.1:49733'])assert.equal(run({url:'http://127.0.0.1:8768/nexus/register.html',preview}).redirected,'https://nexus.vertux.online/account.html?register=1');
-console.log('PASS: separate registration/login, plan allowlist, local fixture routing and fixed production destination');
+assert.ok(run({url:'http://127.0.0.1:8768/nexus/register.html?plan=year',preview:'http://127.0.0.1:49733'}).links.every(link=>link.href==='http://127.0.0.1:49733/account.html?register=1&plan=year'));
+for(const page of ['account','register']) {
+ const html=fs.readFileSync(require('node:path').join(__dirname,`../nexus/${page}.html`),'utf8');
+ assert.match(html,new RegExp(`<html lang="ru" data-page="${page}">`));
+ assert.ok(html.indexOf('assets/account-entry.js')<html.indexOf('</head>'));
+ assert.doesNotMatch(html,/Ваш аккаунт\.|Ваш Invest\.|site-header|assets\/site\.js/);
+ assert.match(html,/<noscript>[\s\S]*visibility: visible/);
+}
+console.log('PASS: pre-paint registration/login redirect without a body, delayed fallback links, plan allowlist and isolated preview routing');

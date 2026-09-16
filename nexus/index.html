@@ -12,9 +12,17 @@
   <link rel="stylesheet" href="assets/fonts/fonts.css?v=20260916a">
   <link rel="stylesheet" href="assets/site.css?v=20260916a">
   <link rel="stylesheet" href="assets/landing.css?v=20260916a">
-  <link rel="stylesheet" href="assets/hero-video.css?v=20260916d">
+  <link rel="stylesheet" href="assets/hero-video.css?v=20260917a">
   <link rel="stylesheet" href="assets/site-refinement.css?v=20260916d">
   <link rel="stylesheet" href="assets/fonts/rubik.css?v=20260916d">
+  <script>
+    // Set the entrance state before the first paint; a failed media script must never hide the copy.
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !navigator.connection?.saveData) {
+      document.documentElement.classList.add('hero-motion');
+      setTimeout(() => document.documentElement.classList.add('hero-copy-ready'), 2500);
+    }
+  </script>
+  <noscript><style>.nexus-home .hero-film-poster { opacity: 1; }</style></noscript>
 </head>
 <body class="nexus-home" data-page="home">
   <a class="skip-link" href="#content" data-i18n="a11y.skip">К содержанию</a>
@@ -54,7 +62,6 @@
           data-desktop-src="assets/videos/nexus-laptop-intro.mp4?v=20260916a"
           data-mobile-src="assets/videos/nexus-laptop-intro-mobile.mp4?v=20260916a"></video>
         <video id="heroVideo" muted loop playsinline preload="none" tabindex="-1" disablepictureinpicture
-          poster="assets/videos/nexus-laptop-poster.jpg?v=20260916a"
           data-desktop-src="assets/videos/nexus-hero-film.mp4?v=20260916a"
           data-mobile-src="assets/videos/nexus-hero-film-mobile.mp4?v=20260916a"></video>
       </div>
@@ -256,14 +263,14 @@
       <div><a class="brand footer-brand" href="index.html"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a><p data-i18n="footer.homeNote">Рабочие пространства для бизнеса и личных инвестиций.</p></div>
       <nav><span data-i18n="footer.product">ПРОДУКТ</span><a href="#invest">Invest Workspace</a><a href="#business" data-i18n="nav.business">Для бизнеса</a><a href="#invest-plan" data-i18n="nav.subscription">Подписка</a></nav>
       <nav><span data-i18n="footer.access">ДОСТУП</span><a href="download.html" data-i18n="footer.windows">Windows</a><a href="account.html" data-i18n="nav.account">Кабинет</a><a href="security.html" data-i18n="newnav.security">Безопасность</a><a href="updates.html" data-i18n="nav.updates">Обновления</a></nav>
-      <nav><span data-i18n="footer.contact">СВЯЗЬ</span><a href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer">Telegram</a><a class="contact-email" href="mailto:vertux.studio@gmail.com">vertux.studio@gmail.com</a><a href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux Studio</a></nav>
+      <nav><span data-i18n="footer.contact">СВЯЗЬ</span><a href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer">Telegram</a><a class="contact-email" href="mailto:support@vertux.online">support@vertux.online</a><a href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux Studio</a></nav>
     </div>
     <div class="shell footer-bottom"><span>© 2026 VERTUX NEXUS</span><a class="studio-credit" href="https://vertux.online" target="_blank" rel="noopener noreferrer"><img src="assets/vertux-mark.png" alt=""><span data-i18n-html="footer.made">Сделано в студии <b>Vertux</b></span></a><span>SPB / RU</span></div>
   </footer>
 
   <script src="assets/site.js?v=20260916d"></script>
   <script src="assets/landing-interactions.js?v=20260916a"></script>
-  <script src="assets/hero-video.js?v=20260916d"></script>
+  <script src="assets/hero-video.js?v=20260917a"></script>
   <script src="assets/font-preview.js?v=20260916c"></script>
 </body>
 </html>

@@ -1,43 +1,24 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-page="account">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07070a">
-  <meta name="description" content="Личный кабинет Vertux Nexus: подписка, устройства и профиль." data-i18n-content="meta.accountDescription"><title>Вход — Vertux Nexus</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/fonts/fonts.css?v=20260916a"><link rel="stylesheet" href="assets/site.css?v=7">
-<link rel="stylesheet" href="assets/site-refinement.css?v=20260916d">  <link rel="stylesheet" href="assets/fonts/rubik.css?v=20260916d">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#08090b">
+  <meta name="robots" content="noindex">
+  <title>Вход — Vertux Nexus</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <style>
+    :root { color-scheme: dark; background: #08090b; color: #f3f3f5; font: 16px/1.5 system-ui, sans-serif; }
+    body { margin: 0; min-height: 100svh; display: grid; place-items: center; }
+    main { max-width: 32rem; padding: 24px; text-align: center; visibility: hidden; animation: route-fallback 0s 3s forwards; }
+    a { color: #c8bcff; text-underline-offset: .2em; }
+    a:focus-visible { outline: 2px solid #c8bcff; outline-offset: 5px; }
+    @keyframes route-fallback { to { visibility: visible; } }
+  </style>
+  <script defer src="assets/account-entry.js?v=20260917a"></script>
+  <noscript><style>main { visibility: visible; animation: none; }</style></noscript>
 </head>
-<body data-page="account">
-  <div class="noise" aria-hidden="true"></div><div class="pointer-light" aria-hidden="true"></div>
-  <header class="site-header" id="siteHeader">
-    <div class="nav-wrap">
-      <a class="brand" href="index.html" aria-label="Vertux Nexus"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a>
-      <nav class="main-nav" id="mainNav" aria-label="Главная навигация" data-i18n-aria="aria.mainNav">
-        <details class="nav-product"><summary><span data-i18n="newnav.product">Продукт</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3"/></svg></summary>
-          <div class="nav-dropdown">
-            <a href="index.html#invest"><b>Invest Workspace</b><span data-i18n="newnav.invest">Портфель, аналитика и ваш план</span></a>
-            <a href="index.html#business"><b data-i18n="newnav.business">Workspace для бизнеса</b><span data-i18n="newnav.businessNote">Система под процессы компании</span></a>
-            <a class="nav-download" href="download.html" data-i18n="newnav.desktop">Приложение Nexus для Windows ↗</a>
-          </div>
-        </details>
-        <a href="index.html#invest-plan" data-i18n="nav.subscription">Подписка</a>
-        <a href="security.html" data-i18n="newnav.security">Безопасность</a>
-        <a href="updates.html" data-i18n="nav.updates">Обновления</a>
-        <a class="mobile-nav-account" href="account.html" data-i18n="newnav.login">Войти</a>
-      </nav>
-      <div class="nav-actions">
-        <button class="language" type="button" data-lang-toggle aria-label="Сменить язык" data-i18n-aria="aria.language"><span data-lang="ru">RU</span><i></i><span data-lang="en">EN</span></button>
-        <a class="nav-login" href="account.html" data-i18n="newnav.login">Войти</a>
-        <a class="pill pill-primary nav-cta" href="register.html" data-i18n="newnav.start">Начать</a>
-      </div>
-      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Открыть меню" data-i18n-aria="aria.menu"><span></span><span></span></button>
-    </div>
-  </header>
-  <main class="subpage"><div class="shell account-entry-page reveal">
-<h1 data-i18n-html="portal.title">Ваш аккаунт.<br><em>Ваш Invest.</em></h1>
-<p data-i18n="portal.lede">Управляйте подпиской, сроком доступа и устройствами. Вход на сайте и в приложении — с одной почтой.</p>
-<div class="subpage-actions"><a class="pill pill-primary pill-large" data-portal-link href="https://nexus.vertux.online/account.html" data-i18n="portal.login">Войти в кабинет</a><a class="pill pill-ghost pill-large" data-portal-link href="https://nexus.vertux.online/account.html?register=1" data-i18n="portal.register">Создать личный аккаунт</a></div>
-<p class="access-note" data-i18n="portal.note">Личный Invest — для одного владельца. Код приглашения нужен только для присоединения к Workspace компании.</p>
-</div></main>
-  <footer class="site-footer"><div class="shell footer-bottom"><span>© 2026 VERTUX NEXUS</span><a class="studio-credit" href="https://vertux.online" target="_blank" rel="noopener noreferrer"><img src="assets/vertux-mark.png" alt=""><span data-i18n-html="footer.made">Сделано в студии <b>Vertux</b></span></a><span>SPB / RU</span></div></footer>
-  <script src="assets/site.js?v=20260916d"></script>
-<script src="assets/account-entry.js?v=20260916a"></script></body></html>
+<body>
+  <main><p>Переходим в личный кабинет…</p><a data-portal-link href="https://nexus.vertux.online/account.html">Открыть личный кабинет</a></main>
+</body>
+</html>
