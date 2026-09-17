@@ -547,14 +547,20 @@ a { color: inherit; }
 
 /* ===== FOOTER ===== */
 .footer { border-top: 1px solid var(--hairline); padding: var(--s16) 0 var(--s8); }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: var(--s8); padding-bottom: var(--s12); border-bottom: 1px solid var(--hairline); }
+.footer-grid { display: grid; grid-template-columns: 1.5fr repeat(4, minmax(0, 1fr)); gap: var(--s6); padding-bottom: var(--s12); border-bottom: 1px solid var(--hairline); }
+.footer-grid > * { min-width: 0; }
 .logo-foot { font-size: 28px; }
 .foot-tag { color: var(--muted); margin-top: var(--s3); font-size: 14px; max-width: 240px; }
 .foot-col { display: flex; flex-direction: column; gap: 10px; }
 .foot-label { margin-bottom: 4px; }
-.foot-col a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
+.foot-col a { color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; transition: color 0.2s; }
 .foot-col a:hover { color: var(--accent-2); }
+.foot-col a:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 5px; }
 .footer-bottom { padding-top: var(--s8); color: var(--faint); font-size: 10px; }
+@media (max-width: 1100px) {
+  .footer-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .foot-brand { grid-column: 1 / -1; }
+}
 
 /* ===== CHAT WIDGET ===== */
 .chat-toggle {
@@ -1569,4 +1575,4 @@ html[lang="en"] .cc-title { font-style: italic; }
 }
 
 /* Legal links and explicit inquiry consent. */
-.footer-legal{display:flex;flex-wrap:wrap;gap:14px 28px;padding-top:28px;padding-bottom:20px;border-top:1px solid var(--border,#ffffff26);font-size:14px;line-height:1.6}.footer-legal a,.legal-check a{color:var(--accent-2,#c8bcff);text-underline-offset:4px}.legal-check{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.6;margin:4px 0 22px;color:var(--text,#f4f1ff)}.legal-check input[type=checkbox]{width:20px;height:20px;min-width:20px;margin:3px 0 0;accent-color:var(--accent,#7c5cff)}.legal-check input:focus-visible,.footer-legal a:focus-visible{outline:2px solid var(--accent-2,#c8bcff);outline-offset:5px}
+.legal-check a{color:var(--accent-2,#c8bcff);text-underline-offset:4px}.legal-check{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.6;margin:4px 0 22px;color:var(--text,#f4f1ff)}.legal-check input[type=checkbox]{width:20px;height:20px;min-width:20px;margin:3px 0 0;accent-color:var(--accent,#7c5cff)}.legal-check input:focus-visible{outline:2px solid var(--accent-2,#c8bcff);outline-offset:5px}

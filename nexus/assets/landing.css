@@ -189,7 +189,6 @@
 .workspace-comparison a { display: inline-flex; align-items: center; min-height: 44px; margin-top: 12px; font-size: 14px; }
 .nexus-home .product-stage { margin-top: 28px; }
 .nexus-home .stage-caption { color: var(--muted); font: 400 13px/1.5 var(--body); letter-spacing: 0; }
-.nexus-home .footer-grid { grid-template-columns: 1.4fr .8fr .8fr 1.2fr; }
 .nexus-home .contact-email { overflow-wrap: anywhere; }
 .nexus-home .site-footer a { min-height: 32px; }
 @media (min-width: 1500px) {
@@ -277,7 +276,7 @@
   .invest-price-cards { margin-top: 32px; }
   .invest-questions { margin-top: 48px; }
   .nexus-home .stage-caption { padding-inline: 12px; font-size: 12px; text-align: center; }
-  .nexus-home .footer-grid > div,.nexus-home .footer-grid nav:last-child { grid-column: 1 / -1; }
+  .nexus-home .footer-grid > div { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nexus-home *, .nexus-home *::before, .nexus-home *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
