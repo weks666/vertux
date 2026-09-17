@@ -12,7 +12,7 @@ const copy = {
     "benefit2": "Работать со своими данными",
     "benefitBody2": "Портфель и ключ брокера на вашем Windows-компьютере. Доступ к счёту — для просмотра.",
     "priceTitle": "Один Workspace.<br><em>Три варианта подписки.</em>",
-    "priceIntro": "Все возможности Invest в каждом варианте. Выбираете только срок.",
+    "priceIntro": "Все возможности базового Invest в каждом варианте. Выбираете только срок.",
     "price.month": "1 месяц",
     "priceDesc.month": "Начать с одного месяца",
     "priceRate.month": "1 490 ₽ / месяц",
@@ -28,7 +28,7 @@ const copy = {
     "priceRate.year": "≈ 1 242 ₽ / месяц",
     "priceSave.year": "Экономия 2 980 ₽ за срок",
     "priceAction.year": "Выбрать год",
-    "priceNote": "Готовим к запуску. Продажи ещё не открыты; условия на три месяца и год предварительные. Экономия рассчитана относительно 1 490 ₽ за каждый месяц."
+    "priceNote": "Базовая подписка: без автосписаний. Приём оплаты готовится к запуску. Экономия рассчитана относительно 1 490 ₽ за каждый месяц."
   },
   "en": {
     "tryDemo": "Explore the demo",
@@ -58,7 +58,7 @@ const copy = {
     "priceRate.year": "≈ RUB 1,242 / month",
     "priceSave.year": "Save RUB 2,980 over the term",
     "priceAction.year": "Choose yearly",
-    "priceNote": "Preparing for launch. Sales are not open yet; three-month and annual terms are provisional. Savings are compared with RUB 1,490 for each month."
+    "priceNote": "Standard subscription, without automatic charges. Checkout is being prepared for launch. Savings are compared with RUB 1,490 for each month."
   }
 };
 function translate(){const c=copy[document.documentElement.lang]||copy.ru;document.querySelectorAll("[data-demo-copy]").forEach(e=>{const v=c[e.dataset.demoCopy];if(v)e.textContent=v});document.querySelectorAll("[data-demo-html]").forEach(e=>{const v=c[e.dataset.demoHtml];if(v)e.innerHTML=v});}
