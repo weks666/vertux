@@ -1567,3 +1567,6 @@ html[lang="en"] .cc-title { font-style: italic; }
   .nexus-launch { gap: 8px; }
   .nexus-launch-arrow { margin-left: 2px; }
 }
+
+/* Legal links and explicit inquiry consent. */
+.footer-legal{display:flex;flex-wrap:wrap;gap:14px 28px;padding-top:28px;padding-bottom:20px;border-top:1px solid var(--border,#ffffff26);font-size:14px;line-height:1.6}.footer-legal a,.legal-check a{color:var(--accent-2,#c8bcff);text-underline-offset:4px}.legal-check{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.6;margin:4px 0 22px;color:var(--text,#f4f1ff)}.legal-check input[type=checkbox]{width:20px;height:20px;min-width:20px;margin:3px 0 0;accent-color:var(--accent,#7c5cff)}.legal-check input:focus-visible,.footer-legal a:focus-visible{outline:2px solid var(--accent-2,#c8bcff);outline-offset:5px}

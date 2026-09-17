@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
-<link rel="stylesheet" href="styles.css?v=16">
+<link rel="stylesheet" href="styles.css?legal=20260917&v=16">
 </head>
 <body>
 
@@ -712,6 +712,7 @@
         <input type="hidden" name="service" id="cfService">
       </div>
       <div class="cf-field"><label class="mono" data-i18n="ct.brief">Пара слов о задаче (опционально)</label><textarea name="brief" rows="3" placeholder="Например: сайт для студии маникюра + виджет записи" data-i18n-ph="ct.ph.brief"></textarea></div>
+      <label class="legal-check"><input type="checkbox" name="inquiryConsent" value="true" required><span>Даю <a href="/nexus/consent.html" target="_blank" rel="noopener noreferrer">согласие на обработку заявки</a>. <a href="/nexus/privacy.html" target="_blank" rel="noopener noreferrer">Политика конфиденциальности</a></span></label><input type="hidden" name="consentVersion" value="studio-inquiry-2026-09-17">
       <button type="submit" class="btn btn-primary btn-lg btn-full magnetic" data-magnetic data-i18n="ct.send">Отправить заявку <span class="arr">→</span></button>
       <div class="cf-result" id="cfResult"></div>
     </form>
@@ -755,6 +756,7 @@
       <a href="https://sk-avangard-spb.com" target="_blank" rel="noopener">СК АВАНГАРД</a>
     </div>
   </div>
+  <nav class="container footer-legal" aria-label="Юридические документы"><a href="/nexus/offer.html">Оферта Invest</a><a href="/nexus/privacy.html">Политика конфиденциальности</a><a href="/nexus/consent.html">Согласие на обработку заявки</a></nav>
   <div class="container footer-bottom mono">© 2026 Vertux · <span data-i18n="ft.made">собрано вручную</span></div>
 </footer>
 
@@ -774,6 +776,7 @@
   </form>
 </div>
 
+<script src="legal-forms.js?v=20260917"></script>
 <script src="script.js?v=16"></script>
 </body>
 </html>
