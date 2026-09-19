@@ -29,6 +29,7 @@
     });
   });
   document.querySelectorAll('[data-select-standard]').forEach(button=>button.addEventListener('click',()=>choose('standard',{focus:true})));
+  if(new URL(location.href).searchParams.get('tier')==='pro')choose('pro');
   const current=location.pathname.split('/').pop()||'index.html';
   document.querySelectorAll('.main-nav a').forEach(link=>{if(link.getAttribute('href')===current)link.setAttribute('aria-current','page');});
   // Keep old shared links/bookmarks meaningful after separating product pages.

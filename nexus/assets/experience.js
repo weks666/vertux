@@ -50,13 +50,7 @@
     $('.nx-preview-chart',root).addEventListener('animationend',e=>e.currentTarget.classList.remove('nx-chart-changing'));
   });
   tabs('[data-custom-choice]');
-  const customPanels=$$('.nx-custom-panel');
-  function paintCustom(panel){
-    const items=$$('[data-custom-done]',panel),done=items.filter(item=>item.checked).length;
-    $('[data-custom-count]',panel).textContent=`${done} / ${items.length}`;
-    $('[data-custom-progress]',panel).style.width=`${done/items.length*100}%`;
-  }
-  customPanels.forEach(panel=>$$('[data-custom-done]',panel).forEach(input=>input.addEventListener('change',()=>paintCustom(panel))));
+  tabs('[data-request-choice]');
   const tour=$('[data-scroll-tour]'),desktopTour=matchMedia('(min-width:1000px) and (min-height:720px)');
   let manualTourY=null,scrollSelection=false,activeTour=0,scrollPending=false,keyboardNavigation=false;
   document.addEventListener('keydown',event=>{if(['Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))keyboardNavigation=true;});
@@ -84,7 +78,7 @@
     $$('[data-price-rub]').forEach(node=>{const rub=Number(node.dataset.priceRub);if(!Number.isFinite(rub))return;const amount=Math.round(usd?rub/exchangeRate:rub).toLocaleString(locale);node.textContent=usd?`$${amount}`:`${amount} ₽`;});
   }
   currencySelect?.addEventListener('change',()=>{displayCurrency=currencySelect.value==='USD'?'USD':'RUB';paintPrices();});
-  function repaint(){previews.forEach(root=>paintPreview(root,root.dataset.period||'month'));customPanels.forEach(paintCustom);paintPrices();}
+  function repaint(){previews.forEach(root=>paintPreview(root,root.dataset.period||'month'));paintPrices();}
   document.addEventListener('nexus:language-change',()=>{displayCurrency=english()?'USD':'RUB';repaint();});repaint();
   // Large editorial groups appear once. Without JS all content stays visible.
   if('IntersectionObserver' in window&&!reduced.matches){
