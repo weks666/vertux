@@ -55,3 +55,44 @@
 #watchlistDeleteDialog h2 { margin-top: 0; font-size: var(--type-heading); }
 
 #personalTextSize, #personalDensity, #watchlistSelect { padding-right: 38px; }
+
+/* The local preferences share the same compact rows as the account settings. */
+.personal-preferences { max-width: none; margin: 0; font-family: var(--font-ui, Rubik, system-ui, sans-serif); }
+.personal-preferences > fieldset { min-width: 0; margin-bottom: 16px; padding: 22px 24px 8px; border-color: var(--line); background: var(--surface); }
+.personal-preferences > fieldset > legend { padding-inline: 0; float: left; width: 100%; margin-bottom: 10px; font-size: var(--type-heading); letter-spacing: -.025em; }
+.personal-preferences .personal-settings-grid { clear: both; display: block; }
+.personal-preference-row { display: grid; grid-template-columns: 24px minmax(150px,1fr) minmax(260px,auto); align-items: center; column-gap: 16px; row-gap: 8px; padding-block: 16px; border-bottom: 1px solid var(--line); }
+.personal-preference-row:last-child { border-bottom: 0; }
+.personal-preference-icon { width: 22px; height: 22px; color: var(--vertux-soft); }
+.personal-preference-title { font-size: var(--type-label); line-height: 1.5; }
+.personal-preference-row > select[hidden] { display: none; }
+.personal-choice-group { display: flex; padding: 3px; gap: 3px; border: 1px solid var(--line); background: var(--ink); border-radius: 10px; }
+.personal-preferences .personal-choice { display: block; position: relative; flex: 1 1 0; margin: 0; min-width: 0; cursor: pointer; }
+.personal-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.personal-choice > span { display: flex; align-items: center; justify-content: center; min-height: 40px; padding: 8px 14px; border-radius: 8px; font-size: var(--type-caption); color: var(--muted); line-height: 1.4; text-align: center; transition: background-color .16s ease,color .16s ease; }
+.personal-choice input:checked + span { background: var(--action-fill); color: var(--white); }
+.personal-choice:hover input:not(:checked):not(:disabled) + span { background: var(--surface-strong); color: var(--text); }
+.personal-choice input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 2px; }
+.personal-choice input:disabled + span { opacity: .6; cursor: default; }
+.personal-row-note { grid-column: 2 / -1; margin: 0; color: var(--muted); font-size: var(--type-caption); line-height: 1.55; max-width: 72ch; }
+.personal-row-note:empty { display: none; }
+.personal-settings-note { margin: 4px 0 14px 40px; color: var(--muted); font-size: var(--type-caption); line-height: 1.6; max-width: 72ch; }
+.personal-preferences > .personal-actions { gap: 10px; }
+.personal-preferences > .personal-status { min-height: 1.6em; margin-block: 10px 0; }
+.personal-preferences [hidden] { display: none !important; }
+@media (max-width: 840px) {
+ .personal-preference-row { grid-template-columns: 24px minmax(0,1fr); }
+ .personal-choice-group { grid-column: 2; min-width: 0; }
+ .personal-row-note { grid-column: 2; }
+}
+@media (max-width: 480px) {
+ .personal-preferences > fieldset { padding: 18px 16px 8px; }
+ .personal-preference-row { column-gap: 12px; }
+ .personal-choice-group, .personal-row-note { grid-column: 1 / -1; }
+ .personal-choice > span { padding-inline: 8px; }
+ .personal-settings-note { margin-left: 0; }
+ .personal-preferences > .personal-actions > button { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .personal-choice > span { transition: none; }
+}

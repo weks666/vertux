@@ -58,6 +58,23 @@
     support: 'Поддержка',
     access: 'Доступы',
   };
+  const supportCategories = Object.freeze({
+    general: 'Общий вопрос',
+    connection: 'Подключение',
+    data: 'Данные и синхронизация',
+    billing: 'Подписка и оплата',
+    account: 'Аккаунт и доступ',
+    suggestion: 'Предложение',
+  });
+  const emptyTicketDraft = () => ({ category: 'general', subject: '', priority: 'normal', message: '' });
+  const icon = (name) => {
+    const paths = {
+      telegram: '<circle cx="12" cy="12" r="12" fill="#229ed9" stroke="none"/><path d="m5.1 11.7 12.4-4.8c.6-.2 1.1.2.9.9l-2.1 9.8c-.1.7-.6.9-1.2.5l-3.2-2.4-1.6 1.5c-.2.2-.3.3-.6.3l.2-3.3 6-5.4c.3-.2-.1-.4-.4-.2l-7.4 4.7-3.2-1c-.7-.2-.7-.6.2-.9Z" fill="white" stroke="none"/>',
+      external: '<path d="M14 3h7v7M21 3l-9 9"/><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/>',
+      check: '<path d="m5 12 4 4L19 6"/>',
+    };
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.check}</svg>`;
+  };
 
   class VertuxServiceCenter extends HTMLElement {
     static get observedAttributes() {
@@ -77,7 +94,7 @@
         invite: null,
         ticketId: null,
         messages: [],
-        ticketDraft: { subject: '', priority: 'normal', message: '' },
+        ticketDraft: emptyTicketDraft(),
         ticketRequestId: null,
         ticketRequestFingerprint: '',
         replyDraft: '',
@@ -85,7 +102,7 @@
         replyRequestMessage: '',
         editMemberId: null,
         billingMonths: 1,
-        billingTermsAccepted: false,
+        billingTermsAccepted: false, billingPrivacyAcknowledged: false,
         billingRequestId: null,
       };
       const stylesheet = document.createElement('link');
@@ -141,6 +158,16 @@
 
     get bridge() {
       return this.serviceAdapter || (window.nexusProduct && window.nexusProduct.service);
+    }
+
+    selectSubscriptionTerm(months) {
+      if (![1, 3, 12].includes(months) || this.state.busy) return false;
+      this.state.billingMonths = months;
+      this.state.billingTermsAccepted = false;
+      this.state.billingPrivacyAcknowledged = false;
+      this.state.billingRequestId = null;
+      this.render();
+      return true;
     }
 
     async call(action, ...args) {
@@ -271,10 +298,8 @@
           ${data.capabilities.viewCommercialDetails ? `<article class="metric"><span>Стоимость</span><strong>${price}</strong></article>` : ''}
         </section>
         <section class="panel">
-          <div class="panel-title"><div><span class="eyebrow">Входит в подписку</span><h3>Возможности и лимиты</h3></div></div>
-          <div class="feature-list">
-            ${(subscription.features || []).map((feature) => `<span class="feature"><i aria-hidden="true">✓</i>${escapeText(feature)}</span>`).join('') || '<p class="muted">Состав тарифа уточняется в договоре.</p>'}
-          </div>
+          <div class="panel-title"><h3>Что входит в план</h3></div>
+          ${this.renderPlanFeatures(subscription.features)}
           ${subscription.entitlements?.length ? `<div class="rows compact">${subscription.entitlements.map((item) => `<div class="row">
             <div class="row-main"><b>${escapeText(item.entitlement_key)}</b><span>${item.product_id ? 'Лимит продукта' : 'Лимит компании'}</span></div>
             <span class="status">${item.enabled ? escapeText(item.limit_value ?? 'Включено') : 'Выключено'}</span>
@@ -287,6 +312,13 @@
       </div>`;
     }
 
+    renderPlanFeatures(features) {
+      const available = Array.isArray(features) ? features.filter(feature => typeof feature === 'string' && feature.trim()) : [];
+      return available.length
+        ? `<ul class="plan-features">${available.map(feature => `<li>${icon('check')}<span>${escapeText(feature)}</span></li>`).join('')}</ul>`
+        : '<p class="muted">Состав плана пока не указан. Уточните его у поддержки.</p>';
+    }
+
     renderStandardSubscription(billing) {
       const money = minor => `${(minor / 100).toLocaleString('ru-RU', { maximumFractionDigits: 2 })} ₽`;
       const current = billing.subscription;
@@ -294,13 +326,15 @@
       const selected = billing.catalog.terms.find(term => term.months === (pending?.months || this.state.billingMonths)) || billing.catalog.terms[0];
       const disabled = this.state.busy || !billing.checkoutEnabled || Boolean(pending);
       const labels = { created: 'Создание оплаты не завершено', pending: 'Ожидает оплаты', applied: 'Оплачено', canceled: 'Отменено платёжной системой', review: 'Оплата требует проверки поддержки' };
-      return `<div class="stack">
-        <section class="summary-grid" aria-label="Состояние подписки">
-          <article class="metric"><span>Подписка</span><strong>Invest Workspace</strong></article>
-          <article class="metric"><span>Состояние</span><strong>${escapeText(statusLabel[current?.status] || (current ? current.status : 'Ещё не оформлена'))}</strong></article>
-          <article class="metric"><span>Доступ до</span><strong>${dateText(current?.periodEnd)}</strong></article>
+      return `<div class="subscription-layout">
+        <section class="panel current-plan" aria-label="Состояние подписки">
+          <div class="panel-title"><h3>Текущий план</h3></div>
+          <div class="plan-identity"><span class="plan-symbol" aria-hidden="true">${icon('check')}</span><div><h3>Invest Workspace</h3><p><span class="status">${escapeText(statusLabel[current?.status] || (current ? current.status : 'Ещё не оформлена'))}</span>${current?.periodEnd ? `<span class="plan-date">Доступ до ${dateText(current.periodEnd)}</span>` : ''}</p></div></div>
+          <h4>Что входит в план</h4>${this.renderPlanFeatures(billing.catalog.features)}
+          <p class="privacy-note">Состав возможностей одинаковый для всех сроков подписки.</p>
+          <div class="plan-ai-note"><strong>AI-анализ</strong><p class="muted">Модель ещё не подключена. Дополнительные AI-пакеты пока не продаются.</p></div>
         </section>
-        <section class="panel"><div class="panel-title"><h3>Выберите срок</h3></div>
+        <section class="panel billing-purchase"><div class="panel-title"><h3>Продлить подписку</h3></div>
           <p class="muted">Одинаковые возможности при любом сроке. Оплата целиком за выбранный период, без автоматических списаний.</p>
           ${billing.testMode ? '<p class="notice">Тестовый магазин: реальные деньги не списываются.</p>' : ''}
           ${billing.catalog.pricingStatus === 'draft' ? '<p class="muted">Цены — черновик до запуска продаж.</p>' : ''}
@@ -308,19 +342,18 @@
             ${billing.catalog.terms.map(term => `<label class="billing-term"><input type="radio" name="billing-months" value="${term.months}" ${selected.months === term.months ? 'checked' : ''}>
               <span><b>${escapeText(term.label)}</b><strong>${money(term.amountMinor)}</strong><small>${money(term.amountMinor / term.months)} в месяц${term.months > 1 ? ` · экономия ${money(billing.catalog.monthlyPriceMinor * term.months - term.amountMinor)}` : ''}</small></span></label>`).join('')}
           </fieldset>
-          <div class="feature-list">${billing.catalog.features.map(feature => `<span class="feature">${escapeText(feature)}</span>`).join('')}</div>
           <p class="muted">При раннем продлении оплаченный срок добавляется к текущему. После окончания доступа новый срок начинается с подтверждения оплаты.</p>
-          ${billing.mayManage ? `${billing.termsUrl ? `<label class="billing-consent"><input type="checkbox" data-billing-consent ${this.state.billingTermsAccepted ? 'checked' : ''} ${this.state.busy ? 'disabled' : ''}> <span>Принимаю <a data-billing-terms href="${escapeText(billing.termsUrl)}" target="_blank" rel="noopener noreferrer">условия оплаты</a></span></label>` : ''}
-            <button class="button primary" data-billing-checkout ${disabled || !this.state.billingTermsAccepted ? 'disabled' : ''}>Оплатить ${money(selected.amountMinor)}</button>
+          ${billing.mayManage ? `${billing.termsUrl ? `<label class="billing-consent"><input type="checkbox" data-billing-consent ${this.state.billingTermsAccepted ? 'checked' : ''} ${this.state.busy ? 'disabled' : ''}> <span>Принимаю <a data-billing-terms href="${escapeText(billing.termsUrl)}" target="_blank" rel="noopener noreferrer">публичную оферту</a></span></label>` : ''}
+            <label class="billing-consent"><input type="checkbox" data-billing-privacy ${this.state.billingPrivacyAcknowledged ? 'checked' : ''} ${this.state.busy ? 'disabled' : ''}><span>Ознакомлен с <a href="${escapeText(billing.privacyUrl || 'https://vertux.online/nexus/privacy.html')}" target="_blank" rel="noopener noreferrer">политикой обработки данных</a></span></label>
+            <button class="button primary" data-billing-checkout ${disabled || !this.state.billingTermsAccepted || !this.state.billingPrivacyAcknowledged ? 'disabled' : ''}>Оплатить ${money(selected.amountMinor)}</button>
             ${billing.unavailableReason ? `<p class="muted">${escapeText(billing.unavailableReason)}</p>` : ''}` : '<p class="muted">Оплатой управляет владелец или администратор аккаунта.</p>'}
         </section>
-        <section class="panel"><h3>AI-анализ</h3><p class="muted">Модель ещё не подключена. При любом сроке подписки включённый AI-бюджет будет обновляться ежемесячно. Дополнительные пакеты пока не продаются.</p></section>
-        ${billing.mayManage ? `<section class="panel"><h3>История оплаты</h3><div class="rows">
+        ${billing.mayManage ? `<section class="panel subscription-history"><div class="panel-title"><h3>История подписки и оплаты</h3></div><div class="rows">
           ${billing.orders.map(order => `<article class="row"><div class="row-main"><b>${money(order.amountMinor)} · ${order.months} мес.</b><span>${escapeText(labels[order.status] || order.status)} · ${dateText(order.createdAt, true)}</span>
             ${order.periodEnd ? `<span>Добавленный период: ${dateText(order.periodStart)} — ${dateText(order.periodEnd)}</span>` : ''}</div>
             ${order.confirmationUrl ? `<button class="button" data-billing-open="${escapeText(order.id)}" ${this.state.busy ? 'disabled' : ''}>Перейти к оплате</button>` : ''}
             ${['pending','created'].includes(order.status) ? `<button class="button subtle" data-billing-refresh="${escapeText(order.id)}" ${this.state.busy ? 'disabled' : ''}>${order.status === 'created' ? 'Повторить создание' : 'Проверить оплату'}</button>` : ''}
-          </article>`).join('') || '<p class="muted">Оплат пока нет.</p>'}</div></section>` : ''}
+          </article>`).join('') || '<div class="empty small"><b>История пока пуста</b><p>Здесь появятся оплаты и продления вашей подписки.</p></div>'}</div></section>` : ''}
       </div>`;
     }
 
@@ -338,7 +371,7 @@
           if (typeof this.bridge?.subscriptionOpenPayment === 'function') await this.call('subscriptionOpenPayment', { orderId });
           else if (!window.nexusProduct) {
             const url = new URL(order?.confirmationUrl);
-            if (url.protocol !== 'https:' || url.username || url.password || url.port || !['yoomoney.ru','yookassa.ru'].includes(url.hostname)) throw new Error('Ссылка оплаты недоступна');
+            if (url.protocol !== 'https:' || url.username || url.password || url.port || !['yoomoney.ru','yookassa.ru','auth.robokassa.ru'].includes(url.hostname)) throw new Error('Ссылка оплаты недоступна');
             window.open(url.href, '_blank', 'noopener,noreferrer');
           } else throw new Error('Обновите Nexus, чтобы открыть оплату, или откройте раздел «Подписка и оплата» из списка продуктов в браузере.');
         } else {
@@ -347,7 +380,7 @@
             this.state.billingRequestId ||= crypto.randomUUID();
             result = await this.call('subscriptionCheckout', { months: order?.months || this.state.billingMonths,
               requestId: order?.requestId || this.state.billingRequestId, termsVersion: billing.termsVersion,
-              acceptedTerms: order?.status === 'created' || this.state.billingTermsAccepted });
+              acceptedTerms: order?.status === 'created' || this.state.billingTermsAccepted, privacyVersion:billing.privacyVersion,privacyAcknowledged:this.state.billingPrivacyAcknowledged });
           } else result = await this.call('subscriptionRefresh', { orderId });
           // Read authoritative dates after payment; a returned browser URL is never proof of payment.
           this.state.data = await this.call('overview');
@@ -368,15 +401,40 @@
     }
 
     renderSupport() {
-      const tickets = this.state.data.support?.tickets || [];
+      const tickets = [...(this.state.data.support?.tickets || [])].sort((a, b) => String(b.updated_at || '').localeCompare(String(a.updated_at || '')));
       const selected = tickets.find((ticket) => ticket.id === this.state.ticketId);
-      return `<div class="support-layout">
-        <section class="panel">
-          <div class="panel-title"><div><span class="eyebrow">История</span><h3>Обращения</h3></div></div>
-          <div class="rows ticket-list">${tickets.map((ticket) => `<button class="row selectable ${selected?.id === ticket.id ? 'selected' : ''}" type="button" data-ticket="${escapeText(ticket.id)}" ${this.state.busy ? 'disabled' : ''}>
-            <span class="row-main"><b>${escapeText(ticket.subject)}</b><span>${escapeText(ticket.product_name || 'Общий вопрос')} · ${dateText(ticket.updated_at, true)}</span></span>
-            <span class="status">${escapeText(statusLabel[ticket.status] || ticket.status)}</span>
-          </button>`).join('') || '<div class="empty small"><p>Обращений пока нет.</p></div>'}</div>
+      const draft = this.state.ticketDraft;
+      const ticketRow = ticket => `<button class="row selectable ${selected?.id === ticket.id ? 'selected' : ''}" type="button" data-ticket="${escapeText(ticket.id)}" ${this.state.busy ? 'disabled' : ''}>
+        <span class="row-main"><b>${escapeText(ticket.subject)}</b><span>${escapeText(ticket.product_name || 'Общий вопрос')}</span></span>
+        <span class="status" data-status="${escapeText(ticket.status)}">${escapeText(statusLabel[ticket.status] || ticket.status)}</span><time>${dateText(ticket.updated_at)}</time><span class="ticket-arrow" aria-hidden="true">›</span>
+      </button>`;
+      return `<div class="stack support-page">
+        <div class="support-top">
+          <section class="panel support-contact">
+            <div class="panel-title"><h3>Связаться с Vertux</h3></div>
+            <div class="contact-description"><span class="contact-symbol">${icon('telegram')}</span><div><strong>Поддержка в Telegram</strong><p class="muted">Задайте вопрос команде Vertux или оставьте обращение здесь.</p></div></div>
+            <a class="button telegram-link" href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer">Написать в Telegram ${icon('external')}</a>
+            <a class="support-email" href="mailto:support@vertux.online">support@vertux.online</a>
+            <p class="privacy-note">Откроется Telegram в отдельном окне.</p>
+          </section>
+          <section class="panel compose">
+            <div class="panel-title"><h3>Создать запрос</h3></div><p class="muted compose-intro">Опишите вопрос, и мы поможем вам разобраться.</p>
+            ${this.state.data.capabilities.createSupportTicket ? `<form class="form" data-form="ticket">
+              <div class="form-grid">
+                <label><span>Категория</span><select name="category" ${this.state.busy ? 'disabled' : ''}>${Object.entries(supportCategories).map(([key, label]) => `<option value="${key}" ${draft.category === key ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
+                <label><span>Тема</span><input name="subject" required minlength="3" maxlength="128" value="${escapeText(draft.subject)}" placeholder="Кратко опишите вопрос" ${this.state.busy ? 'disabled' : ''}></label>
+              </div>
+              <label><span>Описание</span><textarea name="message" required minlength="3" maxlength="4900" placeholder="Что вы хотели сделать и что произошло?" aria-describedby="support-privacy" ${this.state.busy ? 'disabled' : ''}>${escapeText(draft.message)}</textarea></label>
+              <div class="support-submit"><label><span>Приоритет</span><select name="priority" ${this.state.busy ? 'disabled' : ''}><option value="normal" ${draft.priority === 'normal' ? 'selected' : ''}>Обычный</option><option value="high" ${draft.priority === 'high' ? 'selected' : ''}>Высокий</option><option value="urgent" ${draft.priority === 'urgent' ? 'selected' : ''}>Срочный</option><option value="low" ${draft.priority === 'low' ? 'selected' : ''}>Низкий</option></select></label><button class="button primary" type="submit" ${this.state.busy ? 'disabled' : ''}>Отправить в поддержку</button></div>
+              <p class="privacy-note" id="support-privacy">Пароли, коды из писем и ключи брокера не отправляйте.</p>
+            </form>` : '<div class="empty small"><p>Глобальный администратор работает со входящей очередью в Nexus Admin.</p></div>'}
+          </section>
+        </div>
+        <div class="support-bottom">
+        <section class="panel support-history">
+          <div class="panel-title"><h3>Мои обращения</h3><span class="counter" aria-label="Количество обращений">${tickets.length}</span></div>
+          <div class="rows ticket-list">${tickets.slice(0, 5).map(ticketRow).join('') || '<div class="empty small"><b>Обращений пока нет</b><p>Ваши вопросы и ответы поддержки появятся здесь.</p></div>'}</div>
+          ${tickets.length > 5 ? `<details class="older-tickets" ${tickets.slice(5).some(ticket => ticket.id === selected?.id) ? 'open' : ''}><summary>Все обращения · ещё ${tickets.length - 5}</summary><div class="rows ticket-list">${tickets.slice(5).map(ticketRow).join('')}</div></details>` : ''}
           ${selected ? `<div class="conversation">
             <div class="messages">${this.state.messages.map((message) => `<article class="message"><span>${escapeText(message.author_name)} · ${dateText(message.created_at, true)}</span><p>${escapeText(message.body)}</p></article>`).join('') || '<p class="muted">Загружаю переписку…</p>'}</div>
             ${this.state.data.capabilities.replySupportTicket ? `<form class="form" data-form="reply">
@@ -386,15 +444,16 @@
             </form>` : ''}
           </div>` : ''}
         </section>
-        <section class="panel compose">
-          <div class="panel-title"><div><span class="eyebrow">Поддержка Vertux</span><h3>Новое обращение</h3></div></div>
-          ${this.state.data.capabilities.createSupportTicket ? `<form class="form" data-form="ticket">
-            <label><span>Тема</span><input name="subject" required minlength="3" maxlength="160" value="${escapeText(this.state.ticketDraft.subject)}" placeholder="Например: не загружается документ"></label>
-            <label><span>Приоритет</span><select name="priority"><option value="normal" ${this.state.ticketDraft.priority === 'normal' ? 'selected' : ''}>Обычный</option><option value="high" ${this.state.ticketDraft.priority === 'high' ? 'selected' : ''}>Высокий</option><option value="urgent" ${this.state.ticketDraft.priority === 'urgent' ? 'selected' : ''}>Срочный</option><option value="low" ${this.state.ticketDraft.priority === 'low' ? 'selected' : ''}>Низкий</option></select></label>
-            <label><span>Что произошло</span><textarea name="message" required minlength="3" maxlength="5000" placeholder="Опишите шаги и результат. Пароли, ключи и токены не отправляйте.">${escapeText(this.state.ticketDraft.message)}</textarea></label>
-            <button class="button primary" type="submit" ${this.state.busy ? 'disabled' : ''}>Отправить в поддержку</button>
-          </form>` : '<div class="empty small"><p>Глобальный администратор работает со входящей очередью в Nexus Admin.</p></div>'}
+        <section class="panel support-faq">
+          <div class="panel-title"><h3>Частые вопросы</h3></div>
+          <details><summary>Какие данные приложить к вопросу?</summary><p>Укажите раздел, последовательность действий и текст ошибки. На снимке экрана скройте личные данные. Пароли и ключи доступа поддержке не нужны.</p></details>
+          <details><summary>Данные не обновляются. Что проверить?</summary><p>Проверьте интернет и статус подключения в Workspace, затем повторите обновление. Если ошибка остаётся, укажите её текст и время в обращении.</p></details>
+          <details><summary>Где посмотреть срок подписки?</summary><p>В разделе «Подписка» показаны текущий статус, срок доступа и доступные условия продления. Подтверждение оплаты должно появиться в Nexus.</p></details>
+          <details><summary>Как войти на другом компьютере?</summary><p>Установите Nexus и войдите в свой аккаунт. Список устройств и управление доступом находятся в настройках. Локальные данные Workspace и ключи брокера остаются на том компьютере, где вы их добавили.</p></details>
+          <details><summary>Как подключиться по приглашению?</summary><p>Введите код компании в профиле Nexus. Приглашение добавит выданные вам продукты к вашему аккаунту.</p></details>
+          <aside class="support-tip"><strong>Совет</strong><p>Укажите раздел и последовательность действий — это поможет быстрее разобраться в вопросе.</p></aside>
         </section>
+        </div>
       </div>`;
     }
 
@@ -469,12 +528,15 @@
       this.shadowRoot.querySelector('[data-billing-consent]')?.addEventListener('change', event => {
         this.state.billingTermsAccepted = event.target.checked; this.render(); this.shadowRoot.querySelector('[data-billing-consent]')?.focus();
       });
+      this.shadowRoot.querySelector('[data-billing-privacy]')?.addEventListener('change', event => {
+        this.state.billingPrivacyAcknowledged = event.target.checked; this.render(); this.shadowRoot.querySelector('[data-billing-privacy]')?.focus();
+      });
       this.shadowRoot.querySelector('[data-billing-checkout]')?.addEventListener('click', () => this.billingAction('checkout'));
       this.shadowRoot.querySelectorAll('[data-billing-refresh]').forEach(button => button.addEventListener('click', () => this.billingAction('refresh', button.dataset.billingRefresh)));
       this.shadowRoot.querySelectorAll('[data-billing-open]').forEach(button => button.addEventListener('click', () => this.billingAction('open', button.dataset.billingOpen)));
       // Keep the unsent ticket while another conversation is opened or refreshed.
       this.shadowRoot.querySelectorAll('form[data-form="ticket"] [name]').forEach(field => {
-        if (!['subject','message','priority'].includes(field.name)) return;
+        if (!['category','subject','message','priority'].includes(field.name)) return;
         const remember = () => { this.state.ticketDraft[field.name] = field.value; };
         field.addEventListener('input', remember);
         field.addEventListener('change', remember);
@@ -583,17 +645,23 @@
       const submittedTicketId = isReply ? String(values.get('ticketId') || '') : null;
       let ticketPayload = null;
       if (isTicket) {
-        ticketPayload = {
-          subject: String(values.get('subject') || ''),
+        const category = Object.hasOwn(supportCategories, String(values.get('category'))) ? String(values.get('category')) : 'general';
+        this.state.ticketDraft = {
+          category,
+          subject: String(values.get('subject') || '').slice(0, 128),
           priority: String(values.get('priority') || 'normal'),
-          message: String(values.get('message') || ''),
+          message: String(values.get('message') || '').slice(0, 4900),
+        };
+        ticketPayload = {
+          subject: `[${supportCategories[category]}] ${this.state.ticketDraft.subject}`,
+          priority: this.state.ticketDraft.priority,
+          message: `Категория: ${supportCategories[category]}\n\n${this.state.ticketDraft.message}`,
         };
         const fingerprint = JSON.stringify(ticketPayload);
         if (!this.state.ticketRequestId || this.state.ticketRequestFingerprint !== fingerprint) {
           this.state.ticketRequestId = crypto.randomUUID();
           this.state.ticketRequestFingerprint = fingerprint;
         }
-        this.state.ticketDraft = ticketPayload;
       }
       if (isReply) {
         this.state.replyDraft = String(values.get('message') || '');
@@ -614,7 +682,7 @@
             requestId: this.state.ticketRequestId,
           });
           ticketStored = true;
-          this.state.ticketDraft = { subject: '', priority: 'normal', message: '' };
+          this.state.ticketDraft = emptyTicketDraft();
           this.state.ticketRequestId = null;
           this.state.ticketRequestFingerprint = '';
           this.state.notice = 'Обращение отправлено в Vertux';

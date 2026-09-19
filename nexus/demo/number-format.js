@@ -1,7 +1,7 @@
 export const NANO=1_000_000_000n;
 export function normalizeCurrency(currency='RUB') {
   const code=String(currency||'RUB').toUpperCase();
-  return ({RUR:'RUB','РУБ':'RUB','₽':'RUB','$':'USD'})[code] || code;
+  return ({PT:'PTS',PNT:'PTS',POINTS:'PTS',RUR:'RUB','РУБ':'RUB','₽':'RUB','$':'USD'})[code] || code;
 }
 export function decimalNanos(value,{digits=2,locale='ru',absolute=false,trim=true}={}) {
   if(value==null || !/^-?\d+$/.test(String(value)))return '—';

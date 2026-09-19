@@ -1,3 +1,4 @@
+import { instrumentMark, watchInstrumentImages } from './instrument-mark.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const time=value=>new Date(value).toLocaleString('ru-RU',{timeZone:'Europe/Moscow',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
 const date=value=>new Date(value+'T12:00:00Z').toLocaleDateString('ru-RU',{timeZone:'UTC',day:'numeric',month:'short',year:'numeric'});
@@ -12,30 +13,33 @@ export function initNewsPanel({request}) {
  function filtered(){
   const period=$('newsPeriod').value,scope=$('newsRelevance').value,cutoff=Date.now()-({day:86400000,week:7*86400000})[period];
   return items.filter(row=>(period==='all'||Date.parse(row.at)>=cutoff)
-    && (scope==='all'||scope==='direct'&&row.inPortfolio||scope==='related'&&(row.relatedToPortfolio||row.inPortfolio)))
+    && (scope==='all'||scope==='direct'&&row.inPortfolio||scope==='related'&&(row.relatedToPortfolio||row.inPortfolio))
+    && (!$('newsCompany')?.value||(row.relations||[]).some(company=>company.ticker===$('newsCompany').value))
+    && (!$('newsSource')?.value||row.source===$('newsSource').value))
    .sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
  }
  function renderList(){
   const rows=filtered();
-  $('newsFilterCount').textContent='Найдено: '+rows.length+' из '+items.length+' загруженных';
-  $('marketNewsList').innerHTML=rows.slice(0,visibleCount).map(row=>'<article class="news-item'+(row.id===selected?' selected':'')+'"><small>'+esc(time(row.at))+' мск · '+esc(row.source)+'</small>'
+  $('newsFilterCount').textContent=rows.length+' публикаций';
+  $('marketNewsList').innerHTML=rows.slice(0,visibleCount).map(row=>'<article class="news-item'+(row.id===selected?' selected':'')+'">'+instrumentMark(row.relations?.[0]||{ticker:row.source})+'<div class="news-item-copy">'
    +'<button class="news-select" type="button" data-news-id="'+esc(row.id)+'" aria-pressed="'+(row.id===selected)+'"><h4>'+esc(row.title)+'</h4></button>'
-   +(row.inPortfolio?'<span class="portfolio-mark">Прямая связь с активом в портфеле</span>':row.relatedToPortfolio?'<span class="news-related">Может касаться портфеля</span>':'')
-   +'<p>'+esc(row.summary.slice(0,260))+(row.summary.length>260?'…':'')+'</p></article>').join('')
+   +'<p>'+esc(row.summary.slice(0,180))+(row.summary.length>180?'…':'')+'</p></div><div class="news-item-meta"><strong>'+esc(row.source)+'</strong><time datetime="'+esc(row.at)+'">'+esc(time(row.at))+'</time>'
+   +(row.inPortfolio?'<span class="news-relation-dot direct" title="Актив из вашего портфеля" aria-label="Актив из вашего портфеля"></span>':row.relatedToPortfolio?'<span class="news-relation-dot related" title="Возможная связь с портфелем" aria-label="Возможная связь с портфелем"></span>':'')+'</div></article>').join('')
    ||'<p class="empty-copy">В загруженных публикациях нет новостей по этим условиям. Можно загрузить более ранние публикации или изменить фильтры.</p>';
   $('newsMore').hidden=rows.length<=visibleCount;
+  watchInstrumentImages($('marketNewsList'));
  }
  function renderReport(){
   const row=items.find(item=>item.id===selected),panel=$('newsAnalysisContent');
   $('newsGenerate').hidden=!row;
   $('newsGenerate').disabled=busy;
   $('newsGenerate').textContent=busy?'Готовим разбор…':report?'Обновить разбор':'Подготовить AI-разбор';
-  $('newsAnalysisStatus').textContent=issue||(busy?'Проверяем исторические котировки и готовим объяснение. Это может занять около минуты.':report?(report.fixture?'Учебный пример · модель не вызывалась':'Разбор подготовлен · '+report.model):'Запускается только по кнопке.');
+  $('newsAnalysisStatus').textContent=issue||(busy?'Готовим разбор…':report?(report.fixture?'Учебный пример':'Разбор подготовлен · '+report.model):'');
   $('newsAnalysisStatus').classList.toggle('negative',Boolean(issue));
   panel.setAttribute('aria-busy',String(busy));
   if(!row){panel.innerHTML='<p class="empty-copy">Выберите публикацию в ленте. Здесь появятся связанные компании, сравнение с прошлым и возможные сценарии.</p>';return;}
   let html='<div class="news-selected-source"><h4 tabindex="-1" id="newsSelectedTitle">'+esc(row.title)+'</h4><p>'+esc(time(row.at)+' мск · '+row.source)+'</p>'
-    +link(row.url,'Открыть публикацию')+'</div>';
+    +link(row.url,'Читать в источнике · '+row.source+' ↗')+'</div>';
   if(!report){
    const seen=new Set(),relations=(row.relations||[]).filter(item=>{if(seen.has(item.ticker))return false;seen.add(item.ticker);return true;}).slice(0,6);
    html+='<p class="news-original">'+esc(row.summary)+'</p><section class="news-analysis-section"><h4>Какие компании могут быть связаны</h4>'
@@ -63,7 +67,7 @@ export function initNewsPanel({request}) {
  }
  function choose(id){selected=id;report=null;issue='';renderList();renderReport();if(matchMedia('(max-width: 1100px)').matches)$('newsAnalysisPanel').scrollIntoView({block:'start'});$('newsSelectedTitle')?.focus({preventScroll:true});}
  $('marketNewsList').addEventListener('click',event=>{const button=event.target.closest('[data-news-id]');if(button)choose(button.dataset.newsId);});
- for(const id of ['newsPeriod','newsRelevance'])$(id).addEventListener('change',()=>{visibleCount=20;const rows=filtered();if(!rows.some(row=>row.id===selected)){selected=rows[0]?.id||'';report=null;issue='';}renderList();renderReport();});
+ for(const id of ['newsPeriod','newsRelevance','newsCompany','newsSource'])$(id)?.addEventListener('change',()=>{visibleCount=20;const rows=filtered();if(!rows.some(row=>row.id===selected)){selected=rows[0]?.id||'';report=null;issue='';}renderList();renderReport();});
  $('newsMore').addEventListener('click',()=>{visibleCount+=20;renderList();});
  $('newsGenerate').addEventListener('click',async()=>{
   if(busy||!selected)return;const id=selected,serial=generation;busy=true;issue='';renderReport();
@@ -73,6 +77,11 @@ export function initNewsPanel({request}) {
  });
  return {
   show(data){const old=items.find(item=>item.id===selected);items=data.items||[];const current=items.find(item=>item.id===selected);
+   for(const [id,title,values] of [['newsCompany','Все компании',items.flatMap(row=>(row.relations||[]).map(company=>company.ticker))],['newsSource','Все источники',items.map(row=>row.source)]]) {
+    const control=$(id);if(!control)continue;const previous=control.value;
+    const choices=[...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
+    control.innerHTML='<option value="">'+title+'</option>'+choices.map(value=>'<option value="'+esc(value)+'">'+esc(value)+'</option>').join('');control.value=choices.includes(previous)?previous:'';
+   }
    if(!current||old&&(old.title!==current.title||old.summary!==current.summary)){report=null;selected=filtered()[0]?.id||'';}
    renderList();renderReport();},
   reset(){generation++;items=[];selected='';report=null;issue='';busy=false;visibleCount=20;renderList();renderReport();}

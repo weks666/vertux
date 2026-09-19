@@ -1,0 +1,88 @@
+/* Knowledge and planning extend the existing Rubik / Vertux working surfaces. */
+.glossary-workspace { display: grid; grid-template-columns: minmax(240px, .7fr) minmax(0, 1.6fr); gap: 18px; align-items: start; }
+.glossary-workspace #glossaryGrid { display: grid; columns: auto; gap: 0; max-height: 760px; overflow: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.glossary-term { padding: 18px; text-align: left; color: var(--text); background: none; border: 0; border-bottom: 1px solid var(--line); display: grid; gap: 7px; cursor: pointer; }
+.glossary-term:last-child { border-bottom: 0; }
+.glossary-term strong { font-size: 15px; line-height: 1.4; }
+.glossary-term span { color: var(--muted); font-size: 13px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.glossary-term small, .term-category { color: var(--vertux-soft); font-size: 13px; }
+.glossary-term.active { background: rgba(124,92,255,.14); box-shadow: inset 0 0 0 1px var(--vertux); border-radius: 10px; }
+.glossary-term:hover { background: rgba(124,92,255,.08); }
+.glossary-detail { padding: clamp(20px, 2.5vw, 30px); border: 1px solid var(--line); border-radius: 14px; background: var(--surface); min-width: 0; }
+.glossary-detail:empty { display: none; }
+.glossary-detail-head h3 { font-size: clamp(24px, 2.2vw, 35px); line-height: 1.2; margin: 0 0 8px; }
+.glossary-detail-head p { margin: 0 0 12px; color: var(--muted); }
+.glossary-definition { font-size: 17px; line-height: 1.65; margin: 22px 0 12px; }
+.glossary-context { color: var(--muted); line-height: 1.7; }
+.term-explanation { display: grid; gap: 24px; margin-top: 24px; }
+.term-explanation h4, .term-related h4 { font-size: 16px; margin: 0 0 13px; }
+.term-formula-text { padding: 18px; border-radius: 10px; background: var(--surface-raised); font-size: 17px; line-height: 1.65; overflow-wrap: anywhere; }
+.term-variables { margin: 0; font-size: 13px; line-height: 1.6; }
+.term-variables > div { display: grid; grid-template-columns: minmax(90px,.6fr) 1.4fr; gap: 15px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.term-variables dt { color: var(--text); font-weight: 500; }
+.term-variables dd { color: var(--muted); margin: 0; }
+.term-worked-example { padding-top: 22px; border-top: 1px solid var(--line); }
+.term-worked-example p { margin: 0; line-height: 1.8; }
+.term-related { padding-top: 26px; margin-top: 26px; border-top: 1px solid var(--line); }
+.term-related > div { display: flex; gap: 8px; flex-wrap: wrap; }
+.term-related button { white-space: normal; height: auto; min-height: 40px; text-align: left; }
+.term-drawdown-example { margin: 26px 0 0; padding: 20px 0; border-block: 1px solid var(--line); }
+.term-drawdown-example figcaption { font-size: 14px; font-weight: 500; }
+.term-drawdown-example svg { display: block; width: 100%; height: auto; margin-top: 14px; overflow: visible; }
+.term-drawdown-example path { fill: none; }
+.term-drawdown-example .example-guide { stroke: var(--line-strong); stroke-dasharray: 3 5; }
+.term-drawdown-example .example-fall { stroke: var(--vertux-soft); stroke-width: 3; }
+.term-drawdown-example circle { fill: var(--vertux-soft); }
+.term-drawdown-example text { fill: var(--muted); stroke: none; font-size: 14px; }
+.term-drawdown-example .example-loss { fill: var(--negative); font-size: 24px; font-weight: 600; }
+.workspace-section-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 5px; margin: 0 0 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.workspace-section-tabs button { min-height: 44px; padding: 10px 18px; border: 0; border-radius: 9px; background: none; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 9px; font-weight: 500; }
+.workspace-section-tabs button.active { color: var(--text); background: rgba(124,92,255,.17); }
+.workspace-section-tabs svg, .company-key-metrics svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.7; flex: 0 0 auto; color: var(--vertux-soft); }
+[data-risk-panel][hidden], [data-company-controls][hidden] { display: none !important; }
+.risk-plan-view .calculator-columns { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,.85fr); align-items: start; }
+.risk-plan-view .calculator-form { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.calculator-output { border-left: 1px solid var(--line); padding: 22px; min-height: 100%; }
+.calculator-output h4 { font-size: 18px; margin: 0 0 20px; }
+.calculator-output .calculator-metrics { padding: 0; border-top: 0; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 16px; }
+.calculator-output .calculator-metrics dd { font-size: 24px; }
+.calculator-output .surface-note { padding: 20px 0 0; }
+.risk-plan-view .calculator-future-fields { grid-template-columns: 1fr; }
+.calculator-field-note { grid-column: 1/-1; }
+.risk-plan-view .calculator-intro { padding-top: 16px; }
+.calculator-example { margin: 16px 0 0; }
+.manual-plan-surface .surface-head { align-items: center; }
+.plan-editor[hidden] { display: none; }
+.manual-plan-surface > .form-progress { margin: 0; padding: 14px 20px; color: var(--muted); font-size: 13px; }
+.manual-plan-surface > .form-progress:empty { display: none; }
+.plan-editor { background: var(--surface-raised); border-block: 1px solid var(--line); }
+.plan-draft-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.plan-draft-heading strong { font-size: 16px; }
+.plan-draft-prices { display: flex; flex-wrap: wrap; gap: 16px; margin: 0; }
+.plan-draft-prices div { display: grid; gap: 5px; min-width: 90px; }
+.plan-draft-prices dt { color: var(--muted); font-size: 13px; }
+.plan-draft-prices dd { margin: 0; font-size: 14px; font-variant-numeric: tabular-nums; }
+.manual-plan-row > .plan-draft-heading, .manual-plan-row > .plan-draft-prices { grid-column: 1; }
+.manual-plan-row > .plan-draft-note { max-width: 85ch; white-space: pre-wrap; }
+.journal-summary { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 16px 20px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+.journal-summary strong { color: var(--text); margin-right: 5px; }
+.company-workspace .ai-layout { grid-template-columns: minmax(0,1fr); }
+.company-workspace .company-selection { display: flex; align-items: center; gap: 20px; padding: 20px; border: 1px solid var(--line); border-radius: 14px; margin-bottom: 18px; background: var(--surface); }
+.company-selection svg { width: 30px; height: 30px; fill: none; stroke: var(--vertux-soft); stroke-width: 1.6; }
+.company-selection label { flex: 1; display: grid; gap: 8px; max-width: 650px; color: var(--muted); font-size: 13px; }
+.company-selection select { width: 100%; }
+.company-workspace .ai-request { padding: 0 0 20px; border: 0; background: none; }
+.company-controls-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; }
+.company-controls-row > label { flex: 1; min-width: 210px; display: grid; gap: 8px; color: var(--muted); font-size: 13px; }
+.company-controls-row > button { width: auto; }
+.company-workspace .ai-boundary { margin: 16px 0 0; padding: 0; background: none; border: 0; }
+.company-workspace .ai-report { min-height: 340px; }
+.company-key-metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin: 22px 0; }
+.company-key-metrics > div { padding: 20px; min-width: 0; border-bottom: 1px solid var(--line); }
+.company-key-metrics dt { display: flex; gap: 8px; align-items: start; color: var(--muted); font-size: 13px; line-height: 1.45; }
+.company-key-metrics dd { font-size: clamp(18px,1.7vw,24px); font-weight: 550; margin: 14px 0 8px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.company-key-metrics small { font-size: 13px; color: var(--muted); }
+.company-workspace .company-extra-metrics { margin-top: 20px; }
+@media(max-width:1050px) { .company-key-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .risk-plan-view .calculator-columns { grid-template-columns: 1fr; } .calculator-output { border-left: 0; border-top: 1px solid var(--line); } }
+@media(max-width:780px) { .glossary-workspace { grid-template-columns: 1fr; } .glossary-workspace #glossaryGrid { max-height: 330px; } .glossary-definition { font-size: 16px; } .workspace-section-tabs button { flex: 1; justify-content: center; padding-inline: 10px; } .workspace-section-tabs svg { display: none; } .company-key-metrics > div { padding: 15px 10px; } .company-selection { gap: 12px; } }
+@media(max-width:500px) { .term-variables > div { grid-template-columns: 1fr; gap: 4px; } .risk-plan-view .calculator-form { grid-template-columns: 1fr; } .calculator-output .calculator-metrics { grid-template-columns: 1fr; } .company-controls-row > button { width: 100%; } }

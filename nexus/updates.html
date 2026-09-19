@@ -5,6 +5,7 @@
   <meta name="description" content="Выпуски приложения Nexus и Invest Workspace: изменения, доступные версии и планы." data-i18n-content="meta.updatesDescription"><title>Обновления - Vertux Nexus</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/fonts/fonts.css?v=20260916a"><link rel="stylesheet" href="assets/site.css?v=20260919-release">
 <link rel="stylesheet" href="assets/site-refinement.css?v=20260916d">  <link rel="stylesheet" href="assets/fonts/rubik.css?v=20260916d">
+<link rel="stylesheet" href="assets/product-site.css?v=20260919a">
 </head>
 <body data-page="updates">
   <div class="noise" aria-hidden="true"></div><div class="pointer-light" aria-hidden="true"></div>
@@ -12,22 +13,22 @@
     <div class="nav-wrap">
       <a class="brand" href="index.html" aria-label="Vertux Nexus"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a>
       <nav class="main-nav" id="mainNav" aria-label="Главная навигация" data-i18n-aria="aria.mainNav">
-        <details class="nav-product"><summary><span data-i18n="newnav.product">Продукт</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3"/></svg></summary>
+        <details class="nav-product"><summary><span data-nx-en="Products">Продукты</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3"/></svg></summary>
           <div class="nav-dropdown">
-            <a href="index.html#invest"><b>Invest Workspace</b><span data-i18n="newnav.invest">Портфель, аналитика и ваш план</span></a>
-            <a href="index.html#business"><b data-i18n="newnav.business">Workspace для бизнеса</b><span data-i18n="newnav.businessNote">Система под процессы компании</span></a>
+            <a href="invest.html"><b>Invest Workspace</b><span data-i18n="newnav.invest">Портфель, аналитика и ваш план</span></a>
+            <a href="workspace.html"><b data-i18n="newnav.business">Workspace для бизнеса</b><span data-i18n="newnav.businessNote">Система под процессы компании</span></a>
             <a class="nav-download" href="download.html" data-i18n="newnav.desktop">Приложение Nexus для Windows ↗</a>
           </div>
         </details>
-        <a href="index.html#invest-plan" data-i18n="nav.subscription">Подписка</a>
+        <a href="pricing.html" data-nx-en="Plans">Тарифы</a>
         <a href="security.html" data-i18n="newnav.security">Безопасность</a>
         <a href="updates.html" data-i18n="nav.updates">Обновления</a>
-        <a class="mobile-nav-account" href="https://nexus.vertux.online/account.html" data-i18n="newnav.login">Войти</a>
+        <a class="mobile-nav-account" href="https://nexus.vertux.online/account.html" data-i18n="newnav.login">Кабинет</a>
       </nav>
       <div class="nav-actions">
         <button class="language" type="button" data-lang-toggle aria-label="Сменить язык" data-i18n-aria="aria.language"><span data-lang="ru">RU</span><i></i><span data-lang="en">EN</span></button>
-        <a class="nav-login" href="https://nexus.vertux.online/account.html" data-i18n="newnav.login">Войти</a>
-        <a class="pill pill-primary nav-cta" href="register.html" data-i18n="newnav.start">Начать</a>
+        <a class="nav-login" href="https://nexus.vertux.online/account.html" data-i18n="newnav.login">Кабинет</a>
+        <a class="pill pill-primary nav-cta" href="download.html" data-nx-en="Download">Скачать</a>
       </div>
       <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Открыть меню" data-i18n-aria="aria.menu"><span></span><span></span></button>
     </div>
@@ -47,12 +48,14 @@
   <footer class="site-footer">
     <div class="shell footer-grid">
       <div><a class="brand footer-brand" href="index.html"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a><p data-i18n="footer.homeNote">Рабочие пространства для бизнеса и личных инвестиций.</p></div>
-      <nav><span data-i18n="footer.product">ПРОДУКТ</span><a href="index.html#invest">Invest Workspace</a><a href="index.html#business" data-i18n="nav.business">Для бизнеса</a><a href="index.html#invest-plan" data-i18n="nav.subscription">Подписка</a></nav>
+      <nav><span data-i18n="footer.product">ПРОДУКТ</span><a href="invest.html">Invest Workspace</a><a href="workspace.html" data-i18n="nav.business">Для бизнеса</a><a href="pricing.html" data-nx-en="Plans">Тарифы</a></nav>
       <nav><span data-i18n="footer.access">ДОСТУП</span><a href="download.html" data-i18n="footer.windows">Windows</a><a href="https://nexus.vertux.online/account.html" data-i18n="nav.account">Кабинет</a><a href="security.html" data-i18n="newnav.security">Безопасность</a><a href="updates.html" data-i18n="nav.updates">Обновления</a></nav>
       <nav><span data-i18n="footer.contact">СВЯЗЬ</span><a href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer">Telegram</a><a class="contact-email" href="mailto:support@vertux.online">support@vertux.online</a><a href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux Studio</a></nav>
-      <nav aria-label="Документы"><span>ДОКУМЕНТЫ</span><a href="offer.html">Публичная оферта</a><a href="privacy.html">Политика конфиденциальности</a><a href="consent.html">Согласие на обработку заявки</a></nav>
+      <nav aria-label="Документы" data-nx-aria-en="Documents"><span data-nx-en="DOCUMENTS">ДОКУМЕНТЫ</span><a href="offer.html" data-nx-en="Public offer">Публичная оферта</a><a href="privacy.html" data-nx-en="Privacy policy">Политика конфиденциальности</a><a href="consent.html" data-nx-en="Inquiry consent">Согласие на обработку заявки</a></nav>
     </div>
     <div class="shell footer-bottom"><span>© 2026 VERTUX NEXUS</span><a class="studio-credit" href="https://vertux.online" target="_blank" rel="noopener noreferrer"><img src="assets/vertux-mark.png" alt=""><span data-i18n-html="footer.made">Сделано в студии <b>Vertux</b></span></a></div>
   </footer>
   <script src="assets/site.js?v=20260919-release"></script>
+<script src="assets/product-site.js?v=20260919a"></script>
+<script src="assets/header-session.js?v=20260917a"></script>
 </body></html>

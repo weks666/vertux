@@ -1,0 +1,2 @@
+export const telegramIcon = '<svg class="telegram-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#27a7e7"/><path d="m5.7 11.5 11.8-4.6c.6-.2 1 .1.8.8l-2 9.5c-.1.6-.5.8-1 .5l-3.1-2.3-1.5 1.5c-.2.2-.3.3-.6.3l.2-3.2 5.8-5.2c.3-.2-.1-.4-.4-.2l-7.2 4.5-3.1-1c-.7-.2-.7-.6.1-.9Z" fill="#fff"/></svg>';
+export const tbankIcon = '<svg class="broker-mark" viewBox="0 0 32 36" role="img" aria-label="Т-Банк"><path d="M2 2h28v18c0 7-8 12-14 14C10 32 2 27 2 20Z" fill="#ffdd2d"/><path d="M8 9h16v5h-5v12h-6V14H8Z" fill="#202020"/></svg>';

@@ -10,7 +10,7 @@ const roundUp = (value, divisor) => (value + divisor - 1n) / divisor;
 export function calculateRiskDraft(input = {}) {
   const { capitalNanos, riskPpm, riskBudgetNanos, entryPriceNanos, stopPriceNanos, lotSize,
     direction = 'long', assetType = 'share', minPriceIncrementNanos,
-    minPriceIncrementAmountNanos, guaranteePerLotNanos } = input;
+    minPriceIncrementAmountNanos, guaranteePerLotNanos, targetPriceNanos } = input;
   const explicitBudget = riskBudgetNanos !== undefined;
   const riskInput = explicitBudget ? riskBudgetNanos : riskPpm;
   if ([capitalNanos, riskInput, entryPriceNanos, stopPriceNanos, lotSize].some(value => value === '' || value == null)) {
@@ -37,6 +37,10 @@ export function calculateRiskDraft(input = {}) {
   if (guaranteePerLotNanos != null && guaranteePerLotNanos !== '' && !positive(guaranteePerLotNanos)) {
     return unavailable('invalid', 'Гарантийное обеспечение на лот должно быть положительным.');
   }
+  if (targetPriceNanos !== undefined && (!positive(targetPriceNanos)
+    || (direction === 'long' ? BigInt(targetPriceNanos) <= entry : BigInt(targetPriceNanos) >= entry))) {
+    return unavailable('invalid', 'Цель должна быть выше входа для покупки и ниже входа для шорта.');
+  }
   const distance = entry > stop ? entry - stop : stop - entry;
   const budget = explicitBudget ? BigInt(riskBudgetNanos) : capital * BigInt(riskPpm) / PPM;
   const perLot = assetType === 'future'
@@ -53,12 +57,19 @@ export function calculateRiskDraft(input = {}) {
     lots = capital / capitalPerLot;
     capitalLimited = true;
   }
+  const rewardDistance = targetPriceNanos === undefined ? null : (direction === 'long' ? BigInt(targetPriceNanos) - entry : entry - BigInt(targetPriceNanos));
+  const rewardPerLot = rewardDistance === null ? null : assetType === 'future'
+    ? rewardDistance * BigInt(minPriceIncrementAmountNanos) * lot / BigInt(minPriceIncrementNanos)
+    : rewardDistance * lot;
+  const rewardRatioHundredths = rewardPerLot === null ? null : rewardPerLot * 100n / perLot;
   return {
     state: 'calculated', reason: lots === 0n ? 'При выбранном риске и капитале не помещается даже один лот.' : '',
     riskBudgetNanos: budget.toString(), lossPerLotNanos: perLot.toString(),
     lots: lots.toString(), units: (lots * lot).toString(),
     positionAmountNanos: (lots * notionalPerLot).toString(), actualRiskNanos: (lots * perLot).toString(),
     stopDistanceNanos: distance.toString(), direction, assetType, capitalLimited,
+    potentialRewardNanos: rewardPerLot === null ? null : (rewardPerLot * lots).toString(),
+    rewardRiskRatio: rewardRatioHundredths === null ? null : `${rewardRatioHundredths / 100n}.${String(rewardRatioHundredths % 100n).padStart(2, '0')}`,
     marginVerified: false, execution: 'none',
     warning: assetType === 'future'
       ? 'Сценарий по вашим ценам и риску. Доступный запас маржи брокера не проверяется; комиссии и проскальзывание не включены.'

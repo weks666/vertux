@@ -1,8 +1,10 @@
+import {tbankIcon} from './brand-icons.js';
 import { sortRows, connectTableSort } from './table-sort.js';
+import { filterLedgerRows, validDateRange, sumMoneyByCurrency, summarizeOperationFees, relativeBarWidth, createFilterScheduler } from './analytics-filters.js';
 import { money, decimalNanos, positionQuantity, convertNanos } from './number-format.js';
-import { instrumentMark, watchInstrumentImages } from './instrument-mark.js';
+import { instrumentMark, issuerName, watchInstrumentImages } from './instrument-mark.js';
 import { ui, setLanguage, startTranslation } from './ui-language.js';
-import { createWorkspaceNavigation } from './account-module/v1.2.0/workspace-navigation.js';
+import { createWorkspaceNavigation } from './account-module/v1.3.0/workspace-navigation.js';
 import { initWorkspacePreferences } from './personal-workspace.js';
 import { FEATURE_TERMS, searchProduct } from './product-features.js';
 import { initMarketCalendar } from './market-calendar.js';
@@ -11,6 +13,9 @@ import { runtimeAdapter } from './demo-runtime.js';
 import { initPriceAlerts } from './price-alerts.js';
 import { calculateRiskDraft } from './risk-calculator.js';
 import { initTradingPlan } from './trading-plan-ui.js';
+import { initLedgerTabs, metricNote, signedClass, resultTrend } from './reference-ui.js';
+import { glossaryEntries, glossaryMarkup, initRiskTabs } from './knowledge-workspace.js';
+import { orderAccounts, readAccountPins, writeAccountPins, dailyPositionSummary } from './account-layout.js';
 
 const state = {
   bootstrap: null,
@@ -50,6 +55,8 @@ const state = {
   companyRequest: 0,
   companyViews: new Map(),
   companyPending: null,
+  companyTab: 'facts',
+  companyFacts: new Map(),
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -62,16 +69,20 @@ function escapeText(value) {
 function formatMoney(value, currency = 'RUB', { native = false } = {}) {
   return money(value,currency,{locale:state.language,target:native?currency:state.displayCurrency,rates:state.bootstrap?.displayFx?.rates});
 }
+function signedMoney(value,currency='RUB') {
+  const formatted=formatMoney(value,currency);
+  return value!=null && BigInt(value)>0n && formatted!=='—' ? '+'+formatted : formatted;
+}
 function formatQuantity(value) { return decimalNanos(value,{digits:9,locale:state.language}); }
 function quoteMoney(value,currency) { return formatMoney(value,currency,{native:true}); }
 function positionShare(row,data=state.bootstrap) {
-  // Contract notionals cannot be presented as capital allocations.
-  if(row.assetType==='future' || row.positionValueNanos==null)return null;
+  // Futures use the same denominator, but are explicitly labelled as exposure.
+  if(row.positionValueNanos==null)return null;
   const total=data?.portfolio?.currentTotalNanos??data?.portfolio?.totalNanos;
   const value=convertNanos(row.positionValueNanos,row.positionValueCurrency||row.priceCurrency,'RUB',data?.displayFx?.rates);
   return value!=null&&total!=null&&BigInt(total)>0n?Number(BigInt(value)*1000000n/BigInt(total))/1000000:null;
 }
-const positionReaders={name:r=>instrumentDisplay(r).ticker||instrumentDisplay(r).name,type:r=>r.assetType+':'+r.direction,openedAt:r=>r.openedAt?Date.parse(r.openedAt):null,quantityNanos:r=>r.quantityNanos==null?null:BigInt(r.quantityNanos)<0n?-BigInt(r.quantityNanos):BigInt(r.quantityNanos),share:r=>positionShare(r)};
+const positionReaders={name:r=>instrumentDisplay(r).ticker||instrumentDisplay(r).name,type:r=>r.assetType+':'+r.direction,openedAt:r=>r.openedAt?Date.parse(r.openedAt):null,quantityNanos:r=>r.quantityNanos==null?null:BigInt(r.quantityNanos)<0n?-BigInt(r.quantityNanos):BigInt(r.quantityNanos),averagePriceNanos:r=>r.entryPriceNanos??r.averagePriceNanos,share:r=>positionShare(r,analyticsDisplayData())};
 
 function formatPercentage(value, { signed = false } = {}) {
   if (value === null || value === undefined || !Number.isFinite(Number(value))) return '—';
@@ -91,9 +102,9 @@ function evidenceLabel(kind, data = state.bootstrap) {
 }
 
 function formatMoneyAndRate(amountNanos, rate, currency = 'RUB') {
-  const amount = formatMoney(amountNanos, currency);
+  const amount = signedMoney(amountNanos, currency);
   const percent = formatPercentage(rate, { signed: true });
-  return `<strong>${escapeText(amount)}</strong><small>${escapeText(percent)}</small>`;
+  return `<strong>${escapeText(amount)}</strong><small class="return-rate">${escapeText(percent)}</small>`;
 }
 
 function formatDate(value, withSeconds = false) {
@@ -101,6 +112,11 @@ function formatDate(value, withSeconds = false) {
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return '—';
   return `${new Intl.DateTimeFormat(state.language==='en'?'en-GB':'ru-RU', { timeZone: 'Europe/Moscow', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: withSeconds ? '2-digit' : undefined }).format(date)} ${state.language==='en'?'MSK':'мск'}`;
+}
+
+function formatShortDate(value) {
+  if (!value || !Number.isFinite(Date.parse(value))) return '—';
+  return new Intl.DateTimeFormat(state.language === 'en' ? 'en-GB' : 'ru-RU', {timeZone:'Europe/Moscow',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(value));
 }
 
 function formatAge(milliseconds) {
@@ -266,9 +282,9 @@ function openCredentialCaptureDialog(mode = 'connect') {
   resetCredentialCaptureDialog({ reset: true });
   $('#credentialCaptureTitle').textContent = mode === 'replace' ? 'Заменить подключение через Windows?' : 'Открыть защищённый ввод Windows?';
   $('#captureSubmitButton').textContent = mode === 'replace' ? 'Открыть окно замены' : 'Открыть системное окно';
-  if (state.connection?.environment) $('#captureEnvironment').value = state.connection.environment;
+  $('#captureEnvironment').value = 'live';
   $('#credentialCaptureDialog').showModal();
-  requestAnimationFrame(() => $('#captureEnvironment').focus());
+  requestAnimationFrame(() => $('#captureConsent').focus());
 }
 
 function closeCredentialCaptureDialog() {
@@ -336,6 +352,7 @@ const viewMeta = {
 };
 
 function activateView(view, trigger = null, { focusMain = true } = {}) {
+  const viewChanged = state.currentView !== view;
   state.currentView = view;
   document.body.dataset.currentView=view;
   $('.quality-strip').hidden=view!=='sync';
@@ -351,10 +368,15 @@ function activateView(view, trigger = null, { focusMain = true } = {}) {
   $('#viewContext').textContent = context;
   document.body.classList.remove('rail-open');
   $('[data-open-rail]').setAttribute('aria-expanded', 'false');
+  if (viewChanged) {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    $('#mainContent').scrollTop = 0;
+  }
   if (view === 'instruments') requestAnimationFrame(renderMarketChart);
   if (view === 'overview') requestAnimationFrame(renderEquityChart);
   if (view === 'analytics') { requestAnimationFrame(renderAnalyticsChartOnView); void refreshMarketVision(); }
   if (view === 'glossary') requestAnimationFrame(renderGlossary);
+  if (view === 'ai') { renderSelectedCompany(); void ensureCompanyFacts(); }
   if (view === 'events') void state.marketCalendarUi?.ensureNews();
   if (['settings','profile'].includes(view)) void mountAccountCenter(view);
   if (focusMain) $('#mainContent').focus({ preventScroll: true });
@@ -377,12 +399,14 @@ async function mountAccountCenter(section) {
     return;
   }
   try {
-    await import('./account-module/v1.2.0/vertux-account-center.js');
+    await import('./account-module/v1.3.0/vertux-account-center.js');
     if (state.currentView !== section) return;
     if (!accountCenter) {
       accountCenter = document.createElement('vertux-account-center');
       accountCenter.workspaceNavigation=workspaceNavigation;
       $('#personalSettings').hidden = false;
+      $('#personalSettings').slot = 'workspace-settings';
+      accountCenter.append($('#personalSettings'));
       accountCenter.addEventListener('vertux-account-changed', event => {
         if (event.detail?.name) $('#identityName').textContent = event.detail.name;
       });
@@ -550,7 +574,7 @@ function renderConnection(data, { phase = null, errorMessage = '' } = {}) {
   const connected = local && connection.connected;
   const busy = ['checking', 'rechecking', 'syncing'].includes(currentPhase);
   const primary = $('#connectionPrimaryButton');
-  primary.hidden = connected;
+  primary.hidden = connected || !local;
   primary.disabled = !local || busy;
   primary.textContent = staticPreview ? 'Недоступно в веб-просмотре' : fixture ? 'Недоступно в учебном режиме' : 'Подключить через Windows';
   $('#connectionCheckButton').hidden = !connected;
@@ -565,6 +589,7 @@ function renderConnection(data, { phase = null, errorMessage = '' } = {}) {
 
   const connectButton = $('#connectButton');
   connectButton.disabled = !local || busy;
+  connectButton.hidden = !local;
   connectButton.textContent = connected ? 'Заменить через Windows' : staticPreview ? 'Подключение недоступно в веб-просмотре' : fixture ? 'Подключение недоступно в учебном режиме' : 'Подключить через Windows';
   if (local && !connected) $('#syncButton').disabled = true;
 }
@@ -574,7 +599,7 @@ function renderQuality(data) {
   const issue=quality.error||quality.stale;
   $('#dataStateStatus').hidden=!issue||data.environment==='fixture';
   $('#dataStateStatus').textContent=quality.error?'Не удалось обновить данные · Синхронизация':quality.stale?'Данные устарели · Синхронизация':'';
-  $('#qualitySource').textContent = quality.source || 'Учебный источник';
+  $('#qualitySource').textContent = quality.source || (data.environment === 'fixture' ? 'Учебный источник' : 'Источник ещё не подключён');
   $('#qualityConnector').textContent = quality.connector || '';
   $('#qualityConnector').hidden = !quality.connector || /только чтение|read.only/iu.test(quality.connector);
   $('#qualityAccount').textContent = quality.accountName || 'Не выбран';
@@ -604,61 +629,90 @@ function renderEvidenceNote(element, summary, detail = '') {
   if (detail && detail !== summary) element.innerHTML = `${escapeText(summary)} <button class="term-help" type="button" data-evidence-note="${escapeText(detail)}" aria-label="Подробнее: ${escapeText(summary)}" aria-expanded="false">?</button>`;
 }
 
+function renderAccountCards(data) {
+  const scope = String(state.bootstrap?.identity?.preferenceScope || 'local');
+  const pins = readAccountPins(localStorage, scope);
+  const rows = orderAccounts((data.clientProduct?.portfolios || []).map(row => ({...row, id:row.preferenceKey || row.id})), pins);
+  const host = $('#portfolioCards');
+  const expanded = host.querySelector('details')?.open || false;
+  const signature = JSON.stringify([rows, pins, state.language, state.displayCurrency, data.displayFx, data.portfolio?.totalNanos]);
+  if (host.accountSignature === signature) return;
+  host.accountSignature = signature;
+  const focusedPin = host.contains(document.activeElement) ? document.activeElement.dataset.pinAccount : null;
+  const card = row => `<div class="portfolio-row">
+    <span class="account-card-name" title="${escapeText(formatDate(row.asOf))}"><i class="account-dot" aria-hidden="true"></i><strong>${escapeText(row.label)}</strong><button type="button" class="account-pin" data-pin-account="${escapeText(row.id)}" aria-pressed="${pins.includes(row.id)}" aria-label="${pins.includes(row.id) ? 'Открепить' : 'Закрепить'} счёт: ${escapeText(row.label)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 6 0-1 6 4 4v2h-5v6l-1-2-1 2v-6H6v-2l4-4-1-6Z"/></svg></button></span>
+    <span class="numeric"><strong>${escapeText(formatMoney(row.valueNanos, row.currency || 'RUB'))}</strong><small>${escapeText(formatPercentage(row.shareOfTotalRate))}</small></span>
+    <div class="allocation-track" aria-label="${escapeText(formatPercentage(row.shareOfTotalRate))} от общей суммы"><i style="--allocation:${Math.max(0, Math.min(100, Number(row.shareOfTotalRate || 0) * 100))}%"></i></div>
+  </div>`;
+  host.innerHTML = rows.length ? rows.slice(0, 2).map(card).join('') + (rows.length > 2 ? `<details class="accounts-more"${expanded ? ' open' : ''}><summary>Все счета · ${rows.length}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="accounts-overflow">${rows.map(card).join('')}</div></details>` : '') + `<div class="accounts-total"><span>Общая стоимость</span><strong>${escapeText(formatMoney(data.portfolio?.totalNanos, data.portfolio?.currency))}</strong></div>` : '<p class="empty-copy">Нет сохранённых портфелей. Запустите синхронизацию.</p>';
+  host.querySelectorAll('[data-pin-account]').forEach(button => button.addEventListener('click', () => {
+    const id = button.dataset.pinAccount;
+    writeAccountPins(localStorage, scope, pins.includes(id) ? pins.filter(pin => pin !== id) : [...pins, id]);
+    renderAccountCards(data);
+    host.querySelector(`[data-pin-account="${CSS.escape(id)}"]`)?.focus({ preventScroll: true });
+  }));
+  if (focusedPin) host.querySelector(`[data-pin-account="${CSS.escape(focusedPin)}"]`)?.focus({ preventScroll:true });
+}
+
 function renderPortfolio(data) {
   const portfolio = data.portfolio || {};
   const selected = data.selectedPeriod;
   const coverage = data.dataCoverage || {};
   $('#portfolioValue').textContent = formatMoney(portfolio.totalNanos, portfolio.currency);
-  $('#portfolioValueLabel').textContent = selected ? 'Стоимость на конец периода' : 'Стоимость портфеля';
+  $('#portfolioValueLabel').textContent = 'Стоимость портфеля';
+  const today = dailyPositionSummary(data.clientProduct?.openPositions || []);
+  const daily = $('#portfolioDayChange');
+  daily.className = `portfolio-day-change ${signedClass(today?.pnlNanos)}`;
+  daily.innerHTML = today ? `${escapeText(today.rate == null ? signedMoney(today.pnlNanos, today.currency) : formatPercentage(today.rate, {signed:true}))}<small>сегодня по позициям</small>` : '<span>—</span><small>сегодня по позициям</small>';
+  daily.title = today ? 'Сумма дневных результатов текущих открытых позиций по данным брокера. Не включает уже закрытые позиции; не является полной доходностью портфеля за день.' : 'Дневные данные не получены для всех текущих позиций либо относятся к прошлой дате.';
   const valuationDetails = [`Оценка стоимости: ${formatDate(portfolio.asOf)}.`,
     portfolio.startTotalNanos != null ? `Первая оценка в периоде: ${formatMoney(portfolio.startTotalNanos, portfolio.currency)} · ${formatDate(portfolio.startAsOf)}.` : 'Начальная оценка не сохранена.',
     portfolio.currentTotalNanos != null ? `Последняя стоимость: ${formatMoney(portfolio.currentTotalNanos, portfolio.currency)} · ${formatDate(portfolio.currentAsOf)}.` : '', coverage.reason || ''].filter(Boolean).join(' ');
   $('#portfolioValueHelp').setAttribute('data-evidence-note', valuationDetails);
-  $('#netPnl').textContent = formatMoney(portfolio.netPnlNanos, portfolio.currency);
+  $('#netPnl').textContent = signedMoney(portfolio.netPnlNanos, portfolio.currency);
   renderEvidenceNote($('#netPnlMeta'), portfolio.pnlReason ? coverageSummary(coverage) : 'После комиссий', portfolio.pnlReason);
-  $('#netPnl').className = BigInt(portfolio.netPnlNanos || '0') < 0n ? 'negative' : 'positive';
-  $('#realizedPnl').textContent = formatMoney(portfolio.realizedNanos, portfolio.currency);
-  $('#unrealizedPnl').textContent = formatMoney(portfolio.unrealizedNanos, portfolio.currency);
+  $('#netPnl').className = signedClass(portfolio.netPnlNanos);
+  $('#netPnlRate').textContent = formatPercentage(data.analytics?.netReturn, { signed: true });
+  $('#netPnlRate').className = `metric-rate ${signedClass(portfolio.netPnlNanos)}`;
+  $('#netPnlHelp').dataset.evidenceNote = [portfolio.pnlReason, 'Результат за выбранный период после комиссий.'].filter(Boolean).join(' ');
+  for (const [id, value] of [['realizedPnl', portfolio.realizedNanos], ['unrealizedPnl', portfolio.unrealizedNanos]]) $('#'+id).className = signedClass(value);
+  $('#realizedPnl').textContent = signedMoney(portfolio.realizedNanos, portfolio.currency);
+  $('#unrealizedPnl').textContent = signedMoney(portfolio.unrealizedNanos, portfolio.currency);
   renderEvidenceNote($('#markFreshness'), portfolio.unrealizedNanos != null
     ? `По текущим позициям · ${formatDate(portfolio.currentAsOf || portfolio.asOf)}`
     : 'Нет оценки открытых позиций.', portfolio.unrealizedReason || '');
   $('#feesValue').textContent = formatMoney(portfolio.feesNanos, portfolio.currency);
-  $('#drawdownValue').textContent = formatPercentage(portfolio.maxDrawdownRate);
+  $('#drawdownValue').textContent = formatPercentage(portfolio.maxDrawdownRate == null ? null : -Math.abs(portfolio.maxDrawdownRate));
   renderEvidenceNote($('#drawdownPeriod'), portfolio.maxDrawdownRate === null || portfolio.maxDrawdownRate === undefined
     ? coverageSummary(coverage, 'Нужны оценки в разные даты.')
     : portfolio.riskCoverage?.state === 'partial' ? 'По активным интервалам.' : 'По оценкам стоимости за период.', portfolio.maxDrawdownRate == null ? coverage.reason : portfolio.riskCoverage?.reason || portfolio.drawdownPeriod);
+  metricNote($('#unrealizedPnl'), $('#markFreshness').textContent);
+  metricNote($('#drawdownValue'), $('#drawdownPeriod').textContent);
   $('#equityVersion').textContent = data.calculationVersion || 'Версия расчёта не указана';
 
-  const portfolioRows = data.clientProduct?.portfolios || [];
-  $('#portfolioCards').innerHTML = portfolioRows.length ? portfolioRows.map((row) => `
-    <div class="portfolio-row">
-      <span><strong>${escapeText(row.label)}</strong><small>${escapeText(formatDate(row.asOf))}</small></span>
-      <span class="numeric"><strong>${escapeText(formatMoney(row.valueNanos, row.currency || 'RUB'))}</strong><small>${escapeText(formatPercentage(row.shareOfTotalRate))} от общей суммы</small></span>
-      <div class="allocation-track" aria-label="${escapeText(formatPercentage(row.shareOfTotalRate))} от общей суммы"><i style="--allocation:${Math.max(0, Math.min(100, Number(row.shareOfTotalRate || 0) * 100))}%"></i></div>
-    </div>`).join('') : '<p class="empty-copy">Нет сохранённых портфелей. Запустите синхронизацию.</p>';
+  renderAccountCards(data);
 
   const rows = sortRows(data.clientProduct?.openPositions || [],state.sorts.positions,positionReaders);
   $('#positionsBody').innerHTML = rows.length ? rows.map((row) => {
     const display=instrumentDisplay(row),currency=row.pnlCurrency||row.currency||'RUB';
-    const resultClass=value=>value==null?'':BigInt(value)<0n?'negative':'positive';
+    const resultClass = signedClass;
     const share=positionShare(row,data);
     return `<tr>
       <td><span class="instrument-with-mark">${instrumentMark(row,display)}<span class="instrument-cell"><strong>${escapeText(display.ticker||display.name)}</strong><small title="${escapeText(display.name)}">${escapeText(display.name!==display.ticker?display.name:'')}</small></span></span></td>
       <td><span class="asset-type">${ui(row.assetType==='future'?'Фьючерс':'Акция')}</span><small class="position-direction">${row.direction==='short'?'Short':'Long'}</small></td>
-      <td title="${escapeText(row.openedAtNote||'')}">${escapeText(row.openedAt?formatDate(row.openedAt):ui('Нужна история'))}</td>
+      <td title="${escapeText(row.openedAtNote||'')}">${escapeText(row.openedAt?formatShortDate(row.openedAt):'—')}</td>
       <td class="numeric">${escapeText(positionQuantity(row,{locale:state.language}))}</td>
-      <td class="numeric" title="${escapeText(row.entryPriceNote||'')}">${escapeText(quoteMoney(row.averagePriceNanos,row.priceCurrency))}</td>
+      <td class="numeric" title="${escapeText(row.entryPriceNote||'')}">${escapeText(quoteMoney(row.entryPriceNanos ?? row.averagePriceNanos,row.priceCurrency))}</td>
       <td class="numeric" title="${escapeText(row.positionValue?.note||'')}">${escapeText(formatMoney(row.positionValueNanos,row.positionValueCurrency||row.currency||row.priceCurrency))}</td>
-      <td class="numeric">${share==null?'—':escapeText(formatPercentage(share))}</td>
-      <td class="numeric ${resultClass(row.dayPnlNanos)}">${escapeText(formatMoney(row.dayPnlNanos,currency))}</td>
-      <td class="numeric ${resultClass(row.totalPnlNanos)}"><strong>${escapeText(formatMoney(row.totalPnlNanos,currency))}</strong>${row.totalReturnRate==null?'':`<small class="return-rate">${escapeText(formatPercentage(row.totalReturnRate,{signed:true}))}${row.assetType==='future'?' '+ui('цены'):''}</small>`}</td>
+      <td class="numeric" title="${row.assetType === 'future' ? 'Экспозиция: номинальная стоимость контрактов / капитал. Это не доля вложенных денег и не гарантийное обеспечение.' : 'Стоимость позиции / текущая стоимость выбранных счетов'}">${share==null?'—':escapeText(formatPercentage(share))}${row.assetType === 'future' && share != null ? '<small class="position-exposure">эксп.</small>' : ''}</td>
+      <td class="numeric ${resultClass(row.totalPnlNanos)}" title="${escapeText(row.method || '')}"><strong>${escapeText(signedMoney(row.totalPnlNanos,currency))}</strong>${row.totalReturnRate==null?'':`<small class="return-rate">${escapeText(formatPercentage(row.totalReturnRate,{signed:true}))}${row.assetType==='future'?' '+ui('цены'):''}</small>`}</td>
     </tr>`;
-  }).join('') : '<tr><td colspan="9" class="empty-cell">Нет сохранённых открытых позиций. Запустите синхронизацию.</td></tr>';
+  }).join('') : '<tr><td colspan="8" class="empty-cell">Нет сохранённых открытых позиций. Запустите синхронизацию.</td></tr>';
   watchInstrumentImages($('#positionsBody'));
 
 }
 
-const OPERATIONS_PAGE_SIZE = 100;
+const OPERATIONS_PAGE_SIZE = 20;
 
 function usableInstrumentText(value, uid) {
   const text = String(value || '').trim();
@@ -670,13 +724,14 @@ function usableInstrumentText(value, uid) {
 function prepareDisplayLabels(data) {
   state.portfolioLabels = new Map((data.clientProduct?.portfolios || []).map((item) => [item.id, item.label]));
   state.instrumentLabels = new Map();
-  for (const row of [...(data.instruments || []), ...(data.positions || []), ...(data.clientProduct?.openPositions || []), ...(data.clientProduct?.closedPositions || [])]) {
+  for (const row of [...(state.marketCalendarUi?.getCatalog() || []), ...(data.instruments || []), ...(data.positions || []), ...(data.clientProduct?.openPositions || []), ...(data.clientProduct?.closedPositions || [])]) {
     if (!row.instrumentUid) continue;
     const key = row.instrumentUid;
     const previous = state.instrumentLabels.get(key) || {};
     state.instrumentLabels.set(key, {
       name: usableInstrumentText(row.name, key) || previous.name || '',
       ticker: usableInstrumentText(row.ticker, key) || previous.ticker || '',
+      logoName: row.logoName || previous.logoName || null,
     });
   }
 }
@@ -687,7 +742,7 @@ function instrumentDisplay(row) {
   const ticker = usableInstrumentText(row.ticker, uid) || metadata.ticker || '';
   const name = usableInstrumentText(row.name, uid) || metadata.name || ticker
     || (uid ? 'Название недоступно' : 'Событие счёта');
-  return { name, ticker, instrumentUid:uid, logoName:row.logoName || metadata.logoName };
+  return { name:issuerName(ticker,name), ticker, instrumentUid:uid, logoName:row.logoName || metadata.logoName };
 }
 
 function portfolioDisplay(row) {
@@ -703,7 +758,7 @@ function renderOperations(data, { page = 0 } = {}) {
   $('#operationsBody').innerHTML = pageRows.length ? pageRows.map((row) => {
     const display = instrumentDisplay(row);
     const detail = [display.ticker && display.name !== display.ticker ? display.name : '', portfolioDisplay(row)].filter(Boolean).join(' · ');
-    return `<tr><td>${escapeText(formatDate(row.occurredAt, true))}</td><td><span class="instrument-with-mark">${row.instrumentUid?instrumentMark(display):''}<span class="instrument-cell"><strong>${escapeText(display.ticker || display.name)}</strong><small>${escapeText(detail)}</small></span></span></td><td>${escapeText(row.label || row.type)}</td><td class="numeric">${escapeText(formatQuantity(row.quantityNanos))}</td><td class="numeric">${escapeText(formatMoney(row.paymentNanos, row.currency))}</td><td class="numeric">${escapeText(formatMoney(row.commissionNanos, row.currency))}</td><td><span class="status-chip fresh">${escapeText(row.stateLabel || 'Исполнено')}</span></td></tr>`;
+    return `<tr><td><span class="instrument-with-mark">${row.instrumentUid?instrumentMark(display):''}<span class="instrument-cell"><strong>${escapeText(display.ticker || display.name)}</strong><small>${escapeText(detail)}</small></span></span></td><td>${escapeText(formatDate(row.occurredAt, true))}</td><td>${escapeText(row.label || row.type)}</td><td class="numeric">${escapeText(formatQuantity(row.quantityNanos))}</td><td class="numeric">${escapeText(formatMoney(row.paymentNanos, row.currency))}</td><td class="numeric">${escapeText(formatMoney(row.commissionNanos, row.currency))}</td><td><span class="status-chip fresh">${escapeText(row.stateLabel || 'Исполнено')}</span></td></tr>`;
   }).join('') : '<tr><td colspan="7" class="empty-cell">Нет нормализованных операций для выбранного периода.</td></tr>';
   watchInstrumentImages($('#operationsBody'));
   $('#operationsCount').textContent = rows.length
@@ -718,7 +773,14 @@ function changeOperationPage(direction) {
 }
 
 function renderClosedPositions(data) {
-  const rows = sortRows(data.clientProduct?.closedPositions||[],state.sorts.closed,{...positionReaders,closedAt:r=>r.closedAt?Date.parse(r.closedAt):null});
+  const filtered = filterLedgerRows(data.clientProduct?.closedPositions || [], state.operationFilterValues || {}, { dateKey: 'closedAt', display: instrumentDisplay, accountLabel: portfolioDisplay });
+  const rows = sortRows(filtered,state.sorts.closed,{...positionReaders,closedAt:r=>r.closedAt?Date.parse(r.closedAt):null});
+  const result = sumMoneyByCurrency(rows, 'pnlNanos', 'pnlCurrency');
+  $('#closedSummaryCount').textContent = rows.length.toLocaleString(state.language === 'en' ? 'en-US' : 'ru-RU');
+  $('#closedSummaryResult').textContent = result.amounts.length ? result.amounts.map(row => formatMoney(row.nanos, row.currency, { native: true })).join(' · ') : '—';
+  $('#closedSummaryNote').textContent = result.missing ? `${result.known} из ${rows.length} с денежным результатом. Вариационная маржа — в аналитике.` : rows.length ? 'После комиссий · по выбранным фильтрам' : 'Нет закрытых позиций за период';
+  $('#closedSummaryResult').className = result.amounts.length === 1 ? signedClass(result.amounts[0].nanos) : '';
+  $('#closedSummaryHelp').dataset.evidenceNote = $('#closedSummaryNote').textContent;
   const showCost = rows.some(row => row.positionCostNanos != null);
   $('#closedPositionCostHeader').hidden = !showCost;
   const pageRows = pagedRows('closedPositions', rows, 20, () => renderClosedPositions(data));
@@ -727,17 +789,18 @@ function renderClosedPositions(data) {
     const priceCurrency = row.assetType === 'future' ? 'PTS' : row.currency || 'RUB';
     const display = instrumentDisplay(row);
     return `<tr>
-      <td><span class="instrument-with-mark">${instrumentMark(display)}<span class="instrument-cell"><strong>${escapeText(display.ticker||display.name)}</strong><small>${escapeText([display.name!==display.ticker?display.name:'',portfolioDisplay(row)].filter(Boolean).join(' · '))}</small></span></span></td>
+      <td><span class="instrument-with-mark">${instrumentMark(display)}<span class="instrument-cell"><strong>${escapeText(display.ticker||display.name)}</strong><small>${escapeText(display.name!==display.ticker?display.name:'')}</small></span></span></td>
       <td><span class="asset-chip">${row.assetType === 'future' ? 'Фьючерс' : 'Акция'}</span><small class="cell-note">${row.direction === 'short' ? 'Шорт' : 'Лонг'}</small></td>
-      <td class="numeric"><strong>${escapeText(quoteMoney(row.entryPriceNanos, priceCurrency))}</strong><small class="cell-note">→ ${escapeText(quoteMoney(row.exitPriceNanos, priceCurrency))}</small></td>
-      <td><strong>${escapeText(row.openedAt ? formatDate(row.openedAt, true) : '—')}</strong><small class="cell-note">→ ${escapeText(row.closedAt ? formatDate(row.closedAt, true) : '—')}</small></td>
+      <td title="${escapeText(formatDate(row.openedAt, true))}">${escapeText(formatShortDate(row.openedAt))}</td>
+      <td title="${escapeText(formatDate(row.closedAt, true))}">${escapeText(formatShortDate(row.closedAt))}</td>
       <td class="numeric">${escapeText(positionQuantity(row,{locale:state.language}))}</td>
+      <td class="numeric" title="${escapeText('Цена закрытия: '+quoteMoney(row.exitPriceNanos, priceCurrency))}">${escapeText(quoteMoney(row.entryPriceNanos, priceCurrency))}</td>
 ${showCost ? `<td class="numeric">${row.positionCostNanos == null ? '<span aria-label="Стоимость для этой позиции недоступна">—</span>' : escapeText(formatMoney(row.positionCostNanos, row.currency || 'RUB'))}</td>` : ''}
       <td class="numeric ${pnl == null ? '' : pnl < 0n ? 'negative' : 'positive'}">${row.assetType === 'future' && pnl == null
-        ? `<strong class="${row.returnRate == null ? '' : Number(row.returnRate) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.returnRate, { signed: true }))} цены</strong><small class="cell-note">Вариационная маржа — отдельно <button class="term-help" type="button" data-evidence-note="${escapeText(row.pnlReason || 'Вариационная маржа показана отдельно за период.')}" aria-label="Сведения о результате фьючерса" aria-expanded="false">?</button></small>`
+        ? `<strong class="${row.returnRate == null ? '' : Number(row.returnRate) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.returnRate, { signed: true }))} цены</strong><small class="cell-note inline-help"><button class="term-help" type="button" data-evidence-note="${escapeText(row.pnlReason || 'Вариационная маржа показана отдельно за период.')}" aria-label="Сведения о результате фьючерса" aria-expanded="false">?</button></small>`
         : formatMoneyAndRate(row.pnlNanos, row.returnRate, row.currency || 'RUB')}</td>
     </tr>`;
-  }).join('') : `<tr><td colspan="${showCost ? 7 : 6}" class="empty-cell">За выбранный период нет восстановленных закрытых позиций. Выберите другой период; для расчёта нужны обе стороны сделки.</td></tr>`;
+  }).join('') : `<tr><td colspan="${showCost ? 8 : 7}" class="empty-cell">За выбранный период нет восстановленных закрытых позиций. Выберите другой период; для расчёта нужны обе стороны сделки.</td></tr>`;
   watchInstrumentImages($('#closedPositionsBody'));
 }
 
@@ -745,27 +808,78 @@ function applyOperationFilters({ announce = true } = {}) {
   if (!state.bootstrap) return;
   const form = $('#operationFilters');
   const values = Object.fromEntries(new FormData(form));
-  const instrumentQuery = String(values.instrument || '').trim().toLocaleLowerCase('ru');
-  const rows = (state.bootstrap.operations || []).filter((row) => {
-    const calendarDate = String(row.occurredAt || '').slice(0, 10);
-    if (values.from && calendarDate < values.from) return false;
-    if (values.to && calendarDate > values.to) return false;
-    if (values.account && values.account !== row.portfolioId) return false;
-    if (instrumentQuery && ![row.instrumentUid, instrumentDisplay(row).ticker, instrumentDisplay(row).name, portfolioDisplay(row)]
-      .some((value) => String(value || '').toLocaleLowerCase('ru').includes(instrumentQuery))) return false;
-    if (values.asset && row.assetType !== values.asset) return false;
-    return true;
-  });
+  if ((values.from || values.to) && !validDateRange(values.from, values.to)) return;
+  state.operationFilterValues = values;
+  const rows = filterLedgerRows(state.bootstrap.operations || [], values, { display: instrumentDisplay, accountLabel: portfolioDisplay });
   renderOperations({ operations: rows });
+  const fees = summarizeOperationFees(rows);
+  $('#operationSummaryFees').textContent = fees.amounts.length ? fees.amounts.map(row => formatMoney(row.nanos, row.currency, { native: true })).join(' · ') : '—';
+  $('#operationSummaryFeesNote').textContent = fees.missing ? `${fees.known} из ${fees.known + fees.missing} операций с известной комиссией` : 'По исполненным операциям периода';
+  $('#operationFeesHelp').dataset.evidenceNote = $('#operationSummaryFeesNote').textContent;
+  state.listPages?.delete('closedPositions');
+  renderClosedPositions(state.bootstrap);
   if (announce) showToast(`Фильтры применены: ${rows.length} операций.`);
+}
+
+function initAutomaticLedgerFilters() {
+  const form = $('#operationFilters');
+  const status = $('#operationFilterStatus');
+  const invalidatePeriod = () => { state.periodRequest++; state.periodLoading = false; $('#statisticsPeriodForm').setAttribute('aria-busy', 'false'); };
+  const scheduler = createFilterScheduler({ apply: async values => {
+    if (values.periodChanged) {
+      if (values.period === 'custom' && !validDateRange(values.from, values.to)) return;
+      await selectPeriod(values.period === 'custom' ? { period: 'custom', from: values.from, to: values.to } : { period: values.period }, { announce: false });
+    }
+    applyOperationFilters({ announce: false });
+  } });
+  const onChange = event => {
+    const values = Object.fromEntries(new FormData(form));
+    const dateChanged = ['from', 'to'].includes(event.target.name);
+    const periodChanged = state.operationPeriodDraft || dateChanged || event.target.name === 'period';
+    if (dateChanged) { values.period = 'custom'; form.elements.period.value = 'custom'; }
+    form.querySelector('.ledger-date-range').hidden = values.period !== 'custom';
+    status.textContent = '';
+    if (periodChanged) {
+      periodScheduler.cancel(); state.statisticsPeriodDraft = false;
+      invalidatePeriod(); state.operationPeriodDraft = true;
+      if (values.period === 'custom' && !validDateRange(values.from, values.to)) {
+        scheduler.cancel(); status.textContent = 'Укажите обе даты: начало не позже окончания.'; return;
+      }
+    }
+    scheduler.schedule({ ...values, periodChanged });
+  };
+  form.addEventListener('input', onChange);
+  form.addEventListener('submit', event => { event.preventDefault(); });
+  $('#resetOperationFilters').addEventListener('click', () => {
+    scheduler.cancel(); periodScheduler.cancel(); invalidatePeriod(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = false;
+    form.reset(); state.operationFilterValues = {}; status.textContent = '';
+    void selectPeriod({ period: 'month' }, { announce: false });
+  });
+  const periodScheduler = createFilterScheduler({ apply: values => selectPeriod(values, { announce: false }) });
+  for (const id of ['statisticsFrom', 'statisticsTo']) $('#' + id).addEventListener('input', () => {
+    scheduler.cancel(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = true; invalidatePeriod();
+    const from = $('#statisticsFrom').value, to = $('#statisticsTo').value;
+    if (!validDateRange(from, to)) { periodScheduler.cancel(); $('#statisticsPeriodStatus').textContent = 'Укажите обе даты: начало не позже окончания.'; return; }
+    periodScheduler.schedule({ period: 'custom', from, to });
+  });
+  $('#resetStatisticsPeriod').addEventListener('click', () => {
+    periodScheduler.cancel(); scheduler.cancel(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = false;
+    state.analyticsAccount = ''; state.listPages = new Map();
+    void selectPeriod({ period: 'month' }, { announce: false });
+  });
+  for (const button of $$('[data-stat-range], [data-range]')) button.addEventListener('click', () => { scheduler.cancel(); periodScheduler.cancel(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = false; });
 }
 
 function renderAnalytics(data) {
   const analytics = data.analytics || {};
   $('#analyticsVersion').textContent = data.calculationVersion || 'Версия расчёта не указана';
   const percentage = value => formatPercentage(value);
-  $('#grossReturn').textContent = percentage(analytics.grossReturn);
-  $('#netReturn').textContent = percentage(analytics.netReturn);
+  $('#grossReturn').textContent = formatPercentage(analytics.grossReturn,{signed:true});
+  $('#netReturn').textContent = formatPercentage(analytics.netReturn,{signed:true});
+  for (const [id, value] of [['grossReturn', analytics.grossReturn], ['netReturn', analytics.netReturn]]) {
+    $('#' + id).classList.toggle('positive', value != null && value >= 0);
+    $('#' + id).classList.toggle('negative', value != null && value < 0);
+  }
   renderEvidenceNote($('#grossReturn').nextElementSibling, analytics.returnReason ? coverageSummary(data.dataCoverage) : 'для выбранного периода', analytics.returnReason);
   renderEvidenceNote($('#netReturn').nextElementSibling, analytics.returnReason ? coverageSummary(data.dataCoverage) : 'с учётом комиссий', analytics.returnReason);
   $('#volatilityValue').textContent = percentage(analytics.volatility);
@@ -781,26 +895,35 @@ function renderAnalytics(data) {
   $('#profitFactorValue').nextElementSibling.textContent = analytics.profitFactor === null || analytics.profitFactor === undefined
     ? analytics.profitFactorState === 'no-losses' ? 'В выбранном периоде нет убыточных закрытых сделок.' : 'Для отношения прибыли к убытку нужны закрытые сделки за период.'
     : 'отношение прибыли к убытку по закрытым сделкам';
+  for (const id of ['netReturn','grossReturn','volatilityValue','profitFactorValue']) metricNote($('#'+id), $('#'+id).nextElementSibling.textContent);
+  resultTrend($('#netReturn'), analytics.netReturn);
+  $('#analyticsChartValue').textContent = formatPercentage(analytics.netReturn, { signed:true });
+  $('#analyticsChartValue').className = analytics.netReturn == null ? '' : analytics.netReturn < 0 ? 'negative' : 'positive';
   $('#variationMargin').textContent = formatMoney(analytics.variationMarginNanos, 'RUB');
   const ranking = analytics.instrumentRanking || [];
   const rankingPage = pagedRows('instrumentRanking', ranking, 8, () => renderAnalytics(data));
   $('#instrumentRanking').innerHTML = rankingPage.length ? rankingPage.map((item) => {
     const display = instrumentDisplay(item);
-    return `<div class="ranking-row"><strong>${escapeText(display.ticker || display.name)}</strong><span class="${BigInt(item.pnlNanos || '0') < 0n ? 'negative' : 'positive'}">${escapeText(formatMoney(item.pnlNanos, item.currency || 'RUB'))}</span><small>${escapeText([display.name !== display.ticker ? display.name : '', item.portfolioLabel, item.returnRate != null ? `${formatPercentage(item.returnRate, { signed: true })} за срок позиции` : 'Процент не рассчитан'].filter(Boolean).join(' · '))}</small></div>`;
+    const currency = item.currency || 'RUB';
+    const width = relativeBarWidth(item.pnlNanos, ranking.filter(row => (row.currency || 'RUB') === currency).map(row => row.pnlNanos));
+    return `<div class="ranking-row result-bar-row ${item.pnlNanos != null && BigInt(item.pnlNanos) < 0n ? 'worst' : 'best'}"><span class="instrument-with-mark">${instrumentMark(display)}<span class="instrument-cell"><strong>${escapeText(display.ticker || display.name)}</strong><small>${escapeText(display.name!==display.ticker?display.name:'')}</small></span></span><div class="relative-bar" aria-hidden="true"><i style="--bar:${width}%"></i></div><span class="numeric ${signedClass(item.pnlNanos)}" title="${escapeText(data.analytics?.instrumentRankingMethod || 'Результат закрытых позиций за срок удержания')}"><strong>${escapeText(signedMoney(item.pnlNanos,currency))}</strong>${item.returnRate==null?'':`<small class="return-rate">${escapeText(formatPercentage(item.returnRate,{signed:true}))}</small>`}</span></div>`;
   }).join('') : '<p class="empty-copy">За период пока нет результата, который можно отнести к конкретным инструментам. Выберите более длинный период или синхронизируйте сделки.</p>';
+  watchInstrumentImages($('#instrumentRanking'));
 
   const statistics = data.clientProduct?.statistics || {};
   const overall = statistics.overall || {};
-  $('#tradeOutcomeMeta').textContent = `${overall.winCount || 0} прибыльных · ${overall.lossCount || 0} убыточных · ${overall.tradeCount || 0} закрытых`;
+  $('#tradeOutcomeMeta').textContent = `${overall.winCount || 0} из ${overall.tradeCount || 0} закрытых`;
   const portfolioRows = statistics.perPortfolio || [];
-  $('#portfolioStatistics').innerHTML = portfolioRows.length ? portfolioRows.map((row) => `
-    <div class="stat-comparison-row"><span><strong>${escapeText(row.label)}</strong><small>${escapeText(row.returnReason || row.returnMethod || 'Результат за выбранный период')}</small></span><dl><div><dt>Доходность до комиссий</dt><dd class="${row.grossReturnRate == null ? '' : Number(row.grossReturnRate) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.grossReturnRate, { signed: true }))}</dd></div><div><dt>Доходность после комиссий</dt><dd class="${row.netReturnRate == null ? '' : Number(row.netReturnRate) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.netReturnRate, { signed: true }))}</dd></div><div><dt>Просадка</dt><dd>${escapeText(formatPercentage(row.maxDrawdownRate))}</dd></div><div><dt>Доля прибыльных сделок</dt><dd>${escapeText(formatPercentage(row.winRate))}</dd></div></dl></div>`).join('') : '<p class="empty-copy">Нет данных по счетам за выбранный период. Выберите другой диапазон.</p>';
+  $('#portfolioStatistics').innerHTML = portfolioRows.length ? `<div class="table-scroll"><table class="account-statistics-table"><thead><tr><th>Счёт</th><th class="numeric">На начало</th><th class="numeric">На конец</th><th class="numeric">Результат</th></tr></thead><tbody>${portfolioRows.map(row=>{
+    const portfolio=(data.equityCurvesByPortfolio||[]).find(item=>item.portfolioId===row.id)?.portfolio || (portfolioRows.length===1?data.portfolio:null) || {};
+    return `<tr><td><span class="account-card-name"><i class="account-dot" aria-hidden="true"></i>${escapeText(row.label)}</span></td><td class="numeric">${escapeText(formatMoney(portfolio.startTotalNanos,portfolio.currency))}</td><td class="numeric">${escapeText(formatMoney(portfolio.totalNanos,portfolio.currency))}</td><td class="numeric ${row.netReturnRate==null?'':row.netReturnRate<0?'negative':'positive'}" title="${escapeText(row.returnReason||row.returnMethod||'')}"><strong>${escapeText(formatPercentage(row.netReturnRate,{signed:true}))}</strong><small class="return-rate">${portfolio.netPnlNanos==null?'':escapeText(signedMoney(portfolio.netPnlNanos,portfolio.currency))}</small>${row.returnReason?`<button class="term-help" type="button" data-evidence-note="${escapeText(row.returnReason)}" aria-label="Сведения о результате счёта">?</button>`:''}</td></tr>`;
+  }).join('')}</tbody></table></div>` : '<p class="empty-copy">Нет данных по счетам за выбранный период.</p>';
 
   const cashFlows = statistics.cashFlows || [];
   const cashPage = pagedRows('cashFlowStatistics', cashFlows, 8, () => renderAnalytics(data));
-  $('#cashFlowSummary').textContent = cashFlows.length ? `${cashFlows.length.toLocaleString('ru-RU')} движений за выбранный период` : 'За выбранный период движений нет';
+  $('#cashFlowSummary').textContent = cashFlows.length ? `${cashFlows.length.toLocaleString('ru-RU')} движений за выбранный период` : '';
   $('#cashFlowStatistics').innerHTML = cashPage.length ? cashPage.map((row) => `
-    <div class="cash-flow-row ${row.kind === 'deposit' ? 'deposit' : 'withdrawal'}"><span><strong>${row.kind === 'deposit' ? 'Пополнение' : 'Вывод средств'}</strong><small>${escapeText([formatDate(row.occurredAt, true), row.portfolioLabel].filter(Boolean).join(' · '))}</small></span><span class="numeric"><strong>${escapeText(formatMoney(row.amountNanos, row.currency || 'RUB'))}</strong><small>${row.portfolioShareRate == null ? 'Нет оценки на начало периода' : `${escapeText(formatPercentage(row.portfolioShareRate))} от портфеля на начало`}</small></span></div>`).join('') : '<p class="empty-copy">В выбранном периоде нет пополнений и выводов.</p>';
+    <div class="cash-flow-row ${row.kind === 'deposit' ? 'deposit' : 'withdrawal'}"><span><strong>${row.kind === 'deposit' ? 'Пополнение' : 'Вывод средств'}</strong><small>${escapeText([formatDate(row.occurredAt, true), row.portfolioLabel].filter(Boolean).join(' · '))}</small></span><span class="numeric"><strong>${escapeText(formatMoney(row.amountNanos, row.currency || 'RUB'))}</strong><small>${row.portfolioShareRate == null ? '' : `${escapeText(formatPercentage(row.portfolioShareRate))} от портфеля на начало`}</small></span></div>`).join('') : '<p class="empty-copy">В выбранном периоде нет пополнений и выводов.</p>';
 
   const rankingState = $('#rankingPositionState')?.value || 'open';
   const currentHoldings = statistics.holdings || data.clientProduct?.openPositions || [];
@@ -833,7 +956,7 @@ function renderAnalytics(data) {
   }).join('') : `<p class="empty-copy">Нет ${holdingState === 'open' ? 'открытых' : 'закрытых за период'} позиций с таким сроком удержания. Выберите другой срок${holdingState === 'closed' ? ' или расширьте период статистики' : ''}.</p>`;
 
   const series = overall.equitySeries || [];
-  renderAnalyticsReturnChart(series, data.dataCoverage, data.selectedPeriod);
+  renderAnalyticsReturnChart(series, data.dataCoverage, data.selectedPeriod, analytics.netReturnSeries || []);
 }
 
 function reconstructedHistoryExplanation(coverage) {
@@ -845,38 +968,39 @@ function reconstructedHistoryExplanation(coverage) {
   return `${base} Дневные цены той же бумаги: ${labels}. Используется другой режим торгов с теми же активом, ISIN и валютой; это расчётная оценка.`;
 }
 
-function renderAnalyticsReturnChart(points, coverage = state.bootstrap?.dataCoverage, selectedPeriod = state.bootstrap?.selectedPeriod) {
+function renderAnalyticsReturnChart(points, coverage = state.bootstrap?.dataCoverage, selectedPeriod = state.bootstrap?.selectedPeriod, netReturnSeries = []) {
   const host = $('#analyticsReturnChart');
   const empty = $('#analyticsReturnEmpty');
   if (!host) return;
   const reconstructed = coverage?.evidence === 'reconstructed';
-  renderEvidenceNote($('#analyticsChartSubtitle'), reconstructed
-    ? 'Восстановленная история. Пополнения и выводы влияют на линию.'
-    : 'По оценкам стоимости портфеля. Пополнения и выводы влияют на линию.', reconstructed
-      ? reconstructedHistoryExplanation(coverage) : 'Доходность после комиссий показана отдельно ниже.');
-  if (!points || points.length < 2 || (state.analyticsChartMode === 'percent' && BigInt(points[0]?.equityNanos || '0') === 0n)) {
+  const percentMode = state.analyticsChartMode === 'percent';
+  const displaySymbol = state.displayCurrency === 'USD' ? '$' : '₽';
+  $('#analyticsChartUnit').textContent = percentMode ? ui('Доходность после комиссий, %') : ui('Стоимость портфеля, ₽').replace('₽', displaySymbol);
+  const valueButton = $('[data-analytics-unit="rubles"]');
+  if (valueButton) valueButton.textContent = ui('Стоимость, ₽').replace('₽', displaySymbol);
+  $('#analyticsChartTitle').textContent = percentMode ? 'Динамика доходности портфеля' : 'Изменение стоимости за период';
+  renderEvidenceNote($('#analyticsChartSubtitle'), percentMode
+    ? 'Пополнения и выводы исключены. Доходность относительно стоимости на начало периода.'
+    : reconstructed ? 'Восстановленная история. Пополнения и выводы влияют на линию.' : 'По оценкам стоимости портфеля. Пополнения и выводы влияют на линию.', reconstructed
+      ? reconstructedHistoryExplanation(coverage) : percentMode ? 'Накопленный результат после комиссий делится на начальную стоимость портфеля. Метод совпадает с показателем выше; это не TWR и не IRR.' : 'Каждая точка — сохранённая оценка стоимости портфеля.');
+  $('#analyticsChartHelp').dataset.evidenceNote = $('#analyticsChartSubtitle').textContent;
+  $('#analyticsChartValue').textContent = percentMode ? formatPercentage(analyticsDisplayData()?.analytics?.netReturn, {signed:true}) : formatMoney(analyticsDisplayData()?.portfolio?.totalNanos, 'RUB');
+  const sourcePoints = percentMode ? netReturnSeries : points;
+  if (!sourcePoints || sourcePoints.length < 2) {
     state.analyticsReturnChart?.setData([]);
     host.hidden = true;
     if (empty) {
       empty.hidden = false;
-      renderEvidenceNote(empty, points?.length === 1 ? 'Одна оценка. Для графика нужна ещё одна дата.'
-        : coverageSummary(coverage, 'Нет сопоставимых оценок за период.'), coverage?.reason);
+      renderEvidenceNote(empty, sourcePoints?.length === 1 ? 'Одна оценка. Для графика нужна ещё одна дата.'
+        : coverageSummary(coverage, percentMode ? 'Для доходности нужна полная история. Стоимость доступна отдельным графиком.' : 'Нет сопоставимых оценок за период.'), coverage?.reason);
     }
     return;
   }
   host.hidden = false;
   if (empty) empty.hidden = true;
 
-  const firstEquity = BigInt(points[0].equityNanos || 0);
-  const chartPoints = points.map((p) => {
-    const equity = BigInt(p.equityNanos || 0);
-    const capitalChangeRate = firstEquity === 0n ? 0 : Number(((equity - firstEquity) * 1_000_000n) / firstEquity) / 1_000_000;
-    return {
-      time: p.time,
-      capitalChangeRate,
-      equityValue: Number(equity) / 1e9,
-    };
-  });
+  const chartPoints = percentMode ? netReturnSeries.map(point => ({ time: point.time, netReturnRate: point.netReturnRate }))
+    : points.map(point => ({ time: point.time, equityValue: Number(BigInt(point.equityNanos)) / 1e9 }));
 
   if (state.analyticsReturnChart) {
     state.analyticsReturnChart.setData(chartPoints, selectedPeriod, { mode: state.analyticsChartMode, scope: state.analyticsAccount });
@@ -887,9 +1011,8 @@ function renderAnalyticsReturnChart(points, coverage = state.bootstrap?.dataCove
 
 function renderAnalyticsChartOnView() {
   $$('[data-analytics-unit]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.analyticsUnit === state.analyticsChartMode)));
-  $('#analyticsChartUnit').textContent = state.analyticsChartMode === 'rubles' ? 'Стоимость портфеля, ₽' : 'Изменение капитала, %';
   const data = analyticsDisplayData();
-  renderAnalyticsReturnChart(data?.clientProduct?.statistics?.overall?.equitySeries || [], data?.dataCoverage, data?.selectedPeriod);
+  renderAnalyticsReturnChart(data?.clientProduct?.statistics?.overall?.equitySeries || [], data?.dataCoverage, data?.selectedPeriod, data?.analytics?.netReturnSeries || []);
 }
 
 function analyticsDisplayData(data = state.bootstrap) {
@@ -915,18 +1038,29 @@ function periodQuery(selection = state.selectedPeriod) {
 function renderSelectedPeriod(data) {
   const selected = data.selectedPeriod;
   const label = selected?.label || 'Вся сохранённая история';
-  $('#statisticsPeriodStatus').textContent = `Все показатели: ${label}.`;
+  if (!state.statisticsPeriodDraft) $('#statisticsPeriodStatus').textContent = `Все показатели: ${label}.`;
   $('#overviewPeriodStatus').textContent = label;
   $('#closedPositionsPeriod').textContent = `Закрыты за период: ${label}. Цена входа учитывает более ранние покупки.`;
   if (selected) {
-    $('#statisticsFrom').value = selected.fromDate || String(selected.from || '').slice(0, 10);
-    $('#statisticsTo').value = selected.toDate || String(selected.to || '').slice(0, 10);
+    if (!state.statisticsPeriodDraft) {
+      $('#statisticsFrom').value = selected.fromDate || String(selected.from || '').slice(0, 10);
+      $('#statisticsTo').value = selected.toDate || String(selected.to || '').slice(0, 10);
+    }
+    if (!state.operationPeriodDraft) {
+      const form = $('#operationFilters');
+      if (form?.elements) {
+        form.elements.period.value = state.selectedPeriod.period;
+        form.querySelector('.ledger-date-range').hidden = state.selectedPeriod.period !== 'custom';
+        form.elements.from.value = $('#statisticsFrom').value;
+        form.elements.to.value = $('#statisticsTo').value;
+      }
+    }
   }
   $$('[data-stat-range]').forEach((button) => {
     const active = button.dataset.statRange === state.selectedPeriod.period;
     button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
   });
-  const overviewRanges = { '1m': 'month', '3m': 'quarter', '1y': 'year', all: 'all' };
+  const overviewRanges = { '1m': 'month', '3m': 'quarter', '6m': 'halfyear', '1y': 'year', all: 'all' };
   $$('[data-range]').forEach((button) => {
     const active = overviewRanges[button.dataset.range] === state.selectedPeriod.period;
     button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
@@ -945,7 +1079,7 @@ function renderPeriodViews() {
   if (!data) return;
   renderSelectedPeriod(data);
   renderPortfolio(data);
-  renderClosedPositions(data);
+  applyOperationFilters({ announce: false });
   renderAnalytics(data);
   renderEquityChart();
 }
@@ -962,12 +1096,16 @@ async function selectPeriod(selection, { announce = true } = {}) {
     // Older static fixtures have no period contract. Keep their current range explicit.
     if (!data.selectedPeriod) throw new Error('Эта версия просмотра ещё не поддерживает пересчёт периода. Откройте обновлённую локальную проверку.');
     state.selectedPeriod = { ...selection };
+    state.operationPeriodDraft = false;
+    state.statisticsPeriodDraft = false;
     state.statisticsRange = selection.period;
     state.listPages = new Map();
     renderBootstrap(data);
     if (announce) showToast('Период применён к графику, метрикам и спискам.');
   } catch (error) {
     if (requestNumber !== state.periodRequest) return;
+    state.operationPeriodDraft = false;
+    state.statisticsPeriodDraft = false;
     renderSelectedPeriod(analyticsDisplayData());
     showToast(error.message || 'Период не обновлён. Повторите попытку.', true);
   } finally {
@@ -1022,6 +1160,10 @@ function renderRiskPlan(data) {
     ? risk.accounts
     : [{ portfolioId: 'portfolio-1', label: slice.portfolios?.[0]?.label || 'Текущий портфель', ...risk }];
   const supportedAccounts = riskAccounts.filter((account) => account.liquidPortfolio?.value !== null && account.liquidPortfolio?.value !== undefined).length;
+  const summaryAccount = riskAccounts.find(account => account.portfolioId === state.riskSummaryAccount) || riskAccounts[0];
+  $('#riskSummaryAccount').innerHTML = riskAccounts.map(account => `<option value="${escapeText(account.portfolioId)}">${escapeText(account.label || 'Текущий счёт')}</option>`).join('');
+  $('#riskSummaryAccount').value = summaryAccount.portfolioId;
+  $('#riskSummaryMetrics').innerHTML = [['Ликвидный портфель','liquidPortfolio'],['Начальная маржа','startingMargin'],['Запас маржи','maxAvailableBeforeMarginCallNanos']].map(([label,key]) => `<div><dt>${label}</dt><dd>${escapeText(formatMoney(summaryAccount[key]?.value,summaryAccount.currency || 'RUB'))}</dd></div>`).join('') + `<div><dt>Оценка получена</dt><dd class="risk-evaluation-time">${escapeText(summaryAccount.capturedAt ? formatDate(summaryAccount.capturedAt) : 'Нет данных')}</dd>${summaryAccount.stale ? '<small>Требуется обновление</small>' : ''}</div>`;
   $('#marginCoverage').textContent = supportedAccounts
     ? `${supportedAccounts} ${supportedAccounts === 1 ? 'счёт' : 'счёта'} · отдельно`
     : 'Источник не подключён';
@@ -1034,8 +1176,8 @@ function renderRiskPlan(data) {
     ['Запас относительно начальной маржи', 'maxAvailableBeforeMarginCallNanos', 'margin-buffer', 'marginBuffer', 'Ликвидный портфель минус начальная маржа, минимум 0 ₽. Только по свежей оценке в рублях.'],
   ];
   $('#marginSourceNote').textContent = supportedAccounts
-    ? 'Показатели сохранены из Т‑Инвест и считаются отдельно по каждому счёту. Сверяйте дату оценки.'
-    : 'Маржинальные показатели появятся после синхронизации, если брокер предоставляет их для счёта. Ниже доступен ручной расчёт размера позиции.';
+    ? 'Оценка Т‑Инвест отдельно по каждому счёту. Обеспечение не равно свободным деньгам; сверяйте дату оценки.'
+    : 'Оценка обеспечения появится после синхронизации счёта. Калькулятор позиции доступен ниже.';
   $('#marginAccountLedgers').innerHTML = riskAccounts.map((account) => {
     const availableFields = moneyFields.filter(([, key]) => account[key]?.value !== null && account[key]?.value !== undefined);
     if (!availableFields.length) return `<section class="margin-account margin-account-empty"><header><strong>${escapeText(account.label)}</strong><span class="status-chip">Нет оценки</span></header><p>${escapeText(account.reason || account.liquidPortfolio?.note || 'Брокер ещё не вернул маржинальные показатели. Обновите данные в основной версии; для немаржинального счёта часть показателей не применяется.')}</p></section>`;
@@ -1051,10 +1193,10 @@ function renderRiskPlan(data) {
         const helpBtn = fixtureReserve
           ? `<button class="term-help" type="button" data-evidence-note="${escapeText(field.note || displayExplanation)}" aria-label="Справка: ${escapeText(displayLabel)}">?</button>`
           : termKey ? `<button class="term-help" type="button" data-term="${termKey}" aria-label="Справка: ${escapeText(label)}">?</button>` : '';
-        return `<div class="${className}"><dt>${displayLabel} ${helpBtn}</dt><dd>${escapeText(formatMoney(field.value, account.currency || 'RUB'))}</dd><small class="metric-explanation">${escapeText(displayExplanation)}</small><small class="metric-source">${escapeText(evidenceNote(field, data))}</small></div>`;
+        return `<div class="${className}" title="${escapeText(displayExplanation + ' ' + evidenceNote(field, data))}"><dt>${displayLabel} ${helpBtn}</dt><dd>${escapeText(formatMoney(field.value, account.currency || 'RUB'))}</dd></div>`;
       }).join('')}</dl>
     </section>`;
-  }).join('') || '<p class="empty-copy">Сначала синхронизируйте счета. Ручной расчёт размера позиции доступен ниже.</p>';
+  }).join('') || '<p class="empty-copy">Сначала синхронизируйте счета. Свой сценарий можно проверить во вкладке «Калькулятор позиции».</p>';
   const futuresRows = riskAccounts.flatMap((account) => (account.instruments || []).map((row) => ({ ...row, portfolioLabel: account.label })));
   const futuresPage = pagedRows('futuresRiskRows', futuresRows, 8, () => renderRiskPlan(data));
   $('#futuresRiskRows').innerHTML = futuresPage.length ? futuresPage.map((row) => `
@@ -1065,7 +1207,8 @@ function renderRiskPlan(data) {
   $('#tradingPlanDate').textContent = plan.date ? `План на ${plan.date} · черновик, без исполнения` : 'Дата не задана. Черновик не исполняется автоматически.';
   const planPage = pagedRows('tradingPlan', sortRows(plan.items || [],state.sorts.plan,{name:r=>r.ticker||r.name}), 10, () => renderRiskPlan(data));
   $('#tradingPlanBody').innerHTML = planPage.length ? planPage.map((row) => `
-    <tr><td><span class="instrument-cell"><strong>${escapeText(row.name)}</strong><small>${escapeText([row.ticker, row.portfolioLabel].filter(Boolean).join(' · '))}</small></span></td><td><span class="status-chip ${row.direction === 'short' ? 'stale' : 'fresh'}">${row.direction === 'short' ? 'Шорт' : 'Лонг'}</span></td><td class="numeric"><strong>${escapeText(formatPercentage(row.allocationRate))}</strong><small class="cell-note">${escapeText(formatMoney(row.positionAmountNanos, 'RUB'))}</small></td><td class="numeric">${escapeText(quoteMoney(row.entryPriceNanos, row.priceCurrency))}</td><td class="numeric">${escapeText(quoteMoney(row.exitPriceNanos, row.priceCurrency))}</td><td>${escapeText(row.expectedHold)}</td></tr>`).join('') : '<tr><td colspan="6" class="empty-cell">План заполняется вручную. Укажите инструмент, цену входа, цель и срок; приложение не создаёт сделки автоматически.</td></tr>';
+    <tr><td><span class="position-instrument">${instrumentMark(row)}<span class="instrument-cell"><strong>${escapeText(row.ticker || row.name)}</strong><small>${escapeText(issuerName(row.ticker, row.name))}</small></span></span></td><td><span class="status-chip ${row.direction === 'short' ? 'stale' : 'fresh'}">${row.direction === 'short' ? 'Шорт' : 'Лонг'}</span></td><td class="numeric"><strong>${escapeText(formatPercentage(row.allocationRate))}</strong><small class="cell-note">${escapeText(formatMoney(row.positionAmountNanos, 'RUB'))}</small></td><td class="numeric">${escapeText(quoteMoney(row.entryPriceNanos, row.priceCurrency))}</td><td class="numeric">${escapeText(quoteMoney(row.exitPriceNanos, row.priceCurrency))}</td><td>${escapeText(row.expectedHold)}</td></tr>`).join('') : '<tr><td colspan="6" class="empty-cell">План заполняется вручную. Укажите инструмент, цену входа, цель и срок; приложение не создаёт сделки автоматически.</td></tr>';
+  watchInstrumentImages($('#tradingPlanBody'));
 
   const advisor = slice.riskAdvisor || {};
   const advisorPage = pagedRows('riskAdvisorRows', advisor.recommendations || [], 8, () => renderRiskPlan(data));
@@ -1092,27 +1235,42 @@ function updateRiskCalculator() {
     minPriceIncrementNanos: future ? inputMoneyNanos(values.priceStep) : undefined,
     minPriceIncrementAmountNanos: future ? inputMoneyNanos(values.stepValue) : undefined,
     guaranteePerLotNanos: future ? inputMoneyNanos(values.guaranteePerLot) : undefined,
+    targetPriceNanos: values.targetPrice?.trim() ? inputMoneyNanos(values.targetPrice) : undefined,
   });
   const output = $('#riskCalculatorResult');
   if (result.state !== 'calculated') {
     output.innerHTML = `<p class="empty-copy">${escapeText(result.reason || 'Введите капитал, допустимый риск, цену входа и стоп-цену.')}</p>`;
     return;
   }
-  output.innerHTML = `<dl class="calculator-metrics"><div><dt>Количество лотов</dt><dd>${escapeText(result.lots)} лот.</dd><small>${escapeText(result.units)} ед.</small></div><div><dt>Убыток при стоп-цене</dt><dd>${escapeText(formatMoney(result.actualRiskNanos))}</dd><small>Допустимый убыток: ${escapeText(formatMoney(result.riskBudgetNanos))}</small></div><div><dt>Сумма позиции</dt><dd>${escapeText(formatMoney(result.positionAmountNanos))}</dd><small>без комиссий и проскальзывания</small></div></dl><p class="surface-note">${escapeText(result.reason || '')} ${escapeText(result.warning || '')}</p>`;
+  const rubles = value => formatMoney(value, 'RUB', { native: true });
+  const levels = [['Вход',values.entryPrice,'entry'],['Стоп',values.stopPrice,'stop'],...(values.targetPrice?.trim() ? [['Цель',values.targetPrice,'target']] : [])].map(([label,value,kind]) => ({label,kind,value:Number(inputMoneyNanos(value))/1e9,text:quoteMoney(inputMoneyNanos(value),future?'PTS':'RUB')}));
+  const low = Math.min(...levels.map(level=>level.value)), high = Math.max(...levels.map(level=>level.value));
+  const levelY = level => 35 + (high - level.value) / (high - low || 1) * 150;
+  const diagram = `<figure class="risk-level-diagram"><figcaption>Уровни сценария</figcaption><svg viewBox="0 0 450 220" role="img" aria-label="Цены входа, стопа и цели из вашего расчёта">${levels.map(level=>`<g class="risk-level-${level.kind}"><path d="M22 ${levelY(level)}H428"/><circle cx="100" cy="${levelY(level)}" r="4"/><text x="22" y="${levelY(level)-10}">${level.label}</text><text x="428" y="${levelY(level)-10}" text-anchor="end">${escapeText(level.text)}</text></g>`).join('')}</svg></figure>`;
+  output.innerHTML = `<dl class="calculator-metrics"><div><dt>${future ? 'Количество контрактов' : 'Количество акций'}</dt><dd>${escapeText(result.units)} ${future ? 'контр.' : 'шт.'}</dd><small>${escapeText(result.lots)} лот.</small></div><div><dt>Убыток при стоп-цене</dt><dd class="negative">${escapeText(rubles(result.actualRiskNanos))}</dd><small>Допустимо: ${escapeText(rubles(result.riskBudgetNanos))}</small></div><div><dt>Сумма позиции</dt><dd>${escapeText(rubles(result.positionAmountNanos))}</dd><small>без комиссий и проскальзывания</small></div>${result.rewardRiskRatio ? `<div><dt>Риск / потенциальная прибыль</dt><dd class="positive">1 : ${escapeText(result.rewardRiskRatio.replace('.', ','))}</dd><small>При достижении цели: ${escapeText(rubles(result.potentialRewardNanos))}</small></div>` : ''}</dl>${diagram}<p class="surface-note">${escapeText(result.reason || '')} ${escapeText(result.warning || '')}</p>`;
 }
 
 function renderSync(data) {
   const runs = data.syncRuns || [];
+  const success = runs.find(run => run.status === 'completed');
+  $('#syncLatestTime').textContent = success ? formatDate(success.finishedAt || success.startedAt, true) : 'Ещё не обновляли';
+  $('#syncLatestState').textContent = runs[0]?.status === 'failed' ? 'Последний запуск завершился с ошибкой' : success ? 'Данные сохранены на устройстве' : 'Запустите первую синхронизацию';
+  $('#syncAutoState').textContent = data.environment === 'fixture' ? 'Учебный режим' : data.connection?.connected && data.capabilities?.portfolioRefresh ? 'Каждые 10 секунд' : 'Нужно подключение';
+  $('#syncNowButton').disabled = $('#syncButton').disabled;
+  const accounts=data.clientProduct?.portfolios||[];
+  $('#brokerConnectionList').innerHTML=accounts.map(account=>'<div class="broker-connection-row">'+tbankIcon+'<span><strong>Т-Банк · '+escapeText(account.label)+'</strong><small>'+(data.environment==='fixture'?'Учебный счёт':'Брокерский счёт')+'</small></span><span class="'+(data.connection?.connected?'positive':'')+'">'+(data.environment==='fixture'?'Учебные данные':data.connection?.connected?'Подключено':'Не подключено')+'</span></div>').join('');
   const runPage = pagedRows('syncRuns', runs, 5, () => renderSync(data));
   $('#syncSummary').textContent = runs.length ? `${runs.length} запуск(а)` : 'нет данных';
-  $('#syncRuns').innerHTML = runPage.length ? runPage.map((run) => `<div class="run-row"><strong>${escapeText(formatDate(run.startedAt, true))}</strong><span class="${run.status === 'failed' ? 'negative' : run.status === 'warning' ? '' : 'positive'}">${escapeText(run.statusLabel || run.status)}</span><small>${escapeText(`${run.portfolioLabel || 'Текущий портфель'} · ${run.rawCount} исходных · ${run.normalizedCount} обработанных · ${run.durationMs} мс`)}</small></div>`).join('') : '<p class="empty-copy">Запуски синхронизации не найдены.</p>';
+  $('#syncRuns').innerHTML = runPage.length ? runPage.map(run => `<details class="run-row"><summary><time>${escapeText(formatDate(run.startedAt,true))}</time><span><strong class="${run.status==='failed'?'negative':run.status==='completed'?'positive':''}">${escapeText(run.statusLabel||run.status)}</strong><small>${escapeText(run.portfolioLabel||'Текущий портфель')}</small></span><span>${run.normalizedCount} обработано <svg><use href="#i-chevron"/></svg></span></summary><p>${run.rawCount} исходных записей · ${run.durationMs} мс</p></details>`).join('') : '<p class="empty-copy">Запуски синхронизации не найдены.</p>';
   const latest = runs[0];
   if (latest) $$('#syncStages li').forEach((item) => item.classList.toggle('complete', latest.completedStages?.includes(item.dataset.stage)));
   const latency = data.latency || {};
   $('#latencyP50').textContent = latency.p50 === null || latency.p50 === undefined ? '—' : `${latency.p50} мс`;
   $('#latencyP95').textContent = latency.p95 === null || latency.p95 === undefined ? '—' : `${latency.p95} мс`;
   $('#latencyP99').textContent = latency.p99 === null || latency.p99 === undefined ? '—' : `${latency.p99} мс`;
-  $('#latencyStatus').textContent = latency.clientVerified ? `Подтверждено на клиентском ПК · n=${latency.samples}` : `Проверка на учебных данных · измерений: ${latency.samples || 0}; не подтверждает клиентскую задержку.`;
+  $('#latencyStatus').textContent = latency.clientVerified ? `Измерено на этом компьютере · обновлений: ${latency.samples}` : data.environment === 'fixture' ? `Проверка на учебных данных · измерений: ${latency.samples || 0}; не подтверждает клиентскую задержку.` : 'Задержка потока ещё не измерена.';
+  const latencySurface = $('#latencyStatus').closest?.('.latency-surface');
+  if (latencySurface) latencySurface.hidden = data.environment !== 'fixture' && !latency.clientVerified;
 }
 
 function renderInstruments(data) {
@@ -1129,7 +1287,8 @@ function renderInstruments(data) {
   const companyInstruments = (data.companyAnalysisInstruments || []).filter((item) => item.assetType === 'share');
   const aiOptions = companyInstruments.map((item) => `<option value="${escapeText(item.instrumentUid)}">${escapeText(`${optionLabel(item)}${item.source === 'history' ? ' · из истории операций' : ''}`)}</option>`).join('');
   $('#aiInstrument').innerHTML = `<option value="">Выберите инструмент</option>${aiOptions}`;
-  $('#aiInstrument').value = companyInstruments.some((item) => item.instrumentUid === selectedCompany) ? selectedCompany : '';
+  $('#aiInstrument').value = companyInstruments.some((item) => item.instrumentUid === selectedCompany) ? selectedCompany : !state.companySelectionInitialized && !selectedCompany ? companyInstruments[0]?.instrumentUid || '' : '';
+  if (companyInstruments.length) state.companySelectionInitialized = true;
   if ($('#aiInstrument').value !== selectedCompany) renderSelectedCompany();
   const preferredInstrument = instruments.some(row => (row.viewKey || row.instrumentUid) === selectedMarket) ? selectedMarket : data.candles?.[0]?.viewKey || data.candles?.[0]?.instrumentUid;
   if (preferredInstrument && instruments.some((item) => (item.viewKey || item.instrumentUid) === preferredInstrument)) {
@@ -1149,27 +1308,54 @@ function renderEquityChart() {
   renderEvidenceNote($('#equityEmpty'), points.length === 1
     ? 'За выбранный период доступна одна оценка. Обновите историю портфеля.'
     : coverageSummary(data?.dataCoverage, 'Нет оценок стоимости за период. Обновите данные или выберите другой период.'), data?.dataCoverage?.reason);
-  $('#equityObservationNote').hidden = !enoughHistory;
+  $('#equityObservationNote').hidden = true;
   const reconstructed = data?.dataCoverage?.evidence === 'reconstructed';
   renderEvidenceNote($('#equityObservationNote'), enoughHistory && batchPoints.length
     ? 'Последовательный опрос счетов; точки не используются для доходности.'
     : enoughHistory ? `${reconstructed ? 'Восстановленная история · ' : ''}${points.length.toLocaleString('ru-RU')} оценок. Пополнения и выводы влияют на стоимость.` : '', batchPoints.length ? data.snapshotBatchCurveNote
       : reconstructed ? reconstructedHistoryExplanation(data?.dataCoverage) : '');
+  $('#equityDataHelp').dataset.evidenceNote = $('#equityObservationNote').textContent || data?.dataCoverage?.reason || 'Сохранённые оценки стоимости портфеля.';
   if (!enoughHistory) state.equityChart?.setData([], data?.selectedPeriod, state.analyticsAccount);
   else if (state.equityChart) state.equityChart.setData(points, data?.selectedPeriod, state.analyticsAccount);
   else state.equityChart = createEquityChart($('#equityChart'), points, data?.selectedPeriod, state.analyticsAccount);
+}
+
+function renderMarketInstrumentSummary(selected, candles = []) {
+  let host = $('#marketInstrumentSummary');
+  if (!host) { host = document.createElement('div'); host.id = 'marketInstrumentSummary'; host.className = 'market-instrument-summary'; $('.instrument-surface').prepend(host); }
+  const rows = normalizeMarketCandles(candles), last = rows.at(-1), previous = rows.at(-2);
+  const currency = String(selected?.assetType === 'future' ? 'PTS' : selected?.currency || selected?.priceCurrency || 'RUB').toUpperCase();
+  const price = value => new Intl.NumberFormat(state.language === 'en' ? 'en-US' : 'ru-RU', { maximumFractionDigits: 4,
+    ...(/^[A-Z]{3}$/.test(currency) && currency !== 'PTS' ? { style: 'currency', currency: currency === 'RUR' ? 'RUB' : currency } : {}) }).format(value) + (currency === 'PTS' ? ' п.' : '');
+  const change = last && previous ? last.close - previous.close : null;
+  const assetLabel = { share: 'Акции', future: 'Фьючерсы', bond: 'Облигации', etf: 'Фонды', currency: 'Валюта' }[selected?.assetType] || '';
+  host.innerHTML = `<div class="market-summary-identity">${instrumentMark(selected || {})}<span><strong>${escapeText(selected?.ticker || 'Инструмент')}</strong><small>${escapeText(selected?.name || 'Выберите актив в каталоге')}</small></span></div><div class="market-summary-quote"><strong>${last ? escapeText(price(last.close)) : '—'}</strong>${change !== null ? `<span class="${change >= 0 ? 'positive' : 'negative'}">${change > 0 ? '+' : ''}${escapeText(price(change))}${previous.close > 0 ? ' (' + (change > 0 ? '+' : '') + (change / previous.close * 100).toLocaleString(state.language === 'en' ? 'en-US' : 'ru-RU', {maximumFractionDigits:2}) + '%)' : ''}</span><small>К предыдущей свече</small>` : '<small>Цена последней свечи</small>'}</div>`;
+  const tags = [assetLabel, selected?.exchange || selected?.realExchange].filter(Boolean);
+  if (tags.length) host.querySelector('.market-summary-identity > span:last-child').insertAdjacentHTML('beforeend', `<small class="market-asset-tags">${tags.map(tag => `<span>${escapeText(tag)}</span>`).join('')}</small>`);
+  const capital = state.companyFacts?.get(selected?.instrumentUid)?.metrics?.find(metric => metric.key === 'marketCapitalization');
+  const capitalText = capital?.value != null && Number.isFinite(Number(capital.value)) ? new Intl.NumberFormat('ru-RU',{notation:'compact',maximumFractionDigits:2}).format(Number(capital.value))+' '+(capital.unit === 'currency' ? 'ден. ед.' : capital.unit || '') : '—';
+  const items=[['Открытие',last?price(last.open):'—'],['Объём свечи',last&&Number.isFinite(last.volume)?last.volume.toLocaleString('ru-RU'):'—'],['Максимум',last?price(last.high):'—'],['Капитализация',capitalText],['Минимум',last?price(last.low):'—'],['Закрытие',last?price(last.close):'—']];
+  host.insertAdjacentHTML('beforeend','<dl class="market-ohlc">'+items.map(([title,value])=>'<div'+(title==='Капитализация'?' title="Из сохранённых фактов компании; прочерк означает отсутствие данных"':'')+'><dt>'+title+'</dt><dd>'+escapeText(value)+'</dd></div>').join('')+'</dl>');
+  watchInstrumentImages(host);
 }
 
 async function renderMarketChart() {
   const sequence = (state.chartRequest || 0) + 1;
   state.chartRequest = sequence;
   const instrumentKey = $('#instrumentSelect').value;
-  const selected = [...(state.bootstrap?.instruments || []), ...(state.marketInstrument ? [state.marketInstrument] : [])].find(row => (row.viewKey || row.instrumentUid) === instrumentKey);
+  const base = (state.bootstrap?.instruments || []).find(row => (row.viewKey || row.instrumentUid) === instrumentKey);
+  const selected = state.marketInstrument && [state.marketInstrument.instrumentUid, state.marketInstrument.viewKey].includes(instrumentKey)
+    ? { ...base, ...state.marketInstrument } : base;
   const instrumentUid = selected?.instrumentUid || instrumentKey;
+  const chartKey = `${instrumentKey}:${$('#marketInterval').value}`;
+  if (state.marketSummaryKey !== chartKey) {
+    renderMarketInstrumentSummary(selected);
+    state.marketSummaryKey = chartKey;
+  }
   let candles = (state.bootstrap?.candles || []).filter(row => row.instrumentUid === instrumentUid || row.viewKey === instrumentKey);
   let unavailable = null;
   if (state.bootstrap?.capabilities?.marketCalendar === true && state.bootstrap?.environment !== 'fixture' && !state.bootstrap?.preview?.localReview && instrumentUid) {
-    $('#marketStatus').textContent = 'Обновляем котировки…';
+    if (state.marketChartKey !== chartKey) $('#marketStatus').textContent = 'Обновляем котировки…';
     try {
       const result = await request('/api/market/candles?' + new URLSearchParams({ instrumentUid, interval: $('#marketInterval').value }));
       if (sequence !== state.chartRequest) return;
@@ -1178,16 +1364,39 @@ async function renderMarketChart() {
     } catch (error) { unavailable = error.message; }
   }
   if (sequence !== state.chartRequest) return;
-  state.marketChart?.destroy();state.marketChart = null;
-  $('#marketChart').replaceChildren();
+  const chartSignature = JSON.stringify([chartKey, state.language, candles]);
+  if (state.marketChart && state.marketChartSignature === chartSignature) {
+    $('#marketStatus').textContent = unavailable || (state.bootstrap?.environment === 'fixture' ? 'Учебные котировки' : 'Котировки Т‑Инвест · обновление раз в минуту');
+    return;
+  }
+  state.marketChartSignature = chartSignature;
   try {
-    state.marketChart = createMarketChart($('#marketChart'), candles);
+    if (state.marketChart && state.marketChartKey === chartKey) state.marketChart.setData(candles);
+    else {
+      state.marketChart?.destroy(); state.marketChart = null;
+      $('#marketChart').replaceChildren();
+      state.marketChart = createMarketChart($('#marketChart'), candles);
+      state.marketChartKey = chartKey;
+    }
+    state.marketChart?.setType($('#marketChartType').value);
     if (!state.marketChart) {
       $('#marketChart').innerHTML = '<div class="empty-state"><h3>Свечи пока недоступны</h3><p>Выберите другой интервал или инструмент. Для нового контракта и закрытого режима торгов истории может не быть.</p></div>';
       $('#marketStatus').textContent = unavailable || 'Т‑Инвест не вернул свечи за этот интервал';
       $('#marketEventTime').textContent='—';$('#marketAge').textContent='Нет свежих котировок';return;
     }
     const normalized = normalizeMarketCandles(candles), last = normalized.at(-1);
+    renderMarketInstrumentSummary(selected, candles);
+    if (state.bootstrap?.capabilities?.companyFacts && selected?.assetType === 'share' && !state.companyFacts?.has(instrumentUid)
+      && state.bootstrap.companyAnalysisInstruments?.some(item=>item.instrumentUid===instrumentUid)) {
+      state.marketFactsAttempted ||= new Set();
+      if (!state.marketFactsAttempted.has(instrumentUid)) {
+        state.marketFactsAttempted.add(instrumentUid);
+        void request('/api/ai/company-facts?instrumentUid='+encodeURIComponent(instrumentUid)).then(report=>{
+          state.companyFacts ||= new Map();state.companyFacts.set(instrumentUid,report);
+          if ($('#instrumentSelect').value===instrumentKey && state.marketChartKey===chartKey) renderMarketInstrumentSummary(selected,candles);
+        }).catch(()=>{});
+      }
+    }
     $('#marketStatus').textContent = unavailable || (state.bootstrap?.environment === 'fixture' ? 'Учебные котировки' : 'Котировки Т‑Инвест · обновление раз в минуту');
     const source = candles.find(candle => candle.priceSource)?.priceSource;
     if (source) $('#marketStatus').textContent = 'Дневные цены ' + source.sourceTicker + ' (' + source.sourceClassCode + ') · проверен тот же актив и ISIN';
@@ -1301,7 +1510,7 @@ async function loadBootstrap() {
     $('#identityRole').textContent = 'Профиль';
     $('#identityInitials').textContent = '—';
     renderConnection({ environment: 'local', connection: { connected: false }, syncRuns: [] }, { phase: 'runtime-error', errorMessage: 'Local Node не ответил. Запустите Nexus и откройте Workspace заново.' });
-    $('#positionsBody').innerHTML = '<tr><td colspan="9" class="empty-cell">Локальные данные недоступны. Проверьте рабочую среду и обновите страницу.</td></tr>';
+    $('#positionsBody').innerHTML = '<tr><td colspan="8" class="empty-cell">Локальные данные недоступны. Проверьте рабочую среду и обновите страницу.</td></tr>';
     $('#closedPositionsBody').innerHTML = '<tr><td colspan="8" class="empty-cell">Закрытые позиции недоступны: рабочая среда не ответила.</td></tr>';
     state.operationRows = [];
     state.operationPage = 0;
@@ -1405,6 +1614,7 @@ async function generateAiReport() {
   const { instrumentUid, focus } = selection;
   if (!instrumentUid) { showToast('Выберите компанию для анализа.', true); return; }
   if (state.bootstrap?.capabilities?.companyFacts !== true) return;
+  state.companyTab = 'analysis';
   const view = companyView(selection);
   const requestNumber = ++state.companyRequest;
   state.companyPending = { ...selection, requestNumber, kind: 'analysis' };
@@ -1416,6 +1626,7 @@ async function generateAiReport() {
     if (state.companyPending?.requestNumber !== requestNumber) return;
     if (result.llmUsed !== true) throw new Error('AI-разбор не получен. Сохранённые факты доступны отдельно.');
     view.report = result;
+    view.analysisReport = result;
     view.phase = 'success';
     view.message = 'AI-разбор получен. Сверяйте выводы с датами и источниками отчётности.';
     view.factsMessage = 'Показан AI-разбор. Сохранённые факты можно открыть отдельно.';
@@ -1458,6 +1669,15 @@ function renderCompanyStatus() {
   const view = companyView(selection);
   const pending = Boolean(state.companyPending);
   const factsAvailable = state.bootstrap?.capabilities?.companyFacts === true && Boolean(selection.instrumentUid);
+  const activeTab = state.companyTab || 'analysis';
+  $$('[data-company-tab]').forEach(button => {
+    const selected = button.dataset.companyTab === activeTab;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-selected', String(selected));
+    button.tabIndex = selected ? 0 : -1;
+  });
+  $$('[data-company-controls]').forEach(panel => { panel.hidden = panel.dataset.companyControls !== activeTab; });
+  $('#aiReport').setAttribute('aria-labelledby', activeTab === 'facts' ? 'companyFactsTab' : 'companyAnalysisTab');
   const availability = $('#aiAvailability');
   availability.textContent = view.message || state.companyAvailability?.message || 'Проверяем подключение модели…';
   availability.setAttribute('role', 'status');
@@ -1474,15 +1694,28 @@ function renderCompanyStatus() {
 
 function renderSelectedCompany() {
   const selection = companySelection();
+  const identity = $('#companyIdentityMark');
+  if (identity) {
+    const find = rows => (rows || []).find(row => row.instrumentUid === selection.instrumentUid) || {};
+    const company = { ...find(state.bootstrap?.companyAnalysisInstruments), ...find(state.bootstrap?.instruments), ...find(state.marketCalendarUi?.getCatalog()) };
+    identity.innerHTML = instrumentMark(company);
+    watchInstrumentImages(identity);
+    const position = find(state.bootstrap?.clientProduct?.openPositions);
+    $('#companyIdentityText').innerHTML = `<h3>${escapeText(company.name || 'Выберите компанию')}</h3><p>${escapeText([company.ticker, company.exchange, company.sector].filter(Boolean).join(' · '))}</p>`;
+    $('#companyIdentityQuote').innerHTML = position.currentPriceNanos != null ? `<strong>${escapeText(quoteMoney(position.currentPriceNanos, position.priceCurrency || company.currency))}</strong><small>Котировка: ${escapeText(formatDate(position.asOf))}</small>` : '<small>Текущая котировка не загружена</small>';
+  }
   const view = companyView(selection);
   let notice = '';
-  if (view.phase === 'loading' || view.phase === 'error') {
+  const factsTab = state.companyTab === 'facts';
+  const factsPending = state.companyPending?.key === selection.key && state.companyPending?.kind === 'facts';
+  const report = factsTab ? state.companyFacts?.get(selection.instrumentUid) || (view.report?.llmUsed !== true ? view.report : null) : view.analysisReport || view.report;
+  if (!factsTab && (view.phase === 'loading' || view.phase === 'error')) {
     const title = view.phase === 'loading' ? 'Готовим AI-разбор' : 'AI-разбор не получен';
     const retained = view.report ? view.report.llmUsed === true ? 'Ниже показан предыдущий AI-разбор.' : 'Ниже показаны сохранённые факты без AI.' : '';
     notice = `<section role="status" aria-live="polite"><h4>${title}</h4><p>${escapeText(view.message)} ${retained}</p></section>`;
   }
-  if (view.report) renderCompanyReport(view.report, notice);
-  else $('#aiReport').innerHTML = `<div class="ai-report-content">${notice || `<div class="empty-state"><h3>${selection.instrumentUid ? 'Компания выбрана' : 'Выберите компанию для разбора'}</h3><p>Нажмите «Показать сохранённые факты», чтобы открыть показатели и источники.</p></div>`}</div>`;
+  if (report) renderCompanyReport(report, notice);
+  else $('#aiReport').innerHTML = `<div class="ai-report-content">${notice || `<div class="empty-state"><h3>${selection.instrumentUid ? factsPending ? 'Загружаем показатели' : 'Факты пока не загружены' : 'Выберите компанию для разбора'}</h3><p>${escapeText(factsTab ? factsPending ? 'Получаем сохранённые показатели и источники.' : view.factsMessage || 'Выберите компанию. Если данные недоступны, повторите загрузку кнопкой «Обновить факты».' : 'Выберите тему и нажмите «Подготовить AI-разбор». Модель использует публичные сведения о компании.')}</p></div>`}</div>`;
   renderCompanyStatus();
 }
 
@@ -1509,17 +1742,22 @@ function renderCompanyReport(report, notice = '') {
     return `<li>${url ? `<a href="${escapeText(url)}" target="_blank" rel="noopener noreferrer">${escapeText(title)}</a>` : escapeText(title)}<small>${escapeText(dates)}</small></li>`;
   }).join('');
   const knownMetrics = metrics.filter((metric) => metric.value !== null && metric.value !== undefined);
-  const metricValue = (value) => {
+  const metricValue = (value, compact = false) => {
     if (value == null) return 'Нет данных';
     const text = String(value);
     if (!/^-?\d+(?:\.\d+)?$/u.test(text)) return text;
+    const number = Number(text);
+    if (compact && Number.isFinite(number) && Math.abs(number) >= 1e6 && Math.abs(number) <= Number.MAX_SAFE_INTEGER) {
+      return new Intl.NumberFormat('ru-RU', { notation: 'compact', maximumFractionDigits: 2 }).format(number);
+    }
     const [whole, fraction] = text.split('.');
     return `${whole.replace(/\B(?=(\d{3})+(?!\d))/gu, ' ')}${fraction ? `,${fraction}` : ''}`;
   };
   const metricUnit = (unit) => ({ RUB: '₽', USD: '$', EUR: '€', CNY: '¥', PTS: 'п.', currency: 'ден. ед.', ratio: '×', shares: 'акций', units: 'ед.', years: 'лет', days: 'дн.' })[unit] || unit;
   const metricTable = (rows) => `<div class="table-scroll"><table class="company-metrics"><thead><tr><th>Показатель</th><th>Значение</th><th>Отчётный период</th></tr></thead><tbody>${rows.map((metric) => `<tr><th scope="row">${escapeText(metric.label || metric.key)}</th><td>${escapeText(metricValue(metric.value))}${metric.value != null && metric.unit ? ` ${escapeText(metricUnit(metric.unit))}` : ''}</td><td>${escapeText(metric.period || 'Период не указан')}</td></tr>`).join('')}</tbody></table></div>`;
-  const metricSection = knownMetrics.length ? metricTable(knownMetrics.slice(0, 8)) : '<p class="empty-copy">Финансовые показатели компании пока не сохранены. Нужны данные отчётности с указанным периодом.</p>';
-  const extraMetrics = metrics.filter((metric) => !knownMetrics.slice(0, 8).includes(metric));
+  const metricIcon = metric => /debt|долг|risk|риск|liabil/iu.test(`${metric.key} ${metric.label}`) ? 'i-shield' : /revenue|profit|income|выруч|прибыл|доход/iu.test(`${metric.key} ${metric.label}`) ? 'i-overview' : 'i-operations';
+  const metricSection = knownMetrics.length ? `<dl class="company-key-metrics">${knownMetrics.slice(0, 6).map(metric => `<div><dt><svg aria-hidden="true"><use href="#${metricIcon(metric)}"/></svg>${escapeText(metric.label || metric.key)}</dt><dd title="${escapeText(metricValue(metric.value))}${metric.unit ? ` ${escapeText(metricUnit(metric.unit))}` : ''}" aria-label="${escapeText(metricValue(metric.value))}${metric.unit ? ` ${escapeText(metricUnit(metric.unit))}` : ''}">${escapeText(metricValue(metric.value, true))}${metric.unit ? ` ${escapeText(metricUnit(metric.unit))}` : ''}</dd><small>${escapeText(metric.period || 'Период не указан')}</small></div>`).join('')}</dl>` : '<p class="empty-copy">Финансовые показатели компании пока не сохранены. Нужны данные отчётности с указанным периодом.</p>';
+  const extraMetrics = metrics.filter((metric) => !knownMetrics.slice(0, 6).includes(metric));
   const sectionMarkup = sections.map((section) => `<section><h4>${escapeText(section.title)}</h4>${section.items?.length ? `<ul>${section.items.slice(0, 30).map((item) => `<li>${escapeText(item)}</li>`).join('')}</ul>` : `<p>${escapeText(section.text || 'Данных недостаточно.')}</p>`}</section>`).join('');
   const metricMarkup = `${metricSection}${extraMetrics.length ? `<details class="company-extra-metrics"><summary>Остальные показатели: ${extraMetrics.length}</summary>${metricTable(extraMetrics)}</details>` : ''}`;
   $('#aiReport').innerHTML = `<div class="ai-report-content">${notice}<header><span class="analysis-label">${report.llmUsed === true ? 'AI-разбор публичных сведений' : 'Сохранённые факты · без AI'}</span><h3>${escapeText(report.title || 'Факты о компании')}</h3><p>${escapeText(report.dataAsOf ? `Отчётность на ${formatDate(report.dataAsOf)}` : 'Отчётная дата не указана в источнике.')}</p></header>${report.llmUsed === true ? sectionMarkup + metricMarkup : metricMarkup + sectionMarkup}${limitations.length ? `<section><h4>Что учитывать</h4><ul>${limitations.map((item) => `<li>${escapeText(item)}</li>`).join('')}</ul></section>` : ''}${sourceRows ? `<section><h4>Источники</h4><ol class="company-sources">${sourceRows}</ol></section>` : '<p class="surface-note">Источники финансовой отчётности пока не подключены. Показатели компании не рассчитаны.</p>'}</div>`;
@@ -1531,6 +1769,7 @@ async function loadCompanyFacts() {
   const { instrumentUid } = selection;
   if (!instrumentUid) { showToast('Выберите компанию, чтобы открыть факты.', true); return; }
   if (state.bootstrap?.capabilities?.companyFacts !== true) return;
+  state.companyTab = 'facts';
   const view = companyView(selection);
   const requestNumber = ++state.companyRequest;
   state.companyPending = { ...selection, requestNumber, kind: 'facts' };
@@ -1539,6 +1778,8 @@ async function loadCompanyFacts() {
     const result = await request(`/api/ai/company-facts?instrumentUid=${encodeURIComponent(instrumentUid)}`);
     if (state.companyPending?.requestNumber !== requestNumber) return;
     view.report = { ...result, llmUsed: false };
+    state.companyFacts ||= new Map();
+    state.companyFacts.set(instrumentUid, view.report);
     view.factsMessage = 'Показаны сохранённые факты. AI не использовался.';
     if (view.phase === 'success') { view.phase = 'idle'; view.message = ''; }
   } catch (error) {
@@ -1550,17 +1791,29 @@ async function loadCompanyFacts() {
     if (state.companyPending?.requestNumber === requestNumber) {
       state.companyPending = null;
       renderSelectedCompany();
+      if (state.currentView === 'ai' && companySelection().instrumentUid !== instrumentUid) void ensureCompanyFacts();
     }
   }
 }
 
+function ensureCompanyFacts() {
+  const { instrumentUid } = companySelection();
+  if (!instrumentUid || state.companyTab !== 'facts' || state.companyPending || state.companyFacts?.has(instrumentUid)) return;
+  state.companyFactsAttempted ||= new Set();
+  if (state.companyFactsAttempted.has(instrumentUid)) return;
+  state.companyFactsAttempted.add(instrumentUid);
+  return loadCompanyFacts();
+}
+
 function bindUi() {
+  $('#riskSummaryAccount').addEventListener('change', event => { state.riskSummaryAccount = event.target.value; renderRiskPlan(state.bootstrap); });
   $$('[data-view]').forEach((button) => button.addEventListener('click', () => activateView(button.dataset.view, button)));
   $$('[data-go-view]').forEach((button) => button.addEventListener('click', () => activateView(button.dataset.goView)));
   $$('[data-system-section]').forEach((button) => button.addEventListener('click', () => {
     activateView('system', button);
     const labels = { subscription: 'Подписка', support: 'Поддержка', access: 'Доступы' };
     $('#systemTitle').textContent = labels[button.dataset.systemSection];
+    $('#systemDescription').textContent = {subscription:'Возможности вашего плана, срок доступа и продление.',support:'Поможем разобраться с подключением, данными и работой приложения.',access:'Участники и доступ к Workspace.'}[button.dataset.systemSection];
     mountServiceCenter(button.dataset.systemSection);
   }));
   $('[data-open-rail]').addEventListener('click', () => {
@@ -1573,6 +1826,7 @@ function bindUi() {
   });
   $('#navProductSwitcher')?.addEventListener('click', openProductSwitcher);
   $('#syncButton').addEventListener('click', startSync);
+  $('#syncNowButton').addEventListener('click', () => { if (!$('#syncButton').disabled) void startSync(); });
   $('#exportButton').addEventListener('click', () => {
     if (!runtimeAdapter) {
       showToast('Static fixture runtime is unavailable.', true);
@@ -1583,10 +1837,14 @@ function bindUi() {
   $('#identityStatus').addEventListener('click', openProfileSettings);
   $('#instrumentSelect').addEventListener('change', renderMarketChart);
   $('#marketInterval').addEventListener('change', renderMarketChart);
+  $('#marketChartType').addEventListener('change', event => state.marketChart?.setType(event.target.value));
   $('#operationsPrevious').addEventListener('click', () => changeOperationPage(-1));
   $('#operationsNext').addEventListener('click', () => changeOperationPage(1));
   $('#riskCalculatorForm').addEventListener('submit', (event) => { event.preventDefault(); updateRiskCalculator(); });
   $('#riskCalculatorForm').elements.assetType.addEventListener('change', updateRiskCalculator);
+  $('#riskCalculatorForm').addEventListener('input', updateRiskCalculator);
+  state.selectRiskTab = initRiskTabs();
+  initLedgerTabs();
   $$('[data-list-page]').forEach((button) => button.addEventListener('click', () => changeListPage(button.dataset.listPage, Number(button.dataset.pageDirection))));
   $('#holdingRange').addEventListener('change', () => {
     state.listPages.delete('efficiencyChart');
@@ -1602,7 +1860,7 @@ function bindUi() {
     renderPeriodViews();
   });
   $$('[data-range]').forEach((button) => button.addEventListener('click', () => {
-    void selectStatisticsRange(({ '1m': 'month', '3m': 'quarter', '1y': 'year', all: 'all' })[button.dataset.range] || 'month');
+    void selectStatisticsRange(({ '1m': 'month', '3m': 'quarter', '6m': 'halfyear', '1y': 'year', all: 'all' })[button.dataset.range] || 'month');
   }));
   $$('.chart-toolbar [data-indicator]').forEach((button) => button.addEventListener('click', () => {
     const active = !button.classList.contains('active');
@@ -1613,8 +1871,17 @@ function bindUi() {
   $$('.chart-toolbar [data-drawing]').forEach((button) => button.addEventListener('click', () => { state.marketChart?.beginDrawing(button.dataset.drawing); showToast(button.dataset.drawing === 'trend' ? 'Укажите две точки на графике.' : 'Укажите уровень на графике.'); }));
   $('#aiAnalyzeButton').addEventListener('click', generateAiReport);
   $('#companyFactsButton').addEventListener('click', loadCompanyFacts);
-  $('#aiInstrument').addEventListener('change', renderSelectedCompany);
+  $('#aiInstrument').addEventListener('change', () => { renderSelectedCompany(); void ensureCompanyFacts(); });
   $('#aiFocus').addEventListener('change', renderSelectedCompany);
+  $$('[data-company-tab]').forEach((button, index, buttons) => {
+    const select = target => { state.companyTab = target.dataset.companyTab; renderSelectedCompany(); void ensureCompanyFacts(); };
+    button.addEventListener('click', () => select(button));
+    button.addEventListener('keydown', event => {
+      const next = event.key === 'ArrowRight' || event.key === 'ArrowLeft' ? 1 - index : event.key === 'Home' ? 0 : event.key === 'End' ? 1 : null;
+      if (next === null) return;
+      event.preventDefault(); select(buttons[next]); buttons[next].focus();
+    });
+  });
   $('#connectButton').addEventListener('click', () => openCredentialCaptureDialog(state.connection?.connected ? 'replace' : 'connect'));
   $('#connectionPrimaryButton').addEventListener('click', () => openCredentialCaptureDialog('connect'));
   $('#replaceConnectionButton').addEventListener('click', () => openCredentialCaptureDialog('replace'));
@@ -1632,8 +1899,8 @@ function bindUi() {
       $('#captureError').textContent = 'Подтвердите готовность ввода в системном окне Windows.';
       return;
     }
-    const environment = $('#captureEnvironment').value;
-    if (!['live', 'sandbox'].includes(environment)) {
+    const environment = 'live';
+    if ($('#captureEnvironment').value !== 'live') {
       $('#captureError').textContent = 'Выберите доступную среду T‑Invest.';
       return;
     }
@@ -1692,8 +1959,8 @@ function bindUi() {
   $('#credentialCaptureDialog').addEventListener('cancel', (event) => { event.preventDefault(); closeCredentialCaptureDialog(); });
   $('#credentialCaptureDialog').addEventListener('close', () => resetCredentialCaptureDialog({ reset: true }));
   $('#disconnectDialog').addEventListener('cancel', (event) => { event.preventDefault(); $('#disconnectDialog').close(); });
-  $('#operationFilters').addEventListener('submit', (event) => { event.preventDefault(); applyOperationFilters(); });
-  $('#statisticsPeriodForm').addEventListener('submit', (event) => { event.preventDefault(); applyStatisticsPeriod(); });
+  initAutomaticLedgerFilters();
+  $('#statisticsPeriodForm').addEventListener('submit', (event) => { event.preventDefault(); });
   $$('[data-stat-range]').forEach((button) => button.addEventListener('click', () => selectStatisticsRange(button.dataset.statRange)));
 
   initTermTooltips();
@@ -1733,7 +2000,7 @@ Object.assign(FINANCIAL_TERMS, {
       { name: 'Цена_шага', desc: 'Минимальный шаг цены инструмента (например, 1 или 10 пунктов)' },
       { name: 'Количество_лотов', desc: 'Число контрактов в портфеле (для шорт-позиций результат инвертируется)' }
     ],
-    example: 'Покупка 2 контрактов фьючерса на индекс Мосбиржи (цена шага 10 п., стоимость шага 15 ₽). Рост котировки с 3200 до 3250 п. даёт VM = (3250 - 3200) / 10 × 15 × 2 = +1 500 ₽ начислений на баланс.',
+    example: 'Учебный пример: 2 фьючерсных контракта, шаг цены 10 п., стоимость шага 15 ₽. Рост расчётной цены с 3200 до 3250 п. даёт VM = (3250 - 3200) / 10 × 15 × 2 = +150 ₽.',
   },
   profitFactor: {
     abbr: 'PF',
@@ -1770,12 +2037,12 @@ Object.assign(FINANCIAL_TERMS, {
     category: 'Доходность и риск',
     summary: 'Наибольшее падение стоимости капитала от исторического пика до локального минимума.',
     details: 'Показывает максимальный риск потерь, с которым инвестор столкнулся за анализируемый период, до момента достижения нового пика капитала.',
-    formula: 'Max Drawdown = ((Пик баланса - Дно просадки) / Пик баланса) × 100%',
+    formula: 'Просадка = ((Дно просадки − Пик баланса) / Пик баланса) × 100%',
     variables: [
       { name: 'Пик баланса', desc: 'Максимальное значение капитала портфеля до начала падения' },
       { name: 'Дно просадки', desc: 'Минимальное значение портфеля до восстановления к новому пику' }
     ],
-    example: 'Портфель вырос до 1 000 000 ₽, затем снизился до 850 000 ₽, после чего пошёл в рост. Просадка составила (1 000 000 - 850 000) / 1 000 000 = 15%.',
+    example: 'Портфель вырос до 1 000 000 ₽, затем снизился до 850 000 ₽. Изменение от пика: (850 000 − 1 000 000) / 1 000 000 × 100% = −15%. Величина просадки — 15%.',
   },
   netReturn: {
     abbr: 'Net %',
@@ -2018,53 +2285,43 @@ ${term.variables?.length ? `<div class="term-popover-vars">${term.variables.map(
 }
 
 function renderGlossary() {
-  const grid = $('#glossaryGrid');
-  const countEl = $('#glossaryCount');
-  if (!grid) return;
-
-  const category = state.glossaryCategory || 'all';
-  const filter = (state.glossaryFilter || '').trim().toLocaleLowerCase('ru');
-
-  const terms = Object.entries(FINANCIAL_TERMS).filter(([key, term]) => {
-    if (category !== 'all' && term.category !== category) return false;
-    if (filter) {
-      const match = [term.abbr, term.name, term.nameEn, term.summary, term.formula, term.example]
-        .some((val) => String(val || '').toLocaleLowerCase('ru').includes(filter));
-      if (!match) return false;
-    }
-    return true;
-  });
-
-  if (countEl) countEl.textContent = `${terms.length} ${terms.length === 1 ? 'термин' : terms.length < 5 ? 'термина' : 'терминов'}`;
-
-  if (terms.length === 0) {
-    grid.innerHTML = '<p class="empty-copy">Ничего не найдено по данному запросу.</p>';
-    return;
-  }
-
-  grid.innerHTML = terms.map(([key, term]) => `
-    <article class="term-card">
-      <header class="term-card-header">
-        <div class="term-card-title">
-          <h3>${escapeText(term.name)}</h3>
-          ${term.nameEn && term.nameEn.toLocaleLowerCase() !== term.name.toLocaleLowerCase() ? `<small>${escapeText(term.nameEn)}</small>` : ''}
-        </div>
-        ${term.abbr && term.abbr.length <= 12 && ![term.name,term.nameEn].some(value=>String(value).toLocaleLowerCase()===term.abbr.toLocaleLowerCase()) ? `<span class="term-popover-badge">${escapeText(term.abbr)}</span>` : ''}
-      </header>
-      <p class="term-card-desc">${escapeText(term.summary)}</p>
-<details class="term-card-details"><summary>${term.formula?.trim() ? 'Формула и пример' : 'Подробнее'}</summary>
-${term.formula?.trim() ? `<div class="term-card-formula">${escapeText(term.formula)}</div>` : ''}
-${term.variables?.length ? `<div class="term-popover-vars">${term.variables.map((v) => `<div><b>${escapeText(v.name)}:</b> ${escapeText(v.desc)}</div>`).join('')}</div>` : ''}
-      <div class="term-card-example">
-        <strong>Пример:</strong>
-        ${escapeText(term.example)}
-      </div>
-      </details>
-    </article>
-  `).join('');
+  const grid = $('#glossaryGrid'), detail = $('#glossaryDetail');
+  if (!grid || !detail) return;
+  const terms = glossaryEntries(FINANCIAL_TERMS, { category: state.glossaryCategory, query: state.glossaryFilter, direction: state.glossarySort || 'asc' });
+  const rendered = glossaryMarkup(terms, state.glossarySelected, FINANCIAL_TERMS);
+  state.glossarySelected = rendered.selected;
+  $('#glossaryCount').textContent = `Найдено: ${terms.length}`;
+  grid.innerHTML = rendered.list;
+  detail.innerHTML = rendered.detail;
 }
 
 function initGlossary() {
+  $('#glossarySort')?.addEventListener('click', event => {
+    state.glossarySort = state.glossarySort === 'desc' ? 'asc' : 'desc';
+    event.currentTarget.setAttribute('aria-label', state.glossarySort === 'desc' ? 'Сортировка от Я до А' : 'Сортировка от А до Я');
+    event.currentTarget.querySelector('span').textContent = state.glossarySort === 'desc' ? 'Я–А' : 'А–Я';
+    renderGlossary();
+  });
+  $('[data-view-panel="glossary"]')?.addEventListener('click', event => {
+    const topic = event.target.closest('[data-glossary-topic]');
+    const related = event.target.closest('[data-glossary-related]');
+    if (topic || related) {
+      state.glossaryFilter = '';
+      $('#glossaryInlineSearch').value = '';
+      state.glossaryCategory = topic ? topic.dataset.glossaryTopic : 'all';
+      if (related) state.glossarySelected = related.dataset.glossaryRelated;
+      $$('[data-glossary-cat]').forEach(button => {
+        const active = button.dataset.glossaryCat === state.glossaryCategory;
+        button.classList.toggle('active', active); button.setAttribute('aria-pressed', String(active));
+      });
+      renderGlossary(); $('#glossaryDetail').focus({ preventScroll: true }); return;
+    }
+    const button = event.target.closest('[data-glossary-term]');
+    if (!button) return;
+    state.glossarySelected = button.dataset.glossaryTerm;
+    renderGlossary();
+    $('#glossaryDetail').focus({ preventScroll: true });
+  });
   $$('[data-glossary-cat]').forEach((btn) => btn.addEventListener('click', () => {
     state.glossaryCategory = btn.dataset.glossaryCat;
     $$('[data-glossary-cat]').forEach((b) => {
@@ -2091,6 +2348,8 @@ function initGlobalSearch() {
     if(row.term){state.glossaryFilter=FINANCIAL_TERMS[row.term]?.name||row.title;state.glossaryCategory='all';$('#glossaryInlineSearch').value=state.glossaryFilter;
       $$('[data-glossary-cat]').forEach(b=>{const selected=b.dataset.glossaryCat==='all';b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});renderGlossary();
     } else if(row.instrumentUid)state.marketCalendarUi?.openCatalogInstrument(row.instrumentUid);
+    const riskPanel = row.target && document.getElementById(row.target)?.closest('[data-risk-panel]');
+    if (riskPanel) state.selectRiskTab?.(riskPanel.dataset.riskPanel);
     requestAnimationFrame(()=>{const target=row.target&&document.getElementById(row.target);if(target){target.scrollIntoView({block:'start'});if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});}});
   };
   const mark=index=>{active=(index+rows.length)%rows.length;[...list.querySelectorAll('[data-search-index]')].forEach((button,i)=>button.setAttribute('aria-selected',String(i===active)));
@@ -2142,11 +2401,16 @@ state.marketCalendarUi=initMarketCalendar({
     if(state.currentView==='instruments')void renderMarketChart();
   }
 });
+document.addEventListener('invest:catalog-updated', () => {
+  if (!state.bootstrap) return;
+  prepareDisplayLabels(state.bootstrap);
+  renderPortfolio(analyticsDisplayData());
+});
 for (const button of $$('[data-analytics-unit]')) button.addEventListener('click', () => { state.analyticsChartMode = button.dataset.analyticsUnit; renderAnalyticsChartOnView(); });
 const personalAvailable=(!runtimeAdapter || state.bootstrap?.preview?.interactiveTutorial===true) && state.bootstrap?.preview?.localReview!==true;
 if(personalAvailable) { $('#personalSettings').hidden=false; state.personalUi = initWorkspacePreferences({ request, showToast, onPresentation:applyPresentation }); }
 else $('#personalSettings').hidden = true;
-if (!runtimeAdapter) initPriceAlerts({ request, readOnly: state.bootstrap?.preview?.localReview === true, showToast: (message, error) => showToast(message, error), activateView });
+if (!runtimeAdapter) initPriceAlerts({ request, getBootstrap: () => state.bootstrap, readOnly: state.bootstrap?.preview?.localReview === true && state.bootstrap?.environment !== 'fixture', showToast: (message, error) => showToast(message, error), activateView });
 openStream();
 // GitHub Pages fixture intentionally has no service worker.
 
@@ -2167,8 +2431,8 @@ function applyPresentation(preferences) {
     }).catch(()=>{ $('#displayCurrencyNote').textContent=ui('Курс ЦБ сейчас недоступен. Показан последний сохранённый курс; без курса суммы отмечены прочерком.'); });
   }
 }
-connectTableSort($('#positionsBody').closest('table'),['name','type','openedAt','quantityNanos','averagePriceNanos','positionValueNanos','share','dayPnlNanos','totalPnlNanos'],sort=>{state.sorts.positions=sort;renderPortfolio(analyticsDisplayData());});
-connectTableSort($('#operationsBody').closest('table'),['occurredAt','name','type','quantityNanos','paymentNanos','commissionNanos','state'],sort=>{state.sorts.operations=sort;renderOperations({operations:state.operationRows});});
-connectTableSort($('#closedPositionsBody').closest('table'),['name','type','entryPriceNanos','closedAt','quantityNanos','positionCostNanos','pnlNanos'],sort=>{state.sorts.closed=sort;state.listPages.delete('closedPositions');renderClosedPositions(analyticsDisplayData());});
+connectTableSort($('#positionsBody').closest('table'),['name','type','openedAt','quantityNanos','averagePriceNanos','positionValueNanos','share','totalPnlNanos'],sort=>{state.sorts.positions=sort;renderPortfolio(analyticsDisplayData());});
+connectTableSort($('#operationsBody').closest('table'),['name','occurredAt','type','quantityNanos','paymentNanos','commissionNanos','state'],sort=>{state.sorts.operations=sort;renderOperations({operations:state.operationRows});});
+connectTableSort($('#closedPositionsBody').closest('table'),['name','type','openedAt','closedAt','quantityNanos','entryPriceNanos','positionCostNanos','pnlNanos'],sort=>{state.sorts.closed=sort;state.listPages.delete('closedPositions');renderClosedPositions(state.bootstrap);});
 connectTableSort($('#tradingPlanBody').closest('table'),['name','direction','allocationRate','entryPriceNanos','exitPriceNanos','expectedHold'],sort=>{state.sorts.plan=sort;state.listPages.delete('tradingPlan');renderRiskPlan(analyticsDisplayData());});
 startTranslation();

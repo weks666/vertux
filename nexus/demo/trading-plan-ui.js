@@ -1,3 +1,4 @@
+import { instrumentLogo, issuerName } from './instrument-mark.js';
 const PAGE_SIZE = 8;
 const ACTIONS = { watch: 'Наблюдение', buy: 'План покупки', sell: 'План продажи' };
 const FIELDS = ['planAccount', 'planInstrument', 'planDate', 'planAction', 'planEntry', 'planStop', 'planTarget', 'planNote', 'planSave'];
@@ -11,6 +12,8 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
   if (!form) return { refresh: async () => {} };
   const list = element('manualPlanList');
   const status = element('planEditorStatus');
+  const add = element('planAdd');
+  const summary = element('planJournalSummary');
   const cancelEdit = document.createElement('button'); cancelEdit.type = 'button'; cancelEdit.className = 'button'; cancelEdit.textContent = 'Отменить редактирование'; cancelEdit.hidden = true; form.append(cancelEdit);
   let items = [], portfolios = [], instruments = [], page = 0, enabled = false, busy = false, editingId = null, revision = 0;
   function node(tag, text, className) {
@@ -20,9 +23,15 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
     return result;
   }
   function report(message) { status.textContent = message; }
+  function showEditor(visible) {
+    form.hidden = !visible;
+    add?.setAttribute('aria-expanded', String(visible));
+    cancelEdit.hidden = !visible;
+  }
   function controls() {
     for (const id of FIELDS) element(id).disabled = !enabled || busy;
     cancelEdit.disabled = busy;
+    if (add) add.disabled = !enabled || busy;
     element('planInstrument').disabled ||= !element('planInstrument').options.length;
     element('planSave').disabled ||= !element('planInstrument').options.length;
     for (const button of list.querySelectorAll('button')) button.disabled = !enabled || busy || button.dataset.planUnavailable === 'true';
@@ -59,28 +68,49 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
     element('planAction').value = 'watch';
     const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
     element('planDate').value = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
-    element('planSave').textContent = 'Сохранить черновик';
+    element('planSave').textContent = 'Сохранить идею';
   }
   function render() {
     page = Math.max(0, Math.min(page, Math.ceil(items.length / PAGE_SIZE) - 1));
     const visible = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
     list.replaceChildren();
-    if (!visible.length) list.append(node('p', 'Пока нет черновиков. Выберите инструмент и запишите свой план.', 'empty-copy'));
+    if (summary) {
+      summary.replaceChildren(...[['Всего идей', items.length], ['Наблюдение', items.filter(item => item.action === 'watch').length], ['Покупка', items.filter(item => item.action === 'buy').length], ['Продажа', items.filter(item => item.action === 'sell').length]].map(([label, count]) => {
+        const item = node('span'); item.append(node('strong', String(count)), node('span', label)); return item;
+      }));
+    }
+    if (!visible.length) list.append(node('p', 'Добавьте первую идею: инструмент, условия и дату пересмотра.', 'empty-copy'));
     for (const item of visible) {
       const row = node('article', undefined, 'manual-plan-row');
       const meta = instruments.find(instrument => instrument.portfolioId === item.portfolioId && instrument.instrumentUid === item.instrumentUid);
       const portfolio = portfolios.find(value => value.id === item.portfolioId);
-      row.append(node('strong', instrumentLabel(meta)));
+      const identity = node('div', undefined, 'plan-draft-identity');
+      const logo=instrumentLogo(meta||{}), mark=node('span',undefined,'instrument-mark');
+      if(logo){const img=node('img');img.src=logo;img.alt='';img.loading='lazy';img.addEventListener('error',()=>{img.hidden=true;});mark.append(img);}else mark.textContent='◇';
+      const title=node('span',undefined,'instrument-cell');title.append(node('strong',meta?.ticker||'Инструмент'),node('small',issuerName(meta?.ticker,meta?.name)||'Название недоступно'));
+      identity.append(mark,title);row.append(identity);
       const date = /^\d{4}-\d{2}-\d{2}$/u.test(item.plannedFor) ? item.plannedFor.split('-').reverse().join('.') : 'Дата не указана';
-      row.append(node('p', `${date} · ${portfolio?.label || 'Портфель'} · ${ACTIONS[item.action] || 'Черновик'}`));
+      const plan=node('div',undefined,'plan-draft-plan');plan.append(node('strong',ACTIONS[item.action]||'Черновик'));
       const prices = [['Вход', item.entryPrice], ['Стоп', item.stopPrice], ['Цель', item.targetPrice]].filter(([, value]) => value !== null && value !== undefined && value !== '');
-      if (prices.length) row.append(node('p', prices.map(([label, value]) => `${label}: ${value}`).join(' · '), 'muted'));
-      if (item.note) row.append(node('p', item.note, 'plan-draft-note'));
+      const currency=String(meta?.currency||'RUB').toUpperCase();
+      const unit=meta?.assetType==='future'?'п.':({RUB:'₽',RUR:'₽',USD:'$',EUR:'€',CNY:'¥'})[currency]||currency;
+      if (prices.length) {
+        const priceList = node('dl', undefined, 'plan-draft-prices');
+        for (const [label, value] of prices) { const part = node('div'); part.append(node('dt', label), node('dd', `${String(value).replace('.', ',')} ${unit}`)); priceList.append(part); }
+        plan.append(priceList);
+      } else plan.append(node('small','Уровни не заданы'));
+      row.append(plan);
+      const review=node('div',undefined,'plan-draft-review');review.append(node('strong',date),node('small',portfolio?.label||'Портфель'));row.append(review);
+      const state=node('div',undefined,'plan-draft-state');state.append(node('span','Черновик','status-chip draft'));row.append(state);
+      row.append(node('p', item.note||'Добавьте заметку к идее', 'plan-draft-note'));
+      const more=node('button','⋯','icon-button plan-draft-more');more.type='button';more.setAttribute('aria-label',`Подробнее об идее ${instrumentLabel(meta)}`);more.setAttribute('aria-expanded','false');
+      const detail=node('section',undefined,'plan-draft-detail');detail.hidden=true;detail.append(node('h4','Идея и план'),node('p',item.note||'Заметка пока не добавлена'),node('small',`Пересмотреть ${date} · ${portfolio?.label||'Портфель'}`));
+      more.addEventListener('click',()=>{detail.hidden=!detail.hidden;more.setAttribute('aria-expanded',String(!detail.hidden));});row.append(more);
       const actions = node('div', undefined, 'plan-draft-actions');
       const edit = node('button', 'Изменить', 'button'); edit.type = 'button'; edit.dataset.planUnavailable = String(!meta); edit.disabled = !meta;
       edit.addEventListener('click', () => {
         if (busy || !enabled || !meta) return;
-        editingId = item.id; cancelEdit.hidden = false;
+        editingId = item.id; showEditor(true);
         element('planAccount').value = item.portfolioId; instrumentChoices(item.instrumentUid);
         for (const [id, field] of [['planDate', 'plannedFor'], ['planAction', 'action'], ['planEntry', 'entryPrice'], ['planStop', 'stopPrice'], ['planTarget', 'targetPrice'], ['planNote', 'note']]) element(id).value = item[field] ?? '';
         element('planSave').textContent = 'Сохранить изменения';
@@ -89,9 +119,10 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
       const remove = node('button', 'Удалить', 'button'); remove.type = 'button';
       remove.setAttribute('aria-label', `Удалить черновик ${instrumentLabel(meta)} на ${date}`);
       remove.addEventListener('click', () => mutate(`/api/trading-plan/${encodeURIComponent(item.id)}`, { method: 'DELETE' }, 'Черновик удалён.', item.id));
-      actions.append(edit, remove); row.append(actions); list.append(row);
+      actions.append(edit, remove); detail.append(actions);row.append(detail);list.append(row);
     }
-    element('manualPlanCount').textContent = items.length ? `${page * PAGE_SIZE + 1}–${page * PAGE_SIZE + visible.length} из ${items.length}` : '0 черновиков';
+    element('manualPlanCount').textContent = items.length ? `${page * PAGE_SIZE + 1}–${page * PAGE_SIZE + visible.length} из ${items.length}` : '';
+    element('manualPlanCount').closest?.('nav')?.toggleAttribute('hidden', items.length <= PAGE_SIZE);
     controls();
   }
   function accept(data) {
@@ -104,7 +135,7 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
     busy = true; revision++; controls(); report('Сохранение черновика…');
     try {
       accept(await request(path, options));
-      if (!deletedId || editingId === deletedId) resetEditor();
+      if (!deletedId || editingId === deletedId) { resetEditor(); if (add) showEditor(false); }
       report(success); showToast(success);
     } catch (error) { report(error.message || 'Не удалось сохранить черновик. Повторите попытку.'); }
     finally { busy = false; controls(); }
@@ -132,11 +163,19 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
     if (!enabled) { items = []; render(); report('Локальный редактор плана недоступен в этой версии.'); return; }
     if (busy) return;
     const version = ++revision;
-    report('План хранится на этом устройстве. Покупки и продажи не исполняются.');
+    report('');
     try { const data = await request('/api/trading-plan'); if (version === revision) accept(data); }
     catch (error) { if (version === revision) report(error.message || 'Не удалось загрузить черновики.'); }
   }
-  cancelEdit.addEventListener('click', () => { if (!busy) { resetEditor(); report('Новый локальный черновик.'); } });
+  cancelEdit.textContent = 'Отмена';
+  cancelEdit.addEventListener('click', () => { if (!busy) { resetEditor(); if (add) showEditor(false); report('План хранится на этом устройстве.'); } });
+  add?.addEventListener('click', () => {
+    if (!enabled || busy) return;
+    const opening = form.hidden;
+    if (opening) resetEditor();
+    showEditor(opening);
+    if (opening) element('planInstrument').focus();
+  });
   resetEditor(); syncChoices(); render();
   return { refresh };
 }

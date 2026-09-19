@@ -10,14 +10,29 @@ const money=(value,currency='RUB')=>value==null?'—':new Intl.NumberFormat('ru-
 const typeNames={dividend:'Дивиденды',expiration:'Экспирации',report:'Отчёты',reminder:'Мои даты'};
 const fieldLabels={currency:'Валюта',exchange:'Биржа',sector:'Сектор',countryOfRiskName:'Страна',basicAsset:'Базовый актив',futuresType:'Тип фьючерса',shareType:'Тип акции',classCode:'Режим торгов',realExchange:'Площадка'};
 const boolLabels={shortEnabledFlag:'Доступен шорт',forQualInvestorFlag:'Для квалифицированных',apiTradeAvailableFlag:'Доступен через API',buyAvailableFlag:'Доступна покупка',sellAvailableFlag:'Доступна продажа',liquidityFlag:'Ликвидный',otcFlag:'Внебиржевой',forIisFlag:'Доступен на ИИС',divYieldFlag:'Дивидендная доходность'};
+export function selectUpcomingEvents(data, reminders, today) {
+ const rows=[...(data?.portfolioUpcoming||[]),...(data?.upcoming||[]),...(data?.events||[]),...reminders];
+ return [...new Map(rows.filter(e=>e.date>=today&&!e.cancelled&&(e.inPortfolio||e.type==='reminder'&&!e.acknowledgedAt)).map(e=>[e.id,e])).values()]
+  .sort((a,b)=>a.date.localeCompare(b.date)||String(a.at||'').localeCompare(String(b.at||''))).slice(0,3);
+}
 export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast,refreshPortfolio}) {
  const $=s=>document.querySelector(s);
+ const heading=$('.instrument-heading'),shortlist=$('.instrument-shortlist'),chart=$('.instrument-surface');
+ if(heading&&shortlist)shortlist.insertBefore(heading,$('.instrument-list-controls'));
+ if(chart)chart.after($('#instrumentCatalogBrowser'));
  const stopHeader=followTableHeader($('#catalogSurface .table-scroll'));
- const state={catalog:[],month:moscowDate().slice(0,7),day:moscowDate(),type:'all',assetType:'share',page:0,data:null,busy:false,editing:null,selectedAsset:'',calendarRequest:0,lastError:null,newsInstrument:'',newsRequest:0,newsLoaded:false};
+ const state={catalog:[],month:moscowDate().slice(0,7),day:moscowDate(),type:'all',assetType:'all',page:0,data:null,busy:false,editing:null,selectedAsset:'',calendarRequest:0,lastError:null,newsInstrument:'',newsRequest:0,newsLoaded:false};
  const newsPanel=initNewsPanel({request});
+ let favoriteList=null,favorites=new Set(),favoritesBusy=false,favoritesLoaded=false;
+ function favoriteButton(row){const selected=favorites.has(row.instrumentUid);return '<button type="button" class="instrument-favorite'+(selected?' active':'')+'" data-favorite-uid="'+esc(row.instrumentUid)+'" aria-pressed="'+selected+'" aria-label="'+(selected?'Убрать из избранного: ':'В избранное: ')+esc(row.ticker||row.name)+'" '+(!favoritesLoaded||favoritesBusy?'disabled':'')+'><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.3.9-4.6 4.5 1.1 6.3-5.6-3-5.6 3 1.1-6.3L2.9 9.6l6.3-.9Z"/></svg></button>';}
+ async function loadFavorites(){
+  try{const result=await request('/api/market/watchlists');favoriteList=(result.items||[]).find(row=>row.name==='Избранное')||null;favorites=new Set((favoriteList?.items||[]).map(row=>row.instrumentUid));favoritesLoaded=true;}
+  catch{favoritesLoaded=false;}
+ }
  let poller=null,calendarTimer=null,disposed=false,lastConnectionKey=null,lastHoldingsKey=null,hydrationRunning=false,hydrationAgain=false;
  const roots=()=>getBootstrap()?.capabilities?.marketCalendar===true&&(!getBootstrap()?.preview?.static || getBootstrap()?.preview?.interactiveTutorial === true)&&!getBootstrap()?.preview?.localReview;
  const label=r=>[r.ticker,r.name,r.classCode].filter(Boolean).join(' · ');
+ const eventLabel=e=>e.ticker&&String(e.title||'').startsWith(e.ticker+' · ')?e.title:[e.ticker,e.title].filter(Boolean).join(' · ');
  const instrument=input=>state.catalog.find(r=>label(r)===input || r.instrumentUid===input);
  function populateAssets(query='') {
   const rows=state.catalog.filter(r=>!query||label(r).toLowerCase().includes(query.toLowerCase())).sort((a,b)=>Number(b.inPortfolio)-Number(a.inPortfolio)).slice(0,60);
@@ -30,19 +45,35 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   document.dispatchEvent(new Event('invest:catalog-updated'));
   const filters=$('#catalogExtraFilters');
   const old=Object.fromEntries([...filters.querySelectorAll('select')].map(el=>[el.name,el.value]));
-  filters.innerHTML=Object.entries(fieldLabels).map(([key,title])=>{
+  const attributes=Object.entries(fieldLabels).map(([key,title])=>{
    const values=[...new Set(state.catalog.map(r=>r[key]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ru'));
    return '<label><span>'+title+'</span><select name="'+key+'"><option value="">Все</option>'+values.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')+'</select></label>';
-  }).join('')+Object.entries(boolLabels).map(([key,title])=>'<label><span>'+title+'</span><select name="'+key+'"><option value="">Любое значение</option><option value="true">Да</option><option value="false">Нет</option></select></label>').join('');
+  }).join('');
+  const availability=Object.entries(boolLabels).map(([key,title])=>'<label><span>'+title+'</span><select name="'+key+'"><option value="">Любое значение</option><option value="true">Да</option><option value="false">Нет</option></select></label>').join('');
+  filters.innerHTML='<fieldset><legend>Рынок и характеристики</legend><div class="catalog-filter-fields">'+attributes+'</div></fieldset><fieldset><legend>Доступность и условия</legend><div class="catalog-filter-fields">'+availability+'</div></fieldset>';
   for(const el of filters.querySelectorAll('select'))if(old[el.name])el.value=old[el.name];
   $('#catalogStatus').textContent=data.warnings?.length?'Часть каталога не обновилась. Сохранённые данные доступны.':data.capturedAt?'Каталог Т‑Инвест · '+new Date(data.capturedAt).toLocaleString('ru-RU',{timeZone:'Europe/Moscow'})+' мск'+(data.stale?' · требуется обновление':''):'Каталог ещё не загружен.';
   renderCatalog();
  }
  function renderCatalog() {
+  const known=new Map(state.catalog.map(row=>[row.instrumentUid,row]));
+  for(const row of getBootstrap()?.instruments||[])known.set(row.instrumentUid,{...row,...known.get(row.instrumentUid),inPortfolio:true});
+  const watchCatalog=[...known.values()];
+  const held=watchCatalog.filter(r=>r.inPortfolio),scope=$('#instrumentListScope')?.value||'portfolio',search=($('#instrumentListSearch')?.value||'').trim().toLowerCase();
+  const quick=(scope==='favorites'?watchCatalog.filter(r=>favorites.has(r.instrumentUid)):scope==='all'?watchCatalog:['share','future'].includes(scope)?watchCatalog.filter(r=>r.assetType===scope):held).filter(row=>!search||label(row).toLowerCase().includes(search));
+  $('#instrumentShortlistTitle').textContent='Список наблюдения';
+  const quotes=getBootstrap()?.positions||[];
+  const quickMarkup=quick.slice(0,40).map(r=>{
+   const quote=quotes.find(p=>p.instrumentUid===r.instrumentUid),price=quote?.currentPriceNanos??quote?.priceNanos;
+   const priceText=price==null?'':r.assetType==='future'?new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(Number(BigInt(price))/1e9)+' п.':money(price,r.currency||'RUB');
+   return '<div class="instrument-watch-row"><button type="button" class="instrument-quick-item" data-chart-uid="'+esc(r.instrumentUid)+'">'+instrumentMark(r)+'<span><strong>'+esc(r.ticker||r.name)+'</strong><small>'+esc(r.name)+'</small></span>'+(price!=null?'<span class="watch-price">'+esc(priceText)+'</span>':'')+'</button>'+favoriteButton(r)+'</div>';
+  }).join('')||'<p class="empty-copy">'+(scope==='favorites'?'Добавьте активы в избранное с помощью звезды.':'Активы не найдены.')+'</p>';
+  const quickHost=$('#instrumentQuickList');
+  if(quickHost.renderedMarkup!==quickMarkup){const focused=document.activeElement?.dataset?.favoriteUid||document.activeElement?.dataset?.chartUid;quickHost.innerHTML=quickMarkup;quickHost.renderedMarkup=quickMarkup;watchInstrumentImages(quickHost);if(focused)quickHost.querySelector('[data-favorite-uid="'+CSS.escape(focused)+'"],[data-chart-uid="'+CSS.escape(focused)+'"]')?.focus({preventScroll:true});}
   const query=$('#catalogSearch').value.trim().toLowerCase(),filters=Object.fromEntries([...$('#catalogExtraFilters').querySelectorAll('select')].filter(el=>el.value!=='').map(el=>[el.name,el.value]));
   const min=Number($('#catalogLotMin').value),max=$('#catalogLotMax').value?Number($('#catalogLotMax').value):Infinity;
   const expiry=$('#catalogExpiry').value;
-  const rows=sortRows(state.catalog.filter(r=>r.assetType===state.assetType&&(!query||label(r).toLowerCase().includes(query))&&(!$('#catalogHeld').checked||r.inPortfolio)
+  const rows=sortRows(state.catalog.filter(r=>(state.assetType==='all'||r.assetType===state.assetType)&&(!query||label(r).toLowerCase().includes(query))&&(!$('#catalogHeld').checked||r.inPortfolio)
    &&(!$('#catalogLotMin').value||r.lot!==null&&r.lot>=min)&&(!$('#catalogLotMax').value||r.lot!==null&&r.lot<=max)
    &&(!expiry||r.expirationDate&&r.expirationDate.slice(0,10)<=expiry)
    &&Object.entries(filters).every(([k,v])=>String(r[k])===v)),state.sort||{key:'name',direction:'asc'},{name:label,sector:r=>r.assetType==='future'?r.basicAsset:r.sector,expirationDate:r=>r.expirationDate?Date.parse(r.expirationDate):null});
@@ -51,7 +82,7 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   watchInstrumentImages($('#catalogBody'));
   $('#catalogCount').textContent=rows.length?((state.page*25+1)+'–'+Math.min(rows.length,(state.page+1)*25)+' из '+rows.length):'0 инструментов';
   $('#catalogPrevious').disabled=state.page===0;$('#catalogNext').disabled=(state.page+1)*25>=rows.length;
-  document.querySelectorAll('[data-catalog-type]').forEach(b=>{b.classList.toggle('active',b.dataset.catalogType===state.assetType);b.setAttribute('aria-pressed',String(b.dataset.catalogType===state.assetType));});
+  document.querySelectorAll('[data-catalog-type]').forEach(b=>{b.classList.toggle('active',b.dataset.catalogType===state.assetType);b.setAttribute('aria-pressed',String(b.dataset.catalogType===state.assetType));const unavailable=!['all','share','future'].includes(b.dataset.catalogType)&&!state.catalog.some(row=>row.assetType===b.dataset.catalogType);b.disabled=unavailable;b.title=unavailable?'Этот тип пока не загружен в каталог':'';});
  }
  function events(){
   const data=state.data;if(!data)return[];
@@ -64,27 +95,41 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   const focusDate=document.activeElement?.dataset?.calendarDate;
   const all=events(),monthStart=new Date(state.month+'-01T12:00:00Z'),offset=(monthStart.getUTCDay()+6)%7,days=new Date(Date.UTC(monthStart.getUTCFullYear(),monthStart.getUTCMonth()+1,0)).getUTCDate();
   $('#calendarMonth').textContent=new Intl.DateTimeFormat('ru-RU',{timeZone:'UTC',month:'long',year:'numeric'}).format(monthStart);
-  $('#calendarGrid').innerHTML=Array.from({length:Math.ceil((offset+days)/7)*7},(_,index)=>{
+  const gridMarkup=Array.from({length:Math.ceil((offset+days)/7)*7},(_,index)=>{
    const number=index-offset+1;
    if(number<1||number>days)return '<span class="calendar-day outside" aria-hidden="true"></span>';
    const date=state.month+'-'+String(number).padStart(2,'0'),items=all.filter(e=>e.date===date),owned=items.some(e=>e.inPortfolio);
    return '<button class="calendar-day'+(date===state.day?' selected':'')+(date===moscowDate()?' today':'')+'" type="button" data-calendar-date="'+date+'" aria-pressed="'+(date===state.day)+'" aria-label="'+esc(dateLabel(date)+', событий: '+items.length+(owned?', есть активы из портфеля':''))+'"><span class="calendar-number">'+number+'</span>'+
     items.slice(0,2).map(e=>'<span class="calendar-event '+e.type+'">'+esc(e.ticker||typeNames[e.type])+'</span>').join('')+(items.length>2?'<small>ещё '+(items.length-2)+'</small>':'')+(owned?'<span class="calendar-held" title="В портфеле">П</span>':'')+'</button>';
   }).join('');
-  $('#calendarSelectedDay').textContent=dateLabel(state.day);
+  const grid=$('#calendarGrid');if(grid.renderedMarkup!==gridMarkup){grid.innerHTML=gridMarkup;grid.renderedMarkup=gridMarkup;}
+  $('#calendarSelectedDay').textContent='События на '+dateLabel(state.day);
   if(focusDate)$('#calendarGrid [data-calendar-date="'+focusDate+'"]')?.focus({preventScroll:true});
-  const rows=all.filter(e=>e.date===state.day).sort((a,b)=>String(a.at).localeCompare(String(b.at)));
-  $('#calendarAgenda').innerHTML=rows.map(e=>'<article class="agenda-event"><div class="agenda-meta"><span>'+typeNames[e.type]+'</span>'+(e.inPortfolio?'<span class="portfolio-mark">В портфеле</span>':'')+'</div><h4>'+esc([e.ticker,e.title].filter(Boolean).join(' · '))+'</h4>'+
-   (e.cancelled?'<strong class="negative">Выплата отменена</strong>':'')+
-   (e.amountNanos!=null?'<p>'+esc(money(e.amountNanos,e.currency||'RUB'))+' на бумагу</p>':'')+
-   '<p>'+esc(e.note||'')+'</p>'+(e.reminder?'<small>'+new Date(e.at).toLocaleTimeString('ru-RU',{timeZone:'Europe/Moscow',hour:'2-digit',minute:'2-digit'})+' мск'+(e.acknowledgedAt?' · просмотрено':'')+'</small><div class="agenda-actions"><button type="button" data-edit-reminder="'+e.id+'">Изменить</button><button type="button" data-delete-reminder="'+e.id+'">Удалить</button>'+(!e.acknowledgedAt?'<button type="button" data-ack-reminder="'+e.id+'">Просмотрено</button>':'')+'</div>':
-   '<div class="agenda-actions"><button type="button" data-event-uid="'+esc(e.instrumentUid)+'">Новости актива</button><button type="button" data-plan-uid="'+esc(e.instrumentUid)+'" data-plan-date="'+e.date+'">Моя заметка</button>'+(e.url?'<a href="'+esc(e.url)+'" target="_blank" rel="noopener noreferrer">Карточка Т‑Инвест</a>':'')+'</div><small>'+esc(e.source)+'</small>')+'</article>').join('')||'<p class="empty-copy">На выбранный день в загруженных данных событий нет. Ближайшие даты показаны выше; можно добавить свою заметку.</p>';
-  $('#calendarAddForDay').textContent='Напомнить '+new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(state.day+'T12:00:00Z'));
+  const rows=all.filter(e=>e.date===state.day).sort((a,b)=>String(a.at||'').localeCompare(String(b.at||'')));
+  $('#calendarDayCount').textContent=rows.length ? String(rows.length) : '';
+  const agenda=$('#calendarAgenda'),signature=JSON.stringify([state.day,rows]);
+  if(agenda.renderedSignature!==signature){
+   const expanded=new Set([...agenda.querySelectorAll('details[open]')].map(el=>el.dataset.eventId));
+   const focused=document.activeElement?.dataset?.agendaKey;
+   agenda.innerHTML=rows.map(e=>{
+    const asset=state.catalog.find(r=>r.instrumentUid===e.instrumentUid)||e;
+    const time=e.reminder?new Date(e.at).toLocaleTimeString('ru-RU',{timeZone:'Europe/Moscow',hour:'2-digit',minute:'2-digit'}):'';
+    const title=e.ticker&&String(e.title||'').startsWith(e.ticker+' · ')?e.title.slice(e.ticker.length+3):e.title;
+    return '<details class="agenda-event '+esc(e.type)+'" data-event-id="'+esc(e.id)+'"'+(expanded.has(e.id)?' open':'')+'><summary data-agenda-key="'+esc(e.id)+'">'+instrumentMark(asset)+'<span class="agenda-heading"><span class="agenda-meta"><span class="event-kind">'+esc(typeNames[e.type])+'</span>'+(time?'<time>'+esc(time)+'</time>':'')+'</span><strong>'+esc(title||eventLabel(e))+'</strong><small>'+esc(asset.name||e.ticker||'Личное напоминание')+'</small></span><svg class="agenda-chevron"><use href="#i-chevron"/></svg></summary><div class="agenda-body">'+
+      (e.cancelled?'<strong class="negative">Выплата отменена</strong>':'')+
+      (e.amountNanos!=null?'<p>'+esc(money(e.amountNanos,e.currency||'RUB'))+' на бумагу</p>':'')+
+      (e.note?'<p>'+esc(e.note)+'</p>':'')+
+      (e.reminder?'<div class="agenda-actions"><button type="button" data-edit-reminder="'+esc(e.id)+'">Изменить</button><button type="button" data-delete-reminder="'+esc(e.id)+'">Удалить</button>'+(!e.acknowledgedAt?'<button type="button" data-ack-reminder="'+esc(e.id)+'">Просмотрено</button>':'<small>Просмотрено</small>')+'</div>':'<div class="agenda-actions"><button type="button" data-event-uid="'+esc(e.instrumentUid)+'">Новости компании</button>'+(e.url?'<a href="'+esc(e.url)+'" target="_blank" rel="noopener noreferrer">Источник ↗</a>':'')+'</div><small>'+esc(e.source||'')+'</small>')+'</div></details>';
+   }).join('')||'<p class="empty-copy">На этот день нет загруженных событий. Выберите другую дату или добавьте напоминание.</p>';
+   agenda.renderedSignature=signature;watchInstrumentImages(agenda);
+   if(focused)agenda.querySelector('[data-agenda-key="'+CSS.escape(focused)+'"]')?.focus({preventScroll:true});
+  }
   const coverage=state.data?.coverage;
   if(coverage&&!state.busy&&!state.lastError)setStatus((state.data.fixture?'Учебные события · ':'')+({portfolio:'Портфель и ваши заметки',market:'Акции Мосбиржи и фьючерсы',all:'Каталог Т‑Инвест',instrument:'Выбранный актив'})[coverage.scope]+' · проверено '+Math.max(0,coverage.instruments-coverage.pending-coverage.stale)+' из '+coverage.instruments+(coverage.pending||coverage.stale?' · загрузка продолжается':' · опубликованные даты загружены'));
   $('#calendarCoverageNote').textContent=coverage?.note||'';
-  const upcoming=[...(state.data?.upcoming||[]),...all.filter(e=>e.type==='reminder')].filter(e=>e.date>=moscowDate()&&(state.type==='all'||e.type===state.type)).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,8);
-  $('#calendarUpcoming').innerHTML=upcoming.map(e=>'<button type="button" data-upcoming-date="'+e.date+'"><time>'+esc(new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(e.date+'T12:00:00Z')))+'</time><span><strong>'+esc([e.ticker,e.title].filter(Boolean).join(' · '))+'</strong><small>'+esc(e.inPortfolio?'Актив из портфеля':typeNames[e.type])+'</small></span></button>').join('')||'<p class="empty-copy">'+(coverage?.pending||coverage?.stale?'Проверяем опубликованные даты. Загруженные события будут появляться здесь.':'В проверенном периоде будущих дат нет. Можно выбрать другой список активов или создать напоминание.')+'</p>';
+  const personal=(state.data?.reminders||[]).filter(r=>r.enabled&&!r.sourceEventId).map(r=>({id:r.id,type:'reminder',date:moscowDate(new Date(r.snoozedUntil||r.dueAt)),at:r.dueAt,title:r.title,acknowledgedAt:r.acknowledgedAt}));
+  const upcoming=selectUpcomingEvents(state.data,personal,moscowDate());
+  $('#calendarUpcoming').innerHTML=upcoming.map(e=>'<button type="button" class="upcoming-'+esc(e.type)+'" data-upcoming-date="'+e.date+'"><time>'+esc(new Intl.DateTimeFormat('ru-RU',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(e.date+'T12:00:00Z')))+'</time><span><small class="upcoming-kind">'+esc(typeNames[e.type])+'</small><strong>'+esc([e.ticker,e.title].filter(Boolean).join(' · '))+'</strong><small>'+esc(e.inPortfolio?'В вашем портфеле':'Личное напоминание')+'</small></span></button>').join('')||'<p class="empty-copy">'+(coverage?.pending||coverage?.stale?'Проверяем опубликованные даты. Загруженные события будут появляться здесь.':'Для ваших активов пока нет ближайших опубликованных дат. Можно добавить своё напоминание.')+'</p>';
   if(state.data){$('#calendarAutoEvents').checked=state.data.preferences.autoEvents;$('#calendarNative').checked=state.data.preferences.nativeNotifications;
    $('#calendarNotificationNote').textContent=state.data.nativeAvailable?'Окно Windows поверх программ, пока Invest запущен. Пропущенные напоминания появятся при следующем запуске. Время — московское.':'В этом просмотре напоминания появляются внутри Invest. Окно поверх программ доступно в установленной версии Windows.';}
  }
@@ -110,7 +155,7 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
     if(data.stale)await refreshCatalog();
    }
    state.catalog.forEach(r=>r.inPortfolio=held.has(r.instrumentUid));renderCatalog();
-   if(state.data){state.data.events.forEach(e=>e.inPortfolio=held.has(e.instrumentUid));renderCalendar();}
+   if(state.data){for(const list of [state.data.events,state.data.upcoming,state.data.portfolioUpcoming])list?.forEach(e=>e.inPortfolio=held.has(e.instrumentUid));renderCalendar();}
    if(connectionChanged||holdingsChanged||!state.data)await loadCalendar(true);
    if(holdingsChanged&&state.newsLoaded)void loadNews();
   }catch(error){setStatus(error.message,true);}
@@ -120,24 +165,28 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
  function openEditor(asset,date=state.day){
   $('#reminderFormStatus').textContent='';
   state.editing=null;$('#reminderForm').reset();$('#reminderAsset').value=asset?label(asset):'';$('#reminderDate').value=date;$('#reminderTime').value='09:00';
-  $('#reminderSave').textContent='Сохранить напоминание';$('#reminderEditor').hidden=false;$('#reminderAsset').focus();
+  $('#reminderSave').textContent='Сохранить напоминание';$('#reminderEditor').hidden=false;$('#reminderEditor').scrollIntoView({block:'center'});$('#reminderAsset').focus({preventScroll:true});
  }
  function editReminder(id){
   const row=state.data.reminders.find(r=>r.id===id);if(!row)return;
   openEditor(state.catalog.find(r=>r.instrumentUid===row.instrumentUid),moscowDate(new Date(row.dueAt)));state.editing=id;
   $('#reminderTime').value=new Date(Date.parse(row.dueAt)+3*3600000).toISOString().slice(11,16);$('#reminderNote').value=row.note;$('#reminderSave').textContent='Сохранить изменения';
  }
+ function scheduleCalendar(){
+  clearTimeout(calendarTimer);if(disposed)return;
+  calendarTimer=setTimeout(()=>{if(document.visibilityState==='visible'&&$('.events-view')?.classList.contains('active'))void loadCalendar(true);else scheduleCalendar();},60000);
+ }
  async function loadCalendar(refresh=false){
   if(!roots())return;
   clearTimeout(calendarTimer);const serial=++state.calendarRequest,query=options();
-  state.busy=true;state.lastError=null;$('#calendarRefresh').disabled=true;setStatus('Обновляем события…');
+  state.busy=true;state.lastError=null;if(!state.data)setStatus('Загружаем события…');
   try{
    const data=refresh?await request('/api/calendar/refresh',{method:'POST',body:JSON.stringify(query)}):await request('/api/calendar?'+new URLSearchParams(query));
    if(serial!==state.calendarRequest)return;state.data=data;
    if(data.warnings?.length){state.lastError='Часть событий не обновилась. Сохранённые даты доступны; попробуйте позже.';setStatus(state.lastError,true);}
-   calendarTimer=setTimeout(()=>void loadCalendar(true),60000);
-  }catch(error){if(serial===state.calendarRequest){state.lastError=error.message;setStatus(error.message,true);calendarTimer=setTimeout(()=>void loadCalendar(true),60000);}}
-  finally{if(serial===state.calendarRequest){state.busy=false;$('#calendarRefresh').disabled=false;renderCalendar();}}
+   scheduleCalendar();
+  }catch(error){if(serial===state.calendarRequest){state.lastError=error.message;setStatus(error.message,true);scheduleCalendar();}}
+  finally{if(serial===state.calendarRequest){state.busy=false;renderCalendar();}}
  }
  async function loadNews(instrumentUid=state.newsInstrument,{force=false,older=false}={}){
   if(!roots())return;
@@ -162,6 +211,7 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
  }
  async function start(){
   const available=roots();$('#catalogSurface').hidden=!available;$('#calendarSurface').hidden=!available;$('#marketNewsSurface').hidden=!available;
+  $('#calendarAddReminder').disabled=!available;
   $('#autoRefreshStatus').hidden=!available;
   if(!available)return;
   if(getBootstrap()?.environment==='fixture')$('#autoRefreshStatus').textContent='Учебный просмотр · реальные позиции не обновляются';
@@ -178,6 +228,18 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   }
  }
  const change=()=>{state.page=0;renderCatalog();};
+ $('#instrumentListSearch')?.addEventListener('input',renderCatalog);
+ $('#instrumentListScope')?.addEventListener('change',renderCatalog);
+ document.addEventListener('click',async event=>{
+  const button=event.target.closest('[data-favorite-uid]');if(!button||favoritesBusy||!favoritesLoaded)return;
+  favoritesBusy=true;renderCatalog();
+  try{
+   if(!favoriteList)favoriteList=await request('/api/market/watchlists',{method:'POST',body:JSON.stringify({name:'Избранное'})});
+   const id=button.dataset.favoriteUid,add=!favorites.has(id);
+   await request('/api/market/watchlists/'+encodeURIComponent(favoriteList.id)+'/items',{method:add?'POST':'DELETE',body:JSON.stringify({instrumentUid:id})});
+   if(add)favorites.add(id);else favorites.delete(id);
+  }catch(error){showToast(error.message,true);}finally{favoritesBusy=false;renderCatalog();}
+ });
  connectTableSort($('#catalogBody').closest('table'),['name','currency','exchange','lot','sector','expirationDate',null],sort=>{state.sort=sort;change();});
  $('#catalogFilters').addEventListener('submit',event=>event.preventDefault());
  $('#catalogSearch').addEventListener('input',change);$('#catalogExtraFilters').addEventListener('change',change);
@@ -193,21 +255,20 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   event.preventDefault();state.day=next;renderCalendar();$('#calendarGrid [data-calendar-date="'+next+'"]')?.focus();
  });
  document.querySelectorAll('[data-month-step]').forEach(b=>b.addEventListener('click',()=>{const d=new Date(state.month+'-01T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+Number(b.dataset.monthStep));state.month=d.toISOString().slice(0,7);state.day=state.month+'-01';renderCalendar();void loadCalendar(true);}));
- $('#calendarUpcoming').addEventListener('click',event=>{const button=event.target.closest('[data-upcoming-date]');if(!button)return;state.day=button.dataset.upcomingDate;const changed=state.month!==state.day.slice(0,7);state.month=state.day.slice(0,7);renderCalendar();if(changed)void loadCalendar(true);$('#calendarGrid').scrollIntoView({block:'center'});});
+ $('#calendarUpcoming').addEventListener('click',event=>{const button=event.target.closest('[data-upcoming-date]');if(!button)return;state.day=button.dataset.upcomingDate;state.month=state.day.slice(0,7);state.type='all';state.selectedAsset='';$('#calendarType').value='all';$('#calendarUniverse').value='portfolio';$('#calendarAsset').value='';renderCalendar();void loadCalendar(true);$('#calendarGrid').scrollIntoView({block:'center'});});
  $('#calendarToday').addEventListener('click',()=>{state.day=moscowDate();state.month=state.day.slice(0,7);renderCalendar();void loadCalendar(true);});
  $('#calendarUniverse').addEventListener('change',()=>void loadCalendar(true));
  $('#calendarAsset').addEventListener('input',e=>populateAssets(e.target.value));$('#reminderAsset').addEventListener('input',e=>populateAssets(e.target.value));
  $('#calendarAsset').addEventListener('change',e=>{state.selectedAsset=instrument(e.target.value)?.instrumentUid||'';if(e.target.value&&!state.selectedAsset){setStatus('Выберите актив из подсказок.',true);return;}void loadCalendar(true);});
  $('#calendarType').addEventListener('change',e=>{state.type=e.target.value;renderCalendar();});
- $('#calendarRefresh').addEventListener('click',()=>void loadCalendar(true));
- $('#calendarAddForDay').addEventListener('click',()=>openEditor(state.catalog.find(r=>r.instrumentUid===state.selectedAsset)));
- $('#reminderCancel').addEventListener('click',()=>{$('#reminderEditor').hidden=true;$('#calendarAddForDay').focus();});
+ $('#calendarAddReminder').addEventListener('click',()=>openEditor(state.catalog.find(r=>r.instrumentUid===state.selectedAsset),state.day));
+ $('#reminderCancel').addEventListener('click',()=>{$('#reminderEditor').hidden=true;$('#calendarAddReminder').focus();});
  $('#reminderForm').addEventListener('submit',async e=>{
   e.preventDefault();const asset=instrument($('#reminderAsset').value);if(!asset){$('#reminderFormStatus').textContent='Выберите актив из подсказок.';return;}
   const due=new Date($('#reminderDate').value+'T'+$('#reminderTime').value+':00+03:00');if(!Number.isFinite(due.getTime()))return;
   $('#reminderSave').disabled=true;
   try {await request('/api/calendar/reminders',{method:'POST',body:JSON.stringify({...(state.editing?{id:state.editing}:{}),instrumentUid:asset.instrumentUid,title:asset.ticker+' · Посмотреть актив',note:$('#reminderNote').value,dueAt:due.toISOString(),timezone:'Europe/Moscow'})});
-   $('#reminderEditor').hidden=true;showToast('Напоминание сохранено');await loadCalendar();$('#calendarAddForDay').focus();
+   $('#reminderEditor').hidden=true;showToast('Напоминание сохранено');await loadCalendar();$('#calendarAddReminder').focus();
   }catch(error){$('#reminderFormStatus').textContent=error.message;}finally{$('#reminderSave').disabled=false;}
  });
  for(const [id,key]of [['calendarAutoEvents','autoEvents'],['calendarNative','nativeNotifications']])$('#'+id).addEventListener('change',async e=>{
@@ -217,7 +278,7 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   const b=e.target.closest('[data-chart-uid],[data-plan-uid],[data-edit-reminder],[data-delete-reminder],[data-ack-reminder],[data-event-uid]');
   if(!b)return;
   try {
-   if(b.dataset.chartUid){const asset=state.catalog.find(r=>r.instrumentUid===b.dataset.chartUid);onChartSelect(asset);}
+   if(b.dataset.chartUid){const asset=state.catalog.find(r=>r.instrumentUid===b.dataset.chartUid)||(getBootstrap()?.instruments||[]).find(r=>r.instrumentUid===b.dataset.chartUid);onChartSelect(asset);}
    if(b.dataset.planUid){document.querySelector('[data-view="events"]')?.click();openEditor(state.catalog.find(r=>r.instrumentUid===b.dataset.planUid),b.dataset.planDate||state.day);}
    if(b.dataset.editReminder)editReminder(b.dataset.editReminder);
    if(b.dataset.deleteReminder){await request('/api/calendar/reminders/'+b.dataset.deleteReminder,{method:'DELETE'});await loadCalendar();}
@@ -242,11 +303,11 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   catch(error){showToast(error.message,true);}
  });
  $('#calendarDueDialog').addEventListener('cancel',e=>{e.preventDefault();$('#calendarDueSnooze').click();});
- void start().then(()=>{if(roots())void showDue();});
+ void start().then(async()=>{if(roots()){await loadFavorites();renderCatalog();void showDue();}});
  window.addEventListener('pagehide',()=>{disposed=true;stopHeader();poller?.stop();clearTimeout(calendarTimer);clearTimeout(dueTimer);},{once:true});
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void poller?.tick();});
  return { refreshHoldings,loadNews,ensureNews:()=>state.newsLoaded?Promise.resolve():loadNews(),getCatalog:()=>state.catalog,
   openInstrumentChart:id=>onChartSelect(state.catalog.find(row=>row.instrumentUid===id)),
-  openCatalogInstrument:id=>{const asset=state.catalog.find(row=>row.instrumentUid===id);if(!asset)return;state.assetType=asset.assetType;$('#catalogFilters').reset();$('#catalogSearch').value=asset.ticker||asset.name;state.page=0;renderCatalog();}
+  openCatalogInstrument:id=>{$('#instrumentCatalogBrowser').open=true;const asset=state.catalog.find(row=>row.instrumentUid===id);if(!asset)return;state.assetType=asset.assetType;$('#catalogFilters').reset();$('#catalogSearch').value=asset.ticker||asset.name;state.page=0;renderCatalog();}
  };
 }

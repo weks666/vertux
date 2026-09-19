@@ -6,18 +6,18 @@ export function setChartPresentation(value) {
 }
 const chartTheme = {
   layout: {
-    background: { type: 'solid', color: '#111319' },
-    textColor: '#8f9199',
+    background: { type: 'solid', color: '#0d141e' },
+    textColor: '#9daeca',
     fontFamily: 'Rubik, system-ui, sans-serif',
-    fontSize: 13,
+    fontSize: 12,
     attributionLogo: false,
   },
   grid: {
-    vertLines: { color: 'rgba(255,255,255,.035)' },
-    horzLines: { color: 'rgba(255,255,255,.035)' },
+    vertLines: { color: 'rgba(149,172,204,.055)' },
+    horzLines: { color: 'rgba(149,172,204,.14)', style: 2 },
   },
-  rightPriceScale: { borderColor: 'rgba(255,255,255,.09)' },
-  timeScale: { borderColor: 'rgba(255,255,255,.09)', timeVisible: true, secondsVisible: false },
+  rightPriceScale: { borderColor: 'rgba(149,172,204,.12)' },
+  timeScale: { borderColor: 'rgba(149,172,204,.12)', timeVisible: true, secondsVisible: false },
   localization: { locale: 'ru-RU', timeFormatter: formatChartTime, priceFormatter: formatChartNumber },
   crosshair: {
     vertLine: { color: 'rgba(185,169,255,.45)', labelBackgroundColor: '#5d48cf' },
@@ -31,10 +31,12 @@ function chartApi() {
 
 function observeResize(host, chart) {
   const observer = new ResizeObserver(([entry]) => {
-    if (!entry) return;
+    if (!entry || entry.contentRect.width <= 0 || entry.contentRect.height <= 0) return;
+    const visible = chart.timeScale().getVisibleRange();
     const dimensions = { width: Math.max(1, Math.floor(entry.contentRect.width)) };
     if (entry.contentRect.height > 0) dimensions.height = Math.floor(entry.contentRect.height);
     chart.applyOptions(dimensions);
+    if (visible) chart.timeScale().setVisibleRange(visible);
   });
   observer.observe(host);
   return observer;
@@ -129,20 +131,31 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
     handleScale: { mouseWheel: true, pinch: true, axisPressedMouseMove: true },
     timeScale: historyTimeScale(), crosshair: { ...chartTheme.crosshair, horzLine: { visible: false, labelVisible: false } },
     localization: { ...chartTheme.localization, priceFormatter: formatter() } });
-  const series = chart.addSeries(api.AreaSeries, {
+  const baseline = green && Boolean(api.BaselineSeries);
+  const series = chart.addSeries(baseline ? api.BaselineSeries : api.AreaSeries, {
     lineColor: green ? '#5ed0a0' : '#8c73ff',
     topColor: green ? 'rgba(94,208,160,.28)' : 'rgba(124,92,255,.24)',
     bottomColor: green ? 'rgba(94,208,160,0)' : 'rgba(124,92,255,0)',
-    lineWidth: 2, pointMarkersVisible: values.length <= 90, pointMarkersRadius: 4,
+    ...(baseline ? { baseValue: { type: 'price', price: mode === 'percent' ? 0 : values[0].value },
+      topLineColor: '#8c73ff', topFillColor1: 'rgba(140,115,255,.20)', topFillColor2: 'rgba(140,115,255,.025)',
+      bottomLineColor: '#ef7b76', bottomFillColor1: 'rgba(239,123,118,.025)', bottomFillColor2: 'rgba(239,123,118,.22)' } : {}),
+    lineWidth: 2, pointMarkersVisible: values.length <= 7, pointMarkersRadius: 3,
     priceLineVisible: false,
     priceFormat: { type: 'custom', minMove: 0.01, formatter: formatter() },
     autoscaleInfoProvider: (original) => {
       const base = original();
+      if (green && mode === 'percent' && base?.priceRange) {
+        const low = Math.min(0, base.priceRange.minValue), high = Math.max(0, base.priceRange.maxValue);
+        const padding = Math.max((high - low) * .08, .1);
+        return { ...base, priceRange: { minValue: low - padding, maxValue: high + padding } };
+      }
       if (!values.length || !values.every((point) => point.value === values[0].value)) return base;
       const padding = Math.max(Math.abs(values[0].value) * 0.01, mode === 'percent' ? 0.1 : 100);
       return { ...base, priceRange: { minValue: values[0].value - padding, maxValue: values[0].value + padding } };
     },
   });
+  const zeroLine = green ? series.createPriceLine({ price: 0, color: 'rgba(185,169,255,.6)', lineWidth: 1,
+    lineStyle: 2, lineVisible: mode === 'percent', axisLabelVisible: mode === 'percent', title: '' }) : null;
   const axisValue = series.createPriceLine({ price: values[0].value, color: green ? '#2b8565' : '#5d48cf',
     lineVisible: false, axisLabelVisible: false, title: '' });
   const clearHover = () => { axisValue.applyOptions({ axisLabelVisible: false }); series.applyOptions({ lastValueVisible: true }); };
@@ -170,7 +183,9 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
     timeline = chartDataForPeriod(nextValues.map(({ time, value }) => ({ time, value })), period);
     values = timeline.filter(point => typeof point.value === 'number');
     clearHover();
-    series.applyOptions({ pointMarkersVisible: values.length <= 90, priceFormat: { type: 'custom', minMove: 0.01, formatter: formatter() } });
+    series.applyOptions({ pointMarkersVisible: values.length <= 7, priceFormat: { type: 'custom', minMove: 0.01, formatter: formatter() } });
+    if (baseline) series.applyOptions({ baseValue: { type: 'price', price: mode === 'percent' ? 0 : values[0]?.value || 0 } });
+    zeroLine?.applyOptions({ lineVisible: mode === 'percent', axisLabelVisible: mode === 'percent' });
     chart.applyOptions({ localization: { ...chartTheme.localization, priceFormatter: formatter() } });
     series.setData(values.length ? timeline : []);
     if (values.length) {
@@ -242,6 +257,13 @@ export function createMarketChart(host, candles) {
   });
   volumeSeries.priceScale().applyOptions({ scaleMargins: { top: .78, bottom: 0 } });
   candleSeries.setData(normalized.map(({ time, open, high, low, close }) => ({ time, open, high, low, close })));
+  const barSeries = chart.addSeries(api.BarSeries, { upColor: '#5ed0a0', downColor: '#ef7b76', visible: false });
+  barSeries.setData(normalized.map(({ time, open, high, low, close }) => ({ time, open, high, low, close })));
+  const lineSeries = chart.addSeries(api.LineSeries, { color: '#a98bff', lineWidth: 2, visible: false });
+  const areaSeries = chart.addSeries(api.AreaSeries, { lineColor: '#a98bff', topColor: 'rgba(137,102,255,.32)', bottomColor: 'rgba(137,102,255,.02)', lineWidth: 2, visible: false });
+  for (const series of [lineSeries, areaSeries]) series.setData(normalized.map(row => ({time: row.time, value: row.close})));
+  const priceSeries = { candles: candleSeries, bars: barSeries, line: lineSeries, area: areaSeries };
+  let activeType = 'candles';
   volumeSeries.setData(normalized.map((row) => ({ time: row.time, value: row.volume, color: row.close >= row.open ? 'rgba(94,208,160,.32)' : 'rgba(239,123,118,.32)' })));
 
   const smaSeries = chart.addSeries(api.LineSeries, { color: '#b9a9ff', lineWidth: 1, priceLineVisible: false, visible: false });
@@ -255,10 +277,10 @@ export function createMarketChart(host, candles) {
   let drawingMode = null;
   const clickHandler = (param) => {
     if (!drawingMode || !param.time || !param.point) return;
-    const price = candleSeries.coordinateToPrice(param.point.y);
+    const price = priceSeries[activeType].coordinateToPrice(param.point.y);
     if (price === null) return;
     if (drawingMode === 'horizontal') {
-      drawings.push(candleSeries.createPriceLine({ price, color: '#b9a9ff', lineWidth: 1, axisLabelVisible: true, title: 'Уровень' }));
+      for (const series of Object.values(priceSeries)) drawings.push(series.createPriceLine({ price, color: '#b9a9ff', lineWidth: 1, axisLabelVisible: true, title: 'Уровень' }));
       drawingMode = null;
     } else if (drawingMode === 'trend' && !trendStart) {
       trendStart = { time: param.time, value: price };
@@ -276,19 +298,36 @@ export function createMarketChart(host, candles) {
 
   return {
     chart,
+    setData(candles) {
+      const next = normalizeMarketCandles(candles);
+      if (!next.length) return;
+      normalized.splice(0, normalized.length, ...next);
+      for (const series of [candleSeries, barSeries]) series.setData(next.map(({time,open,high,low,close}) => ({time,open,high,low,close})));
+      for (const series of [lineSeries, areaSeries]) series.setData(next.map(row => ({time:row.time,value:row.close})));
+      volumeSeries.setData(next.map(row => ({time:row.time,value:row.volume,color:row.close >= row.open ? 'rgba(94,208,160,.32)' : 'rgba(239,123,118,.32)'})));
+      smaSeries.setData(movingAverage(next, Math.min(20, Math.max(2, Math.floor(next.length / 3)))));
+      emaSeries.setData(movingAverage(next, Math.min(20, Math.max(2, Math.floor(next.length / 3))), true));
+    },
     updateCandle(row) {
       const normalizedRow = { time: normalizeTime(row.time), open: row.open, high: row.high, low: row.low, close: row.close };
       if (!normalizeMarketCandles([row]).length || normalizedRow.time < (normalized.at(-1)?.time ?? -Infinity)) return;
       if (normalizedRow.time === normalized.at(-1)?.time) normalized[normalized.length - 1] = { ...row, ...normalizedRow };
       else normalized.push({ ...row, ...normalizedRow });
       candleSeries.update(normalizedRow);
+      barSeries.update(normalizedRow);
+      for (const series of [lineSeries, areaSeries]) series.update({time: normalizedRow.time, value: normalizedRow.close});
       volumeSeries.update({ time: normalizedRow.time, value: row.volume, color: row.close >= row.open ? 'rgba(94,208,160,.32)' : 'rgba(239,123,118,.32)' });
     },
     toggle(name, visible) {
-      if (name === 'candles') candleSeries.applyOptions({ visible });
+      if (name === 'candles') priceSeries[activeType].applyOptions({ visible });
       if (name === 'volume') volumeSeries.applyOptions({ visible });
       if (name === 'sma') smaSeries.applyOptions({ visible });
       if (name === 'ema') emaSeries.applyOptions({ visible });
+    },
+    setType(type) {
+      if (!Object.hasOwn(priceSeries, type)) return;
+      activeType = type;
+      for (const [name, series] of Object.entries(priceSeries)) series.applyOptions({ visible: name === type });
     },
     beginDrawing(mode) { drawingMode = mode; trendStart = null; },
     destroy() { observer.disconnect(); chart.unsubscribeClick(clickHandler); chart.remove(); },
@@ -298,7 +337,7 @@ export function createMarketChart(host, candles) {
 export function createAnalyticsReturnChart(host, points, period, options = {}) {
   let mode = options.mode || 'percent';
   const convert = rows => normalizeEquityPoints((Array.isArray(rows) ? rows : []).map(point => ({ time: point?.time,
-    value: mode === 'rubles' ? point?.equityValue : typeof point?.capitalChangeRate === 'number' ? point.capitalChangeRate * 100 : null })));
+    value: mode === 'rubles' ? point?.equityValue : typeof point?.netReturnRate === 'number' ? point.netReturnRate * 100 : null })));
   const view = createRecordedChart(host, convert(points), period, { ...options, mode, green: true });
   if (!view) return null;
   const update = view.setData;

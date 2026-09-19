@@ -22,6 +22,9 @@ html, body { height: 100%; min-height: 0; min-width: 0; overflow: hidden; }
 .headline-pnl { min-width: 155px; padding-left: 16px; }
 .headline-pnl strong { font-size: 21px; }
 .view.active { animation: none; }
+.demo-period-note { color:var(--muted); font-size:12px; line-height:1.5; margin:0 0 16px; }
+input[type="date"][readonly] { cursor:default; color:var(--muted); }
+input[type="date"][readonly]::-webkit-calendar-picker-indicator { display:none; }
 .portfolio-ledger { grid-template-columns: minmax(0,1fr); }
 .portfolio-ledger > *, .overview-grid > * { min-width: 0; }
 .demo-service { max-width: 760px; }
