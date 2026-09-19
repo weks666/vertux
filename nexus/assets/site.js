@@ -89,8 +89,50 @@
     'updates.titleCompact':'Changelog','updates.ledeCompact':'A concise record of what has changed on the website and what still exists only in the product roadmap.','updates.back':'Back to product','updates.current':'CURRENT WEBSITE VERSION','updates.note':'The versions below refer to the public website. Platform capabilities are marked separately when they are only planned.','updates.toPlan':'Jump to roadmap ↓','updates.released':'RELEASED','updates.changed':'CHANGED','updates.added':'ADDED','updates.fixed':'FIXED','updates.planned':'PLANNED','updates.v050t':'A universal Nexus presentation','updates.v050a':'Calls and ERP no longer look like the default content of every workspace.','updates.v050b':'New Process, AI and Knowledge, and Integrations scenes.','updates.v050c':'Key labels are larger and the mobile layout has been rebuilt.','updates.v050d':'The updates page is now a compact changelog.','updates.v040t':'First public product website','updates.v040a':'Russian and English website versions.','updates.v040b':'Interactive Nexus interface demonstration.','updates.v040c':'Separate Access, Account and Updates pages.','updates.noDate':'NO RELEASE DATE','updates.nextt':'Next product stages','updates.nexta':'A public signed Windows release with protected delivery and updates.','updates.nextb':'Real invite-only authentication and client account.','updates.nextc':'Managed Cloud with an isolated environment, monitoring and backups.'
   });
   Object.assign(translations.ru, {
+  "updates.ledeCompact": "Выпуски приложения Nexus и Invest Workspace: что изменилось и что доступно сейчас.",
+  "updates.current": "ДОСТУПНО ДЛЯ WINDOWS",
+  "updates.note": "Версия приложения Nexus и версия Invest обновляются отдельно. Здесь указаны доступные выпуски, а подготовка следующего отмечена отдельно.",
+  "updates.toPlan": "Что готовится дальше ↓",
+  "updates.nexusTitle": "Nexus 0.6.39 — доступ к Workspace",
+  "updates.nexusA": "Новый установщик для Windows доступен на странице загрузки.",
+  "updates.nexusB": "Вход в Invest через аккаунт Nexus и установка локального компонента из приложения.",
+  "updates.nexusC": "Сохранена совместимость с предыдущим выпуском Invest. Подготовка нового обновления не требует отказываться от работающей версии.",
+  "updates.investTitle": "Invest 0.6.5 — портфель и личный кабинет",
+  "updates.investA": "Портфель, операции, аналитика, инструменты и календарь в одном рабочем пространстве.",
+  "updates.investB": "Общий профиль Nexus, подписка и поддержка доступны из Invest.",
+  "updates.investC": "Подключение к Т-Инвестициям работает только на чтение. Брокерский ключ хранится на компьютере пользователя.",
+  "updates.recoveryTitle": "Восстановлен запуск Invest",
+  "updates.recoveryA": "Исправлено несоответствие версий серверного каталога и установленного локального компонента. Существующие данные сохранены.",
+  "updates.recoveryB": "Юридические документы собраны в отдельную группу футера. История изменений теперь показывает выпуски Nexus и Invest.",
+  "updates.nextt": "Следующий интерфейс Invest",
+  "updates.nexta": "Компактные разделы, обновлённые графики, карточки инструментов, календарь и словарь.",
+  "updates.nextb": "Проверка переключения периодов, выбранных счетов и сохранности данных при обновлении.",
+  "updates.nextc": "Новый выпуск появится здесь после проверки установщика и публикации. Pro пока недоступен для покупки."
+});
+  Object.assign(translations.en, {
+  "updates.ledeCompact": "Nexus and Invest Workspace releases: what changed and what is available now.",
+  "updates.current": "AVAILABLE FOR WINDOWS",
+  "updates.note": "Nexus and Invest use separate version numbers. Available releases and upcoming work are listed separately.",
+  "updates.toPlan": "What is next ↓",
+  "updates.nexusTitle": "Nexus 0.6.39 — Workspace access",
+  "updates.nexusA": "The updated Windows installer is available on the download page.",
+  "updates.nexusB": "Sign in to Invest with your Nexus account and install its local component from the app.",
+  "updates.nexusC": "Compatibility with the previous Invest release is preserved. Preparing an update does not require abandoning a working version.",
+  "updates.investTitle": "Invest 0.6.5 — portfolio and account",
+  "updates.investA": "Portfolio, transactions, analytics, instruments and calendar in one workspace.",
+  "updates.investB": "Your shared Nexus profile, subscription and support are available inside Invest.",
+  "updates.investC": "T-Investments access is read-only. The broker credential stays on your computer.",
+  "updates.recoveryTitle": "Invest launch restored",
+  "updates.recoveryA": "Fixed the version mismatch between the server catalog and the installed local component. Existing data is preserved.",
+  "updates.recoveryB": "Legal documents are grouped in the footer. The changelog now covers Nexus and Invest releases.",
+  "updates.nextt": "The next Invest interface",
+  "updates.nexta": "More compact sections, updated charts, instrument cards, calendar and glossary.",
+  "updates.nextb": "Checking date ranges, account selection and data preservation during updates.",
+  "updates.nextc": "The release will appear here after installer verification and publication. Pro is not available for purchase yet."
+});
+  Object.assign(translations.ru, {
     'aria.mainNav':'Главная навигация','aria.language':'Сменить язык','aria.menu':'Открыть меню','aria.capabilities':'Ключевые возможности Nexus','aria.demoTabs':'Разделы демонстрации Nexus','aria.signalRail':'Возможности Nexus','aria.worldTabs':'Сценарии Nexus','aria.changelog':'История версий','aria.processRoute':'Маршрут процесса',
-    'meta.homeDescription':'Vertux Nexus превращает разрозненные процессы, данные и сервисы компании в персональную рабочую систему.','meta.homeTitle':'Vertux Nexus - ваш процесс, собранный в систему','meta.homeOgDescription':'Индивидуальный рабочий контур с понятными статусами, AI в контексте задач и нужными интеграциями.','meta.accountDescription':'Безопасный вход в Vertux Nexus по приглашению.','meta.downloadDescription':'Страница будущего установщика Vertux Nexus для Windows и веб-доступа.','meta.updatesDescription':'Краткая история изменений сайта и будущие этапы Vertux Nexus.',
+    'meta.homeDescription':'Vertux Nexus превращает разрозненные процессы, данные и сервисы компании в персональную рабочую систему.','meta.homeTitle':'Vertux Nexus - ваш процесс, собранный в систему','meta.homeOgDescription':'Индивидуальный рабочий контур с понятными статусами, AI в контексте задач и нужными интеграциями.','meta.accountDescription':'Безопасный вход в Vertux Nexus по приглашению.','meta.downloadDescription':'Страница будущего установщика Vertux Nexus для Windows и веб-доступа.','meta.updatesDescription':'Выпуски приложения Nexus и Invest Workspace: изменения, доступные версии и планы.',
     'sections.system':'01 / СИСТЕМА','sections.product':'02 / ПРОДУКТ','sections.deployment':'03 / РАЗМЕЩЕНИЕ','sections.portal':'04 / КАБИНЕТ',
     'hero.note':'ДОСТУП ПО ПРИГЛАШЕНИЮ · WINDOWS + ВЕБ · УПРАВЛЯЕМОЕ ОБСЛУЖИВАНИЕ','demo.role':'ДОСТУП ВЛАДЕЛЬЦА','status.online':'В СЕТИ','integrations.mode':'ОБЛАКО + ЛОКАЛЬНЫЙ УЗЕЛ',
     'micro.secure':'ЗАЩИЩЕНО','micro.messages':'СООБЩЕНИЯ','micro.status':'СТАТУС','micro.onTrack':'В НОРМЕ','micro.ready':'ГОТОВО','micro.local':'ЛОКАЛЬНО',
