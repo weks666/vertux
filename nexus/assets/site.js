@@ -206,9 +206,9 @@
     'meta.homeDescription':'Рабочие пространства Vertux Nexus: системы под задачи бизнеса и Invest Workspace для личного портфеля. Готовим подписку Invest от 1 490 ₽ в месяц.',
     'meta.homeTitle':'Vertux Nexus — рабочие пространства для бизнеса и инвестиций',
     'meta.homeOgDescription':'Индивидуальные Workspace для компаний и Invest Workspace для инвестора. Возможности, интерфейс и условия будущего запуска.',
-    'nav.business':'Для бизнеса', 'nav.platform':'Платформа',
+    'nav.business':'Custom Workspace', 'nav.platform':'Платформа',
     'hero.title':'Ваши задачи.<br><em>Собраны в Nexus.</em>',
-    'hero.lede':'Рабочие пространства для бизнеса и личных инвестиций. Создаём системы под процессы компаний и готовим Invest Workspace к запуску по подписке.',
+    'hero.lede':'Пространства для инвестиций, личных задач и команд. Создаём системы под процессы компаний и готовим Invest Workspace к запуску по подписке.',
     'hero.primary':'Изучить Invest Workspace', 'hero.secondary':'Workspace для бизнеса',
     'hero.note':'Одна платформа. Разные задачи. Свой Workspace.',
     'invest.status':'Готовим к запуску', 'invest.title':'Весь портфель.<br><em>В поле зрения.</em>',
@@ -234,19 +234,19 @@
     'invest.a2':'Планируем анализ компаний, работу с новостями и 30-дневный пробный период. Сейчас выбираем AI-провайдера и лимиты: эти функции и пробный доступ ещё не запущены.',
     'invest.q3':'Можно ли пользоваться с телефона?',
     'invest.a3':'Первую версию готовим для Windows. Общий облачный портфель и доступ к нему с телефона пока не входят в заявленные возможности.',
-    'business.title':'Workspace по логике<br><em>вашей компании.</em>',
-    'business.lede':'Для задач бизнеса создаём индивидуальные системы: ваши процессы, роли и интеграции. Состав, стоимость и сопровождение определяем после знакомства с задачей.',
+    'business.title':'Один из примеров:<br><em>работа команды.</em>',
+    'business.lede':'Здесь показано пространство команды: проекты, звонки и база знаний. Это один из вариантов Custom Workspace — состав вашей системы зависит от задачи.',
     'business.contact':'Обсудить задачу',
-    'demo.caption':'Пример Workspace для бизнеса · выберите раздел внутри интерфейса',
-    'footer.homeNote':'Рабочие пространства для бизнеса и личных инвестиций.'
+    'demo.caption':'Пример командного Workspace · выберите раздел внутри интерфейса',
+    'footer.homeNote':'Пространства для инвестиций, личных задач и команд.'
   });
   Object.assign(translations.en, {
     'meta.homeDescription':'Vertux Nexus workspaces: custom business systems and Invest Workspace for your portfolio. Preparing an Invest subscription from RUB 1,490 per month.',
     'meta.homeTitle':'Vertux Nexus — workspaces for business and investing',
     'meta.homeOgDescription':'Custom workspaces for companies and Invest Workspace for individual investors. Features, interface and planned launch terms.',
-    'nav.business':'For business', 'nav.platform':'Platform',
+    'nav.business':'Custom Workspace', 'nav.platform':'Platform',
     'hero.title':'Your work.<br><em>Together in Nexus.</em>',
-    'hero.lede':'Workspaces for business and personal investing. We build systems around company processes and are preparing Invest Workspace for a subscription launch.',
+    'hero.lede':'Workspaces for investing, personal goals and teams. We build systems around company processes and are preparing Invest Workspace for a subscription launch.',
     'hero.primary':'Explore Invest Workspace', 'hero.secondary':'A workspace for business',
     'hero.note':'One platform. Different needs. Your own workspace.',
     'invest.status':'Preparing for launch', 'invest.title':'Your portfolio.<br><em>A clearer view.</em>',
@@ -272,11 +272,11 @@
     'invest.a2':'Company analysis, news features and a 30-day trial are planned. We are selecting an AI provider and usage limits; these features and the trial have not launched yet.',
     'invest.q3':'Can I use it on my phone?',
     'invest.a3':'The first version is being prepared for Windows. A shared cloud portfolio and mobile access are not part of the announced features yet.',
-    'business.title':'A workspace built<br><em>around your company.</em>',
-    'business.lede':'For business needs, we build custom systems with your processes, roles and integrations. Scope, pricing and support are agreed after we discuss your needs.',
+    'business.title':'One possible workspace:<br><em>your team at work.</em>',
+    'business.lede':'This example brings together team projects, calls and shared knowledge. It is one possible Custom Workspace; your system is shaped by your needs.',
     'business.contact':'Discuss your project',
-    'demo.caption':'Example business workspace · choose a section inside the interface',
-    'footer.homeNote':'Workspaces for business and personal investing.'
+    'demo.caption':'Example team workspace · choose a section inside the interface',
+    'footer.homeNote':'Workspaces for investing, personal goals and teams.'
   });
 
   Object.assign(translations.ru, {
@@ -319,8 +319,8 @@
     'compare.choice':'Чем индивидуальный Workspace отличается от Invest?',
     'compare.invest':'Общий продукт для личного инвестиционного портфеля. Вы подключаете свой счёт и меняете настройки; набор возможностей развивается вместе с продуктом.',
     'compare.investPrice':'Планируемая подписка: 1 490 ₽ за месяц.', 'compare.toInvest':'Вернуться к Invest',
-    'compare.businessTitle':'Workspace для компании',
-    'compare.business':'Отдельный проект под ваш процесс: свои сущности, этапы, роли сотрудников и интеграции. Сначала разбираем задачу, затем согласуем состав и разработку.',
+    'compare.businessTitle':'Custom Workspace',
+    'compare.business':'Отдельный проект для ваших задач: свои разделы, данные, действия и интеграции. Сначала разбираем задачу, затем согласуем состав и разработку.',
     'compare.businessPrice':'Стоимость и сопровождение рассчитываются под задачу.'
   });
   Object.assign(translations.en, {
@@ -376,8 +376,8 @@
   Object.assign(translations.ru,{
   "newnav.product": "Продукт",
   "newnav.invest": "Портфель, аналитика и ваш план",
-  "newnav.business": "Workspace для бизнеса",
-  "newnav.businessNote": "Система под процессы компании",
+  "newnav.business": "Custom Workspace",
+  "newnav.businessNote": "Для себя, проекта или команды",
   "newnav.desktop": "Приложение Nexus для Windows ↗",
   "newnav.security": "Безопасность",
   "newnav.login": "Войти",
@@ -408,7 +408,7 @@
   "project.title": "У вашей компании свой способ работать.",
   "project.body": "Обсудим, что стоит объединить в одном Workspace: процессы, данные и инструменты команды.",
   "project.action": "Обсудить свой Workspace ↗",
-  "demo.caption": "Пример Workspace для бизнеса · учебные данные",
+  "demo.caption": "Пример командного Workspace · учебные данные",
   "final.contact": "Начать с Invest",
   "security.title": "Ваши данные. Понятные границы доступа.",
   "security.lede": "У личного Invest и кабинета Nexus разные задачи. Рабочие данные портфеля обрабатывает ваше приложение, а кабинет управляет аккаунтом и подпиской.",
@@ -437,8 +437,8 @@
   Object.assign(translations.en,{
   "newnav.product": "Product",
   "newnav.invest": "Your portfolio, analytics and plan",
-  "newnav.business": "Business Workspace",
-  "newnav.businessNote": "Built around your company workflows",
+  "newnav.business": "Custom Workspace",
+  "newnav.businessNote": "For personal goals, projects or teams",
   "newnav.desktop": "Nexus app for Windows ↗",
   "newnav.security": "Security",
   "newnav.login": "Log in",
@@ -469,7 +469,7 @@
   "project.title": "Your company has its own way of working.",
   "project.body": "Let’s discuss the workflows, data and team tools that belong in your Workspace.",
   "project.action": "Discuss your Workspace ↗",
-  "demo.caption": "Business Workspace example · sample data",
+  "demo.caption": "Team workspace example · sample data",
   "final.contact": "Start with Invest",
   "security.title": "Your data. Clear access boundaries.",
   "security.lede": "Personal Invest and the Nexus account have different jobs. Your app processes portfolio data, while your account manages identity and subscriptions.",
@@ -572,7 +572,8 @@
     });
     nav.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
-        closeMenu();
+        // Preserve native anchor navigation before collapsing the mobile menu.
+        setTimeout(closeMenu, 0);
       });
     });
     document.addEventListener('keydown', function (event) {
@@ -587,7 +588,7 @@
   }
 
   document.querySelectorAll('.nav-product').forEach(function (menu) {
-    menu.querySelectorAll('a').forEach(function (link) { link.addEventListener('click', function () { menu.open = false; }); });
+    menu.querySelectorAll('a').forEach(function (link) { link.addEventListener('click', function () { setTimeout(function () { menu.open = false; }, 0); }); });
     document.addEventListener('click', function (event) { if (!menu.contains(event.target)) menu.open = false; });
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary').focus(); }

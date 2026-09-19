@@ -42,7 +42,7 @@ for (const name of result.files) {
   let text = standardRuntimeBytes('public/' + name, await readFile(path)).toString('utf8');
   if (name === 'index.html') {
     text = text.replace('<h1 id="viewTitle">Обзор портфеля</h1>', '<h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Учебные данные</span>');
-    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css">\n</head>');
+    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260919-core">\n</head>');
     // The offline export calculates the six preset ranges at build time.
     // Keep custom-date fields explicitly read-only instead of letting a visitor
     // edit them and silently fall back to the previous preset.

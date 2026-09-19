@@ -8,7 +8,8 @@ html, body { height: 100%; min-height: 0; min-width: 0; overflow: hidden; }
 .navigation { margin-top: 18px; flex: 1; }
 .nav-item { font-size: 12px; gap: 9px; }
 .nav-heading { font-size: 10px; }
-.rail-footer { flex-shrink: 0; }
+/* Public preview exposes the core product, without account and service controls. */
+.rail-footer { display: none !important; }
 .topbar { min-height: 72px; padding: 14px 22px; gap: 12px; flex-shrink: 0; }
 .topbar h1 { font-size: 19px; }
 .topbar-title > .demo-stamp { display: block !important; font-size: 10px; letter-spacing: .04em; color: #b9a9ff; margin-top: 4px; }

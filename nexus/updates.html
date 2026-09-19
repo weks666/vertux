@@ -4,19 +4,22 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07070a">
   <meta name="description" content="Выпуски приложения Nexus и Invest Workspace: изменения, доступные версии и планы." data-i18n-content="meta.updatesDescription"><title>Обновления - Vertux Nexus</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/fonts/fonts.css?v=20260916a"><link rel="stylesheet" href="assets/site.css?v=20260919-release">
-<link rel="stylesheet" href="assets/site-refinement.css?v=20260916d">  <link rel="stylesheet" href="assets/fonts/rubik.css?v=20260916d">
+<link rel="stylesheet" href="assets/fonts/rubik.css?v=20260916d">
+<link rel="stylesheet" href="assets/site-refinement.css?v=20260916d">
 <link rel="stylesheet" href="assets/product-site.css?v=20260919a">
+<link rel="stylesheet" href="assets/experience.css?v=20260919c">
 </head>
-<body data-page="updates">
-  <div class="noise" aria-hidden="true"></div><div class="pointer-light" aria-hidden="true"></div>
+<body class="nx-site nx-updates" data-page="updates">
+<div class="nx-atmosphere" aria-hidden="true"><div class="nx-aurora nx-aurora-one"></div><div class="nx-aurora nx-aurora-two"></div><svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="nx-ribbon"><stop stop-color="#6c86ff"/><stop offset=".48" stop-color="#cc94ff"/><stop offset="1" stop-color="#f2b3de"/></linearGradient></defs><path d="M-100 630 C 420 1040, 700 -180, 1700 330"/><path d="M-100 647 C 420 1027, 700 -167, 1700 355"/><path d="M-100 664 C 420 1014, 700 -154, 1700 380"/><path d="M-100 681 C 420 1001, 700 -141, 1700 405"/><path d="M-100 698 C 420 988, 700 -128, 1700 430"/><path d="M-100 715 C 420 975, 700 -115, 1700 455"/><path d="M-100 732 C 420 962, 700 -102, 1700 480"/><path d="M-100 749 C 420 949, 700 -89, 1700 505"/><path d="M-100 766 C 420 936, 700 -76, 1700 530"/><path d="M-100 783 C 420 923, 700 -63, 1700 555"/><path d="M-100 800 C 420 910, 700 -50, 1700 580"/><path d="M-100 817 C 420 897, 700 -37, 1700 605"/><path d="M-100 834 C 420 884, 700 -24, 1700 630"/><path d="M-100 851 C 420 871, 700 -11, 1700 655"/><path d="M-100 868 C 420 858, 700 2, 1700 680"/><path d="M-100 885 C 420 845, 700 15, 1700 705"/></svg></div>
+<div class="pointer-light" aria-hidden="true"></div>
   <header class="site-header" id="siteHeader">
     <div class="nav-wrap">
       <a class="brand" href="index.html" aria-label="Vertux Nexus"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a>
       <nav class="main-nav" id="mainNav" aria-label="Главная навигация" data-i18n-aria="aria.mainNav">
         <details class="nav-product"><summary><span data-nx-en="Products">Продукты</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3"/></svg></summary>
-          <div class="nav-dropdown">
+          <div class="nav-dropdown"><a href="index.html" data-nx-home-link><b>Nexus</b><span data-nx-en="Overview and product selection">Обзор и выбор продукта</span></a>
             <a href="invest.html"><b>Invest Workspace</b><span data-i18n="newnav.invest">Портфель, аналитика и ваш план</span></a>
-            <a href="workspace.html"><b data-i18n="newnav.business">Workspace для бизнеса</b><span data-i18n="newnav.businessNote">Система под процессы компании</span></a>
+            <a href="workspace.html"><b data-i18n="newnav.business">Custom Workspace</b><span data-i18n="newnav.businessNote">Для себя, проекта или команды</span></a>
             <a class="nav-download" href="download.html" data-i18n="newnav.desktop">Приложение Nexus для Windows ↗</a>
           </div>
         </details>
@@ -33,7 +36,7 @@
       <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mainNav" aria-label="Открыть меню" data-i18n-aria="aria.menu"><span></span><span></span></button>
     </div>
   </header>
-  <main class="subpage updates-page"><div class="shell updates-shell">
+  <main class="subpage updates-page" id="content"><div class="shell updates-shell">
     <header class="updates-heading reveal"><div><p class="section-code" data-i18n="updates.kicker">ОБНОВЛЕНИЯ / NEXUS</p><h1 data-i18n="updates.titleCompact">История изменений</h1><p data-i18n="updates.ledeCompact">Выпуски приложения Nexus и Invest Workspace: что изменилось и что доступно сейчас.</p></div><div class="subpage-actions"><a class="pill pill-ghost" href="index.html" data-i18n="updates.back">К продукту</a><a class="pill pill-primary" href="download.html" data-i18n="updates.access">Получить доступ</a></div></header>
     <div class="changelog-layout">
       <aside class="changelog-index reveal"><span data-i18n="updates.current">ДОСТУПНО ДЛЯ WINDOWS</span><dl class="release-versions"><div><dt>Nexus</dt><dd>0.6.39</dd></div><div><dt>Invest</dt><dd>0.6.5</dd></div></dl><p data-i18n="updates.note">Версия приложения Nexus и версия Invest обновляются отдельно. Здесь указаны доступные выпуски, а подготовка следующего отмечена отдельно.</p><a href="#planned" data-i18n="updates.toPlan">Что готовится дальше ↓</a></aside>
@@ -47,15 +50,16 @@
   </div></main>
   <footer class="site-footer">
     <div class="shell footer-grid">
-      <div><a class="brand footer-brand" href="index.html"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a><p data-i18n="footer.homeNote">Рабочие пространства для бизнеса и личных инвестиций.</p></div>
-      <nav><span data-i18n="footer.product">ПРОДУКТ</span><a href="invest.html">Invest Workspace</a><a href="workspace.html" data-i18n="nav.business">Для бизнеса</a><a href="pricing.html" data-nx-en="Plans">Тарифы</a></nav>
+      <div><a class="brand footer-brand" href="index.html"><span class="brand-icon"><img src="assets/vertux-mark.png" alt=""></span><span class="brand-name"><b>Vertux</b><small>NEXUS</small></span></a><p data-i18n="footer.homeNote">Пространства для инвестиций, личных задач и команд.</p></div>
+      <nav><span data-i18n="footer.product">ПРОДУКТ</span><a href="invest.html">Invest Workspace</a><a href="workspace.html" data-i18n="nav.business">Custom Workspace</a><a href="pricing.html" data-nx-en="Plans">Тарифы</a></nav>
       <nav><span data-i18n="footer.access">ДОСТУП</span><a href="download.html" data-i18n="footer.windows">Windows</a><a href="https://nexus.vertux.online/account.html" data-i18n="nav.account">Кабинет</a><a href="security.html" data-i18n="newnav.security">Безопасность</a><a href="updates.html" data-i18n="nav.updates">Обновления</a></nav>
       <nav><span data-i18n="footer.contact">СВЯЗЬ</span><a href="https://t.me/VertuxManager" target="_blank" rel="noopener noreferrer">Telegram</a><a class="contact-email" href="mailto:support@vertux.online">support@vertux.online</a><a href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux Studio</a></nav>
       <nav aria-label="Документы" data-nx-aria-en="Documents"><span data-nx-en="DOCUMENTS">ДОКУМЕНТЫ</span><a href="offer.html" data-nx-en="Public offer">Публичная оферта</a><a href="privacy.html" data-nx-en="Privacy policy">Политика конфиденциальности</a><a href="consent.html" data-nx-en="Inquiry consent">Согласие на обработку заявки</a></nav>
     </div>
     <div class="shell footer-bottom"><span>© 2026 VERTUX NEXUS</span><a class="studio-credit" href="https://vertux.online" target="_blank" rel="noopener noreferrer"><img src="assets/vertux-mark.png" alt=""><span data-i18n-html="footer.made">Сделано в студии <b>Vertux</b></span></a></div>
   </footer>
-  <script src="assets/site.js?v=20260919-release"></script>
+  <script src="assets/site.js?v=20260919-navigation"></script>
 <script src="assets/product-site.js?v=20260919a"></script>
 <script src="assets/header-session.js?v=20260917a"></script>
+<script src="assets/experience.js?v=20260919c"></script>
 </body></html>
