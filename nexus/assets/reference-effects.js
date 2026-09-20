@@ -1,20 +1,19 @@
 /* Border Beam motion adapted from Motiq's MIT-licensed Border Beam Panel
  * https://motiq.dev/components/border-beam-panel (reference supplied by the user).
- * Native implementation: spring-driven angular velocity, offscreen suspension.
+ * Native implementation: constant angular velocity, offscreen suspension.
  */
 (() => {
   'use strict';
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  const items=[...document.querySelectorAll('[data-beam-panel],.nx-button-primary:not(:disabled),.nav-cta')].map(el=>({el,visible:false,angle:40,speed:0,velocity:0,hover:false}));
+  const items=[...document.querySelectorAll('[data-beam-panel],.nx-button-primary:not(:disabled),.nav-cta')].map(el=>({el,visible:false,angle:40}));
   let frame=0,last=0;
   function runnable(){return !document.hidden&&!reduced.matches&&items.some(item=>item.visible);}
   function tick(now){
     frame=0;if(!runnable()){last=0;return;}
     const dt=Math.min((now-(last||now))/1000,.04);last=now;
     for(const item of items){if(!item.visible)continue;
-      const target=item.hover?170:26;
-      item.velocity+=(30*(target-item.speed)-11*item.velocity)*dt;
-      item.speed+=item.velocity*dt;item.angle=(item.angle+item.speed*dt)%360;
+      // A full turn takes 15 seconds, including hover and keyboard focus.
+      item.angle=(item.angle+24*dt)%360;
       item.el.style.setProperty('--nx-beam-angle',item.angle.toFixed(2)+'deg');
     }
     frame=requestAnimationFrame(tick);
@@ -30,8 +29,6 @@
   },{rootMargin:'30px'}):null;
   items.forEach(item=>{
     if(observer)observer.observe(item.el);else item.visible=true;
-    for(const event of ['pointerenter','focusin'])item.el.addEventListener(event,()=>{item.hover=true;});
-    for(const event of ['pointerleave','focusout'])item.el.addEventListener(event,()=>{item.hover=false;});
   });
   document.querySelectorAll('[data-motion-surface],[data-integration-map]').forEach(el=>observer?.observe(el));
   document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);sync();

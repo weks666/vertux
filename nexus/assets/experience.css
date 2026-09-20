@@ -530,3 +530,30 @@
   .nx-aurora { will-change:auto; }
   .nx-enter[data-visible="false"] { opacity:1; transform:none; }
 }
+
+/* Download essentials stay beside the installer; details are optional. */
+.nx-install-hero { padding-block:135px 55px; align-items:center; }
+.nx-install-hero>div>p { margin-block:20px 26px; }
+.nx-install-specs { max-width:560px; margin:0; }
+.nx-install-specs>div { display:flex; justify-content:space-between; gap:20px; padding:13px 0; border-bottom:1px solid var(--nx-line); font-size:14px; }
+.nx-install-specs dt { color:#c9bbd7; }.nx-install-specs dd { margin:0; }
+.nx-install-help { max-width:560px; margin-top:24px; scroll-margin-top:100px; }
+.nx-install-help summary { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#d6c5f3; cursor:pointer; list-style:none; font-size:14px; }
+.nx-install-help summary::-webkit-details-marker { display:none; }
+.nx-install-help summary .nx-icon { transform:rotate(90deg); transition:transform .2s; }
+.nx-install-help[open] summary .nx-icon { transform:rotate(-90deg); }
+.nx-install-help summary:focus-visible { outline:2px solid #dcc7ff; outline-offset:6px; border-radius:4px; }
+.nx-install-help ol { padding-left:20px; margin-top:20px; color:#c9bbd7; font-size:13px; line-height:1.7; }.nx-install-help li+li { margin-top:9px; }
+.nx-plan-features { width:min(820px,100%); margin:40px auto 28px; }
+.nx-plan-features ul { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 45px; }
+.nx-plan-features li { display:flex; gap:12px; align-items:center; color:#eee5fa; min-height:53px; border-bottom:1px solid #bba3db24; font-size:14px; }
+.nx-plan-features li .nx-icon { width:19px; height:19px; flex:none; color:#b999ff; stroke-width:2; }
+.nx-plan-features li.is-excluded { color:#a69bae; }.nx-plan-features li.is-excluded .nx-icon { color:#8b7b9c; }
+.nx-plan-feature-note { max-width:640px; margin:22px auto 0; text-align:center; font-size:12px; color:#c6b6d8; }
+.nx-pricing-body>.nx-availability { text-align:center; font-size:13px; }
+/* Pair each explanation with its visual on the same softly divided row. */
+.nx-usecases>.nx-section-head { margin-bottom:30px; }
+.nx-usecase { gap:56px; margin-top:0; padding-block:32px; border-top:1px solid #bca1dd30; }
+.nx-usecase>div>p { max-width:460px; }
+@media(max-width:720px) { .nx-install-hero { padding-block:120px 48px; gap:38px; }.nx-plan-features ul { grid-template-columns:1fr; }.nx-usecase { gap:24px; padding-block:28px; }.nx-plan-features { margin-block:26px; } }
+@media(prefers-reduced-motion:reduce) { .nx-install-help summary .nx-icon { transition:none; } }
