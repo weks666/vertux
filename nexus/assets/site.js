@@ -91,7 +91,7 @@
   Object.assign(translations.ru, {
   "updates.ledeCompact": "Выпуски приложения Nexus и Invest Workspace: что изменилось и что доступно сейчас.",
   "updates.current": "ДОСТУПНО ДЛЯ WINDOWS",
-  "updates.note": "Версия приложения Nexus и версия Invest обновляются отдельно. Здесь указаны доступные выпуски, а подготовка следующего отмечена отдельно.",
+  "updates.note": "Nexus и Invest обновляются отдельно. Ниже — выпущенные изменения.",
   "updates.toPlan": "Что готовится дальше ↓",
   "updates.nexusTitle": "Nexus 0.6.39 — доступ к Workspace",
   "updates.nexusA": "Новый установщик для Windows доступен на странице загрузки.",
@@ -112,7 +112,7 @@
   Object.assign(translations.en, {
   "updates.ledeCompact": "Nexus and Invest Workspace releases: what changed and what is available now.",
   "updates.current": "AVAILABLE FOR WINDOWS",
-  "updates.note": "Nexus and Invest use separate version numbers. Available releases and upcoming work are listed separately.",
+  "updates.note": "Nexus and Invest are updated separately. Released changes are listed below.",
   "updates.toPlan": "What is next ↓",
   "updates.nexusTitle": "Nexus 0.6.39 — Workspace access",
   "updates.nexusA": "The updated Windows installer is available on the download page.",

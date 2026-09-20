@@ -70,14 +70,14 @@
   }
   function queueScroll(){if(!scrollPending){scrollPending=true;requestAnimationFrame(paintTour);}}
   if(tour){window.addEventListener('scroll',queueScroll,{passive:true});window.addEventListener('resize',queueScroll,{passive:true});desktopTour.addEventListener('change',queueScroll);reduced.addEventListener('change',queueScroll);paintTour();}
-  // Dated display equivalent, never an alternative checkout currency.
+  // CBR USD/RUB on 19 September 2026: 84.1975; rechecked at publication.
+  // Display currency follows language. Checkout remains RUB.
   const exchangeRate=84.1975;
-  let displayCurrency=english()?'USD':'RUB';const currencySelect=$('[data-currency]');
+  let displayCurrency=english()?'USD':'RUB';
   function paintPrices(){
-    const en=english(),usd=displayCurrency==='USD',locale=en?'en-US':'ru-RU';if(currencySelect)currencySelect.value=displayCurrency;
+    const en=english(),usd=displayCurrency==='USD',locale=en?'en-US':'ru-RU';
     $$('[data-price-rub]').forEach(node=>{const rub=Number(node.dataset.priceRub);if(!Number.isFinite(rub))return;const amount=Math.round(usd?rub/exchangeRate:rub).toLocaleString(locale);node.textContent=usd?`$${amount}`:`${amount} ₽`;});
   }
-  currencySelect?.addEventListener('change',()=>{displayCurrency=currencySelect.value==='USD'?'USD':'RUB';paintPrices();});
   function repaint(){previews.forEach(root=>paintPreview(root,root.dataset.period||'month'));paintPrices();}
   document.addEventListener('nexus:language-change',()=>{displayCurrency=english()?'USD':'RUB';repaint();});repaint();
   // Large editorial groups appear once. Without JS all content stays visible.
