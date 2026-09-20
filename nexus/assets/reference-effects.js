@@ -5,7 +5,7 @@
 (() => {
   'use strict';
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  const items=[...document.querySelectorAll('[data-beam-panel],.nx-button-primary:not(:disabled),.nav-cta')].map(el=>({el,visible:false,angle:40}));
+  const items=[...document.querySelectorAll('[data-beam-panel]')].map(el=>({el,visible:false,angle:40}));
   let frame=0,last=0;
   function runnable(){return !document.hidden&&!reduced.matches&&items.some(item=>item.visible);}
   function tick(now){
@@ -30,7 +30,7 @@
   items.forEach(item=>{
     if(observer)observer.observe(item.el);else item.visible=true;
   });
-  document.querySelectorAll('[data-motion-surface],[data-integration-map]').forEach(el=>observer?.observe(el));
+  document.querySelectorAll('[data-motion-surface],[data-integration-map],.nx-button-primary:not(:disabled),.nav-cta').forEach(el=>observer?.observe(el));
   document.addEventListener('visibilitychange',sync);reduced.addEventListener('change',sync);sync();
   // Wires follow rendered endpoints after responsive layout, fonts and translations.
   for(const map of document.querySelectorAll('[data-integration-map]')){
