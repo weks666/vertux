@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "releases": [
+    {
+      "id": "nexus-0-6-43-invest-0-6-9",
+      "date": "2026-09-21",
+      "versions": { "Nexus": "0.6.43", "Invest": "0.6.9" },
+      "title": { "ru": "Единый Терминал", "en": "One Terminal for your workflow" },
+      "changes": [
+        { "type": "added", "ru": "Каталог, список наблюдения, график, статистика, позиции участников и уведомления собраны в одном разделе. Выбранный инструмент сохраняется при переключении вкладок.", "en": "The catalogue, watchlist, chart, statistics, participant positions and alerts now share one section. The selected instrument stays with you across tabs." },
+        { "type": "changed", "ru": "Терминал можно развернуть на весь экран. Уточнены фильтры, панель графика, подписи времени и единицы котировок фьючерсов.", "en": "The Terminal can expand to full screen. Filters, chart controls, timestamps and futures quote units have been refined." },
+        { "type": "fixed", "ru": "Исправлены восстановление сеанса Workspace при загрузке истории и ошибочная недоступность настроек обновления Nexus. Обновление сохраняет профиль и данные Invest.", "en": "Fixed Workspace session recovery during history loading and incorrectly unavailable Nexus update settings. The update preserves your profile and Invest data." },
+        { "type": "added", "ru": "Позиции физических и юридических лиц доступны для поддерживаемых фьючерсов MOEX. У текущего источника задержка 15 дней — она указана рядом с данными.", "en": "Individual and institutional participant positions are available for supported MOEX futures. The current source has a 15-day delay, shown alongside the data." }
+      ]
+    },
+    {
+      "id": "invest-0-6-8",
+      "date": "2026-09-21",
+      "versions": { "Invest": "0.6.8" },
+      "title": { "ru": "История счёта и понятные графики", "en": "Account history and clearer charts" },
+      "changes": [
+        { "type": "added", "ru": "Загрузка операций с даты открытия брокерского счёта с продолжением после прерывания. Глубина истории зависит от данных, доступных у брокера; цены догружаются в фоне.", "en": "Operations can load from the brokerage account opening date and resume after an interruption. History depth depends on broker data availability; prices load in the background." },
+        { "type": "fixed", "ru": "Отрицательные значения в подсказках графика показаны красным, ноль — без плюса. Ограничено отдаление за границы доступных дат, выровнены таблицы аналитики.", "en": "Negative chart tooltip values are red and zero has no plus sign. Zooming out is limited to the available dates, and analytics tables are aligned." },
+        { "type": "changed", "ru": "Добавлены сохраняемые статусы идей, расчёт единиц и лотов, отдельная загрузка котировки компании и общий блок источников. Обновлены личная подписка, устройства и поддержка.", "en": "Added persistent idea statuses, unit and lot calculations, independent company quote loading and a shared sources block. Personal subscription, devices and support views have been updated." }
+      ]
+    },
+    {
+      "id": "nexus-0-6-41-invest-0-6-7",
+      "date": "2026-09-20",
+      "versions": { "Nexus": "0.6.41", "Invest": "0.6.7" },
+      "title": { "ru": "Обновлённые экраны Invest", "en": "Updated Invest screens" },
+      "changes": [
+        { "type": "fixed", "ru": "Установщик доставляет обновлённый интерфейс Invest. Исправлено согласование известных прежних установок, которое могло мешать запуску Workspace.", "en": "The installer now delivers the updated Invest interface. Fixed reconciliation of known previous installations that could prevent Workspace from opening." },
+        { "type": "changed", "ru": "Новости загружаются постранично. Факты компании и AI-разбор разделены; в аналитике появились итоги по счетам и график пополнений и выводов.", "en": "News loads page by page. Company facts and AI analysis have separate views; analytics includes account totals and a deposits and withdrawals chart." },
+        { "type": "changed", "ru": "Переработаны ценовые уведомления, календарь, журнал синхронизации и поддержка. Улучшена компоновка на узком экране.", "en": "Price alerts, the calendar, sync log and support have been revised, with improved layouts for narrow screens." }
+      ]
+    },
+    {
+      "id": "nexus-0-6-40",
+      "date": "2026-09-20",
+      "versions": { "Nexus": "0.6.40" },
+      "title": { "ru": "Установка и обновление Nexus", "en": "Nexus installation and updates" },
+      "changes": [
+        { "type": "changed", "ru": "Новый установщик опубликован на сайте и в канале обновлений приложения. Выпуск совместим с Invest 0.6.6.", "en": "The new installer is available on the website and through the in-app update channel. This release supports Invest 0.6.6." },
+        { "type": "fixed", "ru": "Исправлена доставка совместимого локального компонента Invest. При обновлении сохраняются аккаунт, настройки и существующие данные.", "en": "Fixed delivery of the compatible local Invest component. Updating preserves your account, settings and existing data." }
+      ]
+    },
+    {
+      "id": "invest-0-6-6",
+      "date": "2026-09-19",
+      "versions": { "Invest": "0.6.6" },
+      "title": { "ru": "Портфель, план и инструменты", "en": "Portfolio, planning and instruments" },
+      "changes": [
+        { "type": "changed", "ru": "Уплотнены таблицы и фильтры, выровнены карточки счетов. У графика инструмента появились цены открытия, максимума, минимума и закрытия; поиск по каталогу раскрывается отдельно.", "en": "Tables and filters are more compact and account cards are aligned. Instrument charts show open, high, low and close prices, with a separate expandable catalogue search." },
+        { "type": "added", "ru": "Калькулятор сделки дополнен уровнями входа, стопа и цели. В словаре появились связанные термины, формулы и числовые примеры.", "en": "The trade calculator includes entry, stop and target levels. The glossary now has related terms, formulas and worked examples." },
+        { "type": "changed", "ru": "Календарь, факты компании и журнал синхронизации получили отдельные состояния загрузки. Профиль, подписка и поддержка доступны в нижней части меню.", "en": "The calendar, company facts and sync log have clearer loading states. Profile, subscription and support are available from the lower part of the menu." }
+      ]
+    },
+    {
+      "id": "workspace-recovery-2026-09-19",
+      "date": "2026-09-19",
+      "label": "NEXUS / INVEST",
+      "versions": {},
+      "title": { "ru": "Восстановлен запуск Invest", "en": "Invest startup restored" },
+      "changes": [
+        { "type": "fixed", "ru": "Исправлено несоответствие версий серверного каталога и установленного локального компонента. Существующие данные сохранены.", "en": "Fixed a version mismatch between the server catalogue and the installed local component. Existing data is preserved." },
+        { "type": "changed", "ru": "Юридические документы собраны в отдельную группу футера. История изменений показывает выпуски Nexus и Invest.", "en": "Legal documents are grouped in the footer. The changelog covers Nexus and Invest releases." }
+      ]
+    },
+    {
+      "id": "nexus-0-6-39",
+      "date": "2026-09-17",
+      "versions": { "Nexus": "0.6.39" },
+      "title": { "ru": "Доступ к Workspace", "en": "Access to your Workspace" },
+      "changes": [
+        { "type": "added", "ru": "Новый установщик для Windows доступен на странице загрузки.", "en": "The new Windows installer is available on the download page." },
+        { "type": "changed", "ru": "Вход в Invest через аккаунт Nexus и установка локального компонента из приложения.", "en": "Sign in to Invest with your Nexus account and install the local component from the app." },
+        { "type": "fixed", "ru": "Сохранена совместимость с предыдущим выпуском Invest.", "en": "Compatibility with the previous Invest release is preserved." }
+      ]
+    },
+    {
+      "id": "invest-0-6-5",
+      "date": "2026-09-17",
+      "versions": { "Invest": "0.6.5" },
+      "title": { "ru": "Портфель и личный кабинет", "en": "Portfolio and personal account" },
+      "changes": [
+        { "type": "added", "ru": "Портфель, операции, аналитика, инструменты и календарь в одном рабочем пространстве.", "en": "Portfolio, operations, analytics, instruments and calendar in one workspace." },
+        { "type": "added", "ru": "Общий профиль Nexus, подписка и поддержка доступны из Invest.", "en": "Your shared Nexus profile, subscription and support are available from Invest." },
+        { "type": "changed", "ru": "Подключение к Т-Инвестициям работает только на чтение. Брокерский ключ хранится на компьютере пользователя.", "en": "The T-Invest connection is read-only. Your broker key stays on your computer." }
+      ]
+    }
+  ]
+}
