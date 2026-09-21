@@ -2,6 +2,18 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-personal-study-server-27-4-47",
+      "date": "2026-09-21",
+      "label": "NEXUS SERVER 27.4.47",
+      "versions": {},
+      "title": { "ru": "Личный Workspace для учёбы", "en": "A personal study Workspace" },
+      "changes": [
+        { "type": "added", "ru": "Администратор Nexus может создать личный учебный Workspace в своём текущем аккаунте через раздел «Для себя». Отдельная регистрация не нужна.", "en": "Nexus administrators can create a personal study Workspace in their existing account from the personal section. No separate registration is required." },
+        { "type": "added", "ru": "Стартовая библиотека содержит 36 вводных уроков и 108 заданий по математике, русскому языку и информатике, формулы, подсказки и разборы. Короткие ответы проверяются автоматически; проверка открытых решений моделью пока не подключена.", "en": "The starter library contains 36 introductory lessons and 108 maths, Russian and computer science exercises, with formulas, hints and worked solutions. Short answers are checked automatically; AI review of open-ended solutions is not connected yet." },
+        { "type": "added", "ru": "Браузеры компьютера и телефона используют общий сохранённый прогресс и черновики. Есть лист для рукописного решения и защита от перезаписи более свежего черновика.", "en": "Desktop and phone browsers share saved progress and drafts. A handwriting sheet is included, with protection against overwriting a newer draft." }
+      ]
+    },
+    {
       "id": "nexus-0-6-43-invest-0-6-9",
       "date": "2026-09-21",
       "versions": { "Nexus": "0.6.43", "Invest": "0.6.9" },
