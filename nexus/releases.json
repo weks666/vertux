@@ -2,6 +2,39 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-10",
+      "date": "2026-09-22",
+      "versions": {
+        "Invest": "0.6.10"
+      },
+      "title": {
+        "ru": "Терминал: вкладки и рабочие раскладки",
+        "en": "Terminal: tabs and chart layouts"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "Пакет Invest 0.6.10 опубликован для Nexus 0.6.44. Новый установщик проходит заключительную проверку; публичная загрузка пока выдаёт Nexus 0.6.43 с совместимой версией Invest.",
+          "en": "Invest 0.6.10 is published for Nexus 0.6.44. The new installer is undergoing final verification; the public download still provides Nexus 0.6.43 with a compatible Invest version."
+        },
+        {
+          "type": "added",
+          "ru": "Список наблюдения слева показывает цены, изменения и мини-графики. Добавлены вкладки инструментов, раскладки на один, два и четыре графика, связанные период и курсор, сворачиваемые панели.",
+          "en": "The left watchlist shows prices, changes and sparklines. Instrument tabs, one-, two- and four-chart layouts, linked time ranges and crosshairs, and collapsible panels are included."
+        },
+        {
+          "type": "added",
+          "ru": "Уровни, тренды, лучи, прямоугольники, свободные линии и Фибоначчи сохраняются вместе с графиком. Есть отмена, повтор и стирание, индикаторы SMA, EMA, Bollinger, VWAP, RSI и MACD, планы и отметки уведомлений.",
+          "en": "Levels, trend lines, rays, rectangles, freehand drawings and Fibonacci studies persist with each chart. Undo, redo and erase are available, alongside SMA, EMA, Bollinger, VWAP, RSI and MACD, plans and alert markers."
+        },
+        {
+          "type": "added",
+          "ru": "Радар текущего списка сравнивает изменение цены, объём со средним и расстояние до собственных уровней. Условия фильтра сохраняются; источник, доступная выборка и время данных указаны в панели.",
+          "en": "The current-list radar compares price changes, volume against its average and distance to your levels. Filter conditions persist; the panel identifies its source, available sample and data time."
+        }
+      ]
+    },
+    {
       "id": "nexus-study-accuracy-server-27-4-50",
       "date": "2026-09-21",
       "label": "NEXUS SERVER 27.4.50",
