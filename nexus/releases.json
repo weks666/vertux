@@ -2,6 +2,28 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-study-accuracy-server-27-4-50",
+      "date": "2026-09-21",
+      "label": "NEXUS SERVER 27.4.50",
+      "versions": {},
+      "title": {
+        "ru": "Учёба: точность проверенных ответов",
+        "en": "Study: accuracy of graded answers"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Сочинения и другие работы, ожидающие проверки, больше не снижают точность: процент рассчитывается только по оценённым ответам.",
+          "en": "Essays and other work awaiting review no longer lower accuracy: the percentage is calculated from graded answers only."
+        },
+        {
+          "type": "changed",
+          "ru": "Все попытки по-прежнему учитываются в истории и календаре активности. В статистике добавлено пояснение расчёта точности.",
+          "en": "All attempts still count in the history and activity calendar. Statistics now explain how accuracy is calculated."
+        }
+      ]
+    },
+    {
       "id": "nexus-study-practice-server-27-4-48",
       "date": "2026-09-21",
       "label": "NEXUS SERVER 27.4.48",
