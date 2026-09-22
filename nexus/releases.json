@@ -2,6 +2,38 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-study-comfort-server-27-4-53",
+      "date": "2026-09-22",
+      "label": "NEXUS SERVER 27.4.53",
+      "versions": {},
+      "title": {
+        "ru": "Учёба: больше практики и объяснений",
+        "en": "Study: more practice and explanations"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "Банк расширен до 18 648 авторских вариантов по 56 темам. В 92 уроках доступны разобранные примеры и дополнительные объяснения; прежние задачи и история сохранены.",
+          "en": "The bank now contains 18,648 original practice variants across 56 topics. The 92 lessons include worked examples and additional explanations; existing problems and history are preserved."
+        },
+        {
+          "type": "added",
+          "ru": "Подобрано 41 русскоязычное видео YouTube для конкретных тем. Плеер открывается внутри урока по нажатию; его можно закрыть или перейти к видео по ссылке.",
+          "en": "41 Russian-language YouTube videos are matched to specific topics. Open a player inside the lesson, close it at any time or follow the direct video link."
+        },
+        {
+          "type": "fixed",
+          "ru": "Новое задание открывается после попытки. К посещённым задачам можно вернуться с сохранением ввода, подсказки и разборы сворачиваются. Режим сосредоточения скрывает дополнительные панели.",
+          "en": "A new problem becomes available after an attempt. Return to visited problems without losing input, collapse hints and solutions, and hide extra panels with focus mode."
+        },
+        {
+          "type": "changed",
+          "ru": "Стандартные дневные цели повышены до 200/150/200 баллов по математике, русскому и информатике, недельная — до 2 750. Добавлены три режима нагрузки; индивидуальные настройки сохранены.",
+          "en": "Default daily goals are now 200/150/200 points for mathematics, Russian and informatics, with a 2,750-point weekly goal. Three workload presets are available; custom settings are preserved."
+        }
+      ]
+    },
+    {
       "id": "nexus-site-account-server-27-4-52",
       "date": "2026-09-22",
       "label": "NEXUS SERVER 27.4.52",
