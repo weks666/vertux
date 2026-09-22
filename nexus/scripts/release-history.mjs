@@ -19,6 +19,7 @@ const pageUrl = new URL('../updates.html', import.meta.url);
 const dataText = await readFile(dataUrl, 'utf8');
 const data = JSON.parse(dataText);
 assert.equal(data.schemaVersion, 1);
+assert(!/nexus-(?:personal-)?study-|stepan.study|Учёб[аыу]|Study:/iu.test(dataText), 'Private Workspace information must not be published in the public changelog');
 assert(Array.isArray(data.releases) && data.releases.length > 0, 'Release history is empty');
 const ids = new Set(), versions = new Set(), latest = {};
 let previousDate = '9999-12-31';
