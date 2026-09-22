@@ -2,6 +2,35 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-45-invest-0-6-11",
+      "date": "2026-09-22",
+      "versions": {
+        "Nexus": "0.6.45",
+        "Invest": "0.6.11"
+      },
+      "title": {
+        "ru": "Восстановление запуска Invest",
+        "en": "Invest launch recovery"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Исправлена ошибка LOCAL_ENROLLMENT_CONFLICT при обновлении сохранённой установки Invest. Подключение к брокеру, счета и история сохраняются.",
+          "en": "Fixed LOCAL_ENROLLMENT_CONFLICT when updating an existing Invest installation. Broker connections, accounts and history are preserved."
+        },
+        {
+          "type": "fixed",
+          "ru": "Терминал отображается только в своём разделе и больше не появляется под обзором портфеля и аналитикой.",
+          "en": "The terminal appears only in its own section and no longer shows below the portfolio overview or analytics."
+        },
+        {
+          "type": "changed",
+          "ru": "Установщик на сайте и канал обновлений Nexus переведены на 0.6.45 с Invest 0.6.11. Для прежних версий Nexus сохраняется совместимый компонент Invest.",
+          "en": "The website installer and Nexus update channel now provide 0.6.45 with Invest 0.6.11. Earlier Nexus versions retain compatible Invest components."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-10",
       "date": "2026-09-22",
       "versions": {
@@ -14,8 +43,8 @@
       "changes": [
         {
           "type": "added",
-          "ru": "Пакет Invest 0.6.10 опубликован для Nexus 0.6.44. Новый установщик проходит заключительную проверку; публичная загрузка пока выдаёт Nexus 0.6.43 с совместимой версией Invest.",
-          "en": "Invest 0.6.10 is published for Nexus 0.6.44. The new installer is undergoing final verification; the public download still provides Nexus 0.6.43 with a compatible Invest version."
+          "ru": "Пакет Invest 0.6.10 опубликован для Nexus 0.6.44. Полный выпуск терминала для загрузки с сайта стал доступен в Nexus 0.6.45 с Invest 0.6.11.",
+          "en": "Invest 0.6.10 was published for Nexus 0.6.44. The complete terminal release became available through the website in Nexus 0.6.45 with Invest 0.6.11."
         },
         {
           "type": "added",
