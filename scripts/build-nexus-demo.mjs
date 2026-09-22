@@ -1,54 +1,49 @@
+import {websiteFixture} from './nexus-demo-fixture.mjs';
 import { resolve, dirname, join } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
-import { readFile, writeFile, copyFile, mkdtemp, cp } from 'node:fs/promises';
+import { readFile, writeFile, copyFile, mkdtemp, cp, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 // Only the public synthetic Pages export is an input, never a customer database.
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '../nexus');
 const source = resolve(process.argv[2] || join(site, '../../vertux-invest-workspace'));
-const { buildPagesPreview } = await import(pathToFileURL(join(source, 'scripts/build-pages-preview.mjs')));
+const { buildPagesPreview, PAGES_PUBLIC_FILES } = await import(pathToFileURL(join(source, 'scripts/build-pages-preview.mjs')));
 const { standardRuntimeBytes } = await import(pathToFileURL(join(source, 'scripts/standard-product-profile.mjs')));
 const staging = await mkdtemp(join(tmpdir(), 'nexus-public-demo-'));
-const tutorial = JSON.parse(await readFile(join(source, 'fixtures/tinvest/kovrocity-account.json'), 'utf8'));
-// A separate synthetic tutorial history. All calculations still run through the
-// application's normal view model; no customer files or network are inputs.
-tutorial.label = 'Synthetic Nexus website tutorial; no customer data';
-const values = [1000000,1004000,1003000,1014000,1018000,1013000,1024000,1032000,1295000,1318000,1307000,1239000];
-tutorial.accounts[0].portfolioHistory = values.map((value,index) => ({
-  asOf: new Date(Date.UTC(2026,6,31+index,21)).toISOString(),
-  totalAmountPortfolio: { units:String(value), nano:0, currency:'rub' },
-  cash:{units:'85000',nano:0,currency:'rub'}, blocked:{units:'0',nano:0,currency:'rub'},
-  expectedYield:{units:'0',nano:0,currency:'rub'}, positions:[],
-}));
-const earlier=[];
-// Midnight Moscow valuations let every demo preset and custom day use a real
-// start observation. Sparse weekly samples made valid filters look broken.
-for(let time=Date.UTC(2025,6,31,21);time<Date.UTC(2026,6,31,21);time+=86400000){
-  const progress=(time-Date.UTC(2025,6,31,21))/(365*86400000);
-  const value=Math.round(850000+150000*progress+Math.sin(progress*38)*5500);
-  earlier.push({...tutorial.accounts[0].portfolioHistory[0],asOf:new Date(time).toISOString(),totalAmountPortfolio:{units:String(value),nano:0,currency:'rub'}});
-}
-tutorial.accounts[0].portfolioHistory.unshift(...earlier);
-for(const [asOf,value] of [['2025-08-11T21:00:00.000Z',855000],['2026-05-11T21:00:00.000Z',970000],['2026-07-11T21:00:00.000Z',990000],['2026-08-04T21:00:00.000Z',1018000],['2026-08-11T21:00:00.000Z',1239000]]){
-  tutorial.accounts[0].portfolioHistory.push({...tutorial.accounts[0].portfolioHistory[0],asOf,totalAmountPortfolio:{units:String(value),nano:0,currency:'rub'}});
-}
-tutorial.accounts[0].portfolioHistory=[...new Map(tutorial.accounts[0].portfolioHistory.map(row=>[row.asOf,row])).values()]
-  .sort((a,b)=>a.asOf.localeCompare(b.asOf));
+const tutorial = await websiteFixture(source);
 const fixtureFile=join(staging,'tutorial.json');
 await writeFile(fixtureFile,JSON.stringify(tutorial));
-const result = await buildPagesPreview({ outputDirectory: join(staging, 'public'), fixtureFile, historyFrom:'2025-08-01T00:00:00.000Z', clean: false });
+const outputDirectory=join(staging,'public');
+let result;
+try { result=await buildPagesPreview({outputDirectory,fixtureFile,historyFrom:'2025-08-01T00:00:00.000Z',clean:false}); }
+catch(error) {
+ // The reviewed working UI adds four local assets. Preserve an exact allowlist;
+ // do not weaken the producer's network guards or copy arbitrary extra files.
+ if(!error.message.startsWith('Pages artifact allowlist mismatch:'))throw error;
+ const files=(await readdir(outputDirectory,{recursive:true,withFileTypes:true})).filter(f=>f.isFile()).map(f=>join(f.parentPath,f.name).slice(outputDirectory.length+1).replaceAll('\\','/')).sort();
+ const allowed=[...PAGES_PUBLIC_FILES,'chart-tool-catalog.js','terminal-editors.js','workspace-customization.css','workspace-customization.js'];
+ if(files.some(f=>!allowed.includes(f))||PAGES_PUBLIC_FILES.some(f=>!files.includes(f)))throw error;
+ result={outputDirectory,files};
+}
+
 for (const name of result.files) {
   if (!/\.(?:js|html|svg)$/u.test(name)) continue;
   const path = join(result.outputDirectory, name);
   let text = standardRuntimeBytes('public/' + name, await readFile(path)).toString('utf8');
+  if (name === 'runtime.js') {
+    const match=text.match(/^const PERIOD_BOOTSTRAPS = (.*);$/m);
+    if(!match)throw new Error('Demo period export contract changed');
+    const month=JSON.parse(match[1]).month;
+    text=text.replace(/^const BASE_BOOTSTRAP = .*;$/m,'const BASE_BOOTSTRAP = '+JSON.stringify(month)+';')
+      .replace(/^const PERIOD_BOOTSTRAPS = .*;$/m,'const PERIOD_BOOTSTRAPS = {all:BASE_BOOTSTRAP,month:BASE_BOOTSTRAP};');
+  }
   if (name === 'index.html') {
     text = text.replace('<h1 id="viewTitle">Обзор портфеля</h1>', '<h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Демо</span>');
-    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260919-core">\n</head>');
-    // The offline export calculates the six preset ranges at build time.
-    // Keep custom-date fields explicitly read-only instead of letting a visitor
-    // edit them and silently fall back to the previous preset.
+    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260922-readonly">\n</head>');
+    // The website shows one fixed period. Keep date fields explicitly
+    // read-only; all editing is locked by demo-service.js.
     text = text.replace(/<form[^>]+id="(?:statisticsPeriodForm|operationFilters)"[\s\S]*?<\/form>/gu, form => {
       const id = /id="([^"]+)"/u.exec(form)[1] + '-demo-note';
-      const note = 'В демо доступны готовые периоды. Свои даты можно выбрать в приложении.';
+      const note = 'В демо показан фиксированный период. Свои даты можно выбрать в приложении.';
       return form.replace(/<input[^>]+type="date"[^>]*>/gu, tag => tag
         .replace(/\saria-describedby="[^"]*"/u, '')
         .replace('type="date"', `type="date" readonly aria-describedby="${id}" title="${note}"`))
@@ -58,8 +53,14 @@ for (const name of result.files) {
     text = text.replace(/\s*<button[^>]+data-system-section="access"[\s\S]*?<\/button>/u, '');
     text = text.replace('</body>', '  <script src="./demo-service.js" defer></script>\n</body>');
   }
-  if (name === 'app.js') text = text.replace("from './runtime.js'", "from './demo-runtime.js'");
-  if (name === 'market-calendar.js') text = text.replace('!getBootstrap()?.preview?.static', '(!getBootstrap()?.preview?.static || getBootstrap()?.preview?.interactiveTutorial === true)');
+  if (name === 'terminal-workbench.js') text=text.replace('indicators:{volume:true},drawings:[]',"indicators:{volume:true},studies:[{id:'demo-sma20',type:'sma',period:20,color:'#e1b264',visible:true},{id:'demo-ema50',type:'ema',period:50,color:'#b9a9ff',visible:true}],drawings:[]").replace('function dirty(key){','function dirty(key){if(getBootstrap()?.preview?.readOnly)return;').replace("freshness.fixture?'Тестовые данные':'Т‑Инвест'", "freshness.fixture?'Демо':'Демо'");
+  if (name === 'market-participants.js') text = text.replace('Задержка 15 дней', 'Вымышленный пример').replace('Московская биржа · срез', 'Демонстрация FUTOI · срез');
+  if (name === 'app.js') text = text.replace("from './runtime.js'", "from './demo-runtime.js'").replaceAll('Показатели обновляются автоматически.', 'Пример готового отчёта. Показатели вымышлены.');
+  if (name === 'market-calendar.js') text = text
+    .replace('!getBootstrap()?.preview?.static', '(!getBootstrap()?.preview?.static || getBootstrap()?.preview?.interactiveTutorial === true)')
+    .replace('async function loadCalendar(refresh=false){','async function loadCalendar(refresh=false){if(getBootstrap()?.preview?.readOnly)refresh=false;')
+    .replace('clearTimeout(calendarTimer);if(disposed)return;','clearTimeout(calendarTimer);if(disposed||getBootstrap()?.preview?.readOnly)return;')
+    .replace("month:moscowDate().slice(0,7),day:moscowDate()","month:'2026-09',day:'2026-09-22'");
   await writeFile(path, text);
 }
 await cp(result.outputDirectory,join(site,'demo'),{recursive:true});

@@ -2,6 +2,33 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-site-account-server-27-4-52",
+      "date": "2026-09-22",
+      "label": "NEXUS SERVER 27.4.52",
+      "versions": {},
+      "title": {
+        "ru": "Сайт и личный кабинет",
+        "en": "Website and account"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Обновлены витрина тарифов, переключатель сроков и демонстрация Invest. Обзорные окна показывают актуальный интерфейс без перехода на другую страницу.",
+          "en": "Updated the plan cards, billing period selector and Invest demo. Preview windows show the current interface without opening another page."
+        },
+        {
+          "type": "changed",
+          "ru": "Пробный доступ для новых подтверждённых аккаунтов после открытия регистрации составляет 7 дней на трёх устройствах. Ранее выданные сроки сохраняются.",
+          "en": "New verified accounts will receive a 7-day trial on three devices when registration opens. Previously granted access periods are preserved."
+        },
+        {
+          "type": "changed",
+          "ru": "В личном кабинете исправлено расположение согласий и смягчён фон иллюстрации. Цены Обычного тарифа согласованы с офертой; приём оплаты остаётся закрыт до запуска.",
+          "en": "Improved consent checkbox alignment and illustration edges in the account page. Standard pricing matches the offer; payments remain closed until launch."
+        }
+      ]
+    },
+    {
       "id": "nexus-0-6-45-invest-0-6-11",
       "date": "2026-09-22",
       "versions": {

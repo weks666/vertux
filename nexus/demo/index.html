@@ -8,14 +8,14 @@
   <meta name="robots" content="noindex,nofollow,noarchive">
   <meta name="theme-color" content="#08090b">
   <meta name="description" content="Личный инвестиционный кабинет Invest Workspace с доступом только для чтения">
-  <title>Invest Workspace · Vertux</title>
+  <title>Vertux Invest Workspace</title>
   <script src="./launch-scrubber.js"></script>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./fonts/fonts.css">
-  <link rel="stylesheet" href="./styles.css?v=0.6.6-1">
+  <link rel="stylesheet" href="./styles.css?v=0.6.11-2">
   <script src="./vendor/lightweight-charts.standalone.production.js" defer></script>
-  <script src="./service-module/v1.3.0/vertux-service-center.js" defer></script>
-  <script type="module" src="./app.js?v=0.6.6-1"></script>
+  <script src="./service-module/v1.3.2/vertux-service-center.js" defer></script>
+  <script type="module" src="./app.js?v=0.6.11-2"></script>
   <link rel="stylesheet" href="./market-calendar.css">
   <link rel="stylesheet" href="./personal-workspace.css">
 <link rel="stylesheet" href="./fonts/rubik.css"><link rel="stylesheet" href="./invest-refinement.css">
@@ -23,11 +23,15 @@
   <link rel="stylesheet" href="./knowledge-workspace.css">
   <link rel="stylesheet" href="./reference-ui.css">
   <link rel="stylesheet" href="./reference-details.css">
-  <link rel="stylesheet" href="./demo-frame.css?v=20260919-core">
+  <link rel="stylesheet" href="./workspace-context.css">
+  <link rel="stylesheet" href="./terminal-workbench.css">
+  <link rel="stylesheet" href="./workspace-customization.css">
+  <link rel="stylesheet" href="./demo-frame.css?v=20260922-readonly">
 </head>
 <body>
 <!-- Operate: implement the approved 2026-09-16 references with real data and existing actions. -->
   <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/></symbol>
     <symbol id="i-trend" viewBox="0 0 24 24"><path d="m3 17 6-6 4 4 8-10M15 5h6v6"/></symbol>
     <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2 12h4l3-8 5 16 3-8h5"/></symbol>
     <symbol id="i-pie" viewBox="0 0 24 24"><path d="M10 3a9 9 0 1 0 11 11H10Z"/><path d="M14 2v8h8a9 9 0 0 0-8-8Z"/></symbol>
@@ -62,8 +66,8 @@
   <div class="app-shell">
     <aside class="rail" id="rail">
       <div class="brand-lockup">
-        <span class="brand-mark">IW</span>
-        <span><strong>Invest</strong><small>Workspace</small></span>
+        <span class="brand-mark">V</span>
+        <span><strong>Vertux</strong><small>Invest Workspace</small></span>
       </div>
       <button class="rail-close icon-button" type="button" aria-label="Закрыть меню" data-close-rail><svg><use href="#i-close"/></svg></button>
 
@@ -74,7 +78,8 @@
         <button class="nav-item" type="button" data-view="analytics"><svg><use href="#i-analytics"/></svg><span>Аналитика</span></button>
         <button class="nav-item" type="button" data-view="glossary"><svg><use href="#i-book"/></svg><span>Словарь терминов</span></button>
         <button class="nav-item" type="button" data-view="risk-plan"><svg><use href="#i-risk"/></svg><span>Риск и план</span></button>
-        <button class="nav-item" type="button" data-view="instruments"><svg><use href="#i-chart"/></svg><span>Инструменты</span></button>
+        <button class="nav-item" type="button" data-view="terminal"><svg><use href="#i-chart"/></svg><span>Терминал</span></button>
+        <button class="nav-item" type="button" id="alertsNav" data-view="alerts" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span>Ценовые уведомления</span><span id="priceAlertCount" hidden></span></button>
         <button class="nav-item" type="button" data-view="events"><svg><use href="#i-operations"/></svg><span>События и новости</span></button>
         <button class="nav-item" type="button" data-view="ai"><svg><use href="#i-ai"/></svg><span>Анализ компании</span></button>
         <button class="nav-item" type="button" data-view="sync"><svg><use href="#i-sync"/></svg><span>Синхронизация</span><i class="nav-alert" id="syncAlert" hidden></i></button>
@@ -86,7 +91,7 @@
         <button class="nav-item" type="button" data-system-section="support"><svg><use href="#i-support"/></svg><span>Поддержка</span></button>
         <button class="nav-item" type="button" data-view="settings"><svg><use href="#i-settings"/></svg><span>Настройки</span></button>
         <button class="owner-button" id="identityStatus" type="button" aria-label="Открыть профиль Nexus"><span id="identityInitials">FX</span><span><strong id="identityName">Демо-профиль</strong><small id="identityRole">Профиль</small></span><svg><use href="#i-settings"/></svg></button>
-        <div class="runtime-evidence" id="nodeStatus" data-state="checking" role="status" aria-live="polite"><i></i><span><strong id="nodeState">Демо-среда</strong><small id="nodeVersion">Предпросмотр без подключения</small></span></div>
+        <div class="runtime-evidence" id="nodeStatus" hidden data-state="checking" role="status" aria-live="polite"><i></i><span><strong id="nodeState">Демо-среда</strong><small id="nodeVersion">Предпросмотр без подключения</small></span></div>
       </div>
     </aside>
 
@@ -94,15 +99,24 @@
       <header class="topbar">
         <button class="mobile-menu icon-button" type="button" aria-label="Открыть меню" aria-expanded="false" data-open-rail><svg><use href="#i-menu"/></svg></button>
         <div class="topbar-title"><span id="viewContext">Портфель и качество данных</span><h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Демо</span></div>
+          <form class="workspace-context" id="statisticsPeriodForm">
+            <label class="context-account"><span class="sr-only">Счёт портфеля</span><div class="filter-field"><svg aria-hidden="true"><use href="#i-user"/></svg><select id="statisticsAccount"><option value="">Все счета</option></select></div></label>
+<label class="context-period"><span class="sr-only">Период портфеля</span><select id="workspacePeriod" aria-label="Период портфеля"><option value="week">Неделя</option><option value="month">Месяц</option><option value="quarter">3 месяца</option><option value="halfyear">6 месяцев</option><option value="year">Год</option><option value="all">Всё время</option><option value="custom" disabled>Свои даты — в приложении</option></select></label>
+            <label class="context-date"><span class="sr-only">Период с</span><input type="date" readonly aria-describedby="statisticsPeriodForm-demo-note" title="В демо показан фиксированный период. Свои даты можно выбрать в приложении." name="from" id="statisticsFrom"></label>
+            <label class="context-date"><span class="sr-only">Период по</span><input type="date" readonly aria-describedby="statisticsPeriodForm-demo-note" title="В демо показан фиксированный период. Свои даты можно выбрать в приложении." name="to" id="statisticsTo"></label>
+            <div class="period-actions"><button class="text-button" type="button" id="resetStatisticsPeriod"><svg aria-hidden="true"><use href="#i-refresh"/></svg>Сбросить</button>
+</div>
+            <small hidden id="statisticsPeriodStatus" class="period-status" role="status" aria-live="polite">Используются сохранённые оценки стоимости и сделки.</small>
+          </form><p class="demo-period-note" id="statisticsPeriodForm-demo-note">В демо показан фиксированный период. Свои даты можно выбрать в приложении.</p>
         <div class="topbar-search" role="search">
-          <svg class="search-icon"><use href="#i-search"/></svg>
-          <input type="search" id="globalSearch" placeholder="Раздел, термин или тикер… (Ctrl+K)" autocomplete="off" aria-label="Поиск по приложению" role="combobox" aria-autocomplete="list" aria-controls="globalSearchResults" aria-expanded="false">
+          <button id="globalSearchToggle" class="icon-button" type="button" aria-label="Открыть поиск" aria-expanded="false"><svg class="search-icon"><use href="#i-search"/></svg></button>
+          <input type="search" id="globalSearch" placeholder="Поиск…" autocomplete="off" aria-label="Поиск по приложению" role="combobox" aria-autocomplete="list" aria-controls="globalSearchResults" aria-expanded="false">
           <kbd class="search-kbd">Ctrl K</kbd>
           <div id="globalSearchResults" class="global-search-results" role="listbox" aria-label="Результаты поиска" hidden></div>
         </div>
         <div class="topbar-actions">
           <button class="button secondary" type="button" id="navProductSwitcher" aria-label="Продукты" title="Перейти к выбору продуктов Nexus"><svg><use href="#i-switch"/></svg><span>Продукты</span></button>
-          <button class="button primary" type="button" id="syncButton" aria-label="Синхронизировать данные без изменения счёта"><svg><use href="#i-refresh"/></svg><span>Синхронизировать</span></button>
+          <button class="button primary" type="button" id="syncButton" hidden aria-label="Синхронизировать данные без изменения счёта"><svg><use href="#i-refresh"/></svg><span>Синхронизировать</span></button>
         </div>
       </header>
 
@@ -120,12 +134,12 @@
           <div class="portfolio-ledger">
             <div class="overview-summary"><article class="portfolio-headline">
               <div class="headline-copy">
-                <span id="portfolioValueLabel">Стоимость на конец периода</span> <button id="portfolioValueHelp" class="term-help" type="button" data-evidence-note="Оценка ещё не загружена." aria-label="Сведения об оценке стоимости" aria-expanded="false">?</button>
+                <span id="portfolioValueLabel">Стоимость на конец периода</span> <button id="portfolioValueHelp" class="term-help" type="button" data-evidence-note="Оценка ещё не загружена." aria-label="Сведения об оценке стоимости" aria-expanded="false">i</button>
                 <strong class="headline-value" id="portfolioValue">—</strong>
                 <div class="portfolio-day-change" id="portfolioDayChange"></div>
               </div>
               <div class="headline-pnl">
-                <span>Результат за период <button class="term-help" type="button" id="netPnlHelp" data-evidence-note="После комиссий" aria-label="Сведения о результате за период">?</button></span>
+                <span>Результат за период <button class="term-help" type="button" id="netPnlHelp" data-evidence-note="После комиссий" aria-label="Сведения о результате за период">i</button></span>
                 <strong id="netPnl">—</strong>
                 <small id="netPnlMeta" hidden></small><small id="netPnlRate" class="metric-rate"></small>
               </div>
@@ -134,16 +148,16 @@
 <aside class="overview-metrics" aria-label="Метрики периода">
 
                 <dl class="metric-ledger">
-                  <div><dt>Реализованная П/У <button class="term-help" type="button" data-term="fifoRealized" aria-label="Справка: Реализованный P&amp;L">?</button></dt><dd id="realizedPnl">—</dd></div>
-                  <div><dt>Комиссии <button class="term-help" type="button" data-term="fees" aria-label="Справка: Комиссии">?</button></dt><dd id="feesValue">—</dd></div>
-                  <div><dt>Макс. просадка <button class="term-help" type="button" data-term="drawdown" aria-label="Справка: Максимальная просадка">?</button></dt><dd id="drawdownValue">—</dd><small id="drawdownPeriod" hidden>недостаточно оценок стоимости</small></div>
+                  <div><dt>Реализованная П/У <button class="term-help" type="button" data-term="fifoRealized" aria-label="Справка: Реализованный P&amp;L">i</button></dt><dd id="realizedPnl">—</dd></div>
+                  <div><dt>Комиссии <button class="term-help" type="button" data-term="fees" aria-label="Справка: Комиссии">i</button></dt><dd id="feesValue">—</dd></div>
+                  <div><dt>Макс. просадка <button class="term-help" type="button" data-term="drawdown" aria-label="Справка: Максимальная просадка">i</button></dt><dd id="drawdownValue">—</dd><small id="drawdownPeriod" hidden>недостаточно оценок стоимости</small></div>
                 </dl>
 
               </aside></div>
             <div class="overview-grid">
               <article class="chart-surface" aria-labelledby="equityTitle">
                 <header class="surface-head">
-                  <div><h2 id="equityTitle">Динамика стоимости портфеля <button class="term-help" id="equityDataHelp" type="button" data-evidence-note="Сохранённые оценки портфеля" aria-label="Сведения о графике">?</button></h2></div>
+                  <div><h2 id="equityTitle">Динамика стоимости портфеля <button class="term-help" id="equityDataHelp" type="button" data-evidence-note="Сохранённые оценки портфеля" aria-label="Сведения о графике">i</button></h2></div>
                   <div class="range-switch" role="group" aria-label="Период обзора"><button class="active" type="button" data-range="1m" aria-pressed="true">Месяц</button><button type="button" data-range="3m" aria-pressed="false">3 месяца</button><button type="button" data-range="6m" aria-pressed="false">6 месяцев</button><button type="button" data-range="1y" aria-pressed="false">Год</button><button type="button" data-range="all" aria-pressed="false">Всё</button></div>
                 </header>
                 <div class="chart-scope"><label><span>Счёт</span><select id="overviewAccount"><option value="">Все счета</option></select></label><p id="overviewPeriodStatus" role="status" aria-live="polite">Загружаем период…</p></div>
@@ -161,7 +175,7 @@
 
 
             <article class="positions-surface">
-              <header class="surface-head"><div class="positions-heading"><h2>Открытые позиции</h2><span class="positions-result">Результат <strong id="unrealizedPnl">—</strong><button class="term-help" type="button" data-term="unrealizedPnl" aria-label="Справка: Нереализованный P&amp;L">?</button><small id="markFreshness" hidden>Для расчёта нужна актуальная цена</small></span></div><button class="text-button" type="button" data-go-view="operations">Закрытые позиции</button></header>
+              <header class="surface-head"><div class="positions-heading"><h2>Открытые позиции</h2><span class="positions-result">Результат <strong id="unrealizedPnl">—</strong><button class="term-help" type="button" data-term="unrealizedPnl" aria-label="Справка: Нереализованный P&amp;L">i</button><small id="markFreshness" hidden>Для расчёта нужна актуальная цена</small></span></div><button class="text-button" type="button" data-go-view="operations">Закрытые позиции</button></header>
               <div class="table-scroll" tabindex="0" aria-label="Таблица позиций, доступна горизонтальная прокрутка">
                 <table class="wide-ledger"><thead><tr><th>Инструмент</th><th>Тип</th><th>Дата входа</th><th class="numeric">Количество</th><th class="numeric">Средняя цена</th><th class="numeric">Стоимость</th><th class="numeric">Доля</th><th class="numeric">Результат</th></tr></thead><tbody id="positionsBody"><tr><td colspan="8" class="empty-cell">Загружаем локальные данные…</td></tr></tbody></table>
               </div>
@@ -177,46 +191,40 @@
             <label><span>Инструмент</span><div class="filter-field"><svg aria-hidden="true"><use href="#i-search"/></svg><input name="instrument" type="search" placeholder="Тикер или название"></div></label>
             <label><span>Тип актива</span><div class="filter-field"><svg aria-hidden="true"><use href="#i-pie"/></svg><select name="asset"><option value="">Все типы</option><option value="share">Акции</option><option value="future">Фьючерсы</option></select></div></label>
             <button class="text-button reset-ledger-filters" id="resetOperationFilters" type="button"><svg aria-hidden="true"><use href="#i-refresh"/></svg>Сбросить фильтры</button>
-            <div class="ledger-date-range"><label><span>С</span><input type="date" readonly aria-describedby="operationFilters-demo-note" title="В демо доступны готовые периоды. Свои даты можно выбрать в приложении." name="from"></label><span class="date-range-separator" aria-hidden="true">—</span><label><span>По</span><input type="date" readonly aria-describedby="operationFilters-demo-note" title="В демо доступны готовые периоды. Свои даты можно выбрать в приложении." name="to"></label><p id="operationFilterStatus" role="status" aria-live="polite"></p></div>
-          </form><p class="demo-period-note" id="operationFilters-demo-note">В демо доступны готовые периоды. Свои даты можно выбрать в приложении.</p>
+            <div class="ledger-date-range"><label><span>С</span><input type="date" readonly aria-describedby="operationFilters-demo-note" title="В демо показан фиксированный период. Свои даты можно выбрать в приложении." name="from"></label><span class="date-range-separator" aria-hidden="true">—</span><label><span>По</span><input type="date" readonly aria-describedby="operationFilters-demo-note" title="В демо показан фиксированный период. Свои даты можно выбрать в приложении." name="to"></label><p id="operationFilterStatus" role="status" aria-live="polite"></p></div>
+          </form><p class="demo-period-note" id="operationFilters-demo-note">В демо показан фиксированный период. Свои даты можно выбрать в приложении.</p>
           <nav class="workspace-section-tabs ledger-tabs" role="tablist" aria-label="История портфеля">
             <button type="button" role="tab" id="operationsTab" data-ledger-tab="operations" aria-controls="operationsPanel" aria-selected="true">Операции</button>
             <button type="button" role="tab" id="closedTab" data-ledger-tab="closed" aria-controls="closedPanel" aria-selected="false" tabindex="-1">Закрытые позиции</button>
           </nav>
           <dl class="ledger-summary" aria-label="Итоги выбранных операций">
             <div><dt>Закрыто позиций</dt><dd id="closedSummaryCount">—</dd></div>
-            <div><dt>Результат по закрытым <button id="closedSummaryHelp" class="term-help" type="button" data-evidence-note="После комиссий" aria-label="Сведения о результате закрытых позиций">?</button></dt><dd id="closedSummaryResult">—</dd><small id="closedSummaryNote" hidden></small></div>
-            <div><dt>Комиссии <button id="operationFeesHelp" class="term-help" type="button" data-evidence-note="Комиссии выбранных операций" aria-label="Сведения о комиссиях">?</button></dt><dd id="operationSummaryFees">—</dd><small id="operationSummaryFeesNote" hidden></small></div>
+            <div><dt>Результат по закрытым <button id="closedSummaryHelp" class="term-help" type="button" data-evidence-note="После комиссий" aria-label="Сведения о результате закрытых позиций">i</button></dt><dd id="closedSummaryResult">—</dd><small id="closedSummaryNote" hidden></small></div>
+            <div><dt>Комиссии <button id="operationFeesHelp" class="term-help" type="button" data-evidence-note="Комиссии выбранных операций" aria-label="Сведения о комиссиях">i</button></dt><dd id="operationSummaryFees">—</dd><small id="operationSummaryFeesNote" hidden></small></div>
           </dl>
           <article class="data-surface operations-surface" id="operationsPanel" role="tabpanel" aria-labelledby="operationsTab" data-ledger-panel="operations"><div class="table-scroll" tabindex="0" aria-label="История операций, доступна прокрутка таблицы"><table><thead><tr><th>Инструмент</th><th>Время</th><th>Операция</th><th class="numeric">Количество</th><th class="numeric">Платёж</th><th class="numeric">Комиссия</th><th>Статус</th></tr></thead><tbody id="operationsBody"><tr><td colspan="7" class="empty-cell">Нет нормализованных операций.</td></tr></tbody></table></div><nav class="operations-pagination" aria-label="Страницы операций"><span id="operationsCount" role="status" aria-live="polite">Операции не загружены</span><div><button class="button secondary" id="operationsPrevious" type="button" aria-controls="operationsBody" disabled>Назад</button><button class="button secondary" id="operationsNext" type="button" aria-controls="operationsBody" disabled>Дальше</button></div></nav></article>
           <article class="data-surface closed-positions-surface" id="closedPanel" role="tabpanel" aria-labelledby="closedTab" data-ledger-panel="closed" hidden>
             <header class="surface-head"><div><h3>Закрытые позиции</h3><p id="closedPositionsPeriod" hidden>Закрыты за выбранный период; цена входа учитывает более ранние покупки.</p></div></header>
-            <div class="table-scroll" tabindex="0" aria-label="Таблица закрытых позиций, доступна горизонтальная прокрутка"><table class="wide-ledger"><thead><tr><th>Инструмент</th><th>Тип</th><th>Открытие</th><th>Закрытие</th><th class="numeric">Количество</th><th class="numeric">Средняя цена</th><th class="numeric" id="closedPositionCostHeader">Стоимость</th><th class="numeric">Итог</th></tr></thead><tbody id="closedPositionsBody"><tr><td colspan="8" class="empty-cell">Закрытые циклы появятся после синхронизации операций.</td></tr></tbody></table></div>
+            <div class="table-scroll" tabindex="0" aria-label="Таблица закрытых позиций, доступна горизонтальная прокрутка"><table class="wide-ledger"><thead><tr><th>Инструмент</th><th>Тип</th><th>Открытие</th><th>Закрытие</th><th class="numeric">Количество</th><th class="numeric">Средняя цена</th><th class="numeric">Итог</th></tr></thead><tbody id="closedPositionsBody"><tr><td colspan="8" class="empty-cell">Закрытые циклы появятся после синхронизации операций.</td></tr></tbody></table></div>
             <nav class="list-pagination" id="closedPositionsPagination" aria-label="Страницы закрытых позиций"><span id="closedPositionsCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="closedPositionsPrevious" data-list-page="closedPositions" data-page-direction="-1" aria-controls="closedPositionsBody">Назад</button><button class="button secondary" type="button" id="closedPositionsNext" data-list-page="closedPositions" data-page-direction="1" aria-controls="closedPositionsBody">Дальше</button></div></nav>
           </article>
         </section>
 
         <section class="view" data-view-panel="analytics">
           <header class="section-head"><div><h2>Аналитика</h2><p>Доходность, структура портфеля и риск за выбранный период.</p></div><span id="analyticsVersion" hidden></span></header>
-          <form class="period-controls" id="statisticsPeriodForm">
-            <label><span>Счёт</span><div class="filter-field"><svg aria-hidden="true"><use href="#i-user"/></svg><select id="statisticsAccount"><option value="">Все счета</option></select></div></label>
-            <label><span>С</span><input type="date" readonly aria-describedby="statisticsPeriodForm-demo-note" title="В демо доступны готовые периоды. Свои даты можно выбрать в приложении." name="from" id="statisticsFrom"></label>
-            <label><span>По</span><input type="date" readonly aria-describedby="statisticsPeriodForm-demo-note" title="В демо доступны готовые периоды. Свои даты можно выбрать в приложении." name="to" id="statisticsTo"></label>
-            <div class="period-actions"><button class="text-button" type="button" id="resetStatisticsPeriod"><svg aria-hidden="true"><use href="#i-refresh"/></svg>Сбросить</button>
-            <button class="button secondary" type="button" id="exportButton" aria-label="Скачать отчёт только в процентах, CSV без сумм и ID" title="CSV без сумм, лотов и идентификаторов счетов"><svg><use href="#i-download"/></svg><span>Отчёт, %</span></button></div>
-            <small hidden id="statisticsPeriodStatus" class="period-status" role="status" aria-live="polite">Используются сохранённые оценки стоимости и сделки.</small>
-          </form><p class="demo-period-note" id="statisticsPeriodForm-demo-note">В демо доступны готовые периоды. Свои даты можно выбрать в приложении.</p>
 
+
+          <div class="analytics-export">            <button class="button secondary" type="button" id="exportButton" aria-label="Скачать отчёт только в процентах, CSV без сумм и ID" title="CSV без сумм, лотов и идентификаторов счетов"><svg><use href="#i-download"/></svg><span>Отчёт, %</span></button></div>
           <article class="analytics-primary"><dl class="analytics-grid">
-            <div class="net-return-metric"><dt>Доходность портфеля <button class="term-help" type="button" data-term="netReturn" aria-label="Справка: Доходность после комиссий">?</button></dt><dd id="netReturn">—</dd><small hidden>с учётом подтверждённых комиссий</small><svg class="metric-icon trend-icon" aria-hidden="true"><use href="#i-trend"/></svg></div>
-            <div><dt>Волатильность <button class="term-help" type="button" data-term="volatility" aria-label="Справка: Волатильность">?</button></dt><dd id="volatilityValue">—</dd><small id="volatilityMeta" hidden></small><svg class="metric-icon" aria-hidden="true"><use href="#i-pulse"/></svg></div>
-            <div><dt>Доля прибыльных сделок <button class="term-help" type="button" data-term="winRate" aria-label="Справка: Доля прибыльных сделок">?</button></dt><dd id="winRateValue">—</dd><small id="tradeOutcomeMeta"></small><svg class="metric-icon" aria-hidden="true"><use href="#i-pie"/></svg></div>
-            <div><dt>Коэффициент прибыльности <button class="term-help" type="button" data-term="profitFactor" aria-label="Справка: Отношение прибыли к убытку">?</button></dt><dd id="profitFactorValue">—</dd><small hidden>по фактическим прибылям и убыткам</small><svg class="metric-icon" aria-hidden="true"><use href="#i-analytics"/></svg></div>
+            <div class="net-return-metric"><dt>Доходность портфеля <button class="term-help" type="button" data-term="netReturn" aria-label="Справка: Доходность после комиссий">i</button></dt><dd id="netReturn">—</dd><small hidden>с учётом подтверждённых комиссий</small><svg class="metric-icon trend-icon" aria-hidden="true"><use href="#i-trend"/></svg></div>
+            <div><dt>Волатильность <button class="term-help" type="button" data-term="volatility" aria-label="Справка: Волатильность">i</button></dt><dd id="volatilityValue">—</dd><small id="volatilityMeta" hidden></small><svg class="metric-icon" aria-hidden="true"><use href="#i-pulse"/></svg></div>
+            <div><dt>Доля прибыльных сделок <button class="term-help" type="button" data-term="winRate" aria-label="Справка: Доля прибыльных сделок">i</button></dt><dd id="winRateValue">—</dd><small id="tradeOutcomeMeta"></small><svg class="metric-icon" aria-hidden="true"><use href="#i-pie"/></svg></div>
+            <div><dt>Коэффициент прибыльности <button class="term-help" type="button" data-term="profitFactor" aria-label="Справка: Отношение прибыли к убытку">i</button></dt><dd id="profitFactorValue">—</dd><small hidden>по фактическим прибылям и убыткам</small><svg class="metric-icon" aria-hidden="true"><use href="#i-analytics"/></svg></div>
           </dl></article>
           <article class="chart-surface analytics-chart-surface" aria-labelledby="analyticsChartTitle">
             <header class="surface-head">
               <div>
-                <h3 id="analyticsChartTitle">Динамика доходности портфеля</h3><div class="chart-value"><strong id="analyticsChartValue">—</strong><button class="term-help" type="button" id="analyticsChartHelp" data-evidence-note="После комиссий" aria-label="Сведения о доходности">?</button></div>
+                <h3 id="analyticsChartTitle">Динамика доходности портфеля</h3><div class="chart-value"><strong id="analyticsChartValue">—</strong><button class="term-help" type="button" id="analyticsChartHelp" data-evidence-note="После комиссий" aria-label="Сведения о доходности">i</button></div>
                 <p id="analyticsChartSubtitle" hidden>Пополнения и выводы исключены. Доходность относительно стоимости на начало периода.</p>
               </div>
               <div class="analytics-chart-legend">
@@ -231,13 +239,14 @@
             </div>
           </article>
 
+          <p class="history-progress" data-history-progress role="status" hidden></p>
           <div class="statistics-ledger analytics-results-ledger">
-            <article class="ranking-surface"><h3>Результат по инструментам <button class="term-help" type="button" data-term="periodInstruments" aria-label="Справка: Инструменты периода">?</button></h3><p class="ranking-explanation" hidden>Прибыль или убыток за выбранный период. Полосы сравнивают суммы в одной валюте.</p><div id="instrumentRanking" class="ranking-list"><p class="empty-copy">Пока нет рассчитанного результата.</p></div><nav class="list-pagination compact" id="instrumentRankingPagination" aria-label="Страницы результата по инструментам"><span id="instrumentRankingCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="instrumentRankingPrevious" data-list-page="instrumentRanking" data-page-direction="-1" aria-controls="instrumentRanking">Назад</button><button class="button secondary" type="button" id="instrumentRankingNext" data-list-page="instrumentRanking" data-page-direction="1" aria-controls="instrumentRanking">Дальше</button></div></nav></article>
+            <article class="ranking-surface"><h3>Результат по инструментам <button class="term-help" type="button" data-term="periodInstruments" data-evidence-note="Вклад в процентах — результат инструмента относительно абсолютной суммы известных результатов той же валюты. Знак отражает прибыль или убыток. При нулевой сумме доля не рассчитывается. Это не доходность отдельной позиции." aria-label="Справка: Инструменты периода">i</button></h3><p class="ranking-explanation" hidden>Прибыль или убыток за выбранный период. Полосы сравнивают суммы в одной валюте.</p><div class="contribution-scroll" tabindex="0" aria-label="Результаты по инструментам"><table id="instrumentRankingTable"><thead><tr><th>Инструмент</th><th><span class="sr-only">Сравнение</span></th><th class="numeric">Вклад, сумма</th><th class="numeric">Вклад, %</th></tr></thead><tbody id="instrumentRanking"><tr><td colspan="4" class="empty-cell">Пока нет рассчитанного результата.</td></tr></tbody></table></div><nav class="list-pagination compact" id="instrumentRankingPagination" aria-label="Страницы результата по инструментам"><span id="instrumentRankingCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="instrumentRankingPrevious" data-list-page="instrumentRanking" data-page-direction="-1" aria-controls="instrumentRanking">Назад</button><button class="button secondary" type="button" id="instrumentRankingNext" data-list-page="instrumentRanking" data-page-direction="1" aria-controls="instrumentRanking">Дальше</button></div></nav></article>
             <article class="data-surface paginated-surface"><header class="surface-head"><div><h3>Результат по счетам</h3></div></header><div id="portfolioStatistics" class="stat-comparison"><p class="empty-copy">Нет статистики.</p></div></article>
-            <article class="data-surface paginated-surface"><header class="surface-head"><div><h3>Пополнения и выводы</h3><p id="cashFlowSummary">Движения средств за выбранный период</p></div></header><div id="cashFlowStatistics" class="cash-flow-list"><p class="empty-copy">Операции пополнения и вывода не найдены.</p></div><nav class="list-pagination" id="cashFlowStatisticsPagination" aria-label="Страницы пополнений и выводов"><span id="cashFlowStatisticsCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="cashFlowStatisticsPrevious" data-list-page="cashFlowStatistics" data-page-direction="-1" aria-controls="cashFlowStatistics">Назад</button><button class="button secondary" type="button" id="cashFlowStatisticsNext" data-list-page="cashFlowStatistics" data-page-direction="1" aria-controls="cashFlowStatistics">Дальше</button></div></nav></article>
+            <article class="data-surface paginated-surface cash-flow-surface"><header class="surface-head"><div><h3>Пополнения и выводы</h3><p id="cashFlowSummary">Движения средств за выбранный период</p></div></header><div id="cashFlowChart"></div><details class="cash-flow-details" id="cashFlowDetails"><summary>Все движения средств</summary><div id="cashFlowStatistics" class="cash-flow-list"><p class="empty-copy">Операции пополнения и вывода не найдены.</p></div><nav class="list-pagination" id="cashFlowStatisticsPagination" aria-label="Страницы пополнений и выводов"><span id="cashFlowStatisticsCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="cashFlowStatisticsPrevious" data-list-page="cashFlowStatistics" data-page-direction="-1" aria-controls="cashFlowStatistics">Назад</button><button class="button secondary" type="button" id="cashFlowStatisticsNext" data-list-page="cashFlowStatistics" data-page-direction="1" aria-controls="cashFlowStatistics">Дальше</button></div></nav></details></article>
           </div>
-          <details class="secondary-metrics"><summary>Дополнительные показатели</summary><dl class="analytics-grid">            <div><dt>Доходность до комиссий <button class="term-help" type="button" data-term="grossReturn" aria-label="Справка: Доходность до комиссий">?</button></dt><dd id="grossReturn">—</dd><small>для выбранного периода</small></div>
-            <div><dt>Вариационная маржа за период <button class="term-help" type="button" data-term="vm" aria-label="Справка: Вариационная маржа">?</button></dt><dd id="variationMargin">—</dd><small>отдельно от закрытых сделок с акциями</small></div>
+          <details class="secondary-metrics"><summary>Дополнительные показатели</summary><dl class="analytics-grid">            <div><dt>Доходность до комиссий <button class="term-help" type="button" data-term="grossReturn" aria-label="Справка: Доходность до комиссий">i</button></dt><dd id="grossReturn">—</dd><small>для выбранного периода</small></div>
+            <div><dt>Вариационная маржа за период <button class="term-help" type="button" data-term="vm" aria-label="Справка: Вариационная маржа">i</button></dt><dd id="variationMargin">—</dd><small>отдельно от закрытых сделок с акциями</small></div>
 </dl></details>
           <details class="position-analysis-details"><summary>Доходность и срок отдельных позиций</summary><div class="statistics-ledger">
             <article class="data-surface paginated-surface"><header class="surface-head"><div><h3>Доходность за срок позиции</h3><p id="rankingSummary">Изменение цены открытых позиций с момента входа.</p></div></header><div class="holding-filter"><label><span>Позиции</span><select id="rankingPositionState"><option value="open">Открытые сейчас</option><option value="closed">Закрытые за период</option></select></label></div><div id="monthlyAssetChart" class="relative-bar-chart"><p class="empty-copy">Загружаем результаты позиций…</p></div><nav class="list-pagination" id="monthlyAssetChartPagination" aria-label="Страницы доходности отдельных позиций"><span id="monthlyAssetChartCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="monthlyAssetChartPrevious" data-list-page="monthlyAssetChart" data-page-direction="-1" aria-controls="monthlyAssetChart">Назад</button><button class="button secondary" type="button" id="monthlyAssetChartNext" data-list-page="monthlyAssetChart" data-page-direction="1" aria-controls="monthlyAssetChart">Дальше</button></div></nav></article>
@@ -273,10 +282,11 @@
           </div>
         </section>
 
-        <section class="view instruments-view" data-view-panel="instruments">
-          <aside class="data-surface instrument-shortlist" aria-labelledby="instrumentShortlistTitle"><header class="surface-head"><h3 id="instrumentShortlistTitle">Список наблюдения</h3></header><div class="instrument-list-controls"><input type="search" id="instrumentListSearch" placeholder="Тикер или название" aria-label="Поиск в списке наблюдения"><select id="instrumentListScope" aria-label="Состав списка наблюдения"><option value="all">Все инструменты</option><option value="favorites">Избранное</option><option value="share">Акции</option><option value="future">Фьючерсы</option><option value="portfolio">В портфеле</option></select></div><div id="instrumentQuickList" class="instrument-quick-list"></div></aside>
+        <section class="view terminal-view" data-view-panel="terminal">
+          <div class="terminal-workbench">
+          <aside class="data-surface instrument-shortlist" aria-labelledby="instrumentShortlistTitle"><header class="surface-head"><h3 id="instrumentShortlistTitle">Список наблюдения</h3></header><div class="instrument-list-controls"><input type="search" id="instrumentListSearch" placeholder="Тикер или название" aria-label="Поиск в списке наблюдения"><select id="instrumentListScope" aria-label="Состав списка наблюдения"><option value="all">Все инструменты</option><option value="favorites">Избранное</option><option value="share">Акции</option><option value="future">Фьючерсы</option><option value="portfolio" selected>В портфеле</option></select><button type="button" class="text-button catalog-open-button" id="openInstrumentCatalog"><svg><use href="#i-search"/></svg>Весь каталог</button></div><div id="instrumentQuickList" class="instrument-quick-list"></div></aside>
           <details id="instrumentCatalogBrowser" class="catalog-browser"><summary>Найти инструмент во всём каталоге <svg><use href="#i-chevron"/></svg></summary><article id="catalogSurface" class="data-surface catalog-surface" hidden>
-            <header class="surface-head"><div><h3>Каталог инструментов</h3><p id="catalogStatus" role="status">Загружаем каталог Т‑Инвест…</p></div><button class="button secondary" id="catalogRefresh" type="button">Обновить каталог</button></header>
+            <header class="surface-head"><div><h3>Каталог инструментов</h3><p id="catalogStatus" role="status">Загружаем каталог Т‑Инвест…</p></div><button class="button secondary" id="catalogRefresh" hidden type="button">Обновить каталог</button></header>
             <div class="catalog-tabs" role="group" aria-label="Тип инструмента"><button type="button" data-catalog-type="all" class="active" aria-pressed="true">Все инструменты</button><button type="button" data-catalog-type="share" aria-pressed="false">Акции</button><button type="button" data-catalog-type="etf" aria-pressed="false">Фонды</button><button type="button" data-catalog-type="bond" aria-pressed="false">Облигации</button><button type="button" data-catalog-type="currency" aria-pressed="false">Валюты</button><button type="button" data-catalog-type="future" aria-pressed="false">Фьючерсы</button></div>
             <form id="catalogFilters" class="catalog-filters">
               <div class="catalog-main-filters"><label class="catalog-search"><span>Название или тикер</span><input type="search" id="catalogSearch" placeholder="Например, ФосАгро или PHOR"></label><label class="check-label"><input type="checkbox" id="catalogHeld"><span>В моём портфеле</span></label><button type="button" class="button secondary" id="catalogReset">Сбросить фильтры</button></div>
@@ -285,11 +295,13 @@
             <div class="table-scroll" tabindex="0" aria-label="Каталог акций и фьючерсов"><table><thead><tr><th>Инструмент</th><th>Валюта</th><th>Биржа</th><th class="numeric">Лот</th><th>Сектор / базовый актив</th><th>Экспирация</th><th>Планирование</th></tr></thead><tbody id="catalogBody"></tbody></table></div>
             <nav class="list-pagination" aria-label="Страницы каталога"><span id="catalogCount" role="status"></span><div><button class="button secondary" id="catalogPrevious" type="button">Назад</button><button class="button secondary" id="catalogNext" type="button">Дальше</button></div></nav>
           </article></details>
-          <header class="section-head instrument-heading"><div><h2>Инструменты</h2><p>График цены, индикаторы и каталог активов.</p></div><label class="instrument-picker"><span>Инструмент</span><select id="instrumentSelect"><option value="">Нет доступных инструментов</option></select></label></header>
-          <article class="instrument-surface"><div class="chart-toolbar" role="toolbar" aria-label="Инструменты графика"><label class="chart-type-picker"><span class="sr-only">Вид графика</span><select id="marketChartType" aria-label="Вид графика"><option value="candles">Свечи</option><option value="bars">Бары</option><option value="line">Линия</option><option value="area">Область</option></select></label><button type="button" class="active" data-indicator="volume" aria-pressed="true">Объём</button><button type="button" data-indicator="sma" aria-pressed="false">SMA 20</button><button type="button" data-indicator="ema" aria-pressed="false">EMA 20</button><span></span><button type="button" data-drawing="horizontal">Горизонталь</button><button type="button" data-drawing="trend">Тренд</button></div><label class="market-interval-control">Интервал <select id="marketInterval" aria-label="Интервал свечей"><option value="CANDLE_INTERVAL_DAY">День · за год</option><option value="CANDLE_INTERVAL_HOUR">Час · за неделю</option><option value="CANDLE_INTERVAL_5_MIN">5 минут · за сутки</option></select></label><div id="marketChart" class="market-chart" aria-label="Свечной график инструмента"></div><footer class="market-status"><span id="marketStatus">Поток котировок не запущен</span><span>Время котировки: <time id="marketEventTime">—</time></span><strong id="marketAge">Возраст данных —</strong></footer></article>
+          <header class="section-head instrument-heading"><div><h2>Терминал</h2><p>График цены, индикаторы и каталог активов.</p></div><label class="instrument-picker"><span>Инструмент</span><select id="instrumentSelect"><option value="">Нет доступных инструментов</option></select></label></header>
+          <article class="instrument-surface"><div class="instrument-actions"><button id="instrumentPriceAlert" type="button" class="button secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>Уведомление</button><button id="instrumentsExpand" type="button" class="button secondary" aria-pressed="false">На весь экран</button></div><div class="chart-toolbar" role="toolbar" aria-label="Инструменты графика"><label class="chart-type-picker"><span class="sr-only">Вид графика</span><select id="marketChartType" aria-label="Вид графика"><option value="candles">Свечи</option><option value="bars">Бары</option><option value="line">Линия</option><option value="area">Область</option></select></label><button type="button" class="active" data-indicator="volume" aria-pressed="true">Объём</button><button type="button" data-indicator="sma" aria-pressed="false">SMA 20</button><button type="button" data-indicator="ema" aria-pressed="false">EMA 20</button><span></span><button type="button" data-drawing="horizontal">Горизонталь</button><button type="button" data-drawing="trend">Тренд</button><button type="button" id="marketClearDrawings" title="Удалить линии этого графика">Убрать линии</button><button type="button" id="marketFit" title="Показать весь загруженный период">Весь график</button></div><label class="market-interval-control">Интервал <select id="marketInterval" aria-label="Интервал свечей"><option value="CANDLE_INTERVAL_DAY">День · за год</option><option value="CANDLE_INTERVAL_HOUR">Час · за неделю</option><option value="CANDLE_INTERVAL_5_MIN">5 минут · за сутки</option></select></label><div id="marketChart" class="market-chart" aria-label="Свечной график инструмента"></div><footer class="market-status"><span id="marketStatus">Поток котировок не запущен</span><span>Время котировки: <time id="marketEventTime">—</time></span><strong id="marketAge">Возраст данных —</strong></footer></article>
 
+          </div>
+          <section class="terminal-dock" aria-label="Контекст инструмента"></section>
           <article class="market-vision-surface">
-            <header class="surface-head"><div><h3>Обзор рынка: акции и фьючерсы</h3><p id="marketVisionCoverage">Изменение цены и объёма за последние завершённые торги.</p></div><button type="button" class="button secondary" id="marketVisionRefresh">Обновить обзор</button></header>
+            <header class="surface-head"><div><h3>Обзор рынка: акции и фьючерсы</h3><p id="marketVisionCoverage">Изменение цены и объёма за последние завершённые торги.</p></div><button type="button" class="button secondary" id="marketVisionRefresh" hidden>Обновить обзор</button></header>
             <div id="marketVisionRows" class="market-vision-grid"><p class="empty-copy">Рыночная выборка не загружена.</p></div>
           </article>
         </section>
@@ -312,10 +324,10 @@
             <datalist id="marketAssetSuggestions"></datalist>
           </article>
           <article class="data-surface news-surface" id="marketNewsSurface" hidden>
-            <header class="surface-head"><div><h3 id="marketNewsTitle">Новости</h3><p id="marketNewsStatus">Публикации и возможная связь с вашими активами.</p></div><div class="news-actions"><button class="button secondary" type="button" id="marketNewsAll" hidden>Все новости</button><button class="button secondary" type="button" id="marketNewsRefresh">Обновить ленту</button></div></header>
-            <div class="news-filters"><label><span>Период</span><select id="newsPeriod"><option value="all">Последние публикации</option><option value="day">За сутки</option><option value="week">За неделю</option></select></label><label><span class="sr-only">Связь с портфелем</span><select id="newsRelevance"><option value="all">Все новости</option><option value="direct">Мои активы</option><option value="related">Связанные компании</option></select></label><label><span class="sr-only">Компания</span><select id="newsCompany" aria-label="Компания в новостях"><option value="">Все компании</option></select></label><label><span class="sr-only">Источник</span><select id="newsSource" aria-label="Источник новостей"><option value="">Все источники</option></select></label><span id="newsFilterCount" role="status"></span></div>
-            <div class="news-workspace"><div><div id="marketNewsList" class="news-list"></div><button class="button secondary" type="button" id="newsMore" hidden>Ещё публикации</button><button class="button secondary" type="button" id="newsOlder" hidden>Загрузить более ранние публикации</button></div>
-              <aside class="news-analysis-panel" id="newsAnalysisPanel" aria-labelledby="newsAnalysisTitle"><header><h3 id="newsAnalysisTitle">Публикация</h3><p id="newsAnalysisStatus" role="status">Запускается только по кнопке.</p><button class="button primary" type="button" id="newsGenerate" hidden>Подготовить AI-разбор</button></header><div id="newsAnalysisContent"><p class="empty-copy">Выберите публикацию в ленте.</p></div></aside>
+            <header class="surface-head"><div><h3 id="marketNewsTitle">Новости</h3><p id="marketNewsStatus" role="status" aria-live="polite"></p></div><div class="news-actions"><button class="button secondary" type="button" id="marketNewsAll" hidden>Все новости</button></div></header>
+            <div class="news-filters"><label><span class="sr-only">Период новостей</span><select id="newsPeriod"><option value="all">Последние</option><option value="day">За сутки</option><option value="week">За неделю</option></select></label><label><span class="sr-only">Связь с портфелем</span><select id="newsRelevance"><option value="all">Все новости</option><option value="direct">Мои активы</option><option value="related">Связанные компании</option></select></label><label><span class="sr-only">Компания</span><select id="newsCompany" aria-label="Компания в новостях"><option value="">Компании</option></select></label><label><span class="sr-only">Источник</span><select id="newsSource" aria-label="Источник новостей"><option value="">Источники</option></select></label><span id="newsFilterCount" role="status"></span></div>
+            <div class="news-workspace"><div class="news-feed"><div id="marketNewsList" class="news-list" role="region" aria-label="Лента публикаций" tabindex="0"></div><button class="button secondary" type="button" id="newsMore" hidden>Ещё публикации</button></div>
+              <aside class="news-analysis-panel" id="newsAnalysisPanel" aria-labelledby="newsAnalysisTitle"><header><h3 id="newsAnalysisTitle">Публикация</h3><p id="newsAnalysisStatus" role="status"></p><button class="button primary" type="button" id="newsGenerate" hidden>Подготовить AI-разбор</button></header><div id="newsAnalysisContent"><p class="empty-copy">Выберите публикацию в ленте.</p></div></aside>
             </div>
           </article>
         </section>
@@ -325,7 +337,7 @@
           <section class="risk-account-overview" aria-label="Краткая оценка обеспечения"><header><label>Счёт<select id="riskSummaryAccount" aria-label="Счёт для оценки обеспечения"></select></label><span>Оценка обеспечения у брокера</span></header><dl id="riskSummaryMetrics"></dl></section>
           <nav class="workspace-section-tabs" role="tablist" aria-label="Риск и план"><button type="button" role="tab" id="riskJournalTab" data-risk-tab="journal" aria-controls="riskJournalPanel" aria-selected="true">Журнал планов</button><button type="button" role="tab" id="riskCalculatorTab" data-risk-tab="calculator" aria-controls="tradeRiskCalculator" aria-selected="false" tabindex="-1">Калькулятор позиции</button><button type="button" role="tab" id="riskHealthTab" data-risk-tab="health" aria-controls="accountRiskState" aria-selected="false" tabindex="-1">Здоровье счёта</button></nav>
           <article class="margin-surface" id="accountRiskState" data-risk-panel="health" role="tabpanel" aria-labelledby="riskHealthTab" hidden>
-            <header class="surface-head"><div><h3 id="accountRiskStateTitle">Обеспечение счёта <button class="term-help" type="button" data-term="marginBuffer" aria-label="Справка: Запас относительно начальной маржи">?</button></h3><p id="marginSourceNote" hidden>Оценка активов для обеспечения и требования брокера. Это не остаток свободных денег.</p></div><span class="evidence-chip" id="marginCoverage">Источник не подключён</span></header>
+            <header class="surface-head"><div><h3 id="accountRiskStateTitle">Обеспечение счёта <button class="term-help" type="button" data-term="marginBuffer" aria-label="Справка: Запас относительно начальной маржи">i</button></h3><p id="marginSourceNote" hidden>Оценка активов для обеспечения и требования брокера. Это не остаток свободных денег.</p></div><span class="evidence-chip" id="marginCoverage">Источник не подключён</span></header>
             <div id="marginAccountLedgers" class="margin-account-ledgers"><p class="empty-copy">Маржинальные показатели появятся после обновления данных, если они доступны для счёта.</p></div>
             <div id="futuresRiskRows" class="futures-risk-list"><p class="empty-copy">Параметры обеспечения открытых фьючерсов пока не получены.</p></div>
             <nav class="list-pagination" id="futuresRiskRowsPagination" aria-label="Страницы рисков фьючерсов"><span id="futuresRiskRowsCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="futuresRiskRowsPrevious" data-list-page="futuresRiskRows" data-page-direction="-1" aria-controls="futuresRiskRows">Назад</button><button class="button secondary" type="button" id="futuresRiskRowsNext" data-list-page="futuresRiskRows" data-page-direction="1" aria-controls="futuresRiskRows">Дальше</button></div></nav>
@@ -338,7 +350,7 @@
               <label><span>Капитал для расчёта, ₽</span><input name="capital" inputmode="decimal" placeholder="Например, 100000" aria-describedby="riskCapitalHelp" required><small id="riskCapitalHelp">Сумма, которую выделяете под этот сценарий. Свободные деньги у брокера не проверяются.</small></label>
               <label><span>Допустимый убыток по одной сделке, ₽</span><input name="riskAmount" inputmode="decimal" value="1000" aria-describedby="riskAmountHelp" required><small id="riskAmountHelp">Максимальный убыток по расчёту до стоп-цены, без комиссий.</small></label>
               <label><span>Тип инструмента</span><select name="assetType"><option value="share">Акция</option><option value="future">Фьючерс</option></select></label>
-              <label><span>Направление сделки</span><select name="direction"><option value="long">Покупка — расчёт на рост</option><option value="short">Шорт — расчёт на снижение</option></select></label>
+              <label><span>Направление сделки</span><select name="direction"><option value="long">Покупка (лонг)</option><option value="short">Продажа (шорт)</option></select></label>
               <label><span>Цена входа</span><input name="entryPrice" inputmode="decimal" placeholder="Например, 100" aria-describedby="riskPriceHelp" required></label>
               <label><span>Стоп-цена</span><input name="stopPrice" inputmode="decimal" placeholder="Например, 95" aria-describedby="riskPriceHelp" required></label>
               <label><span>Цель по цене — необязательно</span><input name="targetPrice" inputmode="decimal" placeholder="Например, 115"></label>
@@ -379,21 +391,21 @@
             <button type="button" role="tab" id="companyAnalysisTab" data-company-tab="analysis" aria-selected="false" aria-controls="aiReport" tabindex="-1">AI-разбор</button>
           </nav>
           <div class="ai-layout"><article class="ai-request">
-            <div data-company-controls="facts"><button class="button secondary" id="companyFactsButton" type="button">Обновить факты</button><small id="companyFactsStatus">Факты из источников доступны отдельно от AI-разбора.</small></div>
+            <div data-company-controls="facts"><button class="button secondary" id="companyFactsButton" type="button" hidden>Обновить факты</button><small id="companyFactsStatus" role="status" aria-live="polite">Показатели обновляются автоматически.</small></div>
             <div data-company-controls="analysis" hidden><div class="company-controls-row"><label><span>Тема разбора</span><select id="aiFocus"><option value="overview">Обзор компании</option><option value="revenue">Выручка и прибыль</option><option value="debt">Долговая нагрузка</option><option value="valuation">Оценка компании</option><option value="risks">Риски и сценарии</option></select></label><button class="button primary" id="aiAnalyzeButton" type="button" disabled>Подготовить AI-разбор</button></div><small id="aiAvailability">Проверяем подключение модели…</small><div class="ai-boundary"><svg><use href="#i-shield"/></svg><p>AI получает только публичные сведения о компании. Ваши счета, позиции и сделки остаются на устройстве.</p></div></div>
           </article><article class="ai-report" id="aiReport" role="tabpanel" aria-labelledby="companyFactsTab"><div class="empty-state"><svg><use href="#i-ai"/></svg><h3>Выберите компанию</h3><p>Откройте сохранённые показатели и источники. Разбор моделью находится в отдельной вкладке.</p></div></article></div>
         </section>
 
         <section class="view" data-view-panel="sync">
-        <section class="quality-strip" aria-label="Качество и свежесть данных">
+        <section class="quality-strip" aria-label="Качество и свежесть данных"><h3>Полнота данных</h3><div id="syncCoverageRows"></div><details class="quality-evidence"><summary>Сведения об источнике</summary><div class="quality-fields">
           <div><span>Источник</span><strong id="qualitySource">Учебный источник</strong><small id="qualityConnector" hidden></small></div>
           <div><span>Счёт</span><strong id="qualityAccount">Синтетический</strong><small id="qualityScope">Учебный счёт</small></div>
           <div><span>Последнее событие</span><strong id="qualityEvent">—</strong><small id="qualityAge">возраст неизвестен</small></div>
           <div><span>Сверка</span><strong id="qualityReconcile">Ожидает данных</strong><small id="qualityCoverage">период не задан</small></div>
           <div class="quality-action"><span>Состояние</span><strong id="qualityState">Загрузка</strong><small id="qualityNote">проверяем локальное хранилище</small></div>
-        </section>
+        </div></details></section>
           <header class="section-head"><div><h2>Синхронизация</h2><p>Обновление портфеля и операций с подключёнными брокерами.</p></div><button class="button secondary" type="button" id="connectButton">Подключить на этом устройстве</button></header>
-          <div class="sync-summary-cards"><article><svg aria-hidden="true"><use href="#i-shield"/></svg><div><span>Последнее успешное обновление</span><strong id="syncLatestTime">—</strong><small id="syncLatestState">Проверяем историю</small></div></article><article><svg aria-hidden="true"><use href="#i-clock"/></svg><div><span>Автоматическое обновление</span><strong id="syncAutoState">Каждые 10 секунд</strong><small>Пока Workspace открыт</small></div></article><article><svg aria-hidden="true"><use href="#i-refresh"/></svg><div><span>Обновить данные</span><strong>Портфель и операции</strong><button class="button secondary" type="button" id="syncNowButton">Обновить сейчас</button></div></article></div><article class="connection-surface" id="connectionSurface" data-state="disconnected" aria-labelledby="connectionTitle">
+          <div class="sync-summary-cards"><article><svg class="sync-success-icon" aria-hidden="true"><use href="#i-check-circle"/></svg><div><span>Последнее успешное обновление</span><strong id="syncLatestTime">—</strong><small id="syncLatestState">Проверяем историю</small></div></article><article><svg aria-hidden="true"><use href="#i-clock"/></svg><div><span>Автоматическое обновление</span><strong id="syncAutoState">Каждые 10 секунд</strong><small>Пока Workspace открыт</small></div></article><article><svg aria-hidden="true"><use href="#i-shield"/></svg><div><span>Хранение данных</span><strong>На этом устройстве</strong><small>Портфель и ключ брокера хранятся локально</small><button class="button secondary" type="button" id="syncNowButton" hidden>Обновить сейчас</button></div></article></div><article class="connection-surface" id="connectionSurface" data-state="disconnected" aria-labelledby="connectionTitle">
             <header class="connection-header">
               <div><h3 id="connectionTitle">Подключение T‑Invest</h3><p id="connectionSummary" role="status" aria-live="polite">Проверяем локальное состояние подключения.</p></div>
               <span class="connection-badge" id="connectionBadge">Проверяем</span>
@@ -419,7 +431,7 @@
             </div>
             <p class="connection-preview-note" id="connectionPreviewNote" hidden>GitHub Pages показывает учебные данные без входа в Nexus и подключения к T‑Invest. Нативное окно Windows здесь недоступно.</p>
           </article>
-          <div class="sync-layout"><details class="sync-pipeline"><summary>Этапы последнего запуска</summary><h3>Последний запуск</h3><ol id="syncStages"><li data-stage="connection"><i></i><span><strong>Проверка соединения</strong><small>ожидает запуска</small></span></li><li data-stage="raw"><i></i><span><strong>Загрузка исходных данных</strong><small>с сохранением истории</small></span></li><li data-stage="normalize"><i></i><span><strong>Нормализация</strong><small>проверка повторов и изменений</small></span></li><li data-stage="reconcile"><i></i><span><strong>Сверка</strong><small>ожидаем отчёт брокера</small></span></li><li data-stage="analytics"><i></i><span><strong>Аналитика</strong><small>проверяемые расчёты</small></span></li></ol></details><article class="sync-history"><header><h3>Журнал синхронизации</h3><span id="syncSummary">нет данных</span></header><p class="sync-retention-note">Подробности последних 100 запусков на счёт. Более ранние записи хранятся в сокращённом виде для истории портфеля.</p><div id="syncRuns" class="run-list"><p class="empty-copy">Запуски синхронизации не найдены.</p></div><nav class="list-pagination" id="syncRunsPagination" aria-label="Страницы истории синхронизации"><span id="syncRunsCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="syncRunsPrevious" data-list-page="syncRuns" data-page-direction="-1" aria-controls="syncRuns">Назад</button><button class="button secondary" type="button" id="syncRunsNext" data-list-page="syncRuns" data-page-direction="1" aria-controls="syncRuns">Дальше</button></div></nav></article><details class="latency-surface"><summary>Задержка потока котировок</summary><dl><div><dt>p50</dt><dd id="latencyP50">—</dd></div><div><dt>p95</dt><dd id="latencyP95">—</dd></div><div><dt>p99</dt><dd id="latencyP99">—</dd></div></dl><p id="latencyStatus">Задержка потока ещё не измерена.</p></details></div>
+          <div class="sync-layout"><details class="sync-pipeline"><summary>Этапы последнего запуска</summary><h3>Последний запуск</h3><ol id="syncStages"><li data-stage="connection"><i></i><span><strong>Проверка соединения</strong><small>ожидает запуска</small></span></li><li data-stage="raw"><i></i><span><strong>Загрузка исходных данных</strong><small>с сохранением истории</small></span></li><li data-stage="normalize"><i></i><span><strong>Нормализация</strong><small>проверка повторов и изменений</small></span></li><li data-stage="reconcile"><i></i><span><strong>Сверка</strong><small>ожидаем отчёт брокера</small></span></li><li data-stage="analytics"><i></i><span><strong>Аналитика</strong><small>проверяемые расчёты</small></span></li></ol></details><article class="sync-history"><header><h3>Журнал синхронизации</h3><div class="sync-run-filters range-switch" role="group" aria-label="Статус синхронизации"><button type="button" data-sync-filter="all" aria-pressed="true">Все</button><button type="button" data-sync-filter="completed" aria-pressed="false">Успешные</button><button type="button" data-sync-filter="failed" aria-pressed="false">Ошибки</button></div></header><span id="syncSummary" class="sr-only">нет данных</span><p class="sync-retention-note">Подробности последних 100 запусков на счёт. Более ранние записи хранятся в сокращённом виде для истории портфеля.</p><div id="syncRuns" class="run-list"><p class="empty-copy">Запуски синхронизации не найдены.</p></div><nav class="list-pagination" id="syncRunsPagination" aria-label="Страницы истории синхронизации"><span id="syncRunsCount" role="status" aria-live="polite"></span><div><button class="button secondary" type="button" id="syncRunsPrevious" data-list-page="syncRuns" data-page-direction="-1" aria-controls="syncRuns">Назад</button><button class="button secondary" type="button" id="syncRunsNext" data-list-page="syncRuns" data-page-direction="1" aria-controls="syncRuns">Дальше</button></div></nav></article><details class="latency-surface"><summary>Задержка потока котировок</summary><dl><div><dt>p50</dt><dd id="latencyP50">—</dd></div><div><dt>p95</dt><dd id="latencyP95">—</dd></div><div><dt>p99</dt><dd id="latencyP99">—</dd></div></dl><p id="latencyStatus">Задержка потока ещё не измерена.</p></details></div>
         </section>
 
         <section class="view" data-view-panel="settings">

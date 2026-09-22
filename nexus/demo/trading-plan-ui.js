@@ -1,6 +1,7 @@
 import { instrumentLogo, issuerName } from './instrument-mark.js';
 const PAGE_SIZE = 8;
-const ACTIONS = { watch: 'Наблюдение', buy: 'План покупки', sell: 'План продажи' };
+const ACTIONS = { watch: 'Наблюдение', buy: 'Покупка', sell: 'Продажа' };
+const STATUSES = { draft:'Черновик', watching:'Наблюдаю', completed:'Реализовано', cancelled:'Отменено' };
 const FIELDS = ['planAccount', 'planInstrument', 'planDate', 'planAction', 'planEntry', 'planStop', 'planTarget', 'planNote', 'planSave'];
 const uuid = /^[a-f\d]{8}-[a-f\d-]{20,}$/iu;
 const textLabel = (value) => typeof value === 'string' && value.length > 0 && !uuid.test(value) && !value.includes('\ufffd') ? value : '';
@@ -34,7 +35,7 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
     if (add) add.disabled = !enabled || busy;
     element('planInstrument').disabled ||= !element('planInstrument').options.length;
     element('planSave').disabled ||= !element('planInstrument').options.length;
-    for (const button of list.querySelectorAll('button')) button.disabled = !enabled || busy || button.dataset.planUnavailable === 'true';
+    for (const button of list.querySelectorAll('button,select')) button.disabled = !enabled || busy || button.dataset.planUnavailable === 'true';
     element('manualPlanPrevious').disabled = busy || page === 0;
     element('manualPlanNext').disabled = busy || (page + 1) * PAGE_SIZE >= items.length;
   }
@@ -91,7 +92,7 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
       identity.append(mark,title);row.append(identity);
       const date = /^\d{4}-\d{2}-\d{2}$/u.test(item.plannedFor) ? item.plannedFor.split('-').reverse().join('.') : 'Дата не указана';
       const plan=node('div',undefined,'plan-draft-plan');plan.append(node('strong',ACTIONS[item.action]||'Черновик'));
-      const prices = [['Вход', item.entryPrice], ['Стоп', item.stopPrice], ['Цель', item.targetPrice]].filter(([, value]) => value !== null && value !== undefined && value !== '');
+      const prices = [['от', item.entryPrice], ['Стоп', item.stopPrice], ['Цель', item.targetPrice]].filter(([, value]) => value !== null && value !== undefined && value !== '');
       const currency=String(meta?.currency||'RUB').toUpperCase();
       const unit=meta?.assetType==='future'?'п.':({RUB:'₽',RUR:'₽',USD:'$',EUR:'€',CNY:'¥'})[currency]||currency;
       if (prices.length) {
@@ -101,7 +102,21 @@ export function initTradingPlan({ request, showToast = () => {}, getBootstrap })
       } else plan.append(node('small','Уровни не заданы'));
       row.append(plan);
       const review=node('div',undefined,'plan-draft-review');review.append(node('strong',date),node('small',portfolio?.label||'Портфель'));row.append(review);
-      const state=node('div',undefined,'plan-draft-state');state.append(node('span','Черновик','status-chip draft'));row.append(state);
+      const state=node('div',undefined,'plan-draft-state');
+      const statusSelect=node('select',undefined,'plan-status-select');
+      statusSelect.setAttribute('aria-label',`Статус идеи ${instrumentLabel(meta)}`);
+      for(const [value,label] of Object.entries(STATUSES)){const option=node('option',label);option.value=value;statusSelect.append(option);}
+      statusSelect.value=Object.hasOwn(STATUSES,item.status)?item.status:'draft';
+      statusSelect.dataset.status=statusSelect.value;
+      statusSelect.addEventListener('change',async()=>{
+        const previous=item.status||'draft', next=statusSelect.value;
+        if(busy||!enabled){statusSelect.value=previous;return;}
+        busy=true;revision++;controls();
+        try{accept(await request(`/api/trading-plan/${encodeURIComponent(item.id)}/status`,{method:'POST',body:JSON.stringify({status:next})}));report('Статус идеи сохранён.');}
+        catch(error){statusSelect.value=previous;report(error.message||'Не удалось изменить статус.');}
+        finally{busy=false;controls();}
+      });
+      state.append(statusSelect);row.append(state);
       row.append(node('p', item.note||'Добавьте заметку к идее', 'plan-draft-note'));
       const more=node('button','⋯','icon-button plan-draft-more');more.type='button';more.setAttribute('aria-label',`Подробнее об идее ${instrumentLabel(meta)}`);more.setAttribute('aria-expanded','false');
       const detail=node('section',undefined,'plan-draft-detail');detail.hidden=true;detail.append(node('h4','Идея и план'),node('p',item.note||'Заметка пока не добавлена'),node('small',`Пересмотреть ${date} · ${portfolio?.label||'Портфель'}`));

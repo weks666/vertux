@@ -16,6 +16,7 @@ export function issuerName(ticker, name) {
   return (!name || String(name).toUpperCase()===symbol) ? issuers[symbol]?.name || name || ticker : name;
 }
 export function instrumentLogo(row={}, display=row) {
+  if (/coffee|кофе|^KC(?:[-HKN UZ0-9]|$)/iu.test(`${display.ticker||row.ticker||''} ${display.name||row.name||''}`)) return './assets/commodities/coffee.svg';
   const bundled=issuers[String(display.ticker||row.ticker||'').toUpperCase()]?.image;
   const logoName=display.logoName||row.logoName;
   return bundled?`./assets/issuers/${bundled}.png`:typeof logoName==='string'&&/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}\.png$/.test(logoName)?`/api/instrument-logos/${encodeURIComponent(logoName)}`:null;
@@ -25,7 +26,7 @@ export function instrumentMark(row,display=row) {
   const bundled=issuers[ticker]?.image;
   const logoName=display.logoName||row.logoName;
   const safeLogo=typeof logoName==='string'&&/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}\.png$/.test(logoName)?logoName:null;
-  const imageSource=bundled?`./assets/issuers/${bundled}.png`:safeLogo?`/api/instrument-logos/${encodeURIComponent(safeLogo)}`:null;
+  const imageSource=instrumentLogo(row,display);
   const category=/^(GOLD|SILV|XAU|XAG|GLD)/.test(ticker)?'metal':/^(SI[-H-Z]|USD|EUR|CNY)/.test(ticker)?'currency':row.assetType==='future'?'future':'share';
   const image=imageSource?`<img src="${escape(imageSource)}" alt="" loading="lazy" decoding="async">`:'';
   return `<span class="instrument-mark mark-${category}${bundled?' mark-'+bundled:''}" aria-hidden="true"><svg viewBox="0 0 24 24">${categories[category]}</svg>${image}</span>`;

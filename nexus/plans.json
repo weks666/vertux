@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "revision": "invest-npd-2026-09-22-r1",
+  "approval": "approved",
+  "salesEnabled": false,
+  "currency": "RUB",
+  "proposedOn": "2026-09-22",
+  "legacyOfferVersion": "invest-npd-2026-09-17-r2",
+  "terms": [
+    {
+      "id": "month",
+      "months": 1,
+      "label": "1 месяц",
+      "en": "1 month",
+      "factor": 1,
+      "discount": 0
+    },
+    {
+      "id": "quarter",
+      "months": 3,
+      "label": "3 месяца",
+      "en": "3 months",
+      "factor": 2.7,
+      "discount": 10
+    },
+    {
+      "id": "year",
+      "months": 12,
+      "label": "12 месяцев",
+      "en": "12 months",
+      "factor": 10,
+      "discount": null
+    }
+  ],
+  "plans": [
+    {
+      "id": "free",
+      "name": "Бесплатный",
+      "en": "Free",
+      "monthlyRub": 0,
+      "status": "proposal",
+      "description": "Знакомство со своим портфелем.",
+      "descriptionEn": "Get to know your own portfolio."
+    },
+    {
+      "id": "standard",
+      "name": "Обычный",
+      "en": "Standard",
+      "monthlyRub": 1500,
+      "status": "prepared",
+      "description": "Для учёта и анализа личного портфеля.",
+      "descriptionEn": "For tracking and understanding your portfolio."
+    },
+    {
+      "id": "plus",
+      "name": "Plus",
+      "en": "Plus",
+      "monthlyRub": 2500,
+      "status": "planned",
+      "description": "Для работы с графиками и инструментами.",
+      "descriptionEn": "For working with charts and instruments."
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "en": "Pro",
+      "monthlyRub": 3500,
+      "status": "planned",
+      "description": "Для анализа позиций участников рынка.",
+      "descriptionEn": "For studying market participant positions."
+    }
+  ],
+  "features": [
+    {
+      "id": "portfolio",
+      "ru": "Брокерские счета",
+      "en": "Brokerage accounts",
+      "values": [
+        "one",
+        "multiple",
+        "multiple",
+        "multiple"
+      ]
+    },
+    {
+      "id": "operations",
+      "ru": "История сделок и операций",
+      "en": "Trade and transaction history",
+      "values": [
+        "yes",
+        "yes",
+        "yes",
+        "yes"
+      ]
+    },
+    {
+      "id": "analytics",
+      "ru": "Аналитика и выбор периода",
+      "en": "Analytics and period selection",
+      "values": [
+        "basic",
+        "yes",
+        "yes",
+        "yes"
+      ]
+    },
+    {
+      "id": "plan",
+      "ru": "Заметки, план и расчёт риска",
+      "en": "Notes, plans and risk calculations",
+      "values": [
+        "no",
+        "yes",
+        "yes",
+        "yes"
+      ]
+    },
+    {
+      "id": "calendar",
+      "ru": "Календарь и напоминания",
+      "en": "Calendar and reminders",
+      "values": [
+        "no",
+        "yes",
+        "yes",
+        "yes"
+      ]
+    },
+    {
+      "id": "devices",
+      "ru": "Устройства",
+      "en": "Devices",
+      "values": [
+        "three",
+        "three",
+        "three",
+        "three"
+      ]
+    },
+    {
+      "id": "terminal",
+      "ru": "Терминал и несколько графиков",
+      "en": "Terminal and multiple charts",
+      "values": [
+        "no",
+        "no",
+        "planned",
+        "planned"
+      ]
+    },
+    {
+      "id": "ai",
+      "ru": "Расширенные AI-разборы",
+      "en": "Extended AI analysis",
+      "values": [
+        "no",
+        "no",
+        "planned",
+        "planned"
+      ]
+    },
+    {
+      "id": "automation",
+      "ru": "Сделки по заданным условиям",
+      "en": "Orders based on your rules",
+      "values": [
+        "no",
+        "no",
+        "planned",
+        "planned"
+      ]
+    },
+    {
+      "id": "futoi",
+      "ru": "Позиции участников MOEX FUTOI",
+      "en": "MOEX FUTOI participant positions",
+      "values": [
+        "no",
+        "no",
+        "no",
+        "planned"
+      ]
+    }
+  ],
+  "termApproval": "approved",
+  "priceApproval": "pending",
+  "freePlanApproval": "proposal",
+  "trial": {
+    "defaultDays": 7,
+    "invitedPilotDays": 30,
+    "deviceLimit": 3,
+    "repeatTrial": false
+  },
+  "approvedOn": "2026-09-22",
+  "approvalBasis": "Owner requested publication of the reviewed website and displayed proposed plans; sales remain disabled."
+}

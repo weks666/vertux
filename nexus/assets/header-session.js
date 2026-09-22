@@ -1,5 +1,12 @@
 (() => {
   'use strict';
+  // The local review server may point account links to its isolated loopback fixture.
+  const preview=document.querySelector('meta[name="nexus-account-preview"]')?.content;
+  if(preview&&['localhost','127.0.0.1'].includes(location.hostname)){
+    try{const local=new URL(preview);if(local.protocol==='http:'&&local.hostname==='127.0.0.1'){
+      document.querySelectorAll('a[href]').forEach(link=>{const target=new URL(link.href,location.href);if(target.origin==='https://nexus.vertux.online'&&target.pathname==='/account.html')link.href=local.origin+target.pathname+target.search+target.hash;});
+    }}catch{/* Invalid preview metadata never changes public routing. */}
+  }
   const links=[...document.querySelectorAll('[data-i18n="newnav.login"]')];
   if(!links.length)return;
   let account=null,busy=false;

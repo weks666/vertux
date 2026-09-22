@@ -17,7 +17,7 @@ const chartTheme = {
     horzLines: { color: 'rgba(149,172,204,.14)', style: 2 },
   },
   rightPriceScale: { borderColor: 'rgba(149,172,204,.12)' },
-  timeScale: { borderColor: 'rgba(149,172,204,.12)', timeVisible: true, secondsVisible: false },
+  timeScale: { borderColor: 'rgba(149,172,204,.12)', timeVisible: true, secondsVisible: false, tickMarkFormatter: formatMarketTick },
   localization: { locale: 'ru-RU', timeFormatter: formatChartTime, priceFormatter: formatChartNumber },
   crosshair: {
     vertLine: { color: 'rgba(185,169,255,.45)', labelBackgroundColor: '#5d48cf' },
@@ -43,6 +43,7 @@ function observeResize(host, chart) {
 }
 
 function normalizeTime(value) {
+  if(value==null || value==='' || typeof value==='boolean')return NaN;
   return typeof value === 'number' ? Math.floor(value) : Math.floor(new Date(value).getTime() / 1000);
 }
 
@@ -56,6 +57,11 @@ function formatChartTime(time) {
   return `${new Intl.DateTimeFormat(presentation.language, { timeZone: 'Europe/Moscow', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(chartDate(time))} ${presentation.language==='en'?'MSK':'мск'}`;
 }
 
+export function formatMarketTick(time, tickMarkType) {
+  const options=tickMarkType===0?{year:'numeric'}:tickMarkType===1?{month:'short'}:tickMarkType===2?{day:'numeric',month:'short'}:{hour:'2-digit',minute:'2-digit',...(tickMarkType===4?{second:'2-digit'}:{})};
+  return new Intl.DateTimeFormat(presentation.language,{timeZone:'Europe/Moscow',...options}).format(chartDate(time));
+}
+
 function formatChartNumber(value) {
   return new Intl.NumberFormat(presentation.language, { maximumFractionDigits: 2 }).format(value);
 }
@@ -66,11 +72,12 @@ function formatChartRubles(value) {
 }
 
 function formatChartPercentage(value) {
-  return `${value >= 0 ? '+' : ''}${new Intl.NumberFormat(presentation.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}%`;
+  if (Math.abs(value) < 0.005) return '0%';
+  return `${value > 0 ? '+' : ''}${new Intl.NumberFormat(presentation.language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}%`;
 }
 
 function historyTimeScale() {
-  return { ...chartTheme.timeScale, timeVisible: false, minBarSpacing: 0.01,
+  return { ...chartTheme.timeScale, timeVisible: false, minBarSpacing: 0.01, fixLeftEdge: true, fixRightEdge: true, rightOffset: 0,
     tickMarkFormatter: (time, tickMarkType) => new Intl.DateTimeFormat(presentation.language, { timeZone: 'Europe/Moscow',
       ...(tickMarkType === 0 ? { year: 'numeric' } : tickMarkType === 1 ? { month: 'short', year: '2-digit' } : { day: 'numeric', month: 'short' }) }).format(chartDate(time)) };
 }
@@ -155,7 +162,7 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
     },
   });
   const zeroLine = green ? series.createPriceLine({ price: 0, color: 'rgba(185,169,255,.6)', lineWidth: 1,
-    lineStyle: 2, lineVisible: mode === 'percent', axisLabelVisible: mode === 'percent', title: '' }) : null;
+    lineStyle: 2, lineVisible: mode === 'percent', axisLabelVisible: false, title: '' }) : null;
   const axisValue = series.createPriceLine({ price: values[0].value, color: green ? '#2b8565' : '#5d48cf',
     lineVisible: false, axisLabelVisible: false, title: '' });
   const clearHover = () => { axisValue.applyOptions({ axisLabelVisible: false }); series.applyOptions({ lastValueVisible: true }); };
@@ -170,7 +177,8 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
       const time = logical == null ? normalizeTime(param.time) : timeline[Math.max(0, Math.min(timeline.length - 1, Math.round(logical)))]?.time;
       const nearest = nearestObservation(values, time);
       if (!nearest) { clearHover(); return; }
-      axisValue.applyOptions({ price: nearest.value, axisLabelVisible: true });
+      const relative = mode === 'percent' ? nearest.value : nearest.value - (values[0]?.value ?? nearest.value);
+      axisValue.applyOptions({ price: nearest.value, axisLabelVisible: true, color: green ? relative < 0 ? '#b63e55' : relative > 0 ? '#237d64' : '#526078' : '#5d48cf' });
       series.applyOptions({ lastValueVisible: false });
       chart.setCrosshairPosition(nearest.value, nearest.time, series);
     } finally { movingCrosshair = false; }
@@ -185,7 +193,7 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
     clearHover();
     series.applyOptions({ pointMarkersVisible: values.length <= 7, priceFormat: { type: 'custom', minMove: 0.01, formatter: formatter() } });
     if (baseline) series.applyOptions({ baseValue: { type: 'price', price: mode === 'percent' ? 0 : values[0]?.value || 0 } });
-    zeroLine?.applyOptions({ lineVisible: mode === 'percent', axisLabelVisible: mode === 'percent' });
+    zeroLine?.applyOptions({ lineVisible: mode === 'percent', axisLabelVisible: false });
     chart.applyOptions({ localization: { ...chartTheme.localization, priceFormatter: formatter() } });
     series.setData(values.length ? timeline : []);
     if (values.length) {
@@ -243,96 +251,7 @@ export function normalizeMarketCandles(candles, interval) {
   return [...byTime.values()].sort((a, b) => a.time - b.time);
 }
 
-export function createMarketChart(host, candles) {
-  const api = chartApi();
-  const normalized = normalizeMarketCandles(candles);
-  if (!api || !host || !normalized.length) return null;
-  const chart = api.createChart(host, { ...chartTheme, height: host.clientHeight || 480 });
-  const candleSeries = chart.addSeries(api.CandlestickSeries, {
-    upColor: '#5ed0a0', downColor: '#ef7b76', borderVisible: false,
-    wickUpColor: '#5ed0a0', wickDownColor: '#ef7b76',
-  });
-  const volumeSeries = chart.addSeries(api.HistogramSeries, {
-    priceFormat: { type: 'volume' }, priceScaleId: '',
-  });
-  volumeSeries.priceScale().applyOptions({ scaleMargins: { top: .78, bottom: 0 } });
-  candleSeries.setData(normalized.map(({ time, open, high, low, close }) => ({ time, open, high, low, close })));
-  const barSeries = chart.addSeries(api.BarSeries, { upColor: '#5ed0a0', downColor: '#ef7b76', visible: false });
-  barSeries.setData(normalized.map(({ time, open, high, low, close }) => ({ time, open, high, low, close })));
-  const lineSeries = chart.addSeries(api.LineSeries, { color: '#a98bff', lineWidth: 2, visible: false });
-  const areaSeries = chart.addSeries(api.AreaSeries, { lineColor: '#a98bff', topColor: 'rgba(137,102,255,.32)', bottomColor: 'rgba(137,102,255,.02)', lineWidth: 2, visible: false });
-  for (const series of [lineSeries, areaSeries]) series.setData(normalized.map(row => ({time: row.time, value: row.close})));
-  const priceSeries = { candles: candleSeries, bars: barSeries, line: lineSeries, area: areaSeries };
-  let activeType = 'candles';
-  volumeSeries.setData(normalized.map((row) => ({ time: row.time, value: row.volume, color: row.close >= row.open ? 'rgba(94,208,160,.32)' : 'rgba(239,123,118,.32)' })));
-
-  const smaSeries = chart.addSeries(api.LineSeries, { color: '#b9a9ff', lineWidth: 1, priceLineVisible: false, visible: false });
-  const emaSeries = chart.addSeries(api.LineSeries, { color: '#e1b264', lineWidth: 1, priceLineVisible: false, visible: false });
-  smaSeries.setData(movingAverage(normalized, Math.min(20, Math.max(2, Math.floor(normalized.length / 3)))));
-  emaSeries.setData(movingAverage(normalized, Math.min(20, Math.max(2, Math.floor(normalized.length / 3))), true));
-  chart.timeScale().fitContent();
-
-  const drawings = [];
-  let trendStart = null;
-  let drawingMode = null;
-  const clickHandler = (param) => {
-    if (!drawingMode || !param.time || !param.point) return;
-    const price = priceSeries[activeType].coordinateToPrice(param.point.y);
-    if (price === null) return;
-    if (drawingMode === 'horizontal') {
-      for (const series of Object.values(priceSeries)) drawings.push(series.createPriceLine({ price, color: '#b9a9ff', lineWidth: 1, axisLabelVisible: true, title: 'Уровень' }));
-      drawingMode = null;
-    } else if (drawingMode === 'trend' && !trendStart) {
-      trendStart = { time: param.time, value: price };
-    } else if (drawingMode === 'trend') {
-      const series = chart.addSeries(api.LineSeries, { color: '#e1b264', lineWidth: 2, priceLineVisible: false, lastValueVisible: false });
-      if (param.time === trendStart.time) { chart.removeSeries(series); return; }
-      series.setData([trendStart, { time: param.time, value: price }].sort((a, b) => Number(a.time) - Number(b.time)));
-      drawings.push(series);
-      trendStart = null;
-      drawingMode = null;
-    }
-  };
-  chart.subscribeClick(clickHandler);
-  const observer = observeResize(host, chart);
-
-  return {
-    chart,
-    setData(candles) {
-      const next = normalizeMarketCandles(candles);
-      if (!next.length) return;
-      normalized.splice(0, normalized.length, ...next);
-      for (const series of [candleSeries, barSeries]) series.setData(next.map(({time,open,high,low,close}) => ({time,open,high,low,close})));
-      for (const series of [lineSeries, areaSeries]) series.setData(next.map(row => ({time:row.time,value:row.close})));
-      volumeSeries.setData(next.map(row => ({time:row.time,value:row.volume,color:row.close >= row.open ? 'rgba(94,208,160,.32)' : 'rgba(239,123,118,.32)'})));
-      smaSeries.setData(movingAverage(next, Math.min(20, Math.max(2, Math.floor(next.length / 3)))));
-      emaSeries.setData(movingAverage(next, Math.min(20, Math.max(2, Math.floor(next.length / 3))), true));
-    },
-    updateCandle(row) {
-      const normalizedRow = { time: normalizeTime(row.time), open: row.open, high: row.high, low: row.low, close: row.close };
-      if (!normalizeMarketCandles([row]).length || normalizedRow.time < (normalized.at(-1)?.time ?? -Infinity)) return;
-      if (normalizedRow.time === normalized.at(-1)?.time) normalized[normalized.length - 1] = { ...row, ...normalizedRow };
-      else normalized.push({ ...row, ...normalizedRow });
-      candleSeries.update(normalizedRow);
-      barSeries.update(normalizedRow);
-      for (const series of [lineSeries, areaSeries]) series.update({time: normalizedRow.time, value: normalizedRow.close});
-      volumeSeries.update({ time: normalizedRow.time, value: row.volume, color: row.close >= row.open ? 'rgba(94,208,160,.32)' : 'rgba(239,123,118,.32)' });
-    },
-    toggle(name, visible) {
-      if (name === 'candles') priceSeries[activeType].applyOptions({ visible });
-      if (name === 'volume') volumeSeries.applyOptions({ visible });
-      if (name === 'sma') smaSeries.applyOptions({ visible });
-      if (name === 'ema') emaSeries.applyOptions({ visible });
-    },
-    setType(type) {
-      if (!Object.hasOwn(priceSeries, type)) return;
-      activeType = type;
-      for (const [name, series] of Object.entries(priceSeries)) series.applyOptions({ visible: name === type });
-    },
-    beginDrawing(mode) { drawingMode = mode; trendStart = null; },
-    destroy() { observer.disconnect(); chart.unsubscribeClick(clickHandler); chart.remove(); },
-  };
-}
+export { createMarketChart } from './market-chart.js';
 
 export function createAnalyticsReturnChart(host, points, period, options = {}) {
   let mode = options.mode || 'percent';

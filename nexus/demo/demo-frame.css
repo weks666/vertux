@@ -66,3 +66,23 @@ input[type="date"][readonly]::-webkit-calendar-picker-indicator { display:none; 
   .demo-service h2 { font-size: 23px; }
 }
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation: none !important; scroll-behavior: auto !important; transition: none !important; } }
+/* The same 0.6.11 app, framed for a read-only product demonstration. */
+#syncButton,.topbar-actions,[data-clear-drawings],[data-history],[data-duplicate-chart],[data-detach-chart],.terminal-flash,.demo-period-note { display:none!important; }
+.nav-item[data-view="settings"],.nav-item[data-view="sync"],.nav-item[data-system-section],.nav-heading:has(+.nav-item[data-system-section]) { display:none!important; }
+.terminal-chart-plot canvas,.participants-chart canvas { pointer-events:none!important; }
+input:disabled,select:disabled,textarea:disabled { opacity:1; color:var(--text); -webkit-text-fill-color:var(--text); cursor:default; }
+button:disabled { cursor:default; }
+.terminal-chart-area { grid-template-columns:minmax(0,1fr)!important; }
+.terminal-chart-plot { pointer-events:none; }
+.terminal-side { display:none!important; }.terminal-stage { grid-template-columns:200px minmax(0,1fr)!important; }.terminal-main { grid-column:2!important; }.terminal-dock { grid-column:1/-1!important; }
+.portfolio-headline { padding:21px; }.portfolio-ledger { gap:20px; }
+.topbar-title > .demo-stamp { display:none!important; }
+.demo-poster .mobile-menu { display:none!important; }
+@media(min-width:900px) { html { zoom:.88; } }
+.demo-poster { zoom:1; }
+@media(max-width:700px) { .terminal-stage { grid-template-columns:minmax(0,1fr)!important; }.terminal-watchlist { display:none!important; }.terminal-main,.terminal-dock { grid-column:1!important; } }
+.terminal-stage>.terminal-dock { grid-column:2!important; }
+.terminal-save-state,.term-help,#resetStatisticsPeriod,#portfolioDayChange { display:none!important; }
+@media(max-width:700px) { .terminal-stage>.instrument-shortlist { display:none!important; }.terminal-stage>.terminal-dock { grid-column:1!important; } }
+
+.terminal-drawing-tools button:disabled,.terminal-common-tools button:disabled,.terminal-timeframes button:disabled { opacity:.82; }
