@@ -2,6 +2,57 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-46",
+      "date": "2026-09-24",
+      "versions": {
+        "Nexus": "0.6.46"
+      },
+      "title": {
+        "ru": "Nexus 0.6.46 для Windows",
+        "en": "Nexus 0.6.46 for Windows"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Установщик на сайте и канал обновлений Nexus теперь выдают версию 0.6.46 с Invest 0.6.12.",
+          "en": "The website installer and Nexus update channel now provide version 0.6.46 with Invest 0.6.12."
+        },
+        {
+          "type": "changed",
+          "ru": "Для более ранних версий Nexus сохраняется выдача совместимых версий Invest.",
+          "en": "Earlier Nexus versions continue to receive compatible Invest versions."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-12",
+      "date": "2026-09-24",
+      "versions": {
+        "Invest": "0.6.12"
+      },
+      "title": {
+        "ru": "Обзор портфеля и история показателей",
+        "en": "Portfolio overview and historical metrics"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Карточки обзора визуально отделены друг от друга; боковая панель стала компактнее. В таблице указано число открытых позиций.",
+          "en": "Overview cards are visually separated and the sidebar is more compact. The table shows the number of open positions."
+        },
+        {
+          "type": "fixed",
+          "ru": "Подсказка «Все показатели» больше не остаётся поверх содержимого. Выбранный период показывает даты; повторяющиеся переключатели диапазона убраны с графиков.",
+          "en": "The All metrics tooltip no longer stays over the content. The selected period shows its dates, and duplicate range controls have been removed from charts."
+        },
+        {
+          "type": "changed",
+          "ru": "Центр уведомлений собран в обзоре. Исторические показатели показывают ограничение покрытия, когда исходных данных недостаточно для достоверного расчёта.",
+          "en": "The notification center is available in the overview. Historical metrics explain limited coverage when source data is insufficient for a reliable calculation."
+        }
+      ]
+    },
+    {
       "id": "nexus-site-account-server-27-4-52",
       "date": "2026-09-22",
       "label": "NEXUS SERVER 27.4.52",
