@@ -18,22 +18,27 @@ export function createMarketChart(host,candles,{onCrosshair,onState,onMode,onRan
  const volume=chart.addSeries(api.HistogramSeries,{priceFormat:{type:'volume'},priceScaleId:'volume',priceLineVisible:false,lastValueVisible:false});
  volume.priceScale().applyOptions({scaleMargins:{top:.84,bottom:0},visible:false});
  for(const series of Object.values(prices))series.priceScale().applyOptions({scaleMargins:{top:.08,bottom:.2}});
- const indicators={},enabled={volume:true},comparisons=new Map();let studies=[],type='candles',flash=false,pulseTimer=null,syncing=false,dead=false,applying=false,historyFrame=0;
+ const indicators={},enabled={volume:true},comparisons=new Map();let studies=[],type='candles',scaleMode='normal',inverted=false,flash=false,pulseTimer=null,syncing=false,dead=false,applying=false,historyFrame=0;
  const price=()=>prices[type];
  const drawing=createDrawingLayer({host,chart,getSeries:price,getRows:()=>rows,onChange:()=>onState?.(getState()),onMode,onSelect:onDrawingSelect});
- function updateIndicators(){for(const study of studies.filter(s=>s.visible)){
+ function updateIndicators(incremental=false){for(const study of studies.filter(s=>s.visible)){
   const outputs=calculateStudy(rows,study);let list=indicators[study.id];
   if(!list){const pane=indicatorCatalog.find(d=>d.type===study.type).placement==='pane'?chart.panes().length:0;
    list=indicators[study.id]=outputs.map(output=>chart.addSeries(output.histogram?api.HistogramSeries:api.LineSeries,{color:output.color||study.color,lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},pane));
    if(pane){chart.panes()[0]?.setStretchFactor(1);chart.panes()[pane]?.setStretchFactor(.35);chart.panes()[pane]?.priceScale('right').applyOptions({minimumWidth:72});}
   }
-  outputs.forEach((output,i)=>{const values=new Map(output.data.map(r=>[r.time,r]));list[i].setData(rows.map(r=>values.get(r.time)||{time:r.time}));});
+  outputs.forEach((output,i)=>{
+   if(incremental){const last=output.data.at(-1);list[i].update(last?.time===rows.at(-1).time?last:{time:rows.at(-1).time});}
+   else{const values=new Map(output.data.map(r=>[r.time,r]));list[i].setData(rows.map(r=>values.get(r.time)||{time:r.time}));}
+  });
  }}
  function rebuildStudies(){for(const list of Object.values(indicators))for(const series of list)chart.removeSeries(series);for(const key of Object.keys(indicators))delete indicators[key];updateIndicators();drawing.refresh();}
  function updateComparisons(){for(const value of comparisons.values()){
-  const other=new Map(value.rows.map(r=>[r.time,r.close]));const anchor=rows.find(r=>other.has(r.time)&&r.close>0&&other.get(r.time)>0);
+  const other=value.closes??=new Map(value.rows.map(r=>[r.time,r.close]));const anchor=rows.find(r=>other.has(r.time)&&r.close>0&&other.get(r.time)>0);
+  value.anchor=anchor?{time:anchor.time,close:anchor.close}:null;
   value.series.setData(anchor?value.rows.map(r=>({time:r.time,value:r.close/other.get(anchor.time)*anchor.close})):[]);
- }chart.priceScale('right').applyOptions({mode:comparisons.size?api.PriceScaleMode.Percentage:api.PriceScaleMode.Normal});}
+ }applyScale();}
+ function applyScale(){chart.priceScale('right').applyOptions({mode:comparisons.size?api.PriceScaleMode.Percentage:({normal:0,log:1,percent:2,indexed:3})[scaleMode],invertScale:inverted,autoScale:true});drawing.refresh();}
  function fill(){const bars=rows.map(({time,open,high,low,close})=>({time,open,high,low,close}));prices.candles.setData(bars);prices.bars.setData(bars);
   for(const series of[prices.line,prices.area])series.setData(rows.map(r=>({time:r.time,value:r.close})));
   volume.setData(rows.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?up+'45':down+'45'})));updateIndicators();updateComparisons();drawing.refresh();}
@@ -43,7 +48,7 @@ export function createMarketChart(host,candles,{onCrosshair,onState,onMode,onRan
   pulseTimer=setTimeout(()=>{delete host.dataset.priceDirection;prices.line.applyOptions({color:'#a98bff'});prices.area.applyOptions({lineColor:'#a98bff'});},700);
  }
  function setData(value){const next=normalizeMarketCandles(value);if(!next.length)return;const previous=rows.at(-1)?.close,range=chart.timeScale().getVisibleLogicalRange(),first=rows[0].time,added=next.filter(r=>r.time<first).length;applying=true;try{rows=next;fill();if(range)chart.timeScale().setVisibleLogicalRange({from:range.from+added,to:range.to+added});}finally{applying=false;}pulse(previous);}
- function getState(){return {type,indicators:{...enabled},studies:studies.map(s=>({...s})),drawings:drawing.getState(),range:chart.timeScale().getVisibleRange(),flash};}
+ function getState(){return {type,scaleMode,inverted,magnet:drawing.isMagnet(),drawingsHidden:drawing.isHidden(),indicators:{...enabled},studies:studies.map(s=>({...s})),drawings:drawing.getState(),range:chart.timeScale().getVisibleRange(),flash};}
  function toggle(name,visible){if(name==='volume'){enabled.volume=visible;volume.applyOptions({visible});}
   else if(indicatorCatalog.some(d=>d.type===name)){enabled[name]=visible;studies=studies.filter(s=>s.id!==name);if(visible)studies.push(normalizeStudy({type:name}));rebuildStudies();}
   onState?.(getState());}
@@ -56,13 +61,29 @@ export function createMarketChart(host,candles,{onCrosshair,onState,onMode,onRan
  fill();theme();chart.timeScale().setVisibleLogicalRange({from:Math.max(0,rows.length-180),to:rows.length+5});
  return {chart,drawings:drawing,getState,getRows:()=>rows.slice(),getSeries:price,setData,
   updateCandle(value){const row=normalizeMarketCandles([value])[0];if(!row||row.interval&&rows.at(-1)?.interval&&row.interval!==rows.at(-1).interval||row.time<rows.at(-1).time)return;
-   const previous=rows.at(-1)?.close;if(row.time===rows.at(-1).time)rows[rows.length-1]=row;else rows.push(row);fill();pulse(previous);return rows.slice();},
+   const last=rows.at(-1);
+   if(row.instrumentUid&&last.instrumentUid&&row.instrumentUid!==last.instrumentUid)return;
+   if(row.time===last.time&&Date.parse(row.capturedAt||'')<Date.parse(last.capturedAt||''))return;
+   const previous=last.close;if(row.time===last.time)rows[rows.length-1]=row;else rows.push(row);
+   // Keep price/history series incremental. A comparison only needs rebuilding
+   // when the first shared candle appears or its anchor price is corrected.
+   const bar={time:row.time,open:row.open,high:row.high,low:row.low,close:row.close};
+   prices.candles.update(bar);prices.bars.update(bar);
+   for(const series of[prices.line,prices.area])series.update({time:row.time,value:row.close});
+   volume.update({time:row.time,value:row.volume,color:row.close>=row.open?up+'45':down+'45'});
+   updateIndicators(true);
+   if([...comparisons.values()].some(value=>value.anchor?value.anchor.time===row.time&&value.anchor.close!==row.close:row.close>0&&value.closes.get(row.time)>0))updateComparisons();
+   drawing.refresh();pulse(previous);return rows.slice();},
   toggle,setStudies(values){studies=(Array.isArray(values)?values:[]).slice(0,24).map(normalizeStudy).filter(Boolean);for(const d of indicatorCatalog)enabled[d.type]=studies.some(s=>s.type===d.type&&s.visible);rebuildStudies();onState?.(getState());},
-  setComparison(meta,value){const old=comparisons.get(meta.instrumentUid);if(!value){if(old){chart.removeSeries(old.series);comparisons.delete(meta.instrumentUid);}}else{const series=old?.series||chart.addSeries(api.LineSeries,{color:meta.color||'#e1b264',lineWidth:2,title:meta.ticker,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});comparisons.set(meta.instrumentUid,{series,rows:normalizeMarketCandles(value)});}updateComparisons();},
+  setComparison(meta,value){const old=comparisons.get(meta.instrumentUid);if(!value){if(old){chart.removeSeries(old.series);comparisons.delete(meta.instrumentUid);}}else{const series=old?.series||chart.addSeries(api.LineSeries,{color:meta.color||'#e1b264',lineWidth:2,title:meta.ticker,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false});series.applyOptions({visible:meta.visible!==false,color:meta.color||'#e1b264'});comparisons.set(meta.instrumentUid,{series,meta:{...meta},rows:normalizeMarketCandles(value)});}updateComparisons();},
+  getComparisons(){return [...comparisons.values()].map(v=>{const last=v.rows.at(-1),base=v.anchor&&v.closes.get(v.anchor.time);return {...v.meta,anchor:v.anchor?.time,change:base&&last?(last.close/base-1)*100:null};});},
+  setScale(mode,invert=inverted){if(['normal','log','percent','indexed'].includes(mode))scaleMode=mode;inverted=invert===true;applyScale();onState?.(getState());},
+  zoom(factor){const range=chart.timeScale().getVisibleLogicalRange();if(!range)return;const span=Math.max(10,(range.to-range.from)*factor),mid=(range.from+range.to)/2;chart.timeScale().setVisibleLogicalRange({from:mid-span/2,to:mid+span/2});},
+  latest(){chart.timeScale().scrollToRealTime();},
   setType(value){if(!prices[value])return;type=value;Object.entries(prices).forEach(([key,s])=>s.applyOptions({visible:key===type}));drawing.refresh();onState?.(getState());},
   setFlash(value){flash=value;onState?.(getState());},
   restore(value){if(!value)return;syncing=true;try{if(prices[value.type]){type=value.type;Object.entries(prices).forEach(([key,s])=>s.applyOptions({visible:key===type}));}
-    if(Array.isArray(value.studies)){studies=value.studies.slice(0,24).map(normalizeStudy).filter(Boolean);Object.assign(enabled,value.indicators);volume.applyOptions({visible:enabled.volume!==false});rebuildStudies();}else for(const[name,visible]of Object.entries(value.indicators||{}))toggle(name,Boolean(visible));drawing.setState(value.drawings);flash=value.flash===true;
+    if(Array.isArray(value.studies)){studies=value.studies.slice(0,24).map(normalizeStudy).filter(Boolean);Object.assign(enabled,value.indicators);volume.applyOptions({visible:enabled.volume!==false});rebuildStudies();}else for(const[name,visible]of Object.entries(value.indicators||{}))toggle(name,Boolean(visible));drawing.setState(value.drawings);drawing.setMagnet(value.magnet);drawing.hide(value.drawingsHidden===true);scaleMode=['normal','log','percent','indexed'].includes(value.scaleMode)?value.scaleMode:'normal';inverted=value.inverted===true;applyScale();flash=value.flash===true;
     if(Number.isFinite(value.range?.from)&&Number.isFinite(value.range?.to)&&value.range.to>value.range.from)chart.timeScale().setVisibleRange(value.range);
    }finally{syncing=false;}},
   setRange(range){if(!range||range.to<=range.from)return;syncing=true;try{chart.timeScale().setVisibleRange(range);}finally{syncing=false;}},

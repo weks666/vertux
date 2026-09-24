@@ -1,4 +1,5 @@
 import {drawingTypes,onePointTools,threePointTools,drawingStyle} from './chart-tool-catalog.js';
+import {regressionChannel,snapToCandle} from './chart-geometry.js';
 const NS='http://www.w3.org/2000/svg';
 const clone=value=>JSON.parse(JSON.stringify(value));
 function el(tag,attrs={},text=''){const node=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))node.setAttribute(k,String(v));if(text)node.textContent=text;return node;}
@@ -10,8 +11,8 @@ export function validDrawings(items) {
 export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{},onMode=()=>{},onSelect=()=>{}}) {
  const svg=el('svg',{'class':'chart-drawings','aria-label':'Разметка графика'});host.append(svg);
  let drawings=[],undo=[],redo=[],mode=null,start=null,preview=null,selected=null,drag=null,frame=0,dead=false,alerts=[],events=[],scenario=null,hidden=false;
- let defaults=drawingStyle();
- const select=id=>{selected=id;onSelect(drawings.find(d=>d.id===id)||null);};
+ let defaults=drawingStyle(),magnet=false;
+ const select=id=>{selected=id;onSelect(drawings.find(d=>d.id===id)||null);schedule();};
  const save=()=>{onChange(clone(drawings));};
  function commit(next){undo.push(clone(drawings));if(undo.length>60)undo.shift();redo=[];drawings=validDrawings(next);save();schedule();}
  function timeX(time){const scale=chart.timeScale(),rows=getRows();if(!rows.length)return null;
@@ -26,7 +27,8 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
   // Use screen positions from the shared time axis; comparison bars may insert dates.
   let lo=0,hi=rows.length-1;while(lo<hi){const mid=Math.floor((lo+hi)/2);if(timeX(rows[mid].time)<x)lo=mid+1;else hi=mid;}
   const i=Math.max(1,Math.min(rows.length-1,lo)),a=rows[Math.max(0,i-1)],b=rows[i],ax=timeX(a.time),bx=timeX(b.time);
-  return {time:bx!==ax?a.time+(b.time-a.time)*(x-ax)/(bx-ax):a.time,price};
+  const point={time:bx!==ax?a.time+(b.time-a.time)*(x-ax)/(bx-ax):a.time,price};
+  return magnet?snapToCandle(rows,point.time,point.price):point;
  }
  const xy=p=>({x:timeX(p.time),y:getSeries().priceToCoordinate(p.price)});
  const plotHeight=()=>chart.panes?.()[0]?.getHeight()||host.clientHeight-28;
@@ -53,6 +55,36 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
   if(item.type==='fibonacci'||item.type==='fibExtension')for(const ratio of style.levels){const value=item.type==='fibonacci'?item.points[0].price+(item.points[1].price-item.points[0].price)*ratio:(item.points[2]||item.points[1]).price+(item.points[1].price-item.points[0].price)*ratio,y=getSeries().priceToCoordinate(value);line(group,Math.min(a.x,b.x),y,style.extend?width:Math.max(a.x,b.x,c.x),y);label(Math.max(a.x,b.x)+4,y-3,String(ratio)+(style.prices?' · '+priceText(value):''));}
   if(item.type==='fibFan')for(const ratio of style.levels){const end={x:b.x,y:a.y+(b.y-a.y)*ratio};infinite(a,end);label(end.x,end.y,String(ratio)+(style.prices?' · '+priceText(getSeries().coordinateToPrice(end.y)):''));}
   if(item.type==='fibTime')for(const n of style.levels){const x=a.x+(b.x-a.x)*n;line(group,x,0,x,height);label(x+3,14,String(n));}
+  if(['pitchfork','schiffPitchfork'].includes(item.type)){
+   const origin=item.type==='schiffPitchfork'?{x:a.x,y:(a.y+b.y)/2}:a,mid={x:(b.x+c.x)/2,y:(b.y+c.y)/2};
+   infinite(origin,mid);for(const p of [b,c])infinite(p,{x:p.x+mid.x-origin.x,y:p.y+mid.y-origin.y});line(group,b.x,b.y,c.x,c.y);
+  }
+  if(['fibArcs','fibCircles'].includes(item.type)){
+   const radius=Math.hypot(b.x-a.x,b.y-a.y);
+   for(const ratio of style.levels.filter(n=>n>0)){const r=radius*ratio;
+    if(item.type==='fibCircles')group.append(el('circle',{cx:a.x,cy:a.y,r}));
+    else group.append(el('path',{d:`M ${b.x-r} ${b.y} A ${r} ${r} 0 0 ${b.y>a.y?1:0} ${b.x+r} ${b.y}`}));
+    label((item.type==='fibCircles'?a.x:b.x)+r,(item.type==='fibCircles'?a.y:b.y)-4,String(ratio));
+   }
+  }
+  if(item.type==='regression'){
+   const fit=regressionChannel(getRows(),item.points[0].time,item.points[1].time);
+   if(fit)for(const offset of [-2,0,2]){const start=xy({time:fit.from,price:fit.start+offset*fit.sigma}),end=xy({time:fit.to,price:fit.end+offset*fit.sigma});
+    line(group,start.x,start.y,end.x,end.y,offset?{'stroke-dasharray':'4 3'}:{});}
+  }
+  if(['longPosition','shortPosition'].includes(item.type)){
+   const direction=item.type==='longPosition'?1:-1,entry=item.points[0].price;
+   const risk=(entry-item.points[1].price)*direction,reward=((item.points[2]?.price??entry)-entry)*direction;
+   const x=Math.min(a.x,b.x,c.x),right=Math.max(a.x,b.x,c.x);
+   if(risk>0&&reward>0){for(const[p,color]of[[b,'#ef7b76'],[c,'#5ed0a0']])group.append(el('rect',{x,y:Math.min(a.y,p.y),width:Math.max(30,right-x),height:Math.abs(p.y-a.y),fill:color,'fill-opacity':.16,stroke:color}));
+    line(group,x,a.y,Math.max(right,x+30),a.y);label(x,a.y-5,'Риск / цель 1 : '+(reward/risk).toFixed(2));
+   }else label(a.x,a.y,'Укажите вход, стоп, затем цель');
+  }
+  if(item.type==='anchoredVwap'){
+   let total=0,weighted=0;const values=[];
+   for(const row of getRows().filter(r=>r.time>=item.points[0].time)){total+=row.volume;weighted+=(row.high+row.low+row.close)/3*row.volume;if(total>0)values.push(xy({time:row.time,price:weighted/total}));}
+   if(values.length)group.append(el('polyline',{points:values.map(p=>`${p.x},${p.y}`).join(' ')}));
+  }
   // Broad invisible stroke is only a pointer target, never the visible stroke.
   if(!ghost)for(const node of [...group.children].filter(n=>n.tagName!=='text')){const hit=node.cloneNode(true);hit.setAttribute('class','drawing-hit');hit.setAttribute('stroke','transparent');hit.setAttribute('stroke-width','12');hit.setAttribute('fill','none');group.append(hit);}
   if(selected===item.id&&!ghost&&item.type!=='freehand')points.forEach((p,i)=>group.append(el('circle',{cx:p.x,cy:p.y,r:4,fill:'var(--chart-bg, #0d141e)','data-handle':i})));
@@ -64,7 +96,7 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
    if([y,stop,target].every(Number.isFinite)){for(const[end,color]of[[stop,'#ef7b76'],[target,'#5ed0a0']])svg.append(el('rect',{x,y:Math.min(y,end),width:width-x,height:Math.abs(y-end),fill:color+'20'}));
     for(const[py,label,color]of[[y,'Вход '+scenario.entry,'#b9a9ff'],[stop,'Стоп '+scenario.stop,'#ef7b76'],[target,'Цель '+scenario.target,'#5ed0a0']]){line(svg,x,py,width,py,{stroke:color,'stroke-width':1,'stroke-dasharray':'5 3'});svg.append(el('text',{x:x+6,y:py-5,fill:color,'font-size':11},label));}}
   }
-  if(!hidden){drawings.forEach(d=>shape(d));if(preview)shape(preview,true);}
+  if(!hidden){drawings.filter(d=>!d.hidden).forEach(d=>shape(d));if(preview)shape(preview,true);}
   for(const alert of alerts.filter(a=>a.enabled!==false)){const y=getSeries().priceToCoordinate(Number(alert.targetPrice));if(y===null||y<0||y>height)continue;
    const group=el('g',{'class':'chart-alert-mark','role':'button','tabindex':0,'aria-label':`Уведомление ${alert.targetPrice}. ${alert.note||''}`});
    line(group,0,y,width,y,{stroke:'#b9a9ff','stroke-width':1,'stroke-dasharray':'4 4'});
@@ -102,7 +134,7 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
  const cancel=()=>{if(drag){drawings=drawings.map(d=>d.id===drag.original.id?drag.original:d);drag=null;}setMode(null);};
  svg.addEventListener('pointerdown',down);svg.addEventListener('pointermove',move);svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',cancel);host.addEventListener('keydown',key);host.addEventListener('pointermove',schedule);host.addEventListener('wheel',schedule,{passive:true});
  chart.timeScale().subscribeVisibleLogicalRangeChange(schedule);chart.subscribeCrosshairMove(schedule);const resize=new ResizeObserver(schedule);resize.observe(host);schedule();
- return {setMode,undo:()=>history('undo'),redo:()=>history('redo'),clear:()=>{commit([]);setMode(null);},hide(value){hidden=value;schedule();},
+ return {setMode,undo:()=>history('undo'),redo:()=>history('redo'),clear:()=>{commit([]);setMode(null);},hide(value){hidden=value;save();schedule();},isHidden:()=>hidden,setMagnet(value){magnet=value===true;save();},isMagnet:()=>magnet,
   getState:()=>clone(drawings),getSelected:()=>clone(drawings.find(d=>d.id===selected)||null),select,
   editSelected(patch){const item=drawings.find(d=>d.id===selected);if(!item)return;const next={...item,...patch,style:drawingStyle({...item.style,...patch.style})};defaults=next.style;commit(drawings.map(d=>d.id===selected?next:d));select(selected);},
   deleteSelected(){if(selected){commit(drawings.filter(d=>d.id!==selected));select(null);}},

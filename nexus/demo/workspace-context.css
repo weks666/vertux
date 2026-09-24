@@ -1,6 +1,7 @@
 /* Shared portfolio scope and a continuous instrument work surface. */
 .topbar{gap:12px;align-items:center;position:sticky;top:0;z-index:20}
 .workspace-context{display:flex;align-items:center;gap:8px;margin:0;flex:1;min-width:0}
+body[data-current-view="system"] .workspace-context{display:none}
 .workspace-context label{min-width:0;margin:0}.workspace-context select,.workspace-context input{height:40px;min-height:40px;font-size:14px;padding:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;color:var(--text)}
 .workspace-context .filter-field{display:flex;align-items:center;position:relative}.workspace-context .filter-field>svg{width:17px;height:17px;position:absolute;left:11px;pointer-events:none;color:var(--muted)}
 .workspace-context .context-account select{padding-left:36px;max-width:230px;min-width:145px}.workspace-context .context-date input{max-width:148px}

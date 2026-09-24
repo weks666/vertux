@@ -2,6 +2,38 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-demo-chart-workspace-2026-09-24",
+      "date": "2026-09-24",
+      "label": "INVEST DEMO",
+      "versions": {},
+      "title": {
+        "ru": "Интерактивное демо Терминала",
+        "en": "Interactive Terminal demo"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "В демо выбранный график можно развернуть на весь экран, перейти к дате и изучить вымышленную историю с 2018 года.",
+          "en": "In the demo, expand the selected chart, jump to a date and explore synthetic history from 2018."
+        },
+        {
+          "type": "added",
+          "ru": "Доступен 31 инструмент рисования, магнит, список объектов, дополнительные шкалы и управление сравнениями.",
+          "en": "Try 31 drawing tools, candle snapping, an object list, additional scales and comparison controls."
+        },
+        {
+          "type": "changed",
+          "ru": "Стакан и ленту можно перенести вправо или вниз. Подсветки карточек появились в операциях и риск-плане.",
+          "en": "Move the order book and trade tape to the right or bottom. Card accents now appear in operations and risk planning."
+        },
+        {
+          "type": "changed",
+          "ru": "Обновлена веб-демонстрация на вымышленных данных; версия установщика Windows этим изменением не обновляется.",
+          "en": "This update changes the website demonstration with synthetic data; it does not update the Windows installer."
+        }
+      ]
+    },
+    {
       "id": "nexus-0-6-46",
       "date": "2026-09-24",
       "versions": {

@@ -21,9 +21,9 @@ export async function websiteFixture(source) {
  // Seeded, non-periodic sessions: gaps, quiet stretches and clustered volatility.
  for(const [ix,p] of a.portfolio.positions.entries()) {
   let seed=7319+ix*104729;const random=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
-  const dates=[];for(let at=Date.UTC(2026,7,12,12);dates.length<180;at-=86400000){const day=new Date(at).getUTCDay();if(day!==0&&day!==6)dates.unshift(at);}
+  const dates=[];for(let at=Date.UTC(2026,7,12,12);at>=Date.UTC(2018,0,1);at-=86400000){const day=new Date(at).getUTCDay();if(day!==0&&day!==6)dates.unshift(at);}
   const bars=[];let prior=100,vol=.006;
-  for(let i=0;i<180;i++){vol=.84*vol+.16*(.003+random()*.018);const regime=i<45?.0018:i<85?-.0015:i<125?.0004:.002;
+  for(let i=0;i<dates.length;i++){vol=.84*vol+.16*(.003+random()*.018);const regime=i<45?.0018:i<85?-.0015:i<125?.0004:.002;
    const open=prior*(1+(random()-.5)*vol*.55),move=regime+(random()+random()+random()-1.5)*vol*1.9+(i===67?-.042:i===112?.029:0),close=open*Math.exp(move),wick=vol*(.1+random()*.75);
    const high=Math.max(open,close)*(1+wick),low=Math.min(open,close)*(1-wick*(.4+random()*.7));
    bars.push({open,high,low,close,volume:Math.round((45000+random()*90000)*(1+Math.abs(move)/vol*1.6))});prior=close;

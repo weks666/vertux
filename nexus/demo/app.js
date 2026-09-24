@@ -16,6 +16,7 @@ import { initMarketCalendar } from './market-calendar.js';
 import { createEquityChart, createMarketChart, createAnalyticsReturnChart, normalizeEquityPoints, normalizeMarketCandles, setChartPresentation } from './charts.js';
 import { runtimeAdapter } from './demo-runtime.js';
 import { initPriceAlerts } from './price-alerts.js';
+import { initWorkspaceNotifications } from './workspace-notifications.js';
 import { calculateRiskDraft } from './risk-calculator.js';
 import { initTradingPlan } from './trading-plan-ui.js';
 import { initLedgerTabs, metricNote, signedClass, resultTrend } from './reference-ui.js';
@@ -53,6 +54,7 @@ const state = {
   listPages: new Map(),
   analyticsAccount: '',
   analyticsChartMode: 'percent',
+  analyticsChartModeTouched: false,
   marketOverview: null,
   marketOverviewPending: false,
   tradingPlanUi: null,
@@ -452,6 +454,19 @@ async function openProductSwitcher() {
 
 async function openProfileSettings() { activateView('profile'); }
 
+function openServiceSection(section, { focusMain = true } = {}) {
+  const labels = { subscription: 'Подписка', support: 'Поддержка', access: 'Доступы' };
+  if (!Object.hasOwn(labels, section)) return;
+  const button = $(`[data-system-section="${section}"]`);
+  if (!button) return;
+  activateView('system', button, { focusMain });
+  $('#viewTitle').textContent = labels[section];
+  $('#viewContext').textContent = 'Ваш Workspace';
+  $('#systemTitle').textContent = labels[section];
+  $('#systemDescription').textContent = { subscription: 'Возможности вашего плана, срок доступа и продление.', support: 'Поможем разобраться с подключением, данными и работой приложения.', access: 'Участники и доступ к Workspace.' }[section];
+  mountServiceCenter(section);
+}
+
 function mountServiceCenter(section) {
   const host = $('#serviceCenterHost');
   if (!host) return;
@@ -469,6 +484,9 @@ function mountServiceCenter(section) {
     host.replaceChildren();
     component = document.createElement('vertux-service-center');
     component.setAttribute('hide-header', '');
+    component.addEventListener('vertux-service-section-change', event => {
+      openServiceSection(event.detail?.section, { focusMain: false });
+    });
     host.append(component);
   }
   component.setAttribute('section', section);
@@ -678,17 +696,21 @@ function renderPortfolio(data) {
   $('#netPnl').textContent = signedMoney(portfolio.netPnlNanos, portfolio.currency);
   renderEvidenceNote($('#netPnlMeta'), portfolio.pnlReason ? coverageSummary(coverage) : 'После комиссий', portfolio.pnlReason);
   $('#netPnl').className = signedClass(portfolio.netPnlNanos);
+  $('.headline-pnl').dataset.tone = signedClass(portfolio.netPnlNanos) || 'neutral';
   $('#netPnlRate').textContent = formatPercentage(data.analytics?.netReturn, { signed: true });
   $('#netPnlRate').className = `metric-rate ${signedClass(portfolio.netPnlNanos)}`;
   $('#netPnlHelp').dataset.evidenceNote = [portfolio.pnlReason, 'Результат за выбранный период после комиссий.'].filter(Boolean).join(' ');
   for (const [id, value] of [['realizedPnl', portfolio.realizedNanos], ['unrealizedPnl', portfolio.unrealizedNanos]]) $('#'+id).className = signedClass(value);
   $('#realizedPnl').textContent = signedMoney(portfolio.realizedNanos, portfolio.currency);
+  $('#realizedPnl').closest('.metric-ledger > div').dataset.tone = signedClass(portfolio.realizedNanos) || 'neutral';
   $('#unrealizedPnl').textContent = signedMoney(portfolio.unrealizedNanos, portfolio.currency);
   renderEvidenceNote($('#markFreshness'), portfolio.unrealizedNanos != null
     ? `По текущим позициям · ${formatDate(portfolio.currentAsOf || portfolio.asOf)}`
     : 'Нет оценки открытых позиций.', portfolio.unrealizedReason || '');
   $('#feesValue').textContent = formatMoney(portfolio.feesNanos, portfolio.currency);
+  $('#feesValue').closest('.metric-ledger > div').dataset.tone = portfolio.feesNanos == null || BigInt(portfolio.feesNanos) === 0n ? 'neutral' : 'warning';
   $('#drawdownValue').textContent = formatPercentage(portfolio.maxDrawdownRate == null ? null : -Math.abs(portfolio.maxDrawdownRate));
+  $('#drawdownValue').closest('.metric-ledger > div').dataset.tone = portfolio.maxDrawdownRate == null ? 'neutral' : 'negative';
   renderEvidenceNote($('#drawdownPeriod'), portfolio.maxDrawdownRate === null || portfolio.maxDrawdownRate === undefined
     ? coverageSummary(coverage, 'Нужны оценки в разные даты.')
     : portfolio.riskCoverage?.state === 'partial' ? 'По активным интервалам.' : 'По оценкам стоимости за период.', portfolio.maxDrawdownRate == null ? coverage.reason : portfolio.riskCoverage?.reason || portfolio.drawdownPeriod);
@@ -699,6 +721,7 @@ function renderPortfolio(data) {
   renderAccountCards(data);
 
   const rows = sortRows(data.clientProduct?.openPositions || [],state.sorts.positions,positionReaders);
+  $('#openPositionsCount').textContent = String(rows.length);
   $('#positionsBody').innerHTML = rows.length ? rows.map((row) => {
     const display=instrumentDisplay(row),currency=row.pnlCurrency||row.currency||'RUB';
     const resultClass = signedClass;
@@ -863,7 +886,7 @@ function initAutomaticLedgerFilters() {
   for (const id of ['statisticsFrom', 'statisticsTo']) $('#' + id).addEventListener('input', () => {
     scheduler.cancel(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = true; invalidatePeriod();
     const from = $('#statisticsFrom').value, to = $('#statisticsTo').value;
-    if (!validDateRange(from, to)) { periodScheduler.cancel(); $('#statisticsPeriodStatus').textContent = 'Укажите обе даты: начало не позже окончания.'; return; }
+    if (!validDateRange(from, to)) { periodScheduler.cancel(); $('#statisticsPeriodStatus').hidden = false; $('#statisticsPeriodStatus').textContent = 'Укажите обе даты: начало не позже окончания.'; return; }
     periodScheduler.schedule({ period: 'custom', from, to });
   });
   $('#resetStatisticsPeriod').addEventListener('click', () => {
@@ -987,20 +1010,32 @@ function renderAnalyticsReturnChart(points, coverage = state.bootstrap?.dataCove
   const host = $('#analyticsReturnChart');
   const empty = $('#analyticsReturnEmpty');
   if (!host) return;
+  const data = analyticsDisplayData();
+  const batchPoints = !state.analyticsAccount && !points.length ? data?.snapshotBatchCurve || [] : [];
+  const valuePoints = points.length ? points : batchPoints.map(point => ({ time: point.time, equityNanos: point.totalNanos }));
+  if (!state.analyticsChartModeTouched && state.analyticsChartMode === 'percent' && netReturnSeries.length < 2 && valuePoints.length >= 2) {
+    state.analyticsChartMode = 'rubles';
+    $$('[data-analytics-unit]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.analyticsUnit === 'rubles')));
+  }
   const reconstructed = coverage?.evidence === 'reconstructed';
   const percentMode = state.analyticsChartMode === 'percent';
   const displaySymbol = state.displayCurrency === 'USD' ? '$' : '₽';
-  $('#analyticsChartUnit').textContent = percentMode ? ui('Доходность после комиссий, %') : ui('Стоимость портфеля, ₽').replace('₽', displaySymbol);
+  $('#analyticsChartUnit').textContent = percentMode ? ui('Доходность после комиссий, %') : ui(batchPoints.length ? 'Сумма оценок счетов, ₽' : 'Стоимость портфеля, ₽').replace('₽', displaySymbol);
   const valueButton = $('[data-analytics-unit="rubles"]');
-  if (valueButton) valueButton.textContent = ui('Стоимость, ₽').replace('₽', displaySymbol);
-  $('#analyticsChartTitle').textContent = percentMode ? 'Динамика доходности портфеля' : 'Изменение стоимости за период';
+  if (valueButton) valueButton.textContent = ui(batchPoints.length ? 'Сумма счетов, ₽' : 'Стоимость, ₽').replace('₽', displaySymbol);
+  $('#analyticsChartTitle').textContent = percentMode ? 'Динамика доходности портфеля' : batchPoints.length ? 'Сумма оценок счетов' : 'Изменение стоимости за период';
   renderEvidenceNote($('#analyticsChartSubtitle'), percentMode
     ? 'Пополнения и выводы исключены. Доходность относительно стоимости на начало периода.'
-    : reconstructed ? 'Восстановленная история. Пополнения и выводы влияют на линию.' : 'По оценкам стоимости портфеля. Пополнения и выводы влияют на линию.', reconstructed
+    : batchPoints.length ? 'Последовательный опрос счетов. Точки не используются для доходности.'
+      : reconstructed ? 'Восстановленная история. Пополнения и выводы влияют на линию.' : 'По оценкам стоимости портфеля. Пополнения и выводы влияют на линию.', batchPoints.length
+      ? data.snapshotBatchCurveNote : reconstructed
       ? reconstructedHistoryExplanation(coverage) : percentMode ? 'Накопленный результат после комиссий делится на начальную стоимость портфеля. Метод совпадает с показателем выше; это не TWR и не IRR.' : 'Каждая точка — сохранённая оценка стоимости портфеля.');
-  $('#analyticsChartHelp').dataset.evidenceNote = $('#analyticsChartSubtitle').textContent;
-  $('#analyticsChartValue').textContent = percentMode ? formatPercentage(analyticsDisplayData()?.analytics?.netReturn, {signed:true}) : formatMoney(analyticsDisplayData()?.portfolio?.totalNanos, 'RUB');
-  const sourcePoints = percentMode ? netReturnSeries : points;
+  $('#analyticsChartHelp').dataset.evidenceNote = [$('#analyticsChartSubtitle').textContent,
+    batchPoints.length ? data.snapshotBatchCurveNote : reconstructed ? reconstructedHistoryExplanation(coverage) : ''].filter(Boolean).join(' ');
+  $('#analyticsChartHelp').setAttribute('aria-label', percentMode ? 'Сведения о доходности'
+    : batchPoints.length ? 'Сведения о сумме оценок счетов' : 'Сведения о стоимости портфеля');
+  $('#analyticsChartValue').textContent = percentMode ? formatPercentage(data?.analytics?.netReturn, {signed:true}) : formatMoney(batchPoints.length ? batchPoints.at(-1)?.totalNanos : data?.portfolio?.totalNanos, 'RUB');
+  const sourcePoints = percentMode ? netReturnSeries : valuePoints;
   if (!sourcePoints || sourcePoints.length < 2) {
     state.analyticsReturnChart?.setData([]);
     host.hidden = true;
@@ -1015,7 +1050,7 @@ function renderAnalyticsReturnChart(points, coverage = state.bootstrap?.dataCove
   if (empty) empty.hidden = true;
 
   const chartPoints = percentMode ? netReturnSeries.map(point => ({ time: point.time, netReturnRate: point.netReturnRate }))
-    : points.map(point => ({ time: point.time, equityValue: Number(BigInt(point.equityNanos)) / 1e9 }));
+    : valuePoints.map(point => ({ time: point.time, equityValue: Number(BigInt(point.equityNanos)) / 1e9 }));
 
   if (state.analyticsReturnChart) {
     state.analyticsReturnChart.setData(chartPoints, selectedPeriod, { mode: state.analyticsChartMode, scope: state.analyticsAccount });
@@ -1054,9 +1089,14 @@ function renderSelectedPeriod(data) {
   const selected = data.selectedPeriod;
   const globalPeriod = $('#workspacePeriod');
   if (globalPeriod) globalPeriod.value = state.selectedPeriod.period;
-  for (const input of $$('.context-date')) input.hidden = state.selectedPeriod.period !== 'custom';
+  if (!state.statisticsPeriodDraft) for (const input of $$('.context-date')) input.hidden = true;
   const label = selected?.label || 'Вся сохранённая история';
   if (!state.statisticsPeriodDraft) $('#statisticsPeriodStatus').textContent = `Все показатели: ${label}.`;
+  const fromDate = selected?.fromDate || String(selected?.from || '').slice(0, 10);
+  const toDate = selected?.toDate || String(selected?.to || '').slice(0, 10);
+  const dateLabel = fromDate && toDate ? `${formatShortDate(fromDate)} — ${formatShortDate(toDate)}` : label;
+  $('#workspaceDateRangeLabel').textContent = dateLabel;
+  $('#workspaceDateRange').setAttribute('aria-label', `Выбрать свои даты. Сейчас: ${dateLabel}`);
   $('#overviewPeriodStatus').textContent = label;
   $('#closedPositionsPeriod').textContent = `Закрыты за период: ${label}. Цена входа учитывает более ранние покупки.`;
   if (selected) {
@@ -1132,6 +1172,7 @@ async function selectPeriod(selection, { announce = true } = {}) {
     state.statisticsRange = selection.period;
     state.listPages = new Map();
     renderBootstrap(data);
+    $('#statisticsPeriodStatus').hidden = true;
     if (announce) showToast('Период применён к графику, метрикам и спискам.');
   } catch (error) {
     if (requestNumber !== state.periodRequest) return;
@@ -1550,9 +1591,11 @@ function renderBootstrap(data) {
   renderRiskPlan(data);
   renderSync(data);
   renderPeriodViews();
+  $('#statisticsPeriodStatus').hidden = true;
   renderLocalReview(data);
   if (state.tradingPlanUi) void state.tradingPlanUi.refresh();
   void state.marketCalendarUi?.refreshHoldings();
+  if(state.terminalUi&&!state.streamAuthorizationFailed)queueMicrotask(openStream);
 }
 
 async function loadBootstrap() {
@@ -1629,57 +1672,65 @@ async function startSync() {
 }
 
 const MAX_STREAM_RETRIES = 5;
-
+let subscriptionTimer=null;
 function streamUnavailable(message) {
-  $('#marketStatus').textContent = message;
-  $('#marketAge').textContent = 'поток котировок не подключён';
+  $('#marketStatus').textContent=message;
+  $('#marketAge').textContent='поток котировок не подключён';
+  state.terminalUi?.marketState({state:'unavailable'});
 }
-
+function sendMarketSubscription() {
+  clearTimeout(subscriptionTimer);
+  subscriptionTimer=setTimeout(()=>{
+    const socket=state.stream;if(!socket||socket.readyState!==1||!socket.send)return;
+    const selection=document.hidden?{charts:[],focus:''}:state.terminalUi?.marketSubscription()||{charts:[],focus:''};
+    const body=JSON.stringify({type:'subscribe',csrfToken:state.session?.csrfToken,...selection});
+    if(socket.lastSelection===body)return;
+    socket.lastSelection=body;socket.send(body);
+  },250);
+}
 function scheduleStreamRetry() {
-  if (document.hidden || state.streamRetryAttempts >= MAX_STREAM_RETRIES) {
-    streamUnavailable('Поток котировок не подключён · автоматические повторы завершены');
-    return;
-  }
-  const delay = Math.min(16_000, 1_000 * (2 ** state.streamRetryAttempts));
-  state.streamRetryAttempts += 1;
-  clearTimeout(state.streamRetryTimer);
-  state.streamRetryTimer = setTimeout(openStream, delay);
-  $('#marketStatus').textContent = `Поток котировок переподключается · попытка ${state.streamRetryAttempts}/${MAX_STREAM_RETRIES}`;
+  state.terminalUi?.marketState({state:document.hidden?'paused':'reconnecting'});
+  if(document.hidden){$('#marketStatus').textContent='Поток приостановлен до возвращения в окно';return;}
+  if(state.streamRetryAttempts>=MAX_STREAM_RETRIES){streamUnavailable('Поток котировок не подключён · обновите страницу для повторного подключения');return;}
+  const delay=Math.min(16000,1000*(2**state.streamRetryAttempts));
+  state.streamRetryAttempts+=1;
+  clearTimeout(state.streamRetryTimer);state.streamRetryTimer=setTimeout(openStream,delay);
+  $('#marketStatus').textContent='Поток котировок переподключается · попытка '+state.streamRetryAttempts+'/'+MAX_STREAM_RETRIES;
 }
-
 function openStream() {
-  clearTimeout(state.streamRetryTimer);
-  state.streamRetryTimer = null;
-  if (state.bootstrap?.preview?.localReview === true || state.bootstrap?.capabilities?.marketStream !== true) {
-    state.stream = null;
-    streamUnavailable(state.bootstrap?.capabilities?.marketStreamReason || 'Поток котировок не подключён в этой версии приложения.');
-    return;
+  clearTimeout(state.streamRetryTimer);state.streamRetryTimer=null;
+  if(state.bootstrap?.preview?.localReview===true||state.bootstrap?.capabilities?.marketStream!==true){
+    const old=state.stream;state.stream=null;old?.close?.();
+    streamUnavailable(state.bootstrap?.capabilities?.marketStreamReason||'Поток котировок не подключён в этой версии приложения.');return;
   }
-  const handleMessage = (message, { reportPaint = true } = {}) => {
-    if(message.type==='market.candle'&&state.terminalUi){state.terminalUi.updateCandle(message.candle);return;}
-    if (message.type !== 'market.candle' || !state.marketChart) return;
-    const selectedInstrument = state.activeMarketInstrument?.instrumentUid || $('#instrumentSelect').value;
-    if (selectedInstrument && message.candle.instrumentUid !== selectedInstrument) return;
-    const candles = state.marketChart.updateCandle(message.candle);
-    if (!candles) return;
-    renderMarketInstrumentSummary(state.activeMarketInstrument, candles);
-    requestAnimationFrame(() => {
-      $('#marketEventTime').textContent = formatDate(message.sourceEventTime, true);
-      const age = Math.max(0, Date.now() - new Date(message.sourceEventTime).getTime());
-      $('#marketAge').textContent = message.simulated ? `${formatAge(age)} · тестовый поток` : formatAge(age);
-      $('#marketAge').classList.remove('live-flash');
-      requestAnimationFrame(() => $('#marketAge').classList.add('live-flash'));
-      if (reportPaint) {
-        void request('/api/latency/paint', { method: 'POST', body: JSON.stringify({ eventId: message.eventId, uiPaintedAt: new Date().toISOString() }) }).catch(() => {});
-      }
-    });
+  if(state.stream&&(runtimeAdapter||state.stream.readyState===0||state.stream.readyState===1)){sendMarketSubscription();return;}
+  const handleMessage=(message,{reportPaint=true}={})=>{
+    if(!message||typeof message!=='object')return;
+    if(message.type==='market.state'||message.type==='stream.state'){
+      state.terminalUi?.marketState(message);return;
+    }
+    if(message.type==='market.reset'){state.terminalUi?.resetMarket();return;}
+    if(message.type==='market.snapshot'){state.terminalUi?.applySnapshot(message);return;}
+    if(['market.book','market.trade','market.status','market.tape-reset'].includes(message.type)){
+      state.terminalUi?.marketEvent(message);return;
+    }
+    if(message.type!=='market.candle'||!message.candle)return;
+    const candle=message.candle;
+    if(!candle.interval&&message.simulated)candle.interval='CANDLE_INTERVAL_DAY';
+    candle.capturedAt??=message.connectorReceivedAt;
+    if(state.terminalUi){state.terminalUi.updateCandle(candle);state.terminalUi.marketEvent({type:'market.candle',instrumentUid:candle.instrumentUid,connectorReceivedAt:message.connectorReceivedAt,simulated:message.simulated});}
+    else if(candle.instrumentUid===(state.activeMarketInstrument?.instrumentUid||$('#instrumentSelect').value))state.marketChart?.updateCandle(candle);
+    if(message.simulated)$('#marketStatus').textContent='Учебные котировки';
+    state.streamRetryAttempts=0;
+    $('#marketEventTime').textContent=message.sourceEventTime?formatDate(message.sourceEventTime,true):'Время события не передано';
+    const at=Date.parse(message.connectorReceivedAt);
+    $('#marketAge').textContent=(Number.isFinite(at)?'Получено '+formatAge(Math.max(0,Date.now()-at)):'Время получения не передано')+(message.simulated?' · тестовый поток':'');
+    if(reportPaint&&message.eventId)requestAnimationFrame(()=>void request('/api/latency/paint',{method:'POST',body:JSON.stringify({eventId:message.eventId,uiPaintedAt:new Date().toISOString()})}).catch(()=>{}));
   };
-  if (!runtimeAdapter) {
-    showToast('Static fixture runtime is unavailable.', true);
-    return;
-  }
-  state.stream = runtimeAdapter.startMarketStream((message) => handleMessage(message, { reportPaint: false }));
+  if(runtimeAdapter){state.stream=runtimeAdapter.startMarketStream(message=>handleMessage(message,{reportPaint:false}));return;}
+  streamUnavailable('Учебный поток недоступен.');
 }
+document.addEventListener('invest:market-subscription',sendMarketSubscription);
 
 async function generateAiReport() {
   if (state.companyPending) return;
@@ -1914,11 +1965,7 @@ function bindUi() {
   $$('[data-view]').forEach((button) => button.addEventListener('click', () => activateView(button.dataset.view, button)));
   $$('[data-go-view]').forEach((button) => button.addEventListener('click', () => activateView(button.dataset.goView)));
   $$('[data-system-section]').forEach((button) => button.addEventListener('click', () => {
-    activateView('system', button);
-    const labels = { subscription: 'Подписка', support: 'Поддержка', access: 'Доступы' };
-    $('#systemTitle').textContent = labels[button.dataset.systemSection];
-    $('#systemDescription').textContent = {subscription:'Возможности вашего плана, срок доступа и продление.',support:'Поможем разобраться с подключением, данными и работой приложения.',access:'Участники и доступ к Workspace.'}[button.dataset.systemSection];
-    mountServiceCenter(button.dataset.systemSection);
+    openServiceSection(button.dataset.systemSection);
   }));
   $('[data-open-rail]').addEventListener('click', () => {
     document.body.classList.add('rail-open');
@@ -2495,6 +2542,11 @@ $('#workspacePeriod')?.addEventListener('change',event=>{
   if(period==='custom'){$('#statisticsFrom').focus();return;}
   void selectPeriod({period},{announce:false});
 });
+$('#workspaceDateRange')?.addEventListener('click',()=>{
+  $('#workspacePeriod').value='custom';
+  for(const control of $$('.context-date')) control.hidden=false;
+  $('#statisticsFrom').focus();
+});
 $('#instrumentsExpand')?.addEventListener('click',event=>{
   const expanded=document.body.classList.toggle('instruments-expanded');
   event.currentTarget.setAttribute('aria-pressed',String(expanded));
@@ -2544,16 +2596,17 @@ document.addEventListener('invest:catalog-updated', () => {
   prepareDisplayLabels(state.bootstrap);
   renderPortfolio(analyticsDisplayData());
 });
-for (const button of $$('[data-analytics-unit]')) button.addEventListener('click', () => { state.analyticsChartMode = button.dataset.analyticsUnit; renderAnalyticsChartOnView(); });
+for (const button of $$('[data-analytics-unit]')) button.addEventListener('click', () => { state.analyticsChartMode = button.dataset.analyticsUnit; state.analyticsChartModeTouched = true; renderAnalyticsChartOnView(); });
 const personalAvailable=(!runtimeAdapter || state.bootstrap?.preview?.interactiveTutorial===true) && state.bootstrap?.preview?.localReview!==true;
 if(personalAvailable) { $('#personalSettings').hidden=false; state.personalUi = initWorkspacePreferences({ request, showToast, onPresentation:applyPresentation }); }
 else $('#personalSettings').hidden = true;
 if (!runtimeAdapter) initPriceAlerts({ request, getBootstrap: () => state.bootstrap, readOnly: state.bootstrap?.preview?.localReview === true && state.bootstrap?.environment !== 'fixture', showToast: (message, error) => showToast(message, error), activateView });
+initWorkspaceNotifications({ activateView });
 state.terminalUi=initTerminal({request,getSelection:()=>state.activeMarketInstrument,getBootstrap:()=>state.bootstrap,
   onSelection:instrument=>{state.activeMarketInstrument=instrument;state.marketInstrument=instrument;},onChart:chart=>{state.marketChart=chart;},showToast});
 openStream();
 setInterval(() => { void ensureCompanyFacts(); }, 60_000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) void ensureCompanyFacts(); });
+document.addEventListener('visibilitychange', () => {sendMarketSubscription();if(!document.hidden){void ensureCompanyFacts();if(!state.stream&&!state.streamAuthorizationFailed){state.streamRetryAttempts=0;openStream();}}});
 // GitHub Pages fixture intentionally has no service worker.
 
 function applyPresentation(preferences) {

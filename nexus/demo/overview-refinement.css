@@ -1,0 +1,144 @@
+/* Portfolio surfaces use a shared edge light so each block stays distinct from the canvas. */
+.overview-summary .headline-copy,
+.overview-summary .headline-pnl,
+.overview-metrics .metric-ledger > div,
+.overview-grid .chart-surface,
+.overview-grid .portfolio-breakdown,
+.positions-surface,
+[data-view-panel="analytics"] .analytics-grid > div,
+[data-view-panel="analytics"] .analytics-chart-surface,
+[data-view-panel="operations"] .ledger-summary > div,
+[data-view-panel="operations"] .data-surface,
+[data-view-panel="risk-plan"] :is(.risk-account-overview,.data-surface,.margin-surface),
+[data-view-panel="analytics"] :is(.ranking-surface,.data-surface),
+[data-view-panel="sync"] :is(.sync-summary-cards > article,.connection-surface,.sync-history),
+[data-view-panel="alerts"] .data-surface,
+[data-view-panel="events"] .data-surface,
+[data-view-panel="analysis"] .data-surface,
+.terminal-stage > :is(.instrument-shortlist,.terminal-side,.terminal-dock) {
+  --card-accent: var(--vertux);
+  border-color: color-mix(in srgb, var(--card-accent) 23%, var(--line));
+  background:
+    radial-gradient(ellipse 88% 68% at 0% 100%, color-mix(in srgb, var(--card-accent) 16%, transparent), transparent 85%),
+    linear-gradient(145deg, color-mix(in srgb, var(--card-accent) 7%, var(--surface)) 0%, var(--surface) 68%);
+  box-shadow: inset 2px 0 color-mix(in srgb, var(--card-accent) 35%, transparent), 0 8px 28px rgba(0, 0, 0, .08);
+}
+.overview-summary .headline-pnl[data-tone="negative"],
+.overview-metrics .metric-ledger > div[data-tone="negative"] { --card-accent: var(--negative); }
+.overview-summary .headline-pnl[data-tone="positive"],
+.overview-metrics .metric-ledger > div[data-tone="positive"] { --card-accent: var(--positive); }
+.overview-metrics .metric-ledger > div[data-tone="warning"] { --card-accent: var(--warning); }
+.overview-metrics .metric-ledger > div[data-tone="neutral"] { --card-accent: var(--vertux); }
+.overview-metrics .metric-ledger dt { display:flex; align-items:center; gap:7px; }
+.overview-metrics .metric-ledger dt > svg {
+  width:16px; height:16px; flex:none; fill:none; stroke:var(--card-accent); stroke-width:1.7;
+}
+.overview-metrics .metric-ledger dt > span { min-width:0; }
+.overview-grid .portfolio-breakdown { overflow:hidden; }
+.overview-grid .portfolio-row {
+  background:color-mix(in srgb, var(--vertux) 4%, var(--surface-raised));
+  border-color:color-mix(in srgb, var(--vertux) 15%, var(--line));
+}
+.positions-count {
+  display:inline-flex; align-items:center; justify-content:center; min-width:25px; min-height:22px;
+  padding:1px 7px; margin-left:5px; border:1px solid color-mix(in srgb,var(--vertux) 25%,var(--line));
+  border-radius:7px; background:color-mix(in srgb,var(--vertux) 16%,var(--surface));
+  color:var(--vertux-soft); font-size:12px; font-weight:600; vertical-align:middle;
+}
+
+/* Navigation controls and the current subscription reflect Nexus state. */
+.brand-lockup { position:relative; padding-right:38px; }
+.brand-lockup > span:nth-child(2) { min-width:0; display:grid; gap:2px; }
+.brand-lockup .rail-collapse {
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  width:30px; height:30px; margin:0; border-radius:8px;
+  color:var(--muted); background:var(--surface-raised);
+}
+.brand-lockup .rail-collapse:hover,
+.brand-lockup .rail-collapse:focus-visible { color:var(--text); border-color:var(--vertux); }
+.rail-plan-card {
+  display:grid; gap:8px; width:100%; padding:14px; margin:12px 0;
+  border:1px solid color-mix(in srgb,var(--vertux) 42%,var(--line)); border-radius:10px;
+  background:radial-gradient(ellipse 100% 75% at 0% 100%,color-mix(in srgb,var(--vertux) 18%,transparent),transparent),var(--surface);
+  color:var(--text); text-align:left; cursor:pointer;
+}
+.rail-plan-card[hidden] { display:none; }
+.rail-plan-card strong { font-size:13px; line-height:1.35; }
+.rail-plan-card > span { font-size:11px; line-height:1.4; color:var(--muted); }
+.rail-plan-card #railPlanAction { color:var(--vertux-soft); font-size:12px; font-weight:600; }
+.rail-plan-card:hover,.rail-plan-card:focus-visible { border-color:var(--vertux-soft); }
+.rail-plan-progress { display:block; height:4px; overflow:hidden; border-radius:4px; background:var(--surface-strong); }
+.rail-plan-progress > i { display:block; height:100%; border-radius:inherit; background:var(--vertux); }
+@media (min-width:961px) {
+  .rail-compact .brand-lockup { min-height:76px; padding:0; align-items:flex-start; justify-content:center; }
+  .rail-compact .brand-lockup > span:nth-child(2) { display:none; }
+  .rail-compact .brand-lockup .rail-collapse { top:auto; bottom:0; left:50%; right:auto; transform:translateX(-50%); }
+  .rail-compact .rail-plan-card { display:none; }
+  .rail-compact .rail-footer .nav-item > span { display:none; }
+}
+
+/* The date chip opens the same custom range used across the Workspace. */
+.workspace-context .context-range {
+  display:inline-flex; align-items:center; gap:8px; min-height:40px; max-width:220px;
+  padding:7px 11px; border:1px solid var(--line); border-radius:8px;
+  background:var(--surface); color:var(--muted); font:500 12px/1.3 var(--body); white-space:nowrap;
+}
+.workspace-context .context-range svg { width:17px; height:17px; flex:none; fill:none; stroke:currentColor; stroke-width:1.6; }
+.workspace-context .context-range span { overflow:hidden; text-overflow:ellipsis; }
+.workspace-context .context-range:hover,.workspace-context .context-range:focus-visible { color:var(--text); border-color:var(--vertux); }
+.workspace-context:has(.context-date:not([hidden])) .context-range { display:none; }
+.workspace-context .period-status[hidden] { display:none!important; }
+.workspace-context .period-status:not([hidden]) {
+  position:static; display:inline-block; flex:none; max-width:180px; overflow:hidden;
+  padding:5px 8px; border:1px solid var(--line-strong); border-radius:7px;
+  box-shadow:none; white-space:nowrap; text-overflow:ellipsis;
+}
+
+/* Notification centre mirrors saved price events and actual support updates. */
+.topbar-actions .notification-toggle { position:relative; display:grid; place-items:center; width:40px; height:40px; flex:none; }
+.notification-toggle svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.7; }
+.notification-toggle #notificationCount:not([hidden]) {
+  position:absolute; top:-5px; right:-6px; min-width:17px; height:17px; padding:0 3px;
+  display:grid; place-items:center; border-radius:10px; background:var(--vertux); color:#fff; font-size:10px; font-weight:700;
+}
+.notification-panel {
+  position:absolute; top:calc(100% - 4px); right:24px; z-index:35;
+  width:min(360px,calc(100vw - 24px)); max-height:min(520px,70vh); overflow:auto;
+  padding:0; border:1px solid var(--line-strong); border-radius:12px;
+  background:var(--surface-raised); color:var(--text); box-shadow:0 20px 55px rgba(0,0,0,.4);
+}
+.notification-panel[hidden] { display:none; }
+.notification-panel > header { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--line); }
+.notification-panel > header strong { font-size:15px; }
+.notification-panel > header .icon-button { width:28px; height:28px; }
+.notification-panel > header svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.6; }
+.notification-panel #notificationItems { display:grid; gap:0; padding:8px; font-size:12px; color:var(--muted); }
+.notification-item { display:grid; gap:4px; width:100%; padding:10px 11px; border:0; border-radius:7px; background:transparent; color:var(--text); text-align:left; cursor:pointer; }
+.notification-item:hover,.notification-item:focus-visible { background:color-mix(in srgb,var(--vertux) 15%,transparent); }
+.notification-item strong { font-size:12px; }
+.notification-item span,.notification-item time { color:var(--muted); font-size:11px; }
+.notification-item[data-unread="true"] { box-shadow:inset 2px 0 var(--vertux); }
+.notification-panel > footer { display:flex; flex-wrap:wrap; gap:4px 12px; padding:9px 13px; border-top:1px solid var(--line); }
+.notification-panel > footer .text-button { font-size:12px; }
+.notification-panel > footer [hidden] { display:none; }
+
+@media (max-width:1200px) { .workspace-context .context-range { max-width:180px; } }
+@media (max-width:1000px) { .notification-panel { top:56px; right:12px; } }
+@media (max-width:720px) {
+  .workspace-context .context-range { flex:1 1 100%; max-width:none; }
+  .notification-panel { top:56px; }
+}
+@media (prefers-reduced-motion:reduce) { .rail-plan-card,.notification-item { scroll-behavior:auto; } }
+
+
+/* One semantic palette for results, costs and planned actions across the Workspace. */
+.ledger-summary > div { border:1px solid var(--line); border-radius:10px; padding:16px; min-width:0; }
+.ledger-summary > div:has(.positive) { --card-accent:var(--positive); }
+.ledger-summary > div:has(.negative) { --card-accent:var(--negative); }
+.ledger-summary > div:has(#operationSummaryFees) { --card-accent:var(--warning); }
+[data-view-panel="risk-plan"] .risk-account-overview,
+[data-view-panel="risk-plan"] .margin-surface { --card-accent:var(--warning); }
+[data-view-panel="risk-plan"] .calculator-surface { --card-accent:var(--positive); }
+.sync-summary-cards > article:has(.sync-success-icon) { --card-accent:var(--positive); }
+.terminal-stage > .terminal-side { --card-accent:var(--positive); }
+.terminal-stage > .terminal-dock { --card-accent:var(--warning); }

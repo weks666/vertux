@@ -143,6 +143,7 @@ export function initPriceAlerts({ request, showToast, activateView, readOnly = f
     for (const button of panel.querySelectorAll('.price-alert-row button')) button.classList.add('button');
     const unread = events.filter((e) => !e.readAt);
     const badge = nav.querySelector('#priceAlertCount'); badge.hidden = !unread.length; badge.textContent = String(unread.length);
+    document.dispatchEvent(new CustomEvent('invest:alerts-updated', { detail: { events } }));
     for (const e of [...unread].reverse()) if (!shown.has(e.id) && !queue.some((q) => q.id === e.id) && current?.id !== e.id) queue.push(e);
     openNext();
   }
@@ -219,7 +220,7 @@ export function initPriceAlerts({ request, showToast, activateView, readOnly = f
   });
   const visibility = () => { if (!document.hidden) { refresh(); openNext(); } };
   document.addEventListener('visibilitychange', visibility);
-  timer = setInterval(() => { if (!document.hidden) { refresh(); openNext(); } }, 10000);
+  timer = setInterval(() => { refresh(); if (!document.hidden) openNext(); }, 10000);
   refresh();
   window.addEventListener('pagehide', () => { stopped = true; clearInterval(timer); });
   window.addEventListener('pageshow', (event) => {

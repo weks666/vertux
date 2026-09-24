@@ -44,6 +44,9 @@ export function summarizeOperationFees(rows) {
   const key = row => `${row.portfolioId || ''}:${currencyOf(row)}`;
   const separateBrokerDebits = new Set(rows.filter(row => row.type === 'OPERATION_TYPE_BROKER_FEE').map(key));
   const fees = rows.map(row => {
+    // The API resolves parent/debit links across the full account ledger.
+    // Keep that decision when this table shows only a filtered subset.
+    if (Object.hasOwn(row, 'cashFeeNanos')) return {currency:currencyOf(row),amount:row.cashFeeNanos};
     const separate = /FEE$|COMMISSION|^OPERATION_TYPE_OVER_COM$|^OPERATION_TYPE_OUTPUT_PENALTY$/u.test(row.type || '');
     let amount = separate ? row.paymentNanos && BigInt(row.paymentNanos) !== 0n ? row.paymentNanos : row.commissionNanos
       : separateBrokerDebits.has(key(row)) ? '0' : row.commissionNanos;

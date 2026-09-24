@@ -29,7 +29,7 @@ export function initWorkspaceCustomization({navigation}) {
  const key=()=>`invest:presentation:${scope}`;
  const readPresentation=()=>{const value=read(key());if(!value.theme){try{const legacy=localStorage.getItem('vertux-invest:appearance');if(['invest','graphite','light'].includes(legacy))value.theme=legacy;}catch{}}return value;};
  const save=()=>{try{localStorage.setItem(key(),JSON.stringify(settings));}catch{status.textContent='Не удалось сохранить настройки на устройстве.';}};
- const toggle=document.createElement('button');toggle.type='button';toggle.className='rail-collapse';toggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v18M3 3h18v18H3z M15 8l-4 4 4 4"/></svg>';rail.querySelector('.brand-lockup').after(toggle);
+ const toggle=document.createElement('button');toggle.type='button';toggle.className='rail-collapse';toggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v18M3 3h18v18H3z M15 8l-4 4 4 4"/></svg>';rail.querySelector('.brand-lockup').append(toggle);
  function collapse(value){document.body.classList.toggle('rail-compact',value);toggle.setAttribute('aria-label',value?'Развернуть меню':'Свернуть меню');toggle.title=value?'Развернуть меню':'Свернуть меню';toggle.setAttribute('aria-expanded',String(!value));}
  toggle.addEventListener('click',()=>{const value=!document.body.classList.contains('rail-compact');manualExpanded=!value;settings.compact=value;collapse(value);save();});
  for(const b of rail.querySelectorAll('.nav-item')){const label=b.querySelector('span')?.textContent;if(label){b.setAttribute('aria-label',label);b.title=label;}}

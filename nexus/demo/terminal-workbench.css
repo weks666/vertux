@@ -193,7 +193,74 @@
 .terminal-fullscreen .terminal-stage { grid-template-columns:minmax(0,1fr)!important; }
 .terminal-fullscreen :is(.terminal-stage>.instrument-shortlist,.terminal-side,.terminal-dock,#instrumentCatalogBrowser) { display:none!important; }
 .terminal-fullscreen .terminal-main { grid-column:1!important; }
-.terminal-fullscreen .terminal-grid[data-count="1"] .terminal-chart-plot { height:calc(100dvh - 210px); min-height:260px; }
-.terminal-fullscreen .terminal-grid[data-count="4"] .terminal-chart-plot { height:calc((100dvh - 295px)/2); min-height:180px; }
 @media(max-width:600px) { .terminal-popover { padding:10px; } .terminal-chart-controls { gap:2px; } .terminal-common-tools button { padding:5px 6px; } .terminal-chart-source { overflow-wrap:anywhere; } }
 @media(max-width:780px) { .terminal-stage>.instrument-shortlist { width:100%; max-width:100%; } }
+
+.terminal-stream-status{font-size:11px;color:var(--muted);margin-inline:8px;white-space:nowrap}
+.terminal-stream-status[data-state="stale"],.terminal-stream-status[data-state="partial"]{color:var(--warning,#dba75a)}
+.terminal-activity-heading{display:flex;justify-content:space-between;gap:16px;align-items:baseline}
+.terminal-activity-heading span,.terminal-activity-meta{font-size:11px;color:var(--muted);margin:6px 0}
+.terminal-activity-scroll{max-height:240px;overflow:auto;overscroll-behavior:contain}
+.terminal-activity-scroll table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.terminal-activity-scroll th,.terminal-activity-scroll td{text-align:right;padding:5px 10px;height:26px;line-height:1.4;border-bottom:1px solid var(--line);white-space:nowrap}
+.terminal-activity-scroll th{position:sticky;top:0;background:var(--surface,#181c25);z-index:1}
+.market-data-stale .terminal-activity-scroll{opacity:.65}
+.terminal-dock>header>[role="tablist"]{overflow-x:auto;min-width:0}
+.terminal-dock>header>[role="tablist"] button{flex-shrink:0}
+@media(max-width:700px){.terminal-stream-status{max-width:100%;white-space:normal}.terminal-activity-heading{flex-wrap:wrap;gap:2px}.terminal-activity-scroll th,.terminal-activity-scroll td{padding:5px 6px}}
+
+
+/* Chart workbench: visible archive controls and reversible focus on one chart. */
+.terminal-comparison-legend { display:flex; flex-wrap:wrap; gap:4px 10px; padding:6px 10px; border-bottom:1px solid var(--line); }
+.terminal-compare-chip { display:inline-flex; align-items:center; border-bottom:2px solid var(--compare-color); }
+.terminal-compare-chip button { font-size:11px; }
+.terminal-compare-chip button[aria-pressed=false] { opacity:.65; text-decoration:line-through; }
+.terminal-comparison-legend > small { flex-basis:100%; color:var(--muted); font-size:10px; }
+.terminal-side-tabs { flex-wrap:wrap; }
+#terminalSideMarket > header { display:flex; justify-content:space-between; align-items:center; gap:8px; margin:12px 0 6px; }
+#terminalSideMarket > header strong { font-size:13px; }
+#terminalSideMarket .terminal-activity-scroll { max-height:235px; }
+#terminalSideMarket .terminal-activity-head { flex-direction:column; align-items:start; gap:4px; }
+#terminalSideMarket table { min-width:0; }
+#terminalSideMarket :is(td,th) { padding-inline:4px; font-size:10px; }
+#terminalSideMarket .terminal-activity-scroll { max-height:215px; }
+.terminal-date-form { display:flex; align-items:end; gap:10px; }
+.terminal-date-form label,.terminal-scale-options label { display:grid; gap:6px; font-size:12px; }
+.terminal-date-form input { width:100%; }
+.terminal-year-shortcuts { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+.terminal-workbench .terminal-year-shortcuts button { border-color:var(--line); }
+.terminal-date-result { font-size:12px; color:var(--warning); }
+.terminal-scale-options { display:grid; gap:14px; }
+.terminal-scale-options label:has([type=checkbox]) { display:flex; align-items:center; }
+.terminal-object-row { display:flex; align-items:center; gap:2px; padding:6px 0; border-bottom:1px solid var(--line); }
+.terminal-object-row > button:first-child { flex:1; text-align:left; }
+.terminal-object-row > button { font-size:11px; padding:5px; }
+.chart-expanded .terminal-layout-tools { display:none; }
+.chart-expanded .terminal-workspace-bar { justify-content:flex-end; padding-bottom:0; }
+.chart-expanded .terminal-workspace-bar .terminal-stream-status { margin-right:auto; order:-1; }
+.chart-expanded .terminal-chart-card > header { min-height:54px; padding-block:8px; }
+.chart-expanded .terminal-tabs { max-width:calc(100vw - 24px); }
+.terminal-workbench [data-expand-chart][aria-pressed=true] { background:var(--action-fill); color:var(--action-text); }
+@media (min-width:1161px) {
+ .terminal-stage { grid-template-columns:210px minmax(0,1fr) 280px; }
+ .terminal-workbench.watch-collapsed .terminal-stage { grid-template-columns:minmax(0,1fr) 280px; }
+}
+@media (max-width:780px) {
+ .terminal-side #terminalSideMarket { width:100%; }
+ .terminal-object-row { flex-wrap:wrap; }
+ .terminal-object-row > button:first-child { flex-basis:100%; }
+ .terminal-workbench [data-expand-chart] { min-width:36px; }
+}
+
+/* Fullscreen follows the remaining viewport height, including wrapped mobile controls. */
+.terminal-fullscreen .terminal-workbench.active.chart-expanded { display:flex; flex-direction:column; height:100dvh; box-sizing:border-box; overflow:hidden; }
+.chart-expanded > .terminal-workspace-bar { flex:none; }
+.chart-expanded > .terminal-stage { display:flex; flex:1; min-height:0; align-items:stretch; }
+.chart-expanded .terminal-main { display:flex; flex-direction:column; width:100%; height:100%; min-height:0; }
+.chart-expanded :is(.terminal-tabs,.terminal-chart-controls,.terminal-save-state) { flex:none; }
+.chart-expanded .terminal-grid { flex:1; min-height:0; grid-template-rows:minmax(0,1fr); }
+.chart-expanded .terminal-chart-card { display:flex; flex-direction:column; min-height:0; }
+.chart-expanded .terminal-chart-card > :is(header,footer,.terminal-comparison-legend) { flex:none; }
+.chart-expanded .terminal-chart-area { flex:1; min-height:0; }
+.terminal-fullscreen .chart-expanded .terminal-grid .terminal-chart-plot { height:100%; min-height:0; }
+.chart-expanded .terminal-drawing-tools { height:100%; min-height:0; }

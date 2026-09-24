@@ -14,8 +14,8 @@
   <link rel="stylesheet" href="./fonts/fonts.css">
   <link rel="stylesheet" href="./styles.css?v=0.6.11-2">
   <script src="./vendor/lightweight-charts.standalone.production.js" defer></script>
-  <script src="./service-module/v1.3.2/vertux-service-center.js" defer></script>
-  <script type="module" src="./app.js?v=0.6.11-2"></script>
+  <script src="./service-module/v1.4.0/vertux-service-center.js" defer></script>
+  <script type="module" src="./app.js?v=0.6.11-3"></script>
   <link rel="stylesheet" href="./market-calendar.css">
   <link rel="stylesheet" href="./personal-workspace.css">
 <link rel="stylesheet" href="./fonts/rubik.css"><link rel="stylesheet" href="./invest-refinement.css">
@@ -26,7 +26,8 @@
   <link rel="stylesheet" href="./workspace-context.css">
   <link rel="stylesheet" href="./terminal-workbench.css">
   <link rel="stylesheet" href="./workspace-customization.css">
-  <link rel="stylesheet" href="./demo-frame.css?v=20260922-readonly">
+  <link rel="stylesheet" href="./overview-refinement.css">
+  <link rel="stylesheet" href="./demo-frame.css?v=20260924-chart-review">
 </head>
 <body>
 <!-- Operate: implement the approved 2026-09-16 references with real data and existing actions. -->
@@ -60,6 +61,10 @@
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
     <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7h15a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a3 3 0 0 1 3-3h12"/><path d="M16 13h5M16 16h5"/></symbol>
+    <symbol id="i-fee" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 2 16 2 16 0V6M4 12v6c0 4 16 4 16 0v-6"/></symbol>
+    <symbol id="i-drawdown" viewBox="0 0 24 24"><path d="M3 5l6 6 4-3 7 9M15 17h5v-5"/></symbol>
   </svg>
 
   <a class="skip-link" href="#mainContent">К основному содержимому</a>
@@ -86,6 +91,7 @@
 
       </nav>
 
+      <button class="rail-plan-card" id="railPlanCard" type="button" hidden><strong id="railPlanTitle"></strong><span id="railPlanDescription"></span><span id="railPlanAction"></span></button>
       <div class="rail-footer">
         <button class="nav-item" type="button" data-system-section="subscription"><svg><use href="#i-subscription"/></svg><span>Подписка</span></button>
         <button class="nav-item" type="button" data-system-section="support"><svg><use href="#i-support"/></svg><span>Поддержка</span></button>
@@ -98,10 +104,11 @@
     <div class="workspace">
       <header class="topbar">
         <button class="mobile-menu icon-button" type="button" aria-label="Открыть меню" aria-expanded="false" data-open-rail><svg><use href="#i-menu"/></svg></button>
-        <div class="topbar-title"><span id="viewContext">Портфель и качество данных</span><h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Демо</span></div>
+        <div class="topbar-title"><span id="viewContext">Портфель и качество данных</span><h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Демо · графики можно изменять</span></div>
           <form class="workspace-context" id="statisticsPeriodForm">
             <label class="context-account"><span class="sr-only">Счёт портфеля</span><div class="filter-field"><svg aria-hidden="true"><use href="#i-user"/></svg><select id="statisticsAccount"><option value="">Все счета</option></select></div></label>
 <label class="context-period"><span class="sr-only">Период портфеля</span><select id="workspacePeriod" aria-label="Период портфеля"><option value="week">Неделя</option><option value="month">Месяц</option><option value="quarter">3 месяца</option><option value="halfyear">6 месяцев</option><option value="year">Год</option><option value="all">Всё время</option><option value="custom" disabled>Свои даты — в приложении</option></select></label>
+            <button class="context-range" id="workspaceDateRange" type="button" aria-label="Выбрать свои даты"><svg aria-hidden="true"><use href="#i-calendar"/></svg><span id="workspaceDateRangeLabel">Период загружается…</span></button>
             <label class="context-date"><span class="sr-only">Период с</span><input type="date" readonly aria-describedby="statisticsPeriodForm-demo-note" title="В демо показан фиксированный период. Свои даты можно выбрать в приложении." name="from" id="statisticsFrom"></label>
             <label class="context-date"><span class="sr-only">Период по</span><input type="date" readonly aria-describedby="statisticsPeriodForm-demo-note" title="В демо показан фиксированный период. Свои даты можно выбрать в приложении." name="to" id="statisticsTo"></label>
             <div class="period-actions"><button class="text-button" type="button" id="resetStatisticsPeriod"><svg aria-hidden="true"><use href="#i-refresh"/></svg>Сбросить</button>
@@ -115,9 +122,11 @@
           <div id="globalSearchResults" class="global-search-results" role="listbox" aria-label="Результаты поиска" hidden></div>
         </div>
         <div class="topbar-actions">
+          <button class="icon-button notification-toggle" id="notificationToggle" type="button" aria-label="Уведомления" aria-expanded="false" aria-controls="notificationPanel"><svg><use href="#i-bell"/></svg><span id="notificationCount" hidden></span></button>
           <button class="button secondary" type="button" id="navProductSwitcher" aria-label="Продукты" title="Перейти к выбору продуктов Nexus"><svg><use href="#i-switch"/></svg><span>Продукты</span></button>
           <button class="button primary" type="button" id="syncButton" hidden aria-label="Синхронизировать данные без изменения счёта"><svg><use href="#i-refresh"/></svg><span>Синхронизировать</span></button>
         </div>
+        <section class="notification-panel" id="notificationPanel" aria-label="Уведомления" hidden><header><strong>Уведомления</strong><button class="icon-button" id="notificationClose" type="button" aria-label="Закрыть уведомления"><svg><use href="#i-close"/></svg></button></header><div id="notificationItems" role="status">Проверяем события…</div><footer><button class="text-button" id="notificationEnableDesktop" type="button" hidden>Включить уведомления Windows</button><button class="text-button" id="notificationOpenAlerts" type="button">Ценовые уведомления</button></footer></section>
       </header>
 
       <main id="mainContent" tabindex="-1">
@@ -148,9 +157,9 @@
 <aside class="overview-metrics" aria-label="Метрики периода">
 
                 <dl class="metric-ledger">
-                  <div><dt>Реализованная П/У <button class="term-help" type="button" data-term="fifoRealized" aria-label="Справка: Реализованный P&amp;L">i</button></dt><dd id="realizedPnl">—</dd></div>
-                  <div><dt>Комиссии <button class="term-help" type="button" data-term="fees" aria-label="Справка: Комиссии">i</button></dt><dd id="feesValue">—</dd></div>
-                  <div><dt>Макс. просадка <button class="term-help" type="button" data-term="drawdown" aria-label="Справка: Максимальная просадка">i</button></dt><dd id="drawdownValue">—</dd><small id="drawdownPeriod" hidden>недостаточно оценок стоимости</small></div>
+                  <div><dt><svg aria-hidden="true"><use href="#i-wallet"/></svg><span>Реализованная П/У</span><button class="term-help" type="button" data-term="fifoRealized" aria-label="Справка: Реализованный P&amp;L">i</button></dt><dd id="realizedPnl">—</dd></div>
+                  <div><dt><svg aria-hidden="true"><use href="#i-fee"/></svg><span>Комиссии</span><button class="term-help" type="button" data-term="fees" aria-label="Справка: Комиссии">i</button></dt><dd id="feesValue">—</dd></div>
+                  <div><dt><svg aria-hidden="true"><use href="#i-drawdown"/></svg><span>Макс. просадка</span><button class="term-help" type="button" data-term="drawdown" aria-label="Справка: Максимальная просадка">i</button></dt><dd id="drawdownValue">—</dd><small id="drawdownPeriod" hidden>недостаточно оценок стоимости</small></div>
                 </dl>
 
               </aside></div>
@@ -158,7 +167,6 @@
               <article class="chart-surface" aria-labelledby="equityTitle">
                 <header class="surface-head">
                   <div><h2 id="equityTitle">Динамика стоимости портфеля <button class="term-help" id="equityDataHelp" type="button" data-evidence-note="Сохранённые оценки портфеля" aria-label="Сведения о графике">i</button></h2></div>
-                  <div class="range-switch" role="group" aria-label="Период обзора"><button class="active" type="button" data-range="1m" aria-pressed="true">Месяц</button><button type="button" data-range="3m" aria-pressed="false">3 месяца</button><button type="button" data-range="6m" aria-pressed="false">6 месяцев</button><button type="button" data-range="1y" aria-pressed="false">Год</button><button type="button" data-range="all" aria-pressed="false">Всё</button></div>
                 </header>
                 <div class="chart-scope"><label><span>Счёт</span><select id="overviewAccount"><option value="">Все счета</option></select></label><p id="overviewPeriodStatus" role="status" aria-live="polite">Загружаем период…</p></div>
                 <div class="chart-frame"><div id="equityChart" class="chart-host" aria-label="График стоимости портфеля"></div><div class="chart-empty" id="equityEmpty">Нет сохранённых оценок стоимости за выбранный период.</div></div>
@@ -175,7 +183,7 @@
 
 
             <article class="positions-surface">
-              <header class="surface-head"><div class="positions-heading"><h2>Открытые позиции</h2><span class="positions-result">Результат <strong id="unrealizedPnl">—</strong><button class="term-help" type="button" data-term="unrealizedPnl" aria-label="Справка: Нереализованный P&amp;L">i</button><small id="markFreshness" hidden>Для расчёта нужна актуальная цена</small></span></div><button class="text-button" type="button" data-go-view="operations">Закрытые позиции</button></header>
+              <header class="surface-head"><div class="positions-heading"><h2>Открытые позиции <span class="positions-count" id="openPositionsCount">0</span></h2><span class="positions-result">Результат <strong id="unrealizedPnl">—</strong><button class="term-help" type="button" data-term="unrealizedPnl" aria-label="Справка: Нереализованный P&amp;L">i</button><small id="markFreshness" hidden>Для расчёта нужна актуальная цена</small></span></div><button class="text-button" type="button" data-go-view="operations">Закрытые позиции</button></header>
               <div class="table-scroll" tabindex="0" aria-label="Таблица позиций, доступна горизонтальная прокрутка">
                 <table class="wide-ledger"><thead><tr><th>Инструмент</th><th>Тип</th><th>Дата входа</th><th class="numeric">Количество</th><th class="numeric">Средняя цена</th><th class="numeric">Стоимость</th><th class="numeric">Доля</th><th class="numeric">Результат</th></tr></thead><tbody id="positionsBody"><tr><td colspan="8" class="empty-cell">Загружаем локальные данные…</td></tr></tbody></table>
               </div>
@@ -228,7 +236,6 @@
                 <p id="analyticsChartSubtitle" hidden>Пополнения и выводы исключены. Доходность относительно стоимости на начало периода.</p>
               </div>
               <div class="analytics-chart-legend">
-                <div class="range-switch period-presets" role="group" aria-label="Период всей статистики"><button type="button" data-stat-range="week" aria-pressed="false">Неделя</button><button class="active" type="button" data-stat-range="month" aria-pressed="true">Месяц</button><button type="button" data-stat-range="quarter" aria-pressed="false">3 месяца</button><button type="button" data-stat-range="halfyear" aria-pressed="false">6 месяцев</button><button type="button" data-stat-range="year" aria-pressed="false">Год</button><button type="button" data-stat-range="all" aria-pressed="false">Всё</button></div>
                 <span hidden><i class="legend-line capital-change"></i><span id="analyticsChartUnit">Доходность после комиссий, %</span></span>
                 <div class="range-control" role="group" aria-label="Режим графика портфеля"><button type="button" data-analytics-unit="percent" aria-pressed="true">Доходность, %</button><button type="button" data-analytics-unit="rubles" aria-pressed="false">Стоимость, ₽</button></div>
               </div>
@@ -486,6 +493,6 @@
 
   <div class="term-popover" id="termPopover" role="tooltip" hidden></div>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-  <script src="./demo-service.js" defer></script>
+  <footer class="demo-studio">Сделано в студии <a data-demo-studio href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux</a> · Вымышленные котировки</footer><script src="./demo-service.js" defer></script>
 </body>
 </html>
