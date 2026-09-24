@@ -9,7 +9,8 @@ html, body { height: 100%; min-height: 0; min-width: 0; overflow: hidden; }
 .nav-item { font-size: 12px; gap: 9px; }
 .nav-heading { font-size: 10px; }
 /* Public preview exposes the core product, without account and service controls. */
-.rail-footer { display: none !important; }
+.rail-footer { display: grid !important; }
+.rail-footer > :not([data-view="settings"]) { display:none!important; }
 .topbar { min-height: 72px; padding: 14px 22px; gap: 12px; flex-shrink: 0; }
 .topbar h1 { font-size: 19px; }
 .topbar-title > .demo-stamp { display: block !important; font-size: 10px; letter-spacing: .04em; color: #b9a9ff; margin-top: 4px; }
@@ -68,7 +69,7 @@ input[type="date"][readonly]::-webkit-calendar-picker-indicator { display:none; 
 @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation: none !important; scroll-behavior: auto !important; transition: none !important; } }
 /* The product UI with local chart interaction and a read-only account example. */
 #syncButton,.topbar-actions,[data-detach-chart],.demo-period-note { display:none!important; }
-.nav-item[data-view="settings"],.nav-item[data-view="sync"],.nav-item[data-system-section],.nav-heading:has(+.nav-item[data-system-section]) { display:none!important; }
+.nav-item[data-view="sync"],.nav-item[data-system-section],.nav-heading:has(+.nav-item[data-system-section]) { display:none!important; }
 
 input:disabled,select:disabled,textarea:disabled { opacity:1; color:var(--text); -webkit-text-fill-color:var(--text); cursor:default; }
 button:disabled { cursor:default; }
@@ -92,3 +93,5 @@ button:disabled { cursor:default; }
 .terminal-fullscreen .demo-studio { display:none; }
 
 html:has(body[data-current-view="terminal"]) { zoom:1; }
+
+[data-view-panel="settings"] > :not(.workspace-customization),.workspace-profile-shortcut,.workspace-menu-row[data-menu-view="subscription"],.workspace-menu-row[data-menu-view="support"],.workspace-menu-row[data-menu-view="sync"] { display:none!important; }

@@ -2,6 +2,38 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-demo-personalization-2026-09-25",
+      "date": "2026-09-25",
+      "label": "INVEST DEMO",
+      "versions": {},
+      "title": {
+        "ru": "Настройка интерфейса Invest",
+        "en": "Invest interface customization"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "В настройках демо можно менять порядок разделов, закреплять и скрывать их, назначать сочетания клавиш. Выбор сохраняется в браузере.",
+          "en": "Reorder, pin and hide demo sidebar sections and assign keyboard shortcuts. Preferences are saved in your browser."
+        },
+        {
+          "type": "fixed",
+          "ru": "Полноэкранный график занимает всё окно. При первом открытии виден весь доступный вымышленный архив: у SBER — с 2018 года.",
+          "en": "The expanded chart fills the viewport. A newly opened chart shows its full available synthetic archive: from 2018 for SBER."
+        },
+        {
+          "type": "changed",
+          "ru": "Из терминала и поверхностей графиков убрано свечение. Подсветки остальных карточек можно отключить; графики поддерживают светлую тему.",
+          "en": "Terminal and chart surfaces no longer glow. Other card effects can be disabled, and charts follow the light theme."
+        },
+        {
+          "type": "changed",
+          "ru": "Котировки выровнены по цене и изменению, метрики получили значки и пояснения. Обновлено только веб-демо: установщик Windows не менялся.",
+          "en": "Quotes align price and change columns, and metrics include icons and context. This changes only the web demo; the Windows installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-demo-chart-workspace-2026-09-24",
       "date": "2026-09-24",
       "label": "INVEST DEMO",

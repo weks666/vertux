@@ -27,7 +27,7 @@
   <link rel="stylesheet" href="./terminal-workbench.css">
   <link rel="stylesheet" href="./workspace-customization.css">
   <link rel="stylesheet" href="./overview-refinement.css">
-  <link rel="stylesheet" href="./demo-frame.css?v=20260924-chart-review">
+  <link rel="stylesheet" href="./demo-frame.css?v=20260925-ui-refinement">
 </head>
 <body>
 <!-- Operate: implement the approved 2026-09-16 references with real data and existing actions. -->
@@ -143,14 +143,14 @@
           <div class="portfolio-ledger">
             <div class="overview-summary"><article class="portfolio-headline">
               <div class="headline-copy">
-                <span id="portfolioValueLabel">Стоимость на конец периода</span> <button id="portfolioValueHelp" class="term-help" type="button" data-evidence-note="Оценка ещё не загружена." aria-label="Сведения об оценке стоимости" aria-expanded="false">i</button>
+                <span class="headline-label"><svg aria-hidden="true"><use href="#i-account"/></svg><span id="portfolioValueLabel">Стоимость на конец периода</span> <button id="portfolioValueHelp" class="term-help" type="button" data-evidence-note="Оценка ещё не загружена." aria-label="Сведения об оценке стоимости" aria-expanded="false">i</button></span>
                 <strong class="headline-value" id="portfolioValue">—</strong>
-                <div class="portfolio-day-change" id="portfolioDayChange"></div>
+                <div class="portfolio-day-change" id="portfolioDayChange"></div><small class="headline-context" id="portfolioContext"></small>
               </div>
               <div class="headline-pnl">
-                <span>Результат за период <button class="term-help" type="button" id="netPnlHelp" data-evidence-note="После комиссий" aria-label="Сведения о результате за период">i</button></span>
+                <span class="headline-label"><svg aria-hidden="true"><use href="#i-trend"/></svg>Результат за период <button class="term-help" type="button" id="netPnlHelp" data-evidence-note="После комиссий" aria-label="Сведения о результате за период">i</button></span>
                 <strong id="netPnl">—</strong>
-                <small id="netPnlMeta" hidden></small><small id="netPnlRate" class="metric-rate"></small>
+                <small id="netPnlMeta" hidden></small><small id="netPnlRate" class="metric-rate"></small><small class="headline-context" id="netPnlContext"></small>
               </div>
             </article>
 
@@ -224,10 +224,10 @@
 
           <div class="analytics-export">            <button class="button secondary" type="button" id="exportButton" aria-label="Скачать отчёт только в процентах, CSV без сумм и ID" title="CSV без сумм, лотов и идентификаторов счетов"><svg><use href="#i-download"/></svg><span>Отчёт, %</span></button></div>
           <article class="analytics-primary"><dl class="analytics-grid">
-            <div class="net-return-metric"><dt>Доходность портфеля <button class="term-help" type="button" data-term="netReturn" aria-label="Справка: Доходность после комиссий">i</button></dt><dd id="netReturn">—</dd><small hidden>с учётом подтверждённых комиссий</small><svg class="metric-icon trend-icon" aria-hidden="true"><use href="#i-trend"/></svg></div>
-            <div><dt>Волатильность <button class="term-help" type="button" data-term="volatility" aria-label="Справка: Волатильность">i</button></dt><dd id="volatilityValue">—</dd><small id="volatilityMeta" hidden></small><svg class="metric-icon" aria-hidden="true"><use href="#i-pulse"/></svg></div>
-            <div><dt>Доля прибыльных сделок <button class="term-help" type="button" data-term="winRate" aria-label="Справка: Доля прибыльных сделок">i</button></dt><dd id="winRateValue">—</dd><small id="tradeOutcomeMeta"></small><svg class="metric-icon" aria-hidden="true"><use href="#i-pie"/></svg></div>
-            <div><dt>Коэффициент прибыльности <button class="term-help" type="button" data-term="profitFactor" aria-label="Справка: Отношение прибыли к убытку">i</button></dt><dd id="profitFactorValue">—</dd><small hidden>по фактическим прибылям и убыткам</small><svg class="metric-icon" aria-hidden="true"><use href="#i-analytics"/></svg></div>
+            <div class="net-return-metric"><dt><svg class="metric-icon trend-icon" aria-hidden="true"><use href="#i-trend"/></svg>Доходность портфеля <button class="term-help" type="button" data-term="netReturn" aria-label="Справка: Доходность после комиссий">i</button></dt><dd id="netReturn">—</dd><small hidden>с учётом подтверждённых комиссий</small></div>
+            <div><dt><svg class="metric-icon" aria-hidden="true"><use href="#i-pulse"/></svg>Волатильность <button class="term-help" type="button" data-term="volatility" aria-label="Справка: Волатильность">i</button></dt><dd id="volatilityValue">—</dd><small id="volatilityMeta" hidden></small></div>
+            <div><dt><svg class="metric-icon" aria-hidden="true"><use href="#i-pie"/></svg>Доля прибыльных сделок <button class="term-help" type="button" data-term="winRate" aria-label="Справка: Доля прибыльных сделок">i</button></dt><dd id="winRateValue">—</dd><small id="tradeOutcomeMeta"></small></div>
+            <div><dt><svg class="metric-icon" aria-hidden="true"><use href="#i-analytics"/></svg>Коэффициент прибыльности <button class="term-help" type="button" data-term="profitFactor" aria-label="Справка: Отношение прибыли к убытку">i</button></dt><dd id="profitFactorValue">—</dd><small hidden>по фактическим прибылям и убыткам</small></div>
           </dl></article>
           <article class="chart-surface analytics-chart-surface" aria-labelledby="analyticsChartTitle">
             <header class="surface-head">

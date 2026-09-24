@@ -1,22 +1,20 @@
-/* Portfolio surfaces use a shared edge light so each block stays distinct from the canvas. */
+:root { --card-accent:var(--vertux); }
+/* Optional accents belong to metric cards; charts keep a continuous flat surface. */
+:root:not([data-visual-effects="off"]) :is(
 .overview-summary .headline-copy,
 .overview-summary .headline-pnl,
 .overview-metrics .metric-ledger > div,
-.overview-grid .chart-surface,
 .overview-grid .portfolio-breakdown,
 .positions-surface,
 [data-view-panel="analytics"] .analytics-grid > div,
-[data-view-panel="analytics"] .analytics-chart-surface,
 [data-view-panel="operations"] .ledger-summary > div,
 [data-view-panel="operations"] .data-surface,
-[data-view-panel="risk-plan"] :is(.risk-account-overview,.data-surface,.margin-surface),
+[data-view-panel="risk-plan"] .data-surface,
 [data-view-panel="analytics"] :is(.ranking-surface,.data-surface),
 [data-view-panel="sync"] :is(.sync-summary-cards > article,.connection-surface,.sync-history),
 [data-view-panel="alerts"] .data-surface,
 [data-view-panel="events"] .data-surface,
-[data-view-panel="analysis"] .data-surface,
-.terminal-stage > :is(.instrument-shortlist,.terminal-side,.terminal-dock) {
-  --card-accent: var(--vertux);
+[data-view-panel="analysis"] .data-surface) {
   border-color: color-mix(in srgb, var(--card-accent) 23%, var(--line));
   background:
     radial-gradient(ellipse 88% 68% at 0% 100%, color-mix(in srgb, var(--card-accent) 16%, transparent), transparent 85%),
@@ -136,9 +134,23 @@
 .ledger-summary > div:has(.positive) { --card-accent:var(--positive); }
 .ledger-summary > div:has(.negative) { --card-accent:var(--negative); }
 .ledger-summary > div:has(#operationSummaryFees) { --card-accent:var(--warning); }
-[data-view-panel="risk-plan"] .risk-account-overview,
-[data-view-panel="risk-plan"] .margin-surface { --card-accent:var(--warning); }
+[data-view-panel="risk-plan"] :is(.risk-account-overview,.margin-surface) { --card-accent:var(--vertux); background:var(--surface); box-shadow:none; border-color:var(--line); }
 [data-view-panel="risk-plan"] .calculator-surface { --card-accent:var(--positive); }
 .sync-summary-cards > article:has(.sync-success-icon) { --card-accent:var(--positive); }
-.terminal-stage > .terminal-side { --card-accent:var(--positive); }
-.terminal-stage > .terminal-dock { --card-accent:var(--warning); }
+
+/* No gradient behind a canvas: the heading and plot share one surface. */
+:is(.overview-grid .chart-surface,.analytics-chart-surface) { background:var(--surface); border-color:var(--line); box-shadow:none; }
+:is(.overview-grid .chart-surface,.analytics-chart-surface) .surface-head { border-bottom:1px solid var(--line); }
+.headline-label,.analytics-grid dt { display:flex; align-items:center; gap:7px; }
+.headline-label { color:var(--muted); font-size:var(--type-caption); }
+.headline-label > svg,.analytics-grid dt > .metric-icon { position:static; inset:auto; width:16px; height:16px; flex:none; fill:none; stroke:var(--vertux-soft); stroke-width:1.7; opacity:1; margin:0; }
+.headline-context { display:block; margin-top:9px; color:var(--muted); font-size:12px; line-height:1.5; }
+.headline-pnl .headline-context { color:var(--muted); }
+#netPnlRate:empty { display:none; }
+:root:not([data-visual-effects="off"]) .journal-summary > span { background:color-mix(in srgb,var(--vertux) 7%,var(--surface)); border:1px solid color-mix(in srgb,var(--vertux) 18%,var(--line)); border-radius:8px; }
+:root:not([data-visual-effects="off"]) .journal-summary > span:nth-child(3) { background:color-mix(in srgb,var(--positive) 7%,var(--surface)); border-color:color-mix(in srgb,var(--positive) 20%,var(--line)); }
+:root:not([data-visual-effects="off"]) .journal-summary > span:nth-child(4) { background:color-mix(in srgb,var(--negative) 7%,var(--surface)); border-color:color-mix(in srgb,var(--negative) 20%,var(--line)); }
+:root:not([data-visual-effects="off"]) .plan-ledger-head { background:color-mix(in srgb,var(--vertux) 7%,var(--surface)); color:var(--text); border-radius:6px; }
+:root[data-visual-effects="off"] :is(.rail-plan-card,.portfolio-row,.positions-count) { background:var(--surface); border-color:var(--line); box-shadow:none; }
+:root[data-visual-effects="off"] :is(.view,.rail-plan-card,.portfolio-row,.notification-item) { animation:none; transition:none; }
+:root[data-visual-effects="off"] .market-price-pulse { animation:none; box-shadow:none; background:transparent; }

@@ -684,6 +684,10 @@ function renderPortfolio(data) {
   const coverage = data.dataCoverage || {};
   $('#portfolioValue').textContent = formatMoney(portfolio.totalNanos, portfolio.currency);
   $('#portfolioValueLabel').textContent = 'Стоимость портфеля';
+  const selectedAccount = $('#statisticsAccount');
+  const accountLabel = selectedAccount?.value ? selectedAccount.selectedOptions[0]?.textContent : 'Все выбранные счета';
+  $('#portfolioContext').textContent = [accountLabel, portfolio.asOf ? 'Оценка на ' + formatDate(portfolio.asOf) : 'Оценка пока недоступна'].filter(Boolean).join(' · ');
+  $('#netPnlContext').textContent = [$('#workspacePeriod')?.selectedOptions[0]?.textContent || 'Выбранный период', portfolio.pnlReason ? 'Есть ограничения данных' : 'Результат после комиссий'].join(' · ');
   const today = dailyPositionSummary(data.clientProduct?.openPositions || []);
   const daily = $('#portfolioDayChange');
   daily.className = `portfolio-day-change ${signedClass(today?.pnlNanos)}`;

@@ -8,7 +8,7 @@ export function createMarketChart(host,candles,{onCrosshair,onState,onMode,onRan
  const chart=api.createChart(host,{width:host.clientWidth||480,height:host.clientHeight||480,
   layout:{background:{type:'solid',color:'#0d141e'},textColor:'#9daeca',fontFamily:'Rubik,system-ui,sans-serif',fontSize:11,attributionLogo:false,panes:{separatorColor:'#233044',separatorHoverColor:'#7358ae'}},
   grid:{vertLines:{color:'#95accc0b'},horzLines:{color:'#95accc16'}},rightPriceScale:{borderColor:'#95accc20',minimumWidth:62},
-  timeScale:{timeVisible:true,secondsVisible:false,tickMarkFormatter:formatMarketTick,fixLeftEdge:false,fixRightEdge:false,rightOffset:6,minBarSpacing:.5,borderColor:'#95accc20'},
+  timeScale:{timeVisible:true,secondsVisible:false,tickMarkFormatter:formatMarketTick,fixLeftEdge:false,fixRightEdge:false,rightOffset:6,minBarSpacing:.001,borderColor:'#95accc20'},
   localization:{locale:'ru-RU',timeFormatter:time=>new Date(time*1000).toLocaleString('ru-RU',{timeZone:'Europe/Moscow'})},
   crosshair:{mode:api.CrosshairMode.Normal,vertLine:{color:'#b9a9ff80',labelBackgroundColor:'#493678'},horzLine:{color:'#b9a9ff80',labelBackgroundColor:'#493678'}}});
  const prices={candles:chart.addSeries(api.CandlestickSeries,{upColor:up,downColor:down,borderVisible:false,wickUpColor:up,wickDownColor:down}),
@@ -42,7 +42,7 @@ export function createMarketChart(host,candles,{onCrosshair,onState,onMode,onRan
  function fill(){const bars=rows.map(({time,open,high,low,close})=>({time,open,high,low,close}));prices.candles.setData(bars);prices.bars.setData(bars);
   for(const series of[prices.line,prices.area])series.setData(rows.map(r=>({time:r.time,value:r.close})));
   volume.setData(rows.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?up+'45':down+'45'})));updateIndicators();updateComparisons();drawing.refresh();}
- function pulse(previous){if(!flash||previous===undefined||previous===rows.at(-1).close)return;
+ function pulse(previous){if(document.documentElement.dataset?.visualEffects==='off'||host.closest?.('.terminal-workbench'))return;if(!flash||previous===undefined||previous===rows.at(-1).close)return;
   const direction=rows.at(-1).close>previous?'up':'down';host.dataset.priceDirection=direction;clearTimeout(pulseTimer);
   if(!matchMedia('(prefers-reduced-motion: reduce)').matches){prices.line.applyOptions({color:direction==='up'?up:down});prices.area.applyOptions({lineColor:direction==='up'?up:down});}
   pulseTimer=setTimeout(()=>{delete host.dataset.priceDirection;prices.line.applyOptions({color:'#a98bff'});prices.area.applyOptions({lineColor:'#a98bff'});},700);
@@ -58,7 +58,7 @@ export function createMarketChart(host,candles,{onCrosshair,onState,onMode,onRan
  const resize=new ResizeObserver(()=>{if(dead||!host.clientWidth||!host.clientHeight)return;const range=chart.timeScale().getVisibleLogicalRange();applying=true;try{chart.applyOptions({width:host.clientWidth,height:host.clientHeight});if(range)chart.timeScale().setVisibleLogicalRange(range);}finally{applying=false;}drawing.refresh();});resize.observe(host);
  function theme(){const css=getComputedStyle(host),value=(name,fallback)=>css.getPropertyValue(name).trim()||fallback,bg=value('--chart-bg','#0d141e'),text=value('--muted','#9daeca'),accent=value('--vertux-soft','#b9a9ff'),line=value('--chart-line','#233044');chart.applyOptions({layout:{background:{type:'solid',color:bg},textColor:text,panes:{separatorColor:line,separatorHoverColor:accent}},grid:{vertLines:{color:line},horzLines:{color:line}},crosshair:{vertLine:{color:accent,labelBackgroundColor:value('--action-fill','#493678')},horzLine:{color:accent,labelBackgroundColor:value('--action-fill','#493678')}}});prices.line.applyOptions({color:accent});prices.area.applyOptions({lineColor:accent});const positive=value('--positive',up),negative=value('--negative',down);prices.candles.applyOptions({upColor:positive,downColor:negative,wickUpColor:positive,wickDownColor:negative});prices.bars.applyOptions({upColor:positive,downColor:negative});}
  const themeObserver=new MutationObserver(theme);themeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['style','data-workspace-theme']});
- fill();theme();chart.timeScale().setVisibleLogicalRange({from:Math.max(0,rows.length-180),to:rows.length+5});
+ fill();theme();chart.timeScale().fitContent();
  return {chart,drawings:drawing,getState,getRows:()=>rows.slice(),getSeries:price,setData,
   updateCandle(value){const row=normalizeMarketCandles([value])[0];if(!row||row.interval&&rows.at(-1)?.interval&&row.interval!==rows.at(-1).interval||row.time<rows.at(-1).time)return;
    const last=rows.at(-1);

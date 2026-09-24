@@ -204,7 +204,19 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
   };
   setData(values, period);
   const observer = observeResize(host, chart);
-  return { chart, series, setData, destroy() { observer.disconnect(); chart.unsubscribeCrosshairMove(onCrosshair); chart.remove(); } };
+  const theme = () => {
+    const css = typeof getComputedStyle === 'function' ? getComputedStyle(host) : null;
+    const color = (name, fallback) => css?.getPropertyValue(name).trim() || fallback;
+    const background = color('--surface', '#0d141e'), text = color('--muted', '#9daeca'), line = color('--line', '#233044');
+    const accent = color('--vertux-soft', '#8c73ff'), negative = color('--negative', '#ef7b76');
+    chart.applyOptions({ layout: { background: { type:'solid', color:background }, textColor:text },
+      grid: { vertLines:{color:line}, horzLines:{color:line} }, rightPriceScale:{borderColor:line}, timeScale:{borderColor:line},
+      crosshair:{vertLine:{color:accent,labelBackgroundColor:color('--action-fill','#5d48cf')}} });
+    series.applyOptions(baseline ? {topLineColor:accent,bottomLineColor:negative} : {lineColor:accent});
+  };
+  const themeObserver = typeof MutationObserver === 'function' ? new MutationObserver(theme) : null;
+  themeObserver?.observe(document.documentElement,{attributes:true,attributeFilter:['style','data-workspace-theme']});theme();
+  return { chart, series, setData, destroy() { observer.disconnect(); themeObserver?.disconnect(); chart.unsubscribeCrosshairMove(onCrosshair); chart.remove(); } };
 }
 
 export function createEquityChart(host, points, period, scope = '') {

@@ -9,6 +9,7 @@ import {initTerminalEditors} from './terminal-editors.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>Number.isFinite(v)?v.toLocaleString('ru-RU',{maximumFractionDigits:5}):'—';
 const pct=v=>Number.isFinite(v)?(v>0?'+':'')+v.toLocaleString('ru-RU',{maximumFractionDigits:2})+'%':'—';
+const quoteNum=(value,meta)=>{const tick=Number(meta?.minPriceIncrementNanos)/1e9,precision=tick>0?Math.max(0,Math.min(8,Math.ceil(-Math.log10(tick)))):Math.abs(value)>0&&Math.abs(value)<.01?6:2;return Number.isFinite(value)?value.toLocaleString('ru-RU',{maximumFractionDigits:precision}):'—';};
 const stamp=t=>new Date(t*1000).toLocaleString('ru-RU',{timeZone:'Europe/Moscow',day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+' мск';
 const icon=name=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${({magnet:'M5 3v10a7 7 0 0 0 14 0V3h-4v10a3 3 0 0 1-6 0V3zM5 7h4M15 7h4',eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM9 12a3 3 0 1 0 6 0 3 3 0 0 0-6 0',zoomout:'M4 12h16',close:'m6 6 12 12M6 18 18 6',add:'M12 4v16M4 12h16',detach:'M14 3h7v7M21 3 11 13M9 5H4v15h15v-5',left:'M8 3v18M3 3h18v18H3z',right:'M16 3v18M3 3h18v18H3z',fit:'M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5',undo:'M9 5 3 10l6 5M4 10h10a6 6 0 0 1 0 12',redo:'m15 5 6 5-6 5M20 10H10a6 6 0 0 0 0 12',horizontal:'M3 12h18',trend:'m4 19 16-14M4 19h1M19 5h1',ray:'m3 20 17-16M14 4h6v6',rectangle:'M4 5h16v14H4z',freehand:'M3 16C5 2 8 23 12 9s5 9 9-4',fibonacci:'M3 4h18M3 10h18M3 14h18M3 20h18',trash:'M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7',erase:'m3 15 10-11 8 7-9 10H8zM8 10l8 7M12 21h9',cursor:'M5 3v16l5-4 4 7 3-2-4-6h7z',bell:'M6 9a6 6 0 0 1 12 0v5l3 3H3l3-3zM10 21h4',chevron:'m6 9 6 6 6-6'})[name]||'M4 4h16v16H4z'}"/></svg>`;
 const btn=(name,label,attr='')=>`<button type="button" class="terminal-icon" aria-label="${label}" title="${label}" ${attr}>${icon(name)}</button>`;
@@ -28,11 +29,12 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  const controls=main.querySelector('.terminal-common-tools');type.parentElement.removeChild(type);controls.append(type);interval.innerHTML=choices;interval.setAttribute('aria-label','Интервал свечей');main.querySelector('.terminal-timeframes').append(interval);
  controls.insertAdjacentHTML('beforeend','<button type="button" id="terminalSymbolSearch">Поиск</button><button type="button" id="terminalCompare">Сравнить</button><button type="button" id="terminalDate">К дате</button><button type="button" id="terminalLive" hidden>К последним свечам</button><button type="button" id="terminalScale">Шкала</button><button type="button" id="terminalObjects">Объекты</button><button type="button" id="terminalIndicators">Индикаторы</button>');
  for(const n of ['sma','ema','bb','vwap','rsi','macd','volume']){const b=document.createElement('button');b.type='button';b.dataset.terminalIndicator=n;b.dataset.indicator=n;b.textContent=({sma:'SMA 20',ema:'EMA 20',bb:'Bollinger',vwap:'VWAP',rsi:'RSI 14',macd:'MACD',volume:'Объём'})[n];b.setAttribute('aria-pressed',String(n==='volume'));if(n!=='volume')b.className='terminal-quick-indicator';controls.append(b);}
- controls.insertAdjacentHTML('beforeend',`${btn('undo','Отменить разметку','data-history="undo"')}${btn('redo','Повторить разметку','data-history="redo"')}${btn('add','Приблизить график','data-chart-zoom="0.7"')}${btn('zoomout','Отдалить график','data-chart-zoom="1.4"')}${btn('fit','Показать весь график','id="terminalFit"')}<label class="terminal-flash"><input type="checkbox" id="terminalFlash">Подсветка цены</label>`);
+ controls.insertAdjacentHTML('beforeend',`${btn('undo','Отменить разметку','data-history="undo"')}${btn('redo','Повторить разметку','data-history="redo"')}${btn('add','Приблизить график','data-chart-zoom="0.7"')}${btn('zoomout','Отдалить график','data-chart-zoom="1.4"')}${btn('fit','Показать весь график','id="terminalFit"')}<label class="terminal-flash" hidden><input type="checkbox" id="terminalFlash">Подсветка цены</label>`);
  const side=document.createElement('aside');side.className='terminal-side';side.innerHTML=`<div class="terminal-side-tabs" role="tablist" aria-label="Работа с инструментом"><button role="tab" type="button" data-side="plan" aria-selected="true">План сделки</button><button role="tab" type="button" data-side="alerts" aria-selected="false">Уведомления</button></div><div id="terminalPlan"><p class="terminal-caption">Сценарий · заявки брокеру не отправляются</p><div class="terminal-plan-versions"></div><form id="terminalPlanForm"><label>Направление<select name="action"><option value="buy">Покупка</option><option value="sell">Продажа</option></select></label>${[['entry','Вход'],['stop','Стоп'],['target','Цель'],['quantity','Количество лотов']].map(([name,label])=>`<label>${label}<input name="${name}" inputmode="decimal" type="number" step="${name==='quantity'?'1':'any'}" min="${name==='quantity'?'1':'0.000000001'}" required></label>`).join('')}<p class="terminal-plan-risk"></p><label class="terminal-note-label">Условие входа<textarea name="note" rows="3" maxlength="1000" placeholder="Что должно подтвердиться перед входом"></textarea></label><button class="button primary" type="submit">Сохранить план</button><button class="button secondary" type="button" id="terminalPlanNew">Новый сценарий</button></form><div class="terminal-plan-message" role="status"></div></div><div id="terminalSideAlerts" hidden></div><label class="terminal-note-label">Заметка к инструменту<textarea id="terminalNote" maxlength="2000" rows="3" placeholder="Что важно проверить"></textarea></label>`;
  dock.innerHTML=`<header><div role="tablist" aria-label="Контекст инструмента">${[['stats','Статистика'],['book','Стакан'],['tape','Лента сделок'],['participants','Позиции участников'],['events','События'],['radar','Радар рынка']].map(([key,label])=>`<button type="button" role="tab" id="terminalTab${key}" data-terminal-tab="${key}" aria-controls="terminal${key[0].toUpperCase()+key.slice(1)}" aria-selected="${key==='stats'}">${label}</button>`).join('')}</div>${btn('chevron','Свернуть нижнюю панель','data-collapse="dock"')}</header><div class="terminal-dock-body"><div id="terminalStats" data-dock="stats" role="tabpanel"></div><div id="terminalBook" data-dock="book" role="tabpanel" hidden></div><div id="terminalTape" data-dock="tape" role="tabpanel" hidden></div><div id="terminalParticipants" data-dock="participants" role="tabpanel" hidden></div><div id="terminalEvents" data-dock="events" role="tabpanel" hidden></div><div id="terminalRadar" data-dock="radar" role="tabpanel" hidden></div></div>`;
  side.querySelector('.terminal-side-tabs').insertAdjacentHTML('afterbegin','<button role="tab" type="button" data-side="market" aria-selected="false">Рынок</button>');
  side.insertAdjacentHTML('beforeend','<div id="terminalSideMarket" hidden><header><strong>Стакан</strong><button type="button" data-market-bottom>Вниз</button></header><div id="terminalSideBook"></div><header><strong>Лента сделок</strong></header><div id="terminalSideTape"></div><button type="button" data-market-side hidden>Вернуть рынок сюда</button></div>');
+ const quoteHead=document.createElement('div');quoteHead.className='terminal-quote-head';quoteHead.innerHTML='<span>Инструмент</span><span title="Последняя дневная свеча">Последняя</span><span title="Изменение к предыдущему дневному закрытию">Изм.</span><span>Изм. %</span>';shortlist.querySelector('#instrumentQuickList').before(quoteHead);
  const stage=document.createElement('div');stage.className='terminal-stage';stage.append(shortlist,main,side,dock);panel.prepend(toolbar,stage);panel.append(catalog);
  const oldBoard=panel.querySelector('.market-vision-surface');if(oldBoard)oldBoard.hidden=true;
  const streamStatus=document.createElement('span');streamStatus.className='terminal-stream-status';streamStatus.setAttribute('role','status');toolbar.append(streamStatus);
@@ -40,7 +42,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  const cacheVersions=new Map();let streamGeneration=0;
  const participants=initParticipantsPanel({host:$('#terminalParticipants'),request});
  const documents=new Map(),charts=new Map(),cache=new Map(),requests=new Map(),revisions=new Map(),pending=new Set(),saving=new Map(),detached=new Set();
- let expandedId=null,expandFocus=null;let layout=emptyLayout(),catalogRows=[],alerts=[],events=[],ready=false,visible=false,saveTimer=null,refreshTimer=null,contextGeneration=0,quoteGeneration=0,syncCursor=false,syncPeriod=false;
+ let expandedId=null,expandFocus=null,expandAnchor=null;let layout=emptyLayout(),catalogRows=[],alerts=[],events=[],ready=false,visible=false,saveTimer=null,refreshTimer=null,contextGeneration=0,quoteGeneration=0,syncCursor=false,syncPeriod=false;
  const detachedId=location.hash.match(/^#terminal\/(chart-[a-zA-Z0-9_-]{1,64})$/)?.[1]||'';
  const activeDoc=()=>documents.get(layout.active);
  const activeMeta=()=>catalogRows.find(r=>r.instrumentUid===activeDoc()?.instrumentUid)||(getBootstrap()?.instruments||[]).find(r=>r.instrumentUid===activeDoc()?.instrumentUid)||activeDoc()||{};
@@ -70,7 +72,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
     page=(boot.candles||[]).filter(r=>r.instrumentUid===meta.instrumentUid&&(!r.interval||r.interval===tf));
     const source=normalizeMarketCandles(page,tf),target=at?Date.parse(at):Date.now(),span=1095*86400000;
     const end=before?Date.parse(before):at?Math.min(Date.now()+1,target+span/2):Date.now()+1;
-    const start=end-span;page=source.filter(r=>r.time*1000>=start&&r.time*1000<end);
+    const start=!before&&!at&&!purpose?(source[0]?.time*1000||end-span):end-span;page=source.filter(r=>r.time*1000>=start&&r.time*1000<end);
     const first=source[0]?.time*1000,hasMore=Number.isFinite(first)&&first<start;
     metadata={fixture:true,stale:false,history:{requestedFrom:new Date(start).toISOString(),nextBefore:hasMore?new Date(start).toISOString():null,hasMore,firstAvailable:Number.isFinite(first)?new Date(first).toISOString():null,boundaryKnown:true}};
    } else {
@@ -116,6 +118,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  }
  function expandChart(id,button){
   if(id&&!documents.has(id))return;if(id){expandFocus=button;expandedId=id;selection(id);}else expandedId=null;
+  if(id&&!expandAnchor){expandAnchor=document.createComment('terminal workspace position');panel.before(expandAnchor);document.body.append(panel);}else if(!id&&expandAnchor){expandAnchor.replaceWith(panel);expandAnchor=null;}
   document.body.classList.toggle('terminal-fullscreen',!!id);panel.classList.toggle('chart-expanded',!!id);
   $('#terminalExpand').textContent=id?'Вернуть панели':'На весь экран';$('#terminalExpand').setAttribute('aria-pressed',String(!!id));
   layoutView();for(const [key,e]of charts){const b=e.card.querySelector('[data-expand-chart]');b.setAttribute('aria-pressed',String(key===id));b.setAttribute('aria-label',key===id?'Свернуть график':'Развернуть этот график');}
@@ -138,16 +141,32 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   doc.view=entry.api.getState();historyStatus(id);renderComparisons(id);dirty(id);
  }
  function historyStatus(id){const e=charts.get(id);if(!e)return;let status=e.card.querySelector('.terminal-history');if(!status){status=document.createElement('span');status.className='terminal-history';e.card.querySelector('footer').append(status);}const h=cache.get(e.key)?.history;
-  status.replaceChildren();const text=document.createElement('span');text.textContent=(e.rows.length?' · с '+new Date(e.rows[0].time*1000).toLocaleDateString('ru-RU'):'')+(e.historyPending?' · Загружаем историю…':h?.hasMore===false?' · начало доступной истории':'');status.append(text);
-  if(h?.hasMore){const button=document.createElement('button');button.type='button';button.dataset.earlier=id;button.disabled=!!e.historyPending;button.textContent=e.historyError?'Повторить загрузку':'Раньше';status.append(button);}
+  status.replaceChildren();const text=document.createElement('span');text.textContent=(e.rows.length?' · с '+new Date(e.rows[0].time*1000).toLocaleDateString('ru-RU'):'')+(e.historyError?' · История загружена частично':e.historyPending||e.autoHistory?' · Загружаем всю историю…':h?.hasMore===false?' · вся доступная история':e.rows.length>=100000?' · Для всей истории выберите дневной интервал':e.historyPaused?' · История загружена частично':'');status.append(text);
+  if(h?.hasMore&&e.rows.length<100000&&(e.historyPaused||e.historyError||documents.get(id)?.historyDate)){const button=document.createElement('button');button.type='button';button.dataset.earlier=id;button.disabled=!!e.historyPending;button.textContent=e.historyError?'Повторить загрузку':'Продолжить загрузку';status.append(button);}
  }
- async function loadEarlier(id,manual=false){const e=charts.get(id),doc=documents.get(id);if(!e||e.historyPending||!visible||(!manual&&e.historyPaused))return;const history=cache.get(e.key)?.history;if(!history?.hasMore||!history.nextBefore)return;
-  const key=e.key,seq=e.seq,interval=doc.interval,first=e.rows[0]?.time;e.historyPending=true;e.historyError=false;historyStatus(id);
-  if(!e.api){try{await loadChart(id,false,{before:history.nextBefore,at:doc.historyDate||undefined});}finally{e.historyPending=false;historyStatus(id);}return;}
-  try{const rows=await candles(doc,interval,false,{before:history.nextBefore,at:doc.historyDate||undefined});if(e.key!==key||e.seq!==seq)return;e.rows=rows;e.api.setData(rows);e.emptyPages=rows[0]?.time===first?(e.emptyPages||0)+1:0;e.historyPaused=e.emptyPages>=3;
-   for(const meta of doc.comparisons||[])void loadComparison(id,meta,history.nextBefore);if(id===layout.active)renderStats();
-  }catch{if(e.key===key){e.historyError=true;e.historyPaused=true;}}
-  finally{e.historyPending=false;if(e.key===key)historyStatus(id);}
+ function loadEarlier(id,manual=false){const e=charts.get(id),doc=documents.get(id);if(!e||!doc||!visible||(!manual&&(e.historyPaused||e.autoHistory)))return Promise.resolve();
+  if(e.historyTask)return e.historyTask;
+  const history=cache.get(e.key)?.history;if(!history?.hasMore||!history.nextBefore)return Promise.resolve();
+  const key=e.key,seq=e.seq,interval=doc.interval,first=e.rows[0]?.time;e.historyPending=true;e.historyError=false;if(manual)e.historyPaused=false;historyStatus(id);
+  const task=(async()=>{
+   if(!e.api){e.emptyPages=(e.emptyPages||0)+1;if(e.emptyPages>=3&&!history.boundaryKnown){e.historyPaused=true;return;}await loadChart(id,false,{before:history.nextBefore,at:doc.historyDate||undefined,historyPage:true});return;}
+   try{const rows=await candles(doc,interval,false,{before:history.nextBefore,at:doc.historyDate||undefined});if(e.key!==key||e.seq!==seq)return;e.rows=rows;e.api.setData(rows);e.emptyPages=rows[0]?.time===first?(e.emptyPages||0)+1:0;e.historyPaused=e.emptyPages>=3&&!history.boundaryKnown;if(e.autoHistory&&!e.historyUserInteraction)e.api.fitContent();
+    for(const meta of doc.comparisons||[])void loadComparison(id,meta,history.nextBefore);if(id===layout.active)renderStats();
+   }catch{if(e.key===key){e.historyError=true;e.historyPaused=true;}}
+  })();
+  const pending=task.finally(()=>{if(e.historyTask===pending){e.historyTask=null;e.historyPending=false;}if(e.key===key)historyStatus(id);});e.historyTask=pending;return pending;
+ }
+ async function loadAllHistory(id){
+  const e=charts.get(id),doc=documents.get(id);if(!e||!doc||doc.historyDate||e.historyPaused||!visible)return;
+  if(e.autoHistory?.key===e.key&&e.autoHistory?.seq===e.seq)return;
+  const token={key:e.key,seq:e.seq};e.autoHistory=token;const cursors=new Set();let pages=0;
+  try{while(visible&&charts.get(id)===e&&!e.card.hidden&&e.key===token.key&&e.seq===token.seq){
+   if(e.historyTask){await e.historyTask;continue;}
+   const h=cache.get(e.key)?.history;if(!h?.hasMore||!h.nextBefore||e.historyPaused)break;
+   if(pages>=40||e.rows.length>=100000||cursors.has(h.nextBefore)){e.historyPaused=true;break;}
+   cursors.add(h.nextBefore);pages++;await loadEarlier(id,true);if(e.key===token.key&&e.seq===token.seq+1)token.seq=e.seq;
+   if(e.historyError||e.historyPaused)break;
+  }}finally{if(e.autoHistory===token){e.autoHistory=null;historyStatus(id);}}
  }
  async function loadComparison(id,meta,before){const e=charts.get(id),doc=documents.get(id);if(!e?.api)return;const key=e.key,seq=e.seq;
   try{const rows=await candles(meta,doc.interval,false,{before,at:doc.historyDate||undefined});if(e.key!==key||e.seq!==seq||!doc.comparisons?.some(m=>m.instrumentUid===meta.instrumentUid))return;
@@ -184,14 +203,14 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
    card.innerHTML=`<header><div class="terminal-chart-identity"><strong>${esc(doc.ticker)}</strong><small></small></div><div class="terminal-chart-quote"></div>${detachedId?'':btn('add','Открыть копию графика',`data-duplicate-chart="${id}"`)}${btn('fit','Развернуть этот график',`data-expand-chart="${id}" aria-pressed="false"`)}${btn('detach',detachedId?'Вернуть график':'В отдельное окно',`data-detach-chart="${id}"`)}</header><div class="terminal-comparison-legend" aria-label="Сравнение инструментов" hidden></div><div class="terminal-chart-area"><div class="terminal-drawing-tools" role="toolbar" aria-label="Рисование">${['cursor','horizontal','trend','ray','rectangle','freehand','fibonacci','erase'].map(tool=>btn(tool,({cursor:'Выбор',horizontal:'Горизонталь',trend:'Тренд',ray:'Луч',rectangle:'Прямоугольник',freehand:'Свободная линия',fibonacci:'Фибоначчи',erase:'Ластик'})[tool],`data-tool="${tool}"`)).join('')}${btn('magnet','Магнит к свечам','data-magnet aria-pressed="false"')}${btn('eye','Скрыть разметку','data-hide-drawings aria-pressed="false"')}${btn('trash','Удалить всю разметку','data-clear-drawings')}</div><div class="terminal-chart-plot" tabindex="0" aria-label="График ${esc(doc.ticker)}"><div class="terminal-crosshair"></div><p class="empty-copy">Загружаем котировки…</p></div></div><footer class="terminal-chart-source"></footer>`;
    const tools=card.querySelector('.terminal-drawing-tools');for(const button of tools.querySelectorAll('[data-tool]')){if(!['cursor','erase'].includes(button.dataset.tool))button.classList.add('terminal-legacy-tool');}
    tools.querySelector('[data-tool=cursor]').insertAdjacentHTML('afterend',drawingGroups.map((g,i)=>btn(g.icon,g.label,`data-tool-group="${i}" aria-haspopup="dialog"`)).join(''));
-   const host=card.querySelector('.terminal-chart-plot');main.querySelector('.terminal-grid').append(card);charts.set(id,{card,host,api:null,rows:[],seq:0});void loadChart(id);}
+   const host=card.querySelector('.terminal-chart-plot');for(const event of ['pointerdown','wheel'])host.addEventListener(event,()=>{const entry=charts.get(id);if(entry)entry.historyUserInteraction=true;},{passive:true});main.querySelector('.terminal-grid').append(card);charts.set(id,{card,host,api:null,rows:[],seq:0});void loadChart(id);}
   for(let i=ids.length;i<(expandedId?1:layout.count);i++){const slot=document.createElement('button');slot.type='button';slot.className='terminal-chart-slot';slot.dataset.addSlot='';slot.innerHTML=icon('add')+'<span>Выбрать инструмент</span>';main.querySelector('.terminal-grid').append(slot);}
   selectionVisual();subscriptionChanged();}
  function selectionVisual(){for(const[id,e]of charts){e.card.classList.toggle('active',id===layout.active);e.host.id=id===layout.active?'marketChart':'';}onChart?.(charts.get(layout.active)?.api||null);}
  async function loadChart(id,force=false,range={}){const entry=charts.get(id),doc=documents.get(id);if(!entry||!doc||detached.has(id))return;const serial=++entry.seq,meta=catalogRows.find(r=>r.instrumentUid===doc.instrumentUid)||(getBootstrap()?.instruments||[]).find(r=>r.instrumentUid===doc.instrumentUid)||doc;
   range={at:doc.historyDate||undefined,...range};const key=doc.instrumentUid+':'+doc.interval+(doc.historyDate?':at:'+doc.historyDate:'');
   if(entry.key!==key){
-   entry.api?.destroy();entry.api=null;entry.rows=[];entry.key=key;entry.historyPending=false;entry.historyPaused=false;entry.emptyPages=0;
+   entry.api?.destroy();entry.api=null;entry.rows=[];entry.key=key;entry.historyPending=false;entry.historyPaused=false;entry.emptyPages=0;entry.historyUserInteraction=false;
    entry.host.innerHTML='<p class="empty-copy">Загружаем свечи выбранного интервала…</p>';
    entry.card.querySelector('.terminal-chart-quote').textContent='—';
    entry.card.querySelector('.terminal-chart-source').textContent='Загружаем котировки…';
@@ -199,7 +218,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   }
   try{const rows=await candles(meta,doc.interval,force,range);if(serial!==entry.seq)return;entry.rows=rows;
    entry.key=key;
-   if(!rows.length){entry.api?.destroy();entry.api=null;entry.host.innerHTML='<p class="empty-copy">Свечей за этот интервал нет. Загрузите более раннюю историю или выберите другой интервал.</p>';entry.card.querySelector('.terminal-chart-quote').textContent='—';entry.card.querySelector('.terminal-chart-source').textContent='Данные за запрошенный период отсутствуют';historyStatus(id);if(id===layout.active){selectionVisual();renderStats();}return;}
+   if(!rows.length){entry.api?.destroy();entry.api=null;entry.host.innerHTML='<p class="empty-copy">Свечей за этот интервал нет. Загрузите более раннюю историю или выберите другой интервал.</p>';entry.card.querySelector('.terminal-chart-quote').textContent='—';entry.card.querySelector('.terminal-chart-source').textContent='Данные за запрошенный период отсутствуют';historyStatus(id);if(id===layout.active){selectionVisual();renderStats();}if(!range.historyPage)void loadAllHistory(id);return;}
    entry.key=key;entry.loading=true;
    if(entry.api)entry.api.setData(rows);else{entry.host.replaceChildren();const legend=document.createElement('div');legend.className='terminal-crosshair';entry.host.append(legend);
     entry.api=createMarketChart(entry.host,rows,{onCrosshair:row=>{legend.textContent=row?`${stamp(row.time)}   О ${num(row.open)}  М ${num(row.high)}  м ${num(row.low)}  З ${num(row.close)}  V ${num(row.volume)}`:'';
@@ -207,16 +226,16 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
      onState:view=>{if(entry.loading)return;doc.view=view;entry.card.querySelector('[data-magnet]')?.setAttribute('aria-pressed',String(view.magnet));entry.card.querySelector('[data-hide-drawings]')?.setAttribute('aria-pressed',String(view.drawingsHidden));dirty(id);},onMode:mode=>{entry.card.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tool===(mode||'cursor'))));},
      onHistory:()=>void loadEarlier(id),onDrawingSelect:item=>{if(id===layout.active)editors.drawing(item);},
      onRange:range=>{if(!layout.linkPeriod||syncPeriod)return;syncPeriod=true;for(const[other,e]of charts)if(other!==id&&!e.card.hidden)e.api?.setRange(range);syncPeriod=false;}});
-    entry.api?.restore(doc.view);}
+    entry.api?.restore({...doc.view,range:doc.historyDate?doc.view?.range:null});if(!doc.historyDate)entry.api?.fitContent();}
    entry.loading=false;const last=rows.at(-1),previous=rows.at(-2);entry.card.querySelector('.terminal-chart-identity').innerHTML=instrumentMark(meta)+`<span><strong>${esc(meta.ticker||doc.ticker)}</strong><small>${esc(meta.name||'')}</small></span>`;watchInstrumentImages(entry.card);
    const change=previous?.close>0?(last.close/previous.close-1)*100:null;
    entry.card.querySelector('.terminal-chart-quote').innerHTML=`<strong>${num(last.close)}${meta.assetType==='future'?' п.':''}</strong><small class="${change<0?'negative':'positive'}">${pct(change)} · к прошлой свече</small>`;
    const freshness=cache.get(key)||{},captured=freshness.capturedAt||last.capturedAt,source=entry.card.querySelector('.terminal-chart-source');
    source.textContent=`${doc.historyDate?'История · ':''}${freshness.fixture?'Демо':'Демо'} · свеча ${stamp(last.time)}${captured?' · получено '+stamp(Date.parse(captured)/1000):''}${freshness.latestEmpty?' · в последнем запросе свечей нет':''}${freshness.stale?' · обновление задерживается':''}`;source.classList.toggle('stale',Boolean(freshness.stale));
-   historyStatus(id);for(const meta of doc.comparisons||[])void loadComparison(id,meta);
+   historyStatus(id);for(const meta of doc.comparisons||[])void loadComparison(id,meta);if(!range.historyPage)void loadAllHistory(id);
    if(id===layout.active){selectionVisual();renderStats();applyContext();}
   }catch(error){if(serial!==entry.seq)return;entry.loading=false;entry.card.querySelector('.terminal-chart-source').textContent='Обновление задерживается. Повторим автоматически.';entry.card.querySelector('.terminal-chart-source').classList.add('stale');if(!entry.api){entry.host.innerHTML='<p class="empty-copy"></p>';entry.host.querySelector('.empty-copy').textContent=error.message||'Нет котировок. Выберите другой инструмент.';}}}
- function renderStats(){const rows=charts.get(layout.active)?.rows||[];const last=rows.at(-1),first=rows[0];$('#terminalStats').innerHTML=last?`<dl class="terminal-stat-grid">${[['Изменение за период',pct((last.close/first.open-1)*100)],['Максимум',num(Math.max(...rows.map(r=>r.high)))],['Минимум',num(Math.min(...rows.map(r=>r.low)))],['Объём',num(rows.reduce((s,r)=>s+r.volume,0))],['Свечей',rows.length]].map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl><p class="terminal-caption">${stamp(first.time)} — ${stamp(last.time)}. По выбранному интервалу.</p>`:'<p class="empty-copy">Выберите инструмент с доступными свечами.</p>';}
+ function renderStats(){const rows=charts.get(layout.active)?.rows||[];const last=rows.at(-1),first=rows[0];$('#terminalStats').innerHTML=last?`<dl class="terminal-stat-grid">${[['Изменение за период',pct((last.close/first.open-1)*100)],['Максимум',num(rows.reduce((max,r)=>Math.max(max,r.high),-Infinity))],['Минимум',num(rows.reduce((min,r)=>Math.min(min,r.low),Infinity))],['Объём',num(rows.reduce((s,r)=>s+r.volume,0))],['Свечей',rows.length]].map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl><p class="terminal-caption">${stamp(first.time)} — ${stamp(last.time)}. По выбранному интервалу.</p>`:'<p class="empty-copy">Выберите инструмент с доступными свечами.</p>';}
  function dockTab(name){layout.dock=name;layout.dockCollapsed=false;for(const b of dock.querySelectorAll('[data-terminal-tab]')){b.setAttribute('aria-selected',String(b.dataset.terminalTab===name));b.tabIndex=b.dataset.terminalTab===name?0:-1;}
   if(['book','tape'].includes(name))marketPlacement(false);
   for(const el of dock.querySelectorAll('[data-dock]'))el.hidden=el.dataset.dock!==name;panel.classList.remove('dock-collapsed');if(name==='participants')participants.show();else participants.hide();if(name==='radar')void renderRadar();dirty('layout');}
@@ -239,8 +258,8 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  let watchObserver=null,watchQueue=[],watchBusy=0;
  async function watchWorker(){while(watchBusy<3&&watchQueue.length){const {control,generation}=watchQueue.shift();if(!visible||generation!==quoteGeneration||!control.isConnected)continue;watchBusy++;
   const meta=catalogRows.find(r=>r.instrumentUid===control.dataset.chartUid)||(getBootstrap()?.instruments||[]).find(r=>r.instrumentUid===control.dataset.chartUid);
-  void (async()=>{try{if(!meta)return;const rows=await candles(meta,'CANDLE_INTERVAL_DAY',false,{purpose:'preview'});if(generation!==quoteGeneration||!control.isConnected)return;const measure=radarMeasure(rows);control.querySelector('.watch-price')?.remove();control.querySelector('.terminal-watch-quote')?.remove();
-   control.insertAdjacentHTML('beforeend',measure?`<span class="terminal-watch-quote ${measure.change<0?'negative':'positive'}"><b>${num(measure.price)}</b>${spark(rows)}<small>${pct(measure.change)}</small></span>`:'<span class="terminal-watch-quote terminal-quote-empty">Нет дневных свечей</span>');if(measure)control.title='Последняя дневная свеча · '+stamp(measure.time);
+  void (async()=>{try{if(!meta)return;const rows=await candles(meta,'CANDLE_INTERVAL_DAY',false,{purpose:'preview'});if(generation!==quoteGeneration||!control.isConnected)return;const measure=radarMeasure(rows),absolute=rows.length>1?rows.at(-1).close-rows.at(-2).close:null;control.querySelector('.watch-price')?.remove();control.querySelector('.terminal-watch-quote')?.remove();
+   control.insertAdjacentHTML('beforeend',measure?`<span class="terminal-watch-quote"><b>${quoteNum(measure.price,meta)}</b><small class="${absolute<0?'negative':absolute>0?'positive':''}">${absolute>0?'+':''}${quoteNum(absolute,meta)}</small><small class="${measure.change<0?'negative':measure.change>0?'positive':''}">${pct(measure.change)}</small></span>`:'<span class="terminal-watch-quote terminal-quote-empty">Нет дневных свечей</span>');if(measure)control.title=(meta.name||meta.ticker)+' · Последняя дневная свеча · '+stamp(measure.time)+' · Изменение к предыдущему дневному закрытию';
   }catch{if(control.isConnected){control.querySelector('.terminal-watch-quote')?.remove();control.insertAdjacentHTML('beforeend','<span class="terminal-watch-quote terminal-quote-empty">Источник временно недоступен</span>');}}
   finally{watchBusy--;void watchWorker();}})();}}
  function enrichWatchlist(){const generation=++quoteGeneration;watchObserver?.disconnect();watchQueue=[];
@@ -295,7 +314,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   else if(button.id==='terminalFit')charts.get(layout.active)?.api?.fitContent();
   else if(button.id==='terminalPlanNew'){activeDoc().plan=null;renderPlan();dirty(layout.active);}
   else if(data.chartZoom)charts.get(layout.active)?.api?.zoom(Number(data.chartZoom));
-  else if(data.earlier)void loadEarlier(data.earlier,true);
+  else if(data.earlier){const e=charts.get(data.earlier);if(e){e.historyPaused=false;e.emptyPages=0;}if(documents.get(data.earlier)?.historyDate)void loadEarlier(data.earlier,true);else void loadAllHistory(data.earlier);}
   else if(button.id==='terminalDate')editors.datePicker(button);
   else if(button.id==='terminalLive')void jumpDate(null);
   else if(button.id==='terminalScale')editors.scale(button);
@@ -348,7 +367,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  function resetMarket(){streamGeneration++;cache.clear();cacheVersions.clear();activity.reset();for(const e of charts.values()){e.seq++;e.api?.destroy();e.api=null;e.rows=[];e.host.textContent='Восстанавливаем котировки…';e.card.querySelector('.terminal-chart-quote').textContent='—';}renderStats();}
  const activityTimer=setInterval(()=>{if(visible&&!document.hidden)activity.tick();},1000);
  window.addEventListener('pagehide',()=>clearInterval(activityTimer),{once:true});
- return {openInstrument,activate(view){visible=view==='terminal';if(!visible&&expandedId)expandChart(null);subscriptionChanged();clearInterval(refreshTimer);if(visible){refreshTimer=setInterval(()=>{if(document.hidden)return;for(const id of idsVisible())void loadChart(id);void enrichWatchlist();void loadContext();},60000);if(ready&&!layout.dockCollapsed&&layout.dock==='participants')participants.show();}else{participants.hide();void flush();}},
+ return {openInstrument,activate(view){visible=view==='terminal';if(!visible&&expandedId)expandChart(null);subscriptionChanged();clearInterval(refreshTimer);if(visible){for(const id of idsVisible())void loadAllHistory(id);refreshTimer=setInterval(()=>{if(document.hidden)return;for(const id of idsVisible())void loadChart(id);void enrichWatchlist();void loadContext();},60000);if(ready&&!layout.dockCollapsed&&layout.dock==='participants')participants.show();}else{participants.hide();void flush();}},
   async refresh(){await initial;if(!ready){initial=init();await initial;}if(!ready)return;const selected=getSelection();if(selected?.instrumentUid&&selected.instrumentUid!==activeDoc()?.instrumentUid)await openInstrument(selected);else if(ready)for(const id of idsVisible())void loadChart(id);if(visible)void enrichWatchlist();},
   update(){},updateCandle,marketSubscription,applySnapshot,resetMarket,
   marketEvent:event=>activity.receive(event),marketState:event=>activity.state(event),flush};

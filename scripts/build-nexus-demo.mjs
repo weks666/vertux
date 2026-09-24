@@ -43,7 +43,7 @@ for (const name of result.files) {
   }
   if (name === 'index.html') {
     text = text.replace('<h1 id="viewTitle">Обзор портфеля</h1>', '<h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Демо · графики можно изменять</span>');
-    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260924-chart-review">\n</head>');
+    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260925-ui-refinement">\n</head>');
     // The website shows one fixed period. Keep date fields explicitly
     // read-only; all editing is locked by demo-service.js.
     text = text.replace(/<form[^>]+id="(?:statisticsPeriodForm|operationFilters)"[\s\S]*?<\/form>/gu, form => {
