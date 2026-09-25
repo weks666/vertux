@@ -1,6 +1,6 @@
 // Public synthetic preview: chart edits live only in the page; broker and account writes remain disabled.
 (() => {
- const allowed='[data-view],[data-go-view],[data-ledger-tab],.rail-collapse,[data-risk-tab],[data-terminal-tab],[data-side],[data-company-tab],[data-open-rail],[data-close-rail],.mobile-menu,.rail-close,summary,[data-chart-uid]';
+ const allowed='[data-panel],[data-close-panel],[data-workspace-menu],[data-view],[data-go-view],[data-ledger-tab],.rail-collapse,[data-risk-tab],[data-terminal-tab],[data-side],[data-company-tab],[data-open-rail],[data-close-rail],.mobile-menu,.rail-close,summary,[data-chart-uid]';
  const chartAllowed='.terminal-main button,.terminal-main select,.terminal-popover button,.terminal-popover input,.terminal-popover select,.terminal-workspace-bar button,[data-collapse],[data-market-bottom],[data-market-side],#instrumentListSearch,#instrumentListScope,a[data-demo-studio],.workspace-customization button,.workspace-customization input,.workspace-customization select';
  const blocked='[data-detach-chart],[data-context="plan"],[data-context="alert"]';
  const canUse=el=>el.matches(allowed)||el.matches(chartAllowed)&&!el.matches(blocked);

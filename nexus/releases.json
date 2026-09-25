@@ -2,6 +2,38 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-demo-terminal-layout-2026-09-25",
+      "date": "2026-09-25",
+      "label": "INVEST DEMO",
+      "versions": {},
+      "title": {
+        "ru": "Терминал с большим графиком",
+        "en": "A chart-first terminal"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "График занимает основную рабочую область. Котировки, стакан, лента, план и уровни открываются отдельно кнопками справа; нижние панели изначально свёрнуты.",
+          "en": "The chart occupies the main workspace. Open quotes, the order book, trades, plan and price levels individually from the right toolbar; bottom panels start collapsed."
+        },
+        {
+          "type": "fixed",
+          "ru": "При разворачивании сам график заполняет ширину окна, без пустой области справа. Выход возвращает прежние панели и расположение графиков.",
+          "en": "The expanded chart itself fills the viewport width without an empty area on the right. Exiting restores the previous panels and chart layout."
+        },
+        {
+          "type": "changed",
+          "ru": "Из терминала убраны общие фильтры портфеля. Выбор нескольких графиков перенесён в меню расположения, стакан и ленту можно перемещать вправо или вниз.",
+          "en": "Portfolio-wide filters are hidden in the terminal. Multiple-chart layouts are selected from the layout menu, and the order book and trade tape can move between the right and bottom panels."
+        },
+        {
+          "type": "changed",
+          "ru": "Обновлено веб-демо на вымышленных данных. Установщик Windows этим выпуском не меняется.",
+          "en": "This updates the web demo with synthetic data. The Windows installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-demo-personalization-2026-09-25",
       "date": "2026-09-25",
       "label": "INVEST DEMO",

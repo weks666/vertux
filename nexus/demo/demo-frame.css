@@ -95,3 +95,6 @@ button:disabled { cursor:default; }
 html:has(body[data-current-view="terminal"]) { zoom:1; }
 
 [data-view-panel="settings"] > :not(.workspace-customization),.workspace-profile-shortcut,.workspace-menu-row[data-menu-view="subscription"],.workspace-menu-row[data-menu-view="support"],.workspace-menu-row[data-menu-view="sync"] { display:none!important; }
+
+/* Keep the studio credit outside the chart workspace. */
+body[data-current-view="terminal"] { --terminal-bottom-inset:26px; }
