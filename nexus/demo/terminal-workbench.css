@@ -400,3 +400,45 @@ body.terminal-fullscreen>.terminal-workbench.active.chart-expanded { position:fi
  .terminal-workbench .terminal-grid[data-count="4"] { grid-template-rows:repeat(4,minmax(240px,1fr)); overflow-y:auto; }
  .terminal-workbench .terminal-grid:not([data-count="1"]) .terminal-chart-identity strong,.terminal-workbench .terminal-grid:not([data-count="1"]) .terminal-chart-quote strong { font-size:11px; }
 }
+/* Drawing shortcuts retain separate, visible primary and menu targets. */
+.terminal-workbench .terminal-drawing-tools { width:48px; flex-basis:48px; }
+.terminal-tool-slot { display:grid; grid-template-columns:30px 18px; width:48px; flex:none; align-items:stretch; }
+.terminal-workbench .terminal-tool-slot button { width:auto; min-width:0; min-height:34px; height:34px; padding:4px 0; border:0; border-radius:3px; }
+.terminal-tool-slot .terminal-tool-menu svg { width:13px; height:13px; }
+.terminal-tool-slot button:hover,.terminal-tool-slot button:focus-visible { background:var(--surface-strong); }
+.terminal-tool-slot button[aria-expanded=true] { color:var(--vertux-soft); background:var(--accent-surface); }
+.terminal-tool-slot .terminal-icon svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.5; }
+.terminal-tool-menu svg { fill:none; stroke:currentColor; stroke-width:1.5; }
+.chart-preferences-section { padding:18px; border-top:1px solid var(--line); }
+.chart-preferences-section>h3 { margin:0 0 12px; }
+.chart-preferences-form { display:grid; gap:8px; min-width:0; }
+.chart-preferences-form details { border-bottom:1px solid var(--line); padding:8px 0 12px; }
+.chart-preferences-form summary { cursor:pointer; font-size:13px; font-weight:600; padding:5px 0; }
+.chart-preferences-form p { color:var(--muted); font-size:12px; line-height:1.5; margin:6px 0 12px; }
+.chart-tool-defaults { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.chart-preferences-form label { display:flex; flex-direction:column; gap:5px; color:var(--muted); font-size:12px; }
+.chart-preferences-form select { width:100%; min-width:0; max-width:100%; }
+.chart-preferences-form .chart-preference-check { display:flex; flex-direction:row; align-items:center; gap:8px; margin:12px 0 4px; line-height:1.4; }
+.chart-preference-check input { flex:none; width:16px; height:16px; }
+.chart-color-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:10px 0; }
+.chart-color-fields input[type=color] { width:100%; min-width:0; height:32px; padding:3px; }
+.chart-fib-palette { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:7px; margin:10px 0; }
+.chart-fib-palette label { font-size:10px; min-width:0; }
+.chart-fib-palette input[type=color] { width:100%; height:30px; padding:2px; }
+.chart-preferences-form .chart-preference-status { margin:4px 0; min-height:18px; }
+.terminal-replay-bar { flex:none; display:flex; align-items:center; flex-wrap:wrap; gap:7px 14px; padding:8px 10px; border-bottom:1px solid var(--line-strong); background:var(--surface-raised); }
+.terminal-replay-date,.terminal-replay-actions { display:flex; align-items:end; flex-wrap:wrap; gap:5px; }
+.terminal-replay-bar label { display:flex; flex-direction:column; gap:3px; color:var(--muted); font-size:10px; }
+.terminal-replay-bar input,.terminal-replay-bar select,.terminal-replay-bar button { min-height:30px; padding:4px 7px; font-size:11px; width:auto; }
+.terminal-replay-bar button svg { display:block; width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.6; }
+.terminal-replay-status { color:var(--text); font-size:11px; font-variant-numeric:tabular-nums; }
+.terminal-replay-bar>small { flex-basis:100%; font-size:10px; color:var(--muted); }
+.terminal-chart-card.replaying>.terminal-chart-source { color:var(--vertux-soft); }
+@media(max-width:600px) {
+ .chart-tool-defaults { grid-template-columns:minmax(0,1fr); }
+ .terminal-replay-bar { padding:5px; gap:5px; max-height:190px; overflow:auto; }
+ .terminal-replay-bar .terminal-replay-actions { flex-wrap:nowrap; gap:3px; }
+ .terminal-replay-bar input,.terminal-replay-bar select,.terminal-replay-bar button { padding:4px; font-size:10px; }
+ .terminal-replay-bar input[type=date] { width:125px; }
+ .terminal-replay-bar>small { line-height:1.3; }
+}

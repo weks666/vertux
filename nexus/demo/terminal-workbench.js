@@ -4,7 +4,9 @@ import {createMarketChart,normalizeMarketCandles} from './charts.js';
 import {initParticipantsPanel} from './market-participants.js';
 import {radarMeasure} from './chart-indicators.js';
 import {instrumentMark,watchInstrumentImages} from './instrument-mark.js';
-import {drawingGroups} from './chart-tool-catalog.js';
+import {createChartPreferences} from './chart-preferences.js';
+import {initReplayControls} from './terminal-replay.js';
+import {drawingGroups,drawingIcon} from './chart-tool-catalog.js';
 import {initTerminalEditors} from './terminal-editors.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>Number.isFinite(v)?v.toLocaleString('ru-RU',{maximumFractionDigits:5}):'—';
@@ -27,7 +29,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  const toolbar=document.createElement('header');toolbar.className='terminal-workspace-bar';toolbar.innerHTML=`${btn('menu','Разделы Workspace','data-workspace-menu')}<div class="terminal-tabs" role="tablist" aria-label="Открытые инструменты"></div><details class="terminal-layout-menu"><summary aria-label="Раскладка графиков">${icon('layout')}<span>Раскладка</span></summary><div class="terminal-layout-tools"><div class="terminal-layout-switch" role="group" aria-label="Число графиков">${[1,2,4].map(n=>`<button type="button" data-layout="${n}" aria-pressed="${n===1}">${n===1?'Один график':n+' графика'}</button>`).join('')}</div><button type="button" data-link="cursor" aria-pressed="false">Связать курсор</button><button type="button" data-link="period" aria-pressed="false">Общий период</button></div></details>${btn('fit','На весь экран','id="terminalExpand"')}<button type="button" id="terminalReturn" hidden>Вернуть в Workspace</button>`;toolbar.querySelector('[data-workspace-menu]').classList.add('terminal-workspace-menu');
  const main=document.createElement('section');main.className='terminal-main';main.innerHTML='<div class="terminal-chart-controls"><div class="terminal-timeframes"></div><div class="terminal-common-tools"></div></div><div class="terminal-grid" data-count="1"></div><p class="terminal-save-state" role="status"></p>';
  const controls=main.querySelector('.terminal-common-tools');type.parentElement.removeChild(type);controls.append(type);interval.innerHTML=choices;interval.setAttribute('aria-label','Интервал свечей');main.querySelector('.terminal-timeframes').append(interval);
- controls.insertAdjacentHTML('beforeend','<button type="button" id="terminalSymbolSearch">Поиск</button><button type="button" id="terminalCompare">Сравнить</button><button type="button" id="terminalDate">К дате</button><button type="button" id="terminalLive" hidden>К последним свечам</button><button type="button" id="terminalScale">Шкала</button><button type="button" id="terminalObjects">Объекты</button><button type="button" id="terminalIndicators">Индикаторы</button>');
+ controls.insertAdjacentHTML('beforeend','<button type="button" id="terminalSymbolSearch">Поиск</button><button type="button" id="terminalCompare">Сравнить</button><button type="button" id="terminalDate">К дате</button><button type="button" id="terminalLive" hidden>К последним свечам</button><button type="button" id="terminalScale">Шкала</button><button type="button" id="terminalObjects">Объекты</button><button type="button" id="terminalIndicators">Индикаторы</button><button type="button" id="terminalReplay" aria-pressed="false">Воспроизведение</button><button type="button" id="terminalSettings">Настройки</button>');
  for(const n of ['sma','ema','bb','vwap','rsi','macd','volume']){const b=document.createElement('button');b.type='button';b.dataset.terminalIndicator=n;b.dataset.indicator=n;b.textContent=({sma:'SMA 20',ema:'EMA 20',bb:'Bollinger',vwap:'VWAP',rsi:'RSI 14',macd:'MACD',volume:'Объём'})[n];b.setAttribute('aria-pressed',String(n==='volume'));if(n!=='volume')b.className='terminal-quick-indicator';controls.append(b);}
  controls.insertAdjacentHTML('beforeend',`${btn('undo','Отменить разметку','data-history="undo"')}${btn('redo','Повторить разметку','data-history="redo"')}${btn('add','Приблизить график','data-chart-zoom="0.7"')}${btn('zoomout','Отдалить график','data-chart-zoom="1.4"')}${btn('fit','Показать весь график','id="terminalFit"')}<label class="terminal-flash" hidden><input type="checkbox" id="terminalFlash">Подсветка цены</label>`);
  const side=document.createElement('aside');side.className='terminal-side';side.innerHTML=`<header class="terminal-panel-heading"><strong id="terminalAuxiliaryTitle">План сделки</strong><button type="button" data-market-bottom title="Переместить под график" hidden>Вниз</button>${btn('close','Закрыть панель','data-close-panel')}</header><div id="terminalPlan"><p class="terminal-caption">Сценарий · заявки брокеру не отправляются</p><div class="terminal-plan-versions"></div><form id="terminalPlanForm"><label>Направление<select name="action"><option value="buy">Покупка</option><option value="sell">Продажа</option></select></label>${[['entry','Вход'],['stop','Стоп'],['target','Цель'],['quantity','Количество лотов']].map(([name,label])=>`<label>${label}<input name="${name}" inputmode="decimal" type="number" step="${name==='quantity'?'1':'any'}" min="${name==='quantity'?'1':'0.000000001'}" required></label>`).join('')}<p class="terminal-plan-risk"></p><label class="terminal-note-label">Условие входа<textarea name="note" rows="3" maxlength="1000" placeholder="Что должно подтвердиться перед входом"></textarea></label><button class="button primary" type="submit">Сохранить план</button><button class="button secondary" type="button" id="terminalPlanNew">Новый сценарий</button></form><div class="terminal-plan-message" role="status"></div></div><div id="terminalSideAlerts" hidden></div><label class="terminal-note-label">Заметка к инструменту<textarea id="terminalNote" maxlength="2000" rows="3" placeholder="Что важно проверить"></textarea></label>`;
@@ -46,7 +48,10 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  const detachedId=location.hash.match(/^#terminal\/(chart-[a-zA-Z0-9_-]{1,64})$/)?.[1]||'';
  const activeDoc=()=>documents.get(layout.active);
  const activeMeta=()=>catalogRows.find(r=>r.instrumentUid===activeDoc()?.instrumentUid)||(getBootstrap()?.instruments||[]).find(r=>r.instrumentUid===activeDoc()?.instrumentUid)||activeDoc()||{};
- const editors=initTerminalEditors({panel,activeChart:()=>charts.get(layout.active),activeDoc,openInstrument,getCatalog:()=>catalogRows,
+ const preferences=createChartPreferences({onChange:()=>paintQuickTools()});
+ const replayControls=initReplayControls({main,button:$('#terminalReplay'),activeChart:()=>charts.get(layout.active),onStop:()=>void loadChart(layout.active,true)});
+ const preferenceSection=document.createElement('section');preferenceSection.className='chart-preferences-section';preferenceSection.innerHTML='<h3>Графики и инструменты</h3><div></div>';$('#'+ 'mainContent').querySelector('[data-view-panel=settings]').append(preferenceSection);preferences.mount(preferenceSection.querySelector('div'));
+ const editors=initTerminalEditors({panel,preferences,activeChart:()=>charts.get(layout.active),activeDoc,openInstrument,getCatalog:()=>catalogRows,
   compare:compareInstrument,loadHistory:()=>loadEarlier(layout.active,true),jumpDate,showToast,
   plan:price=>{if(expandedId)expandChart(null);openPanel('plan');$('#terminalPlanForm').elements.entry.value=price;renderRisk();dirty(layout.active);},
   alert:price=>{$('#instrumentPriceAlert').click();const field=document.querySelector('#priceAlertForm [name="targetPrice"]');if(field){field.value=price;field.dispatchEvent(new Event('input',{bubbles:true}));}}});
@@ -129,7 +134,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   window.dispatchEvent(new Event('resize'));
  }
  async function jumpDate(date,wholeYear=false){
-  const id=layout.active,doc=activeDoc(),entry=charts.get(id);if(!doc||!entry)return;
+  const id=layout.active,doc=activeDoc(),entry=charts.get(id);if(!doc||!entry)return;entry.api?.stopReplay();
   if(date&&!/^\d{4}-\d{2}-\d{2}$/.test(date))throw new Error('Выберите дату.');
   const h=cache.get(entry.key)?.history,target=date?Date.parse(date):null;
   if(date&&h?.firstAvailable&&target<Date.parse(h.firstAvailable))throw new Error('Источник предоставляет этот интервал с '+new Date(h.firstAvailable).toLocaleDateString('ru-RU')+'.');
@@ -143,27 +148,27 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   }else entry.api.latest();
   doc.view=entry.api.getState();historyStatus(id);renderComparisons(id);dirty(id);
  }
- function historyStatus(id){const e=charts.get(id);if(!e)return;let status=e.card.querySelector('.terminal-history');if(!status){status=document.createElement('span');status.className='terminal-history';e.card.querySelector('footer').append(status);}const h=cache.get(e.key)?.history;
+ function historyStatus(id){const e=charts.get(id);if(!e)return;let status=e.card.querySelector('.terminal-history');if(e.api?.getReplay().active)return;if(!status){status=document.createElement('span');status.className='terminal-history';e.card.querySelector('footer').append(status);}const h=cache.get(e.key)?.history;
   status.replaceChildren();const text=document.createElement('span');text.textContent=(e.rows.length?' · с '+new Date(e.rows[0].time*1000).toLocaleDateString('ru-RU'):'')+(e.historyError?' · История загружена частично':e.historyPending||e.autoHistory?' · Загружаем всю историю…':h?.hasMore===false?' · вся доступная история':e.rows.length>=100000?' · Для всей истории выберите дневной интервал':e.historyPaused?' · История загружена частично':'');status.append(text);
   if(h?.hasMore&&e.rows.length<100000&&(e.historyPaused||e.historyError||documents.get(id)?.historyDate)){const button=document.createElement('button');button.type='button';button.dataset.earlier=id;button.disabled=!!e.historyPending;button.textContent=e.historyError?'Повторить загрузку':'Продолжить загрузку';status.append(button);}
  }
- function loadEarlier(id,manual=false){const e=charts.get(id),doc=documents.get(id);if(!e||!doc||!visible||(!manual&&(e.historyPaused||e.autoHistory)))return Promise.resolve();
+ function loadEarlier(id,manual=false){const e=charts.get(id),doc=documents.get(id);if(!e||!doc||e.api?.getReplay().active||!visible||(!manual&&(e.historyPaused||e.autoHistory)))return Promise.resolve();
   if(e.historyTask)return e.historyTask;
   const history=cache.get(e.key)?.history;if(!history?.hasMore||!history.nextBefore)return Promise.resolve();
   const key=e.key,seq=e.seq,interval=doc.interval,first=e.rows[0]?.time;e.historyPending=true;e.historyError=false;if(manual)e.historyPaused=false;historyStatus(id);
   const task=(async()=>{
    if(!e.api){e.emptyPages=(e.emptyPages||0)+1;if(e.emptyPages>=3&&!history.boundaryKnown){e.historyPaused=true;return;}await loadChart(id,false,{before:history.nextBefore,at:doc.historyDate||undefined,historyPage:true});return;}
-   try{const rows=await candles(doc,interval,false,{before:history.nextBefore,at:doc.historyDate||undefined});if(e.key!==key||e.seq!==seq)return;e.rows=rows;e.api.setData(rows);e.emptyPages=rows[0]?.time===first?(e.emptyPages||0)+1:0;e.historyPaused=e.emptyPages>=3&&!history.boundaryKnown;if(e.autoHistory&&!e.historyUserInteraction)e.api.fitContent();
+   try{const rows=await candles(doc,interval,false,{before:history.nextBefore,at:doc.historyDate||undefined});if(e.key!==key||e.seq!==seq||e.api?.getReplay().active)return;e.rows=rows;e.api.setData(rows);e.emptyPages=rows[0]?.time===first?(e.emptyPages||0)+1:0;e.historyPaused=e.emptyPages>=3&&!history.boundaryKnown;if(e.autoHistory&&!e.historyUserInteraction)e.api.fitContent();
     for(const meta of doc.comparisons||[])void loadComparison(id,meta,history.nextBefore);if(id===layout.active)renderStats();
    }catch{if(e.key===key){e.historyError=true;e.historyPaused=true;}}
   })();
   const pending=task.finally(()=>{if(e.historyTask===pending){e.historyTask=null;e.historyPending=false;}if(e.key===key)historyStatus(id);});e.historyTask=pending;return pending;
  }
  async function loadAllHistory(id){
-  const e=charts.get(id),doc=documents.get(id);if(!e||!doc||doc.historyDate||e.historyPaused||!visible)return;
+  const e=charts.get(id),doc=documents.get(id);if(!e||!doc||e.api?.getReplay().active||doc.historyDate||e.historyPaused||!visible)return;
   if(e.autoHistory?.key===e.key&&e.autoHistory?.seq===e.seq)return;
   const token={key:e.key,seq:e.seq};e.autoHistory=token;const cursors=new Set();let pages=0;
-  try{while(visible&&charts.get(id)===e&&!e.card.hidden&&e.key===token.key&&e.seq===token.seq){
+  try{while(visible&&!e.api?.getReplay().active&&charts.get(id)===e&&!e.card.hidden&&e.key===token.key&&e.seq===token.seq){
    if(e.historyTask){await e.historyTask;continue;}
    const h=cache.get(e.key)?.history;if(!h?.hasMore||!h.nextBefore||e.historyPaused)break;
    if(pages>=40||e.rows.length>=100000||cursors.has(h.nextBefore)){e.historyPaused=true;break;}
@@ -187,12 +192,12 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
    asks:Array.from({length:20},(_,i)=>({price:price+step*(i+1),quantity:18+i*5}))});
   for(let i=0;i<20;i++)activity.receive({type:'market.trade',instrumentUid:meta.instrumentUid,price:price+(i%2?1:-1)*step,quantity:1+i%8,side:i%2?'buy':'sell',sourceEventTime:new Date(Date.parse(at)-(19-i)*1000).toISOString(),connectorReceivedAt:at,simulated:true});
  }
- function selection(id){const doc=documents.get(id);if(!doc)return;layout.active=id;const meta=activeMeta();onSelection?.(meta);onChart?.(charts.get(id)?.api||null);interval.value=doc.interval;type.value=doc.view?.type||'candles';$('#terminalLive').hidden=!doc.historyDate;$('#terminalDate').textContent=doc.historyDate?'История · '+doc.historyDate.slice(0,4):'К дате';
+ function selection(id){const doc=documents.get(id);if(!doc)return;if(layout.active!==id)charts.get(layout.active)?.api?.pauseReplay();layout.active=id;const meta=activeMeta();onSelection?.(meta);onChart?.(charts.get(id)?.api||null);interval.value=doc.interval;type.value=doc.view?.type||'candles';$('#terminalLive').hidden=!doc.historyDate;$('#terminalDate').textContent=doc.historyDate?'История · '+doc.historyDate.slice(0,4):'К дате';
   if(detachedId)document.title=(meta.ticker||'График')+' · Терминал · Vertux Nexus';
   const select=$('#instrumentSelect');if(![...select.options].some(o=>o.value===meta.instrumentUid))select.add(new Option(meta.ticker||meta.instrumentUid,meta.instrumentUid));select.value=meta.instrumentUid;
   for(const b of controls.querySelectorAll('[data-terminal-indicator]')){b.setAttribute('aria-pressed',String(doc.view?.indicators?.[b.dataset.terminalIndicator]===true));if(b.dataset.terminalIndicator==='vwap'){b.disabled=doc.interval==='CANDLE_INTERVAL_DAY';b.title='VWAP с 00:00 МСК · доступен на внутридневных интервалах';}}$('#terminalFlash').checked=doc.view?.flash===true;
   for(const[cid,entry]of charts){entry.host.id=cid===id?'marketChart':'';entry.card.classList.toggle('active',cid===id);}
-  for(const b of $('#instrumentQuickList').querySelectorAll('[data-chart-uid]'))b.setAttribute('aria-pressed',String(b.dataset.chartUid===doc.instrumentUid));renderTabs();renderPlan();renderStats();participants.update(meta);activity.select(meta);demoMarketSnapshot(meta);subscriptionChanged();void loadContext();if(!detachedId)dirty('layout');}
+  for(const b of $('#instrumentQuickList').querySelectorAll('[data-chart-uid]'))b.setAttribute('aria-pressed',String(b.dataset.chartUid===doc.instrumentUid));renderTabs();renderPlan();renderStats();replayControls.selection();participants.update(meta);activity.select(meta);demoMarketSnapshot(meta);subscriptionChanged();void loadContext();if(!detachedId)dirty('layout');}
  function renderTabs(){const host=toolbar.querySelector('.terminal-tabs');host.innerHTML=layout.tabs.map(id=>{const doc=documents.get(id);return `<div class="terminal-tab${id===layout.active?' active':''}"><button type="button" role="tab" data-chart-tab="${id}" aria-selected="${id===layout.active}" tabindex="${id===layout.active?'0':'-1'}">${esc(doc?.ticker||'График')}${detached.has(id)?' ↗':''}</button>${btn('close','Закрыть вкладку '+esc(doc?.ticker||''),`data-close-chart="${id}"`)}</div>`;}).join('')+btn('add','Добавить инструмент','id="terminalAdd"');}
  function idsVisible(){if(expandedId)return[expandedId];if(detachedId)return[detachedId];const ids=layout.tabs.filter(id=>!detached.has(id));let selected=ids.slice(0,layout.count);if(ids.includes(layout.active)&&!selected.includes(layout.active)){selected[selected.length-1]=layout.active;}return selected;}
  function layoutView(){panel.classList.toggle('watch-collapsed',layout.watchCollapsed);panel.classList.toggle('side-collapsed',layout.sideCollapsed);panel.classList.toggle('dock-collapsed',layout.dockCollapsed);
@@ -205,12 +210,14 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   for(const id of ids){if(charts.has(id))continue;const doc=documents.get(id);if(!doc)continue;const card=document.createElement('article');card.className='terminal-chart-card';card.dataset.chartId=id;card.tabIndex=0;
    card.innerHTML=`<header><div class="terminal-chart-identity"><strong>${esc(doc.ticker)}</strong><small></small></div><div class="terminal-chart-quote"></div>${detachedId?'':btn('add','Открыть копию графика',`data-duplicate-chart="${id}"`)}${btn('fit',expandedId===id?'Свернуть график':'Развернуть этот график',`data-expand-chart="${id}" aria-pressed="${expandedId===id}"`)}${btn('detach',detachedId?'Вернуть график':'В отдельное окно',`data-detach-chart="${id}"`)}</header><div class="terminal-comparison-legend" aria-label="Сравнение инструментов" hidden></div><div class="terminal-chart-area"><div class="terminal-drawing-tools" role="toolbar" aria-label="Рисование">${['cursor','horizontal','trend','ray','rectangle','freehand','fibonacci','erase'].map(tool=>btn(tool,({cursor:'Выбор',horizontal:'Горизонталь',trend:'Тренд',ray:'Луч',rectangle:'Прямоугольник',freehand:'Свободная линия',fibonacci:'Фибоначчи',erase:'Ластик'})[tool],`data-tool="${tool}"`)).join('')}${btn('magnet','Магнит к свечам','data-magnet aria-pressed="false"')}${btn('eye','Скрыть разметку','data-hide-drawings aria-pressed="false"')}${btn('trash','Удалить всю разметку','data-clear-drawings')}</div><div class="terminal-chart-plot" tabindex="0" aria-label="График ${esc(doc.ticker)}"><div class="terminal-crosshair"></div><p class="empty-copy">Загружаем котировки…</p></div></div><footer class="terminal-chart-source"></footer>`;
    const tools=card.querySelector('.terminal-drawing-tools');for(const button of tools.querySelectorAll('[data-tool]')){if(!['cursor','erase'].includes(button.dataset.tool))button.classList.add('terminal-legacy-tool');}
-   tools.querySelector('[data-tool=cursor]').insertAdjacentHTML('afterend',drawingGroups.map((g,i)=>btn(g.icon,g.label,`data-tool-group="${i}" aria-haspopup="dialog"`)).join(''));
+   tools.querySelector('[data-tool=cursor]').insertAdjacentHTML('afterend',drawingGroups.map((g,i)=>{const type=preferences.get().tools[g.id],label=g.tools.find(([t])=>t===type)[1];return `<span class="terminal-tool-slot"><button type="button" class="terminal-icon" data-tool="${type}" data-quick-tool="${i}" aria-label="${label} — рисовать" title="${label}">${drawingIcon(type)}</button><button type="button" class="terminal-tool-menu" data-tool-group="${i}" aria-label="Другие инструменты: ${g.label}" aria-haspopup="dialog" aria-expanded="false">${icon('chevron')}</button></span>`;}).join(''));
    const host=card.querySelector('.terminal-chart-plot');for(const event of ['pointerdown','wheel'])host.addEventListener(event,()=>{const entry=charts.get(id);if(entry)entry.historyUserInteraction=true;},{passive:true});main.querySelector('.terminal-grid').append(card);charts.set(id,{card,host,api:null,rows:[],seq:0});void loadChart(id);}
   for(let i=ids.length;i<(expandedId?1:layout.count);i++){const slot=document.createElement('button');slot.type='button';slot.className='terminal-chart-slot';slot.dataset.addSlot='';slot.innerHTML=icon('add')+'<span>Выбрать инструмент</span>';main.querySelector('.terminal-grid').append(slot);}
   selectionVisual();subscriptionChanged();}
+ function paintQuickTools(){for(const e of charts.values())for(const b of e.card.querySelectorAll('[data-quick-tool]')){const g=drawingGroups[Number(b.dataset.quickTool)],type=preferences.get().tools[g.id],label=g.tools.find(([t])=>t===type)[1];b.dataset.tool=type;b.title=label;b.setAttribute('aria-label',label+' — рисовать');b.innerHTML=drawingIcon(type);}}
+ function replayChanged(id){const e=charts.get(id);if(!e?.api)return;const r=e.api.getReplay(),subscriptionChangedNow=(e.replayActive===true)!==r.active;e.replayActive=r.active;e.card.classList.toggle('replaying',r.active);if(r.active){const rows=e.api.getRows(),last=rows.at(-1),prior=rows.at(-2);e.card.querySelector('.terminal-chart-quote').innerHTML='<strong>'+num(last.close)+'</strong><small>Воспроизведение · '+pct(prior?.close?(last.close/prior.close-1)*100:null)+'</small>';e.card.querySelector('.terminal-chart-source').textContent='Воспроизведение · '+stamp(last.time);renderComparisons(id);}if(id===layout.active){replayControls.update();renderStats();}if(subscriptionChangedNow)subscriptionChanged();}
  function selectionVisual(){for(const[id,e]of charts){e.card.classList.toggle('active',id===layout.active);e.host.id=id===layout.active?'marketChart':'';}onChart?.(charts.get(layout.active)?.api||null);}
- async function loadChart(id,force=false,range={}){const entry=charts.get(id),doc=documents.get(id);if(!entry||!doc||detached.has(id))return;const serial=++entry.seq,meta=catalogRows.find(r=>r.instrumentUid===doc.instrumentUid)||(getBootstrap()?.instruments||[]).find(r=>r.instrumentUid===doc.instrumentUid)||doc;
+ async function loadChart(id,force=false,range={}){const entry=charts.get(id),doc=documents.get(id);if(!entry||!doc||detached.has(id)||entry.api?.getReplay().active)return;const serial=++entry.seq,meta=catalogRows.find(r=>r.instrumentUid===doc.instrumentUid)||(getBootstrap()?.instruments||[]).find(r=>r.instrumentUid===doc.instrumentUid)||doc;
   range={at:doc.historyDate||undefined,...range};const key=doc.instrumentUid+':'+doc.interval+(doc.historyDate?':at:'+doc.historyDate:'');
   if(entry.key!==key){
    entry.api?.destroy();entry.api=null;entry.rows=[];entry.key=key;entry.historyPending=false;entry.historyPaused=false;entry.emptyPages=0;entry.historyUserInteraction=false;
@@ -219,7 +226,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
    entry.card.querySelector('.terminal-chart-source').textContent='Загружаем котировки…';
    if(id===layout.active){selectionVisual();renderStats();}
   }
-  try{const rows=await candles(meta,doc.interval,force,range);if(serial!==entry.seq)return;entry.rows=rows;
+  try{const rows=await candles(meta,doc.interval,force,range);if(serial!==entry.seq||entry.api?.getReplay().active)return;entry.rows=rows;
    entry.key=key;
    if(!rows.length){entry.api?.destroy();entry.api=null;entry.host.innerHTML='<p class="empty-copy">Свечей за этот интервал нет. Загрузите более раннюю историю или выберите другой интервал.</p>';entry.card.querySelector('.terminal-chart-quote').textContent='—';entry.card.querySelector('.terminal-chart-source').textContent='Данные за запрошенный период отсутствуют';historyStatus(id);if(id===layout.active){selectionVisual();renderStats();}if(!range.historyPage)void loadAllHistory(id);return;}
    entry.key=key;entry.loading=true;
@@ -227,18 +234,19 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
     entry.api=createMarketChart(entry.host,rows,{onCrosshair:row=>{legend.textContent=row?`${stamp(row.time)}   О ${num(row.open)}  М ${num(row.high)}  м ${num(row.low)}  З ${num(row.close)}  V ${num(row.volume)}`:'';
      if(layout.linkCursor&&!syncCursor){syncCursor=true;for(const[other,e]of charts)if(other!==id&&!e.card.hidden)e.api?.setCrosshair(row?.time);syncCursor=false;}},
      onState:view=>{if(entry.loading)return;doc.view=view;entry.card.querySelector('[data-magnet]')?.setAttribute('aria-pressed',String(view.magnet));entry.card.querySelector('[data-hide-drawings]')?.setAttribute('aria-pressed',String(view.drawingsHidden));dirty(id);},onMode:mode=>{entry.card.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tool===(mode||'cursor'))));},
+     getDrawingDefaults:type=>preferences.styleFor(type),onDrawingStyle:(type,style)=>preferences.rememberStyle(type,style),onReplay:()=>replayChanged(id),
      onHistory:()=>void loadEarlier(id),onDrawingSelect:item=>{if(id===layout.active)editors.drawing(item);},
      onRange:range=>{if(!layout.linkPeriod||syncPeriod)return;syncPeriod=true;for(const[other,e]of charts)if(other!==id&&!e.card.hidden)e.api?.setRange(range);syncPeriod=false;}});
-    entry.api?.restore({...doc.view,range:doc.historyDate?doc.view?.range:null});if(!doc.historyDate)entry.api?.fitContent();}
+    entry.api?.restore({...doc.view,colors:doc.view?.colors||preferences.colorsFor(doc.instrumentUid),range:doc.historyDate?doc.view?.range:null});if(!doc.historyDate)entry.api?.fitContent();}
    entry.loading=false;const last=rows.at(-1),previous=rows.at(-2);entry.card.querySelector('.terminal-chart-identity').innerHTML=instrumentMark(meta)+`<span><strong>${esc(meta.ticker||doc.ticker)}</strong><small>${esc(meta.name||'')}</small></span>`;watchInstrumentImages(entry.card);
    const change=previous?.close>0?(last.close/previous.close-1)*100:null;
    entry.card.querySelector('.terminal-chart-quote').innerHTML=`<strong>${num(last.close)}${meta.assetType==='future'?' п.':''}</strong><small class="${change<0?'negative':'positive'}">${pct(change)} · к прошлой свече</small>`;
    const freshness=cache.get(key)||{},captured=freshness.capturedAt||last.capturedAt,source=entry.card.querySelector('.terminal-chart-source');
    source.textContent=`${doc.historyDate?'История · ':''}${freshness.fixture?'Демо':'Демо'} · свеча ${stamp(last.time)}${captured?' · получено '+stamp(Date.parse(captured)/1000):''}${freshness.latestEmpty?' · в последнем запросе свечей нет':''}${freshness.stale?' · обновление задерживается':''}`;source.classList.toggle('stale',Boolean(freshness.stale));
    historyStatus(id);for(const meta of doc.comparisons||[])void loadComparison(id,meta);if(!range.historyPage)void loadAllHistory(id);
-   if(id===layout.active){selectionVisual();renderStats();applyContext();}
+   if(id===layout.active){selectionVisual();renderStats();applyContext();replayControls.update();}
   }catch(error){if(serial!==entry.seq)return;entry.loading=false;entry.card.querySelector('.terminal-chart-source').textContent='Обновление задерживается. Повторим автоматически.';entry.card.querySelector('.terminal-chart-source').classList.add('stale');if(!entry.api){entry.host.innerHTML='<p class="empty-copy"></p>';entry.host.querySelector('.empty-copy').textContent=error.message||'Нет котировок. Выберите другой инструмент.';}}}
- function renderStats(){const rows=charts.get(layout.active)?.rows||[];const last=rows.at(-1),first=rows[0];$('#terminalStats').innerHTML=last?`<dl class="terminal-stat-grid">${[['Изменение за период',pct((last.close/first.open-1)*100)],['Максимум',num(rows.reduce((max,r)=>Math.max(max,r.high),-Infinity))],['Минимум',num(rows.reduce((min,r)=>Math.min(min,r.low),Infinity))],['Объём',num(rows.reduce((s,r)=>s+r.volume,0))],['Свечей',rows.length]].map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl><p class="terminal-caption">${stamp(first.time)} — ${stamp(last.time)}. По выбранному интервалу.</p>`:'<p class="empty-copy">Выберите инструмент с доступными свечами.</p>';}
+ function renderStats(){const entry=charts.get(layout.active),rows=entry?.api?.getReplay().active?entry.api.getRows():entry?.rows||[];const last=rows.at(-1),first=rows[0];$('#terminalStats').innerHTML=last?`<dl class="terminal-stat-grid">${[['Изменение за период',pct((last.close/first.open-1)*100)],['Максимум',num(rows.reduce((max,r)=>Math.max(max,r.high),-Infinity))],['Минимум',num(rows.reduce((min,r)=>Math.min(min,r.low),Infinity))],['Объём',num(rows.reduce((s,r)=>s+r.volume,0))],['Свечей',rows.length]].map(([k,v])=>`<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl><p class="terminal-caption">${stamp(first.time)} — ${stamp(last.time)}. По выбранному интервалу.</p>`:'<p class="empty-copy">Выберите инструмент с доступными свечами.</p>';}
  function dockTab(name,open=true,persist=true){layout.dock=name;layout.dockCollapsed=!open;if(open&&['book','tape'].includes(name)&&['book','tape'].includes(layout.auxiliary))layout.auxiliary='';paintPanels();if(open&&name==='participants')participants.show();else participants.hide();if(open&&name==='radar')void renderRadar();if(persist)dirty('layout');}
  function applyContext(){const doc=activeDoc(),entry=charts.get(layout.active);if(!doc||!entry?.api)return;const plan=doc.plan&&[doc.plan.entry,doc.plan.stop,doc.plan.target].every(v=>Number(v)>0)?{entry:Number(doc.plan.entry),stop:Number(doc.plan.stop),target:Number(doc.plan.target)}:null;entry.api.setContext({alerts:alerts.filter(r=>r.symbol===doc.ticker),events,scenario:plan});}
  async function loadContext(){const meta=activeMeta(),serial=++contextGeneration;if(!meta.instrumentUid)return;
@@ -314,7 +322,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   else if(button.hasAttribute('data-create-alert'))$('#instrumentPriceAlert').click();
   else if(data.planVersion!==undefined){activeDoc().plan={...activeDoc().plans[Number(data.planVersion)]};renderPlan();dirty(layout.active);}
   else if(button.hasAttribute('data-save-filter')){layout.radarSaved=[...(layout.radarSaved||[]),{name:'Фильтр '+((layout.radarSaved||[]).length+1),filter:{...layout.radar}}].slice(-10);dirty('layout');void renderRadar();}
-  else if(button.id==='terminalAdd'||button.hasAttribute('data-add-slot')){layout.watchCollapsed=false;layoutView();$('#instrumentListSearch').focus();}
+  else if(button.id==='terminalAdd'||button.hasAttribute('data-add-slot'))editors.picker(button);
   else if(button.id==='terminalFit')charts.get(layout.active)?.api?.fitContent();
   else if(button.id==='terminalPlanNew'){activeDoc().plan=null;renderPlan();dirty(layout.active);}
   else if(data.chartZoom)charts.get(layout.active)?.api?.zoom(Number(data.chartZoom));
@@ -323,6 +331,8 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
   else if(button.id==='terminalLive')void jumpDate(null);
   else if(button.id==='terminalScale')editors.scale(button);
   else if(button.id==='terminalObjects')editors.objects(button);
+  else if(button.id==='terminalSettings')editors.settings(button);
+  else if(button.id==='terminalReplay')replayControls.toggle();
   else if(button.id==='terminalIndicators')editors.indicators(button);
   else if(button.id==='terminalSymbolSearch')editors.picker(button);
   else if(button.id==='terminalCompare')editors.picker(button,true);
@@ -331,7 +341,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  });
  main.querySelector('.terminal-grid').addEventListener('pointerdown',event=>{const id=event.target.closest('[data-chart-id]')?.dataset.chartId;if(id&&id!==layout.active)selection(id);});
  type.addEventListener('change',()=>charts.get(layout.active)?.api?.setType(type.value));
- interval.addEventListener('change',()=>{const doc=activeDoc();if(!doc)return;doc.interval=interval.value;doc.view={...doc.view,range:null};const e=charts.get(layout.active);if(e){e.historyPaused=false;e.emptyPages=0;}if(doc.interval==='CANDLE_INTERVAL_DAY')doc.view.indicators.vwap=false;selection(layout.active);dirty(layout.active);void loadChart(layout.active);});
+ interval.addEventListener('change',()=>{const doc=activeDoc();if(!doc)return;charts.get(layout.active)?.api?.stopReplay();doc.interval=interval.value;doc.view={...doc.view,range:null};const e=charts.get(layout.active);if(e){e.historyPaused=false;e.emptyPages=0;}if(doc.interval==='CANDLE_INTERVAL_DAY')doc.view.indicators.vwap=false;selection(layout.active);dirty(layout.active);void loadChart(layout.active);});
  $('#terminalFlash').addEventListener('change',event=>charts.get(layout.active)?.api?.setFlash(event.target.checked));
  $('#terminalNote').addEventListener('input',event=>{activeDoc().note=event.target.value;dirty(layout.active);});
  $('#terminalPlanForm').addEventListener('input',()=>{renderRisk();dirty(layout.active);});
@@ -345,12 +355,13 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  globalThis.nexusProduct?.terminal?.onPrepareClose?.(async()=>{if(await flush())globalThis.nexusProduct.terminal.closeReady();else message('Окно оставлено открытым: не удалось сохранить изменения. Повторите возврат после восстановления связи.',true);});
  let initial=init();
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&toolbar.querySelector('details').open)toolbar.querySelector('details').open=false;else if(e.key==='Escape'&&expandedId)expandChart(null);else if(e.key==='Escape'&&visible&&layout.auxiliary&&!panel.querySelector('.terminal-popover:not([hidden])')){const previous=layout.auxiliary;openPanel('');panelRail.querySelector('[data-panel="'+previous+'"]')?.focus();}if(visible&&e.altKey&&e.key==='Enter'){e.preventDefault();expandChart(expandedId?null:layout.active,document.activeElement);}});
- function marketSubscription(){return {charts:visible?idsVisible().flatMap(id=>{const doc=documents.get(id);return doc?.instrumentUid&&!doc.historyDate?[{instrumentUid:doc.instrumentUid,interval:doc.interval}]:[];}):[],focus:visible?activeDoc()?.instrumentUid||'':''};}
+ function marketSubscription(){return {charts:visible?idsVisible().flatMap(id=>{const doc=documents.get(id);return doc?.instrumentUid&&!doc.historyDate&&!charts.get(id)?.api?.getReplay().active?[{instrumentUid:doc.instrumentUid,interval:doc.interval}]:[];}):[],focus:visible?activeDoc()?.instrumentUid||'':''};}
  function subscriptionChanged(){document.dispatchEvent(new Event('invest:market-subscription'));}
  function updateCandle(row){
   const key=row.instrumentUid+':'+row.interval,prior=cache.get(key),next=applyLiveCache(prior,row,row.interval);if(!next)return;
   cacheVersions.set(key,(cacheVersions.get(key)||0)+1);cache.set(key,next);
   for(const[id,e]of charts)if(e.key===key){
+   if(e.api?.getReplay().active)continue;
    if(!e.api){void loadChart(id);continue;}
    const normalized=normalizeMarketCandles([row],row.interval)[0];
    if(normalized.time<e.rows.at(-1)?.time){e.api.setData(next.rows);e.rows=next.rows;}else e.rows=e.api.updateCandle(row)||e.rows;
@@ -371,7 +382,7 @@ export function initTerminal({request,getSelection,getBootstrap,onSelection,onCh
  function resetMarket(){streamGeneration++;cache.clear();cacheVersions.clear();activity.reset();for(const e of charts.values()){e.seq++;e.api?.destroy();e.api=null;e.rows=[];e.host.textContent='Восстанавливаем котировки…';e.card.querySelector('.terminal-chart-quote').textContent='—';}renderStats();}
  const activityTimer=setInterval(()=>{if(visible&&!document.hidden)activity.tick();},1000);
  window.addEventListener('pagehide',()=>clearInterval(activityTimer),{once:true});
- return {openInstrument,activate(view){visible=view==='terminal';if(!visible&&expandedId)expandChart(null);subscriptionChanged();clearInterval(refreshTimer);if(visible){for(const id of idsVisible())void loadAllHistory(id);refreshTimer=setInterval(()=>{if(document.hidden)return;for(const id of idsVisible())void loadChart(id);void enrichWatchlist();void loadContext();},60000);if(ready&&!layout.dockCollapsed&&layout.dock==='participants')participants.show();}else{participants.hide();void flush();}},
+ return {openInstrument,activate(view){visible=view==='terminal';if(!visible&&expandedId)expandChart(null);subscriptionChanged();clearInterval(refreshTimer);if(visible){for(const id of idsVisible())void loadAllHistory(id);refreshTimer=setInterval(()=>{if(document.hidden)return;for(const id of idsVisible())void loadChart(id);void enrichWatchlist();void loadContext();},60000);if(ready&&!layout.dockCollapsed&&layout.dock==='participants')participants.show();}else{for(const e of charts.values())e.api?.pauseReplay();participants.hide();void flush();}},
   async refresh(){await initial;if(!ready){initial=init();await initial;}if(!ready)return;const selected=getSelection();if(selected?.instrumentUid&&selected.instrumentUid!==activeDoc()?.instrumentUid)await openInstrument(selected);else if(ready)for(const id of idsVisible())void loadChart(id);if(visible)void enrichWatchlist();},
   update(){},updateCandle,marketSubscription,applySnapshot,resetMarket,
   marketEvent:event=>activity.receive(event),marketState:event=>activity.state(event),flush};

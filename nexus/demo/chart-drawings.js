@@ -8,10 +8,10 @@ export function validDrawings(items) {
   &&Array.isArray(item.points)&&item.points.length>=(onePointTools.includes(item.type)?1:threePointTools.includes(item.type)?3:2)&&item.points.length<=500&&item.points.every(p=>Number.isFinite(p.time)&&Number.isFinite(p.price)));
 }
 /** Annotations never become price series: drawing cannot rescale its own coordinates. */
-export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{},onMode=()=>{},onSelect=()=>{}}) {
+export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{},onMode=()=>{},onSelect=()=>{},getDefaults=type=>drawingStyle({},type),onStyle=()=>{}}) {
  const svg=el('svg',{'class':'chart-drawings','aria-label':'Разметка графика'});host.append(svg);
  let drawings=[],undo=[],redo=[],mode=null,start=null,preview=null,selected=null,drag=null,frame=0,dead=false,alerts=[],events=[],scenario=null,hidden=false;
- let defaults=drawingStyle(),magnet=false;
+ let magnet=false;const defaults=type=>drawingStyle(getDefaults(type),type);
  const select=id=>{selected=id;onSelect(drawings.find(d=>d.id===id)||null);schedule();};
  const save=()=>{onChange(clone(drawings));};
  function commit(next){undo.push(clone(drawings));if(undo.length>60)undo.shift();redo=[];drawings=validDrawings(next);save();schedule();}
@@ -24,6 +24,7 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
  function at(event){const rect=host.getBoundingClientRect(),scale=chart.timeScale();
   const x=Math.max(0,Math.min(scale.width(),event.clientX-rect.left)),y=Math.max(0,Math.min(plotHeight(),event.clientY-rect.top));
   const rows=getRows(),price=getSeries().coordinateToPrice(y);if(price===null||!rows.length)return null;
+  if(rows.length===1){const point={time:rows[0].time,price};return magnet?snapToCandle(rows,point.time,point.price):point;}
   // Use screen positions from the shared time axis; comparison bars may insert dates.
   let lo=0,hi=rows.length-1;while(lo<hi){const mid=Math.floor((lo+hi)/2);if(timeX(rows[mid].time)<x)lo=mid+1;else hi=mid;}
   const i=Math.max(1,Math.min(rows.length-1,lo)),a=rows[Math.max(0,i-1)],b=rows[i],ax=timeX(a.time),bx=timeX(b.time);
@@ -34,37 +35,51 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
  const plotHeight=()=>chart.panes?.()[0]?.getHeight()||host.clientHeight-28;
  function line(group,x1,y1,x2,y2,attrs={}){group.append(el('line',{x1,y1,x2,y2,...attrs}));}
  function shape(item,ghost=false){const points=item.points.map(xy);if(points.some(p=>p.x===null||p.y===null))return;
-  const a=points[0],b=points[1]||a,c=points[2]||b,style=drawingStyle(item.style),width=chart.timeScale().width(),height=plotHeight(),group=el('g',{'data-drawing-id':item.id,'data-drawing-type':item.type,'class':`drawing-object${selected===item.id?' selected':''}${ghost?' preview':''}`,'fill':'none','stroke':style.color,'stroke-width':style.width,opacity:style.opacity,'stroke-dasharray':style.dash==='dash'?'6 4':style.dash==='dot'?'2 3':''});
-  const label=(x,y,text)=>group.append(el('text',{x:Math.max(4,Math.min(width-100,x)),y:Math.max(12,Math.min(height-4,y)),fill:style.color,stroke:'none','font-size':11},text));
+  const a=points[0],b=points[1]||a,c=points[2]||b,style=drawingStyle(item.style,item.type),width=chart.timeScale().width(),height=plotHeight(),group=el('g',{'data-drawing-id':item.id,'data-drawing-type':item.type,'class':`drawing-object${selected===item.id?' selected':''}${ghost?' preview':''}`,'fill':'none','stroke':style.color,'stroke-width':style.width,opacity:style.opacity,'stroke-dasharray':style.dash==='dash'?'6 4':style.dash==='dot'?'2 3':''});
+  const levelColor=i=>style.multicolor?style.levelColors[i%style.levelColors.length]:style.color;
+  const label=(x,y,text,color=style.color)=>group.append(el('text',{x:Math.max(4,Math.min(width-100,x)),y:Math.max(12,Math.min(height-4,y)),fill:color,stroke:'none','font-size':11},text));
   const priceText=price=>price.toLocaleString('ru-RU',{maximumFractionDigits:6});
-  function infinite(left,right,both=false){const dx=right.x-left.x,dy=right.y-left.y,length=Math.hypot(dx,dy);if(length<.5)return;const reach=Math.hypot(width,height)*4,ux=dx/length,uy=dy/length;line(group,both?left.x-ux*reach:left.x,both?left.y-uy*reach:left.y,right.x+ux*reach,right.y+uy*reach);}
+  function infinite(left,right,both=false,attrs={}){const dx=right.x-left.x,dy=right.y-left.y,length=Math.hypot(dx,dy);if(length<.5)return;const reach=Math.hypot(width,height)*4,ux=dx/length,uy=dy/length;line(group,both?left.x-ux*reach:left.x,both?left.y-uy*reach:left.y,right.x+ux*reach,right.y+uy*reach,attrs);}
   if(['horizontal','horizontalRay','cross'].includes(item.type)){line(group,item.type==='horizontalRay'?a.x:0,a.y,width,a.y);if(style.prices)label(width-100,a.y-4,priceText(item.points[0].price));}
   if(['vertical','cross'].includes(item.type))line(group,a.x,0,a.x,height);
-  if(['trend','arrow','trendAngle','ray','extended'].includes(item.type)){
+  if(['trend','arrow','doubleArrow','trendAngle','ray','extended'].includes(item.type)){
    if(item.type==='ray'||item.type==='extended')infinite(a,b,item.type==='extended');else line(group,a.x,a.y,b.x,b.y);
-   if(item.type==='arrow'){const angle=Math.atan2(b.y-a.y,b.x-a.x);line(group,b.x,b.y,b.x-11*Math.cos(angle-.45),b.y-11*Math.sin(angle-.45));line(group,b.x,b.y,b.x-11*Math.cos(angle+.45),b.y-11*Math.sin(angle+.45));}
+   if(['arrow','doubleArrow'].includes(item.type)){const angle=Math.atan2(b.y-a.y,b.x-a.x);line(group,b.x,b.y,b.x-11*Math.cos(angle-.45),b.y-11*Math.sin(angle-.45));line(group,b.x,b.y,b.x-11*Math.cos(angle+.45),b.y-11*Math.sin(angle+.45));}
+   if(item.type==='doubleArrow'){const angle=Math.atan2(a.y-b.y,a.x-b.x);line(group,a.x,a.y,a.x-11*Math.cos(angle-.45),a.y-11*Math.sin(angle-.45));line(group,a.x,a.y,a.x-11*Math.cos(angle+.45),a.y-11*Math.sin(angle+.45));}
    if(item.type==='trendAngle')label(b.x,b.y-8,(-Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI).toFixed(1)+'°');
   }
   if(['rectangle','priceRange','dateRange','measure'].includes(item.type))group.append(el('rect',{x:Math.min(a.x,b.x),y:item.type==='dateRange'?0:Math.min(a.y,b.y),width:item.type==='priceRange'?60:Math.abs(b.x-a.x),height:item.type==='dateRange'?height:Math.abs(b.y-a.y),fill:style.color,'fill-opacity':style.fill}));
   if(item.type==='ellipse')group.append(el('ellipse',{cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,rx:Math.abs(b.x-a.x)/2,ry:Math.abs(b.y-a.y)/2,fill:style.color,'fill-opacity':style.fill}));
+  if(item.type==='circle')group.append(el('circle',{cx:a.x,cy:a.y,r:Math.hypot(b.x-a.x,b.y-a.y),fill:style.color,'fill-opacity':style.fill}));
+  if(['rotatedRectangle','parallelogram'].includes(item.type)){const dx=b.x-a.x,dy=b.y-a.y,den=dx*dx+dy*dy||1,n=((c.x-a.x)*(-dy)+(c.y-a.y)*dx)/den,offset=item.type==='rotatedRectangle'?{x:-dy*n,y:dx*n}:{x:c.x-b.x,y:c.y-b.y};group.append(el('polygon',{points:[a,b,{x:b.x+offset.x,y:b.y+offset.y},{x:a.x+offset.x,y:a.y+offset.y}].map(p=>`${p.x},${p.y}`).join(' '),fill:style.color,'fill-opacity':style.fill}));}
+  if(item.type==='arc')group.append(el('path',{d:`M ${a.x} ${a.y} Q ${b.x} ${b.y} ${c.x} ${c.y}`}));
+  if(item.type==='horizontalChannel'){for(const y of[a.y,(a.y+b.y)/2,b.y])line(group,0,y,width,y);group.append(el('rect',{x:0,y:Math.min(a.y,b.y),width,height:Math.abs(b.y-a.y),fill:style.color,'fill-opacity':style.fill}));}
+  if(item.type==='callout'){line(group,a.x,a.y,b.x,b.y);label(b.x,b.y-5,style.text);}
+  if(item.type==='priceLabel'){line(group,a.x,a.y,Math.min(width,a.x+80),a.y);label(a.x,a.y-5,priceText(item.points[0].price));}
   if(item.type==='triangle')group.append(el('polygon',{points:points.map(p=>`${p.x},${p.y}`).join(' '),fill:style.color,'fill-opacity':style.fill}));
   if(['measure','priceRange','dateRange'].includes(item.type)){const delta=item.points[1].price-item.points[0].price,days=Math.abs(item.points[1].time-item.points[0].time)/86400;label(b.x,b.y-8,(item.type==='dateRange'?'':priceText(delta)+' ('+(item.points[0].price?100*delta/item.points[0].price:0).toFixed(2)+'%) ')+(item.type==='priceRange'?'':days.toFixed(1)+' д.'));}
   if(item.type==='text')label(a.x,a.y,style.text);
-  if(item.type==='channel'||item.type==='fibChannel'){const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy)||1,nx=-dy/length,ny=dx/length,distance=(c.x-a.x)*nx+(c.y-a.y)*ny,levels=item.type==='channel'?[0,.5,1]:style.levels;for(const level of levels){const left={x:a.x+nx*distance*level,y:a.y+ny*distance*level},right={x:b.x+nx*distance*level,y:b.y+ny*distance*level};if(style.extend)infinite(left,right);else line(group,left.x,left.y,right.x,right.y);if(item.type==='fibChannel')label(right.x,right.y,String(level)+(style.prices?' · '+priceText(getSeries().coordinateToPrice(right.y)):''));}}
-  if(item.type==='freehand')group.append(el('polyline',{points:points.map(p=>`${p.x},${p.y}`).join(' '),'stroke-linejoin':'round','stroke-linecap':'round'}));
-  if(item.type==='fibonacci'||item.type==='fibExtension')for(const ratio of style.levels){const value=item.type==='fibonacci'?item.points[0].price+(item.points[1].price-item.points[0].price)*ratio:(item.points[2]||item.points[1]).price+(item.points[1].price-item.points[0].price)*ratio,y=getSeries().priceToCoordinate(value);line(group,Math.min(a.x,b.x),y,style.extend?width:Math.max(a.x,b.x,c.x),y);label(Math.max(a.x,b.x)+4,y-3,String(ratio)+(style.prices?' · '+priceText(value):''));}
-  if(item.type==='fibFan')for(const ratio of style.levels){const end={x:b.x,y:a.y+(b.y-a.y)*ratio};infinite(a,end);label(end.x,end.y,String(ratio)+(style.prices?' · '+priceText(getSeries().coordinateToPrice(end.y)):''));}
-  if(item.type==='fibTime')for(const n of style.levels){const x=a.x+(b.x-a.x)*n;line(group,x,0,x,height);label(x+3,14,String(n));}
+  if(item.type==='channel'||item.type==='fibChannel'){const dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy)||1,nx=-dy/length,ny=dx/length,distance=(c.x-a.x)*nx+(c.y-a.y)*ny,levels=item.type==='channel'?[0,.5,1]:style.levels;for(const [i,level]of levels.entries()){const color=item.type==='fibChannel'?levelColor(i):style.color,left={x:a.x+nx*distance*level,y:a.y+ny*distance*level},right={x:b.x+nx*distance*level,y:b.y+ny*distance*level};if(style.extend)infinite(left,right,false,{stroke:color});else line(group,left.x,left.y,right.x,right.y,{stroke:color});if(item.type==='fibChannel')label(right.x,right.y,String(level)+(style.prices?' · '+priceText(getSeries().coordinateToPrice(right.y)):''),color);}}
+  if(['freehand','highlighter'].includes(item.type))group.append(el('polyline',{points:points.map(p=>`${p.x},${p.y}`).join(' '),'stroke-linejoin':'round','stroke-linecap':'round'}));
+  if(item.type==='fibonacci'||item.type==='fibExtension'){
+   const left=Math.min(a.x,b.x),right=style.extend?width:Math.max(a.x,b.x,c.x);let previousY=null;
+   style.levels.forEach((ratio,i)=>{const value=item.type==='fibonacci'?item.points[0].price+(item.points[1].price-item.points[0].price)*ratio:(item.points[2]||item.points[1]).price+(item.points[1].price-item.points[0].price)*ratio,y=getSeries().priceToCoordinate(value),color=levelColor(i);
+    if(previousY!==null)group.append(el('rect',{x:left,y:Math.min(previousY,y),width:Math.max(0,right-left),height:Math.abs(y-previousY),fill:color,'fill-opacity':style.fill,stroke:'none'}));
+    line(group,left,y,right,y,{stroke:color});label(right+4,y-3,String(ratio)+(style.prices?' · '+priceText(value):''),color);previousY=y;
+   });
+  }
+  if(item.type==='fibFan')for(const [i,ratio]of style.levels.entries()){group.setAttribute('stroke',style.color);const end={x:b.x,y:a.y+(b.y-a.y)*ratio};infinite(a,end,false,{stroke:levelColor(i)});label(end.x,end.y,String(ratio)+(style.prices?' · '+priceText(getSeries().coordinateToPrice(end.y)):''),levelColor(i));}
+  if(item.type==='fibTime')for(const [i,n]of style.levels.entries()){const x=a.x+(b.x-a.x)*n;line(group,x,0,x,height,{stroke:levelColor(i)});label(x+3,14,String(n),levelColor(i));}
   if(['pitchfork','schiffPitchfork'].includes(item.type)){
    const origin=item.type==='schiffPitchfork'?{x:a.x,y:(a.y+b.y)/2}:a,mid={x:(b.x+c.x)/2,y:(b.y+c.y)/2};
    infinite(origin,mid);for(const p of [b,c])infinite(p,{x:p.x+mid.x-origin.x,y:p.y+mid.y-origin.y});line(group,b.x,b.y,c.x,c.y);
   }
   if(['fibArcs','fibCircles'].includes(item.type)){
    const radius=Math.hypot(b.x-a.x,b.y-a.y);
-   for(const ratio of style.levels.filter(n=>n>0)){const r=radius*ratio;
-    if(item.type==='fibCircles')group.append(el('circle',{cx:a.x,cy:a.y,r}));
-    else group.append(el('path',{d:`M ${b.x-r} ${b.y} A ${r} ${r} 0 0 ${b.y>a.y?1:0} ${b.x+r} ${b.y}`}));
-    label((item.type==='fibCircles'?a.x:b.x)+r,(item.type==='fibCircles'?a.y:b.y)-4,String(ratio));
+   for(const [i,ratio]of style.levels.filter(n=>n>0).entries()){const r=radius*ratio;
+    if(item.type==='fibCircles')group.append(el('circle',{cx:a.x,cy:a.y,r,stroke:levelColor(i)}));
+    else group.append(el('path',{d:`M ${b.x-r} ${b.y} A ${r} ${r} 0 0 ${b.y>a.y?1:0} ${b.x+r} ${b.y}`,stroke:levelColor(i)}));
+    label((item.type==='fibCircles'?a.x:b.x)+r,(item.type==='fibCircles'?a.y:b.y)-4,String(ratio),levelColor(i));
    }
   }
   if(item.type==='regression'){
@@ -87,7 +102,7 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
   }
   // Broad invisible stroke is only a pointer target, never the visible stroke.
   if(!ghost)for(const node of [...group.children].filter(n=>n.tagName!=='text')){const hit=node.cloneNode(true);hit.setAttribute('class','drawing-hit');hit.setAttribute('stroke','transparent');hit.setAttribute('stroke-width','12');hit.setAttribute('fill','none');group.append(hit);}
-  if(selected===item.id&&!ghost&&item.type!=='freehand')points.forEach((p,i)=>group.append(el('circle',{cx:p.x,cy:p.y,r:4,fill:'var(--chart-bg, #0d141e)','data-handle':i})));
+  if(selected===item.id&&!ghost&&!['freehand','highlighter'].includes(item.type))points.forEach((p,i)=>group.append(el('circle',{cx:p.x,cy:p.y,r:4,fill:'var(--chart-bg, #0d141e)','data-handle':i})));
   svg.append(group);
  }
  function render(){frame=0;if(dead)return;svg.replaceChildren();const width=chart.timeScale().width(),height=plotHeight();svg.setAttribute('width',width);svg.setAttribute('height',height);svg.style.width=width+'px';svg.style.height=height+'px';
@@ -114,17 +129,17 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
   if(mode==='erase'){if(object)commit(drawings.filter(d=>d.id!==object.dataset.drawingId));return;}
   if(!mode){select(null);schedule();return;}event.preventDefault();event.stopPropagation();host.focus({preventScroll:true});
   if(drawings.length>=80){setMode(null);return;}
-  if(onePointTools.includes(mode)){const item={id:crypto.randomUUID(),type:mode,points:[point],style:clone(defaults)};commit([...drawings,item]);setMode(null);select(item.id);return;}
-  if(mode==='freehand'){start=point;preview={id:crypto.randomUUID(),type:mode,points:[point],style:clone(defaults)};svg.setPointerCapture(event.pointerId);return;}
-  if(!start){start=point;preview={id:crypto.randomUUID(),type:mode,points:[point,point],style:{...clone(defaults),...(mode==='fibTime'?{levels:[0,1,2,3,5,8,13,21]}:{})}};}
+  if(onePointTools.includes(mode)){const item={id:crypto.randomUUID(),type:mode,points:[point],style:clone(defaults(mode))};commit([...drawings,item]);setMode(null);select(item.id);return;}
+  if(['freehand','highlighter'].includes(mode)){start=point;preview={id:crypto.randomUUID(),type:mode,points:[point],style:clone(defaults(mode))};svg.setPointerCapture(event.pointerId);return;}
+  if(!start){start=point;preview={id:crypto.randomUUID(),type:mode,points:[point,point],style:clone(defaults(mode))};}
   else {preview.points[preview.points.length-1]=point;if(threePointTools.includes(mode)&&preview.points.length===2){preview.points.push(point);schedule();return;}const id=preview.id;commit([...drawings,preview]);setMode(null);select(id);}
  }
  function move(event){const point=at(event);if(!point)return;
   if(drag){const item=drawings.find(d=>d.id===selected);if(drag.handle!==null)item.points[drag.handle]=point;else item.points=drag.original.points.map(p=>({time:p.time+point.time-drag.origin.time,price:p.price+point.price-drag.origin.price}));schedule();return;}
-  if(preview){if(mode==='freehand'){if(event.buttons&&preview.points.length<500)preview.points.push(point);}else preview.points[preview.points.length-1]=point;schedule();}
+  if(preview){if(['freehand','highlighter'].includes(mode)){if(event.buttons&&preview.points.length<500)preview.points.push(point);}else preview.points[preview.points.length-1]=point;schedule();}
  }
  function up(){if(drag){const original=drag.original;undo.push(drawings.map(d=>d.id===original.id?original:clone(d)));redo=[];drag=null;chart.applyOptions({handleScroll:true,handleScale:true});save();schedule();}
-  else if(mode==='freehand'&&preview){if(preview.points.length>1)commit([...drawings,preview]);setMode(null);}}
+  else if(['freehand','highlighter'].includes(mode)&&preview){if(preview.points.length>1)commit([...drawings,preview]);setMode(null);}}
  function key(event){if(['INPUT','TEXTAREA','SELECT'].includes(event.target.tagName))return;
   if(event.key==='Escape'){setMode(null);select(null);schedule();}
   if(['Delete','Backspace'].includes(event.key)&&selected){event.preventDefault();commit(drawings.filter(d=>d.id!==selected));selected=null;}
@@ -136,7 +151,7 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
  chart.timeScale().subscribeVisibleLogicalRangeChange(schedule);chart.subscribeCrosshairMove(schedule);const resize=new ResizeObserver(schedule);resize.observe(host);schedule();
  return {setMode,undo:()=>history('undo'),redo:()=>history('redo'),clear:()=>{commit([]);setMode(null);},hide(value){hidden=value;save();schedule();},isHidden:()=>hidden,setMagnet(value){magnet=value===true;save();},isMagnet:()=>magnet,
   getState:()=>clone(drawings),getSelected:()=>clone(drawings.find(d=>d.id===selected)||null),select,
-  editSelected(patch){const item=drawings.find(d=>d.id===selected);if(!item)return;const next={...item,...patch,style:drawingStyle({...item.style,...patch.style})};defaults=next.style;commit(drawings.map(d=>d.id===selected?next:d));select(selected);},
+  editSelected(patch){const item=drawings.find(d=>d.id===selected);if(!item)return;const next={...item,...patch,style:drawingStyle({...item.style,...patch.style},item.type)};if(patch.style)onStyle(item.type,next.style);commit(drawings.map(d=>d.id===selected?next:d));select(selected);},
   deleteSelected(){if(selected){commit(drawings.filter(d=>d.id!==selected));select(null);}},
   duplicateSelected(){const item=drawings.find(d=>d.id===selected);if(item&&drawings.length<80){const copy={...clone(item),id:crypto.randomUUID()};commit([...drawings,copy]);select(copy.id);}},
   setState(items){drawings=clone(validDrawings(items));undo=[];redo=[];select(null);schedule();},
