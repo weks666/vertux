@@ -9,7 +9,8 @@ export function initTerminalEditors({panel,preferences,activeChart,activeDoc,ope
  function close(restoreFocus=true){returnFocus?.hasAttribute?.('aria-expanded')&&returnFocus.setAttribute('aria-expanded','false');popup.hidden=true;delete popup.dataset.editing;if(restoreFocus)returnFocus?.focus?.({preventScroll:true});returnFocus=null;}
  function show(anchor,title,html){popup.onsubmit=null;delete popup.dataset.editing;returnFocus?.hasAttribute?.('aria-expanded')&&returnFocus.setAttribute('aria-expanded','false');returnFocus=anchor?.focus?anchor:document.activeElement;returnFocus?.hasAttribute?.('aria-expanded')&&returnFocus.setAttribute('aria-expanded','true');popup.setAttribute('aria-label',title);popup.innerHTML=`<header><strong>${esc(title)}</strong><button type="button" data-popup-close aria-label="Закрыть">×</button></header>${html}`;popup.hidden=false;
   const rect=anchor?.getBoundingClientRect?.()||{left:anchor?.clientX||24,bottom:anchor?.clientY||64};
-  popup.style.left=Math.max(8,Math.min(innerWidth-popup.offsetWidth-8,rect.left))+'px';popup.style.top=Math.max(8,Math.min(innerHeight-popup.offsetHeight-8,rect.bottom+6))+'px';popup.querySelector('input,button')?.focus({preventScroll:true});
+  const beside=!!anchor?.closest?.('.terminal-drawing-tools');popup.style.maxWidth=beside?Math.max(180,innerWidth-rect.right-14)+'px':'';
+  popup.style.left=Math.max(8,Math.min(innerWidth-popup.offsetWidth-8,beside?rect.right+6:rect.left))+'px';popup.style.top=Math.max(8,Math.min(innerHeight-popup.offsetHeight-8,rect.bottom+6))+'px';popup.querySelector('input,button')?.focus({preventScroll:true});
  }
  popup.addEventListener('click',e=>{if(e.target.closest('[data-popup-close]'))close();});
  document.addEventListener('pointerdown',e=>{if(!popup.hidden&&!popup.contains(e.target)&&!returnFocus?.contains?.(e.target)){close(false);}},true);
@@ -18,6 +19,12 @@ export function initTerminalEditors({panel,preferences,activeChart,activeDoc,ope
  const drawingToolbar=createDrawingToolbar({activeChart,preferences,details:drawing});
  const star=(kind,type,label)=>`<button type="button" class="terminal-favorite" data-favorite-kind="${kind}" data-favorite-type="${type}" aria-label="В избранное: ${esc(label)}" aria-pressed="${preferences.isFavorite(kind,type)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg></button>`;
  popup.addEventListener('click',e=>{const b=e.target.closest('[data-favorite-type]');if(!b)return;preferences.toggleFavorite(b.dataset.favoriteKind,b.dataset.favoriteType);b.setAttribute('aria-pressed',String(preferences.isFavorite(b.dataset.favoriteKind,b.dataset.favoriteType)));});
+ function cursor(anchor){
+  popup.onclick=null;popup.onchange=null;
+  const modes=[['crosshair','Перекрестие'],['arrow','Стрелка'],['dot','Точка'],['presentation','Демонстрация'],['erase','Ластик']];
+  show(anchor,'Курсор',`<div class="terminal-cursor-options">${modes.map(([value,label])=>`<button type="button" data-cursor-mode="${value}" aria-pressed="${activeChart()?.cursor?.get()===value}">${label}</button>`).join('')}</div><p class="terminal-caption">Демонстрация выделяет указатель для показа графика. Рисунки при этом не меняются.</p>`);
+  popup.onclick=e=>{const value=e.target.closest('[data-cursor-mode]')?.dataset.cursorMode;if(!value)return;api()?.beginDrawing(value==='erase'?'erase':null);activeChart()?.cursor?.set(value);close();};
+ }
  function indicators(anchor){
   const studies=()=>api()?.getState().studies||[];
   const row=s=>`<div class="terminal-study-row" data-study="${esc(s.id)}"><label><input type="checkbox" data-study-field="visible" ${s.visible?'checked':''}>${esc(s.type.toUpperCase())}</label>${['obv','vpt','nvi','pvi','ultimate'].includes(s.type)?'':`<label>Период<input type="number" min="1" max="500" value="${s.period}" data-study-field="period"></label>`}<label>Цвет<input type="color" value="${s.color}" data-study-field="color"></label>${['macd','ppo'].includes(s.type)?`<label>Быстрая<input type="number" min="1" max="499" value="${s.fast}" data-study-field="fast"></label><label>Сигнал<input type="number" min="1" max="100" value="${s.signal}" data-study-field="signal"></label>`:''}${s.type==='tsi'?`<label>Сглаживание<input type="number" min="1" max="100" value="${s.signal}" data-study-field="signal"></label>`:''}${['bb','keltner','supertrend','envelopes','chandelier'].includes(s.type)?`<label>Множитель<input type="number" min=".1" max="10" step=".1" value="${s.deviations}" data-study-field="deviations"></label>`:''}<button type="button" data-remove-study aria-label="Удалить ${esc(s.type)}">×</button></div>`;
@@ -73,5 +80,5 @@ export function initTerminalEditors({panel,preferences,activeChart,activeDoc,ope
   popup.onclick=event=>{const action=event.target.closest('[data-context]')?.dataset.context;if(!action)return;popup.hidden=true;if(action==='search')picker(e);if(action==='compare')picker(e,true);if(action==='indicators')indicators(e);if(action==='fit')api()?.fitContent();if(action==='history')loadHistory();if(action==='plan')plan(price);if(action==='alert')alert(price);if(action==='drawing')drawing(api()?.drawings.getSelected());if(action==='delete')api()?.drawings.deleteSelected();};
  });
  panel.addEventListener('dblclick',e=>{const object=e.target.closest('[data-drawing-id]');if(object){api()?.drawings.select(object.dataset.drawingId);drawing(api()?.drawings.getSelected());}});
- return {indicators,picker,tools,settings,datePicker,scale,objects,drawing:item=>{drawingToolbar.render(item);if(!item&&popup.dataset.editing==='drawing')close(false);},close};
+ return {cursor,indicators,picker,tools,settings,datePicker,scale,objects,drawing:item=>{drawingToolbar.render(item);if(!item&&popup.dataset.editing==='drawing')close(false);},close};
 }

@@ -2,6 +2,38 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-demo-docking-2026-09-26",
+      "date": "2026-09-26",
+      "label": "INVEST DEMO",
+      "versions": {},
+      "title": {
+        "ru": "Свободная компоновка терминала",
+        "en": "Arrange your terminal workspace"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "Перетаскивайте графики и панели за заголовок. Полупрозрачная копия и подсказка показывают место вставки; разделители меняют размеры. Котировки, стакан, лента и план можно оставить открытыми одновременно. Раскладка сохраняется в браузере.",
+          "en": "Drag charts and panels by their headers. A translucent preview shows the drop position; dividers resize blocks. Keep quotes, order book, trades and the plan open together. Your layout is saved in the browser."
+        },
+        {
+          "type": "fixed",
+          "ru": "Захват рисунка остаётся стабильным до отпускания мыши. Перекрывающиеся фигуры выбираются от верхнего слоя к нижнему; закрашенную область можно перемещать. Добавлены передний и задний план, отмена переноса и панель свойств по центру сверху.",
+          "en": "Drawing capture stays stable until the pointer is released. Overlapping shapes select the top layer first, and filled areas can be dragged. Bring drawings forward or backward, cancel a drag, and move the centered properties toolbar."
+        },
+        {
+          "type": "changed",
+          "ru": "Стрелки групп появляются при наведении и фокусе. Повторное нажатие курсора открывает варианты, включая демонстрацию. Нажатие тикера над графиком открывает поиск актива; строка OHLC видна без наведения.",
+          "en": "Tool-group arrows appear on hover or focus. Click the selected cursor again for variants, including presentation mode. Click the chart ticker to find another instrument; the OHLC row stays visible."
+        },
+        {
+          "type": "changed",
+          "ru": "На телефоне собранные блоки располагаются вертикально. Демо использует вымышленные данные; установщик Windows не меняется.",
+          "en": "On phones, arranged blocks stack vertically. The demo uses synthetic data; the Windows installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-demo-terminal-analysis-2026-09-26",
       "date": "2026-09-26",
       "label": "INVEST DEMO",

@@ -531,3 +531,78 @@ body.terminal-fullscreen>.terminal-workbench.active.chart-expanded { position:fi
 .season-bar{height:4px;display:block;width:var(--season-width);background:currentColor;min-width:1px;border-radius:2px}
 
 .chart-drawings .drawing-object circle.drawing-hit{pointer-events:stroke}
+/* Editing and docking use the same flat terminal surfaces. */
+.terminal-tool-slot{position:relative;display:block;min-height:34px}
+.terminal-workbench .terminal-tool-slot>.terminal-icon{width:100%;padding:5px 9px!important}
+.terminal-tool-slot>.terminal-tool-menu{position:absolute;right:0;top:0;width:13px!important;opacity:0;transition:opacity 120ms ease-out}
+.terminal-tool-slot:hover>.terminal-tool-menu,.terminal-tool-slot:focus-within>.terminal-tool-menu,.terminal-tool-slot>.terminal-tool-menu[aria-expanded=true]{opacity:1}
+.terminal-workbench .drawing-toolbar{left:50%;top:32px;transform:translateX(-50%);max-width:calc(100% - 16px);border-color:var(--line-strong);box-shadow:0 5px 18px #0003}
+.terminal-workbench .drawing-toolbar-grip{cursor:grab;touch-action:none;flex-basis:20px;width:20px}
+.drawing-toolbar-grip svg,.terminal-dock-grip svg{stroke-linecap:round;stroke-width:3}
+.terminal-workbench .terminal-chart-identity{width:auto;justify-content:flex-start;text-align:left;padding:2px 4px;overflow:hidden}
+.terminal-chart-identity>span{overflow:hidden}
+.terminal-chart-identity strong:after{content:'⌄';font-size:12px;margin-left:6px;color:var(--muted)}
+.terminal-cursor-options{display:flex;flex-direction:column;align-items:stretch;gap:3px;min-width:190px}
+.terminal-cursor-options button{text-align:left}
+.terminal-chart-plot[data-cursor=arrow]{cursor:default}
+.terminal-chart-plot[data-cursor=crosshair]{cursor:crosshair}
+.terminal-chart-plot[data-cursor=dot],.terminal-chart-plot[data-cursor=presentation]{cursor:none}
+.terminal-chart-plot:is([data-cursor=dot],[data-cursor=presentation]) canvas{cursor:none!important}
+.chart-presentation-pointer{position:absolute;z-index:7;width:8px;height:8px;border-radius:50%;background:var(--text);transform:translate(-50%,-50%);pointer-events:none}
+[data-cursor=presentation] .chart-presentation-pointer{width:24px;height:24px;border:2px solid var(--vertux-soft);background:var(--accent-surface);box-shadow:0 2px 8px #0003}
+[data-cursor=presentation] .chart-presentation-pointer.pressed{width:40px;height:40px;background:var(--vertux-soft);opacity:.65}
+.terminal-workbench [data-dock-handle]{cursor:grab;touch-action:pan-y}
+.terminal-workbench .terminal-dock-grip{display:grid;place-items:center;flex:0 0 18px;width:18px;min-width:18px;padding:0;cursor:grab;touch-action:none;color:var(--muted)}
+.terminal-dock-grip svg{width:16px;height:22px;fill:none;stroke:currentColor}
+.terminal-workbench .terminal-dock-grip:hover{color:var(--text)}
+.terminal-dock-announcement{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+.terminal-workbench.terminal-custom-layout .terminal-stage{grid-template-columns:minmax(0,1fr) 52px;grid-template-areas:'chart panels'}
+.terminal-workbench.terminal-custom-layout .terminal-grid{display:flex;flex-direction:column;gap:0;min-height:360px;background:var(--surface)}
+.terminal-custom-layout .terminal-grid>.terminal-chart-slot{display:none}
+.terminal-dock-split{display:flex;min-width:0;min-height:0;flex:1;overflow:hidden}
+.terminal-dock-split[data-axis=y]{flex-direction:column}
+.terminal-dock-split>:first-child{flex:0 0 calc(var(--dock-ratio) - 3px)!important;min-width:0;min-height:0}
+.terminal-dock-split>:last-child{flex:1 1 0!important;min-width:0;min-height:0}
+.terminal-workbench.terminal-custom-layout .terminal-grid>[data-dock-block]{flex:1}
+.terminal-workbench.terminal-custom-layout .terminal-grid :is(.instrument-shortlist,.terminal-side,.terminal-dock){position:relative;inset:auto;width:auto;height:auto;max-width:none;margin:0;padding:0;border:0;border-radius:0;display:flex;flex-direction:column;background:var(--surface);min-width:0;min-height:0;overflow:auto}
+.terminal-workbench.terminal-custom-layout .terminal-grid .instrument-shortlist{overflow:hidden}
+.terminal-workbench.terminal-custom-layout .terminal-grid .terminal-dock-body{height:auto;flex:1;min-height:0;overflow:auto}
+.terminal-custom-layout .terminal-grid .terminal-dock>header{flex-wrap:wrap}
+.terminal-custom-layout .terminal-grid .terminal-dock [role=tablist]{min-width:0}
+.terminal-dock-divider{flex:0 0 6px;min-width:6px;min-height:6px;background:var(--surface);border-inline:1px solid var(--line);cursor:col-resize;touch-action:none}
+[data-axis=y]>.terminal-dock-divider{border-inline:0;border-block:1px solid var(--line);cursor:row-resize}
+.terminal-dock-divider:hover,.terminal-dock-divider:focus-visible{background:var(--vertux-soft);outline:0}
+.terminal-dock-source{opacity:.3}
+.terminal-dock-ghost{position:fixed!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;z-index:1000!important;pointer-events:none!important;opacity:.72;overflow:hidden!important;border:1px solid var(--vertux-soft)!important;box-shadow:0 16px 40px #0004!important;background:var(--surface)!important;display:flex!important;flex-direction:column!important;max-width:none!important;margin:0!important;will-change:transform}
+.terminal-dock-drop{position:fixed;z-index:999;pointer-events:none;display:grid;place-items:center;border:2px solid var(--vertux-soft);border-radius:4px;background:color-mix(in srgb,var(--vertux-soft) 18%,transparent);color:var(--text);font-size:12px;transition:left 140ms ease-out,top 140ms ease-out,width 140ms ease-out,height 140ms ease-out}
+.terminal-dock-drop[hidden]{display:none}
+.terminal-dragging,.terminal-dragging *{cursor:grabbing!important;user-select:none!important}
+.terminal-dock-menu{position:fixed;z-index:120;max-width:calc(100vw - 16px);width:345px;max-height:70vh;overflow:auto;padding:12px;background:var(--surface-raised);border:1px solid var(--line-strong);border-radius:7px;box-shadow:0 8px 25px #0003}
+.terminal-dock-menu>strong{display:block;font-size:13px;margin-bottom:9px}
+.terminal-dock-menu>div{display:flex;flex-wrap:wrap;gap:3px;padding:6px 0;border-top:1px solid var(--line)}
+.terminal-dock-menu>div>span{width:100%;font-size:11px;color:var(--muted);padding:4px}
+.terminal-custom-layout .terminal-watch-expanded #terminalWatchlist{position:fixed!important;inset:95px 60px 45px 72px!important;width:auto!important;height:auto!important;z-index:30;box-shadow:0 8px 28px #0004}
+@media(hover:none){.terminal-tool-slot>.terminal-tool-menu{opacity:1}}
+@media(max-width:900px){
+ .terminal-workbench.terminal-custom-layout .terminal-stage{min-height:380px;overflow:auto}
+ .terminal-workbench.terminal-custom-layout .terminal-grid{flex:none;min-height:420px}
+ .terminal-custom-layout .terminal-dock-split{flex-direction:column;overflow:visible;flex:none}
+ .terminal-custom-layout .terminal-dock-split>[data-dock-block],.terminal-custom-layout .terminal-dock-split>.terminal-dock-split{flex:none!important;min-height:330px}
+ .terminal-custom-layout .terminal-dock-split>[data-chart-id]{height:480px}
+ .terminal-custom-layout .terminal-dock-divider{display:none}
+ .terminal-custom-layout .terminal-watch-expanded #terminalWatchlist{inset:64px 12px 24px!important}
+}
+@media(prefers-reduced-motion:reduce){.terminal-tool-slot>.terminal-tool-menu,.terminal-dock-drop{transition:none}}
+.terminal-widget-panel{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--surface);overflow:auto}
+.terminal-widget-panel>.terminal-note-label{padding:12px;display:flex;flex-direction:column;gap:8px;font-size:12px}
+.terminal-widget-panel #terminalPlan label{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:5px 0;font-size:12px}
+.terminal-widget-panel #terminalPlan input,.terminal-widget-panel #terminalPlan select{width:128px;min-width:0;padding:6px 8px;font-size:13px}
+.terminal-widget-panel #terminalPlan .terminal-note-label{display:flex;flex-direction:column;align-items:stretch}
+.terminal-widget-panel .button{width:100%;margin-top:8px}
+.terminal-widget-panel #terminalSideBook,.terminal-widget-panel #terminalSideTape{padding:10px;overflow:auto;min-height:0}
+.terminal-workbench.chart-expanded .terminal-widget-panel{display:none!important}
+.drawing-object.locked .drawing-hit{cursor:default}
+.terminal-chart-plot[data-cursor=arrow] canvas{cursor:default!important}
+.terminal-widget-panel .terminal-activity-heading{flex-wrap:wrap}
+.terminal-widget-panel .terminal-activity-heading>strong{white-space:nowrap}
+.terminal-workbench.chart-expanded .terminal-dock-grip{display:none}
