@@ -2,7 +2,7 @@ const directions=['left','right','top','bottom'];
 export function dockLeaves(node){return typeof node==='string'?[node]:node?[...dockLeaves(node.a),...dockLeaves(node.b)]:[];}
 export function normalizeDockTree(value,depth=0,seen=new Set()){
  if(depth>16)return null;
- if(typeof value==='string'){if(!/^(chart:\d{1,2}|watch|panel:(?:book|tape|plan|alerts)|context)$/.test(value)||seen.has(value))return null;seen.add(value);return value;}
+ if(typeof value==='string'){if(!/^(chart:\d{1,2}|watch|panel:(?:book|tape|plan|alerts|trade)|context)$/.test(value)||seen.has(value))return null;seen.add(value);return value;}
  if(!value||!['x','y'].includes(value.axis))return null;
  const a=normalizeDockTree(value.a,depth+1,seen),b=normalizeDockTree(value.b,depth+1,seen);if(!a||!b)return a||b;
  return {axis:value.axis,ratio:Math.max(.15,Math.min(.85,Number(value.ratio)||.5)),a,b};
@@ -19,7 +19,7 @@ const grip='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h1M15 5h1M8
 export function createTerminalDocking({panel,main,stage,toolbar,getItems,isExpanded,showToast=()=>{},onPinsChange=()=>{}}){
  const grid=main.querySelector('.terminal-grid'),homes=new Map();let tree=null,custom=false,drag=null,resize=null,queued=false,scope='device',pins=new Set();
  const key=()=>`invest:terminal-docking:${scope}`;
- function load(){try{const saved=JSON.parse(localStorage.getItem(key())||'null');tree=normalizeDockTree(saved?.tree);custom=!!tree;pins=new Set((saved?.pins||[]).filter(k=>/^(watch|panel:(book|tape|plan|alerts))$/.test(k)));}catch{tree=null;custom=false;pins=new Set();}}
+ function load(){try{const saved=JSON.parse(localStorage.getItem(key())||'null');tree=normalizeDockTree(saved?.tree);custom=!!tree;pins=new Set((saved?.pins||[]).filter(k=>/^(watch|panel:(book|tape|plan|alerts|trade))$/.test(k)));}catch{tree=null;custom=false;pins=new Set();}}
  function save(){try{localStorage.setItem(key(),JSON.stringify({version:1,tree,pins:[...pins]}));}catch{showToast('Раскладка применена, но браузер не разрешил её сохранить.');}}
  const live=document.createElement('p');live.className='terminal-dock-announcement';live.setAttribute('role','status');panel.append(live);
  const menu=document.createElement('div');menu.className='terminal-dock-menu';menu.hidden=true;menu.setAttribute('role','dialog');menu.setAttribute('aria-label','Переместить блок');panel.append(menu);
@@ -42,19 +42,19 @@ export function createTerminalDocking({panel,main,stage,toolbar,getItems,isExpan
    const a=draw(node.a),b=draw(node.b),divider=document.createElement('div');divider.className='terminal-dock-divider';divider.tabIndex=0;divider.setAttribute('role','separator');divider.setAttribute('aria-label','Размер соседних блоков');divider.setAttribute('aria-orientation',node.axis==='x'?'vertical':'horizontal');divider.setAttribute('aria-valuemin','15');divider.setAttribute('aria-valuemax','85');divider.setAttribute('aria-valuenow',String(Math.round(node.ratio*100)));
    const update=ratio=>{node.ratio=Math.max(.15,Math.min(.85,ratio));split.style.setProperty('--dock-ratio',node.ratio*100+'%');divider.setAttribute('aria-valuenow',String(Math.round(node.ratio*100)));};
    const persist=()=>{const left=dockLeaves(node.a),right=dockLeaves(node.b);const find=n=>{if(!n||typeof n==='string')return;if(left.every(k=>dockLeaves(n.a).includes(k))&&right.every(k=>dockLeaves(n.b).includes(k))){n.ratio=node.ratio;return;}find(n.a);find(n.b);};find(tree);save();};
-   divider.addEventListener('pointerdown',e=>{if(e.button!==0)return;e.preventDefault();e.stopPropagation();resize={pointerId:e.pointerId,split,node,update,persist};panel.setPointerCapture(e.pointerId);});
-   divider.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();update(node.ratio+(['ArrowLeft','ArrowUp'].includes(e.key)?-.04:.04));persist();});split.append(a,divider,b);return split;};
+   divider.addEventListener('pointerdown',e=>{if(panel.dataset.layoutLocked==='true'||e.button!==0)return;e.preventDefault();e.stopPropagation();resize={pointerId:e.pointerId,split,node,update,persist};panel.setPointerCapture(e.pointerId);});
+   divider.addEventListener('keydown',e=>{if(panel.dataset.layoutLocked==='true'||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();update(node.ratio+(['ArrowLeft','ArrowUp'].includes(e.key)?-.04:.04));persist();});split.append(a,divider,b);return split;};
   // Reparent before removing old containers, so chart instances stay connected.
   if(projected)grid.append(draw(projected));grid.querySelectorAll('[data-stale=true]').forEach(n=>n.remove());
  }
  function sync(){if(!queued){queued=true;queueMicrotask(render);}}
  function move(source,target,edge){ensureTree(visibleItems());tree=moveDockBlock(tree,source,target,edge);custom=true;for(const item of visibleItems())if(/^(watch|panel:)/.test(item.key))pins.add(item.key);save();onPinsChange();render();live.textContent='Раскладка сохранена. Блок перемещён.';}
- function openMenu(item,button){menuItem=item;menu.replaceChildren();const title=document.createElement('strong');title.textContent='Переместить: '+item.label;menu.append(title);
+ function openMenu(item,button){if(panel.dataset.layoutLocked==='true'){showToast('Расположение закреплено. Отключите закрепление в настройках раскладки.');return;}menuItem=item;menu.replaceChildren();const title=document.createElement('strong');title.textContent='Переместить: '+item.label;menu.append(title);
   for(const target of visibleItems().filter(i=>i.key!==item.key)){const row=document.createElement('div'),label=document.createElement('span');label.textContent=target.label;row.append(label);for(const [edge,label]of [['left','Слева'],['right','Справа'],['top','Сверху'],['bottom','Снизу']]){const b=document.createElement('button');b.type='button';b.textContent=label;b.addEventListener('click',()=>{move(item.key,target.key,edge);closeMenu();visibleItems().find(i=>i.key===item.key)?.header.querySelector('.terminal-dock-grip')?.focus();});row.append(b);}menu.append(row);}
   menu.hidden=false;const r=button.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(innerWidth-menu.offsetWidth-8,r.left))+'px';menu.style.top=Math.max(8,Math.min(innerHeight-menu.offsetHeight-8,r.bottom+5))+'px';menu.querySelector('button')?.focus();
  }
  function end(cancel=false){if(!drag)return;const d=drag;drag=null;d.ghost?.remove();d.targetBox?.remove();d.item.node.classList.remove('terminal-dock-source');panel.classList.remove('terminal-dragging');if(panel.hasPointerCapture(d.pointerId))panel.releasePointerCapture(d.pointerId);if(!cancel&&d.target)move(d.item.key,d.target.key,d.edge);else if(queued)render();}
- panel.addEventListener('pointerdown',e=>{if(!menu.hidden&&!menu.contains(e.target))closeMenu();if(isExpanded()||e.button!==0||e.target.closest('input,select,textarea,a,summary')||e.target.closest('button')&&!e.target.closest('.terminal-dock-grip'))return;const handle=e.target.closest('[data-dock-handle]'),item=visibleItems().find(i=>i.key===handle?.dataset.dockHandle);if(!item)return;drag={item,pointerId:e.pointerId,x:e.clientX,y:e.clientY,active:false,grip:!!e.target.closest('.terminal-dock-grip')};panel.setPointerCapture(e.pointerId);e.preventDefault();},true);
+ panel.addEventListener('pointerdown',e=>{if(!menu.hidden&&!menu.contains(e.target))closeMenu();if(panel.dataset.layoutLocked==='true'||isExpanded()||e.button!==0||e.target.closest('input,select,textarea,a,summary')||e.target.closest('button')&&!e.target.closest('.terminal-dock-grip'))return;const handle=e.target.closest('[data-dock-handle]'),item=visibleItems().find(i=>i.key===handle?.dataset.dockHandle);if(!item)return;drag={item,pointerId:e.pointerId,x:e.clientX,y:e.clientY,active:false,grip:!!e.target.closest('.terminal-dock-grip')};panel.setPointerCapture(e.pointerId);e.preventDefault();},true);
  panel.addEventListener('pointermove',e=>{
   if(resize){if(e.pointerId!==resize.pointerId)return;const r=resize.split.getBoundingClientRect();resize.update(resize.node.axis==='x'?(e.clientX-r.x)/r.width:(e.clientY-r.y)/r.height);return;}
   if(!drag||e.pointerId!==drag.pointerId)return;

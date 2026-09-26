@@ -1,3 +1,4 @@
+import {createDeepAnalytics} from './deep-analytics.js';
 import { expandBootstrapPayload } from './bootstrap-payload.js';
 import { initTerminal } from './terminal.js';
 import { createHistoryLoader, historyProgressCopy } from './history-backfill.js';
@@ -386,7 +387,7 @@ function activateView(view, trigger = null, { focusMain = true } = {}) {
   }
   if (view === 'terminal') requestAnimationFrame(renderMarketChart);
   if (view === 'overview') requestAnimationFrame(renderEquityChart);
-  if (view === 'analytics') { requestAnimationFrame(renderAnalyticsChartOnView); void refreshMarketVision(); }
+  if (view === 'analytics') { void state.deepAnalytics?.activate(); requestAnimationFrame(renderAnalyticsChartOnView); void refreshMarketVision(); }
   if (view === 'glossary') requestAnimationFrame(renderGlossary);
   if (view === 'ai') { renderSelectedCompany(); void ensureCompanyFacts(); }
   if (view === 'events') void state.marketCalendarUi?.ensureNews();
@@ -902,6 +903,7 @@ function initAutomaticLedgerFilters() {
 }
 
 function renderAnalytics(data) {
+  state.deepAnalytics?.update(data);
   const analytics = data.analytics || {};
   $('#analyticsVersion').textContent = data.calculationVersion || 'Версия расчёта не указана';
   const percentage = value => formatPercentage(value);
@@ -2608,6 +2610,9 @@ if (!runtimeAdapter) initPriceAlerts({ request, getBootstrap: () => state.bootst
 initWorkspaceNotifications({ activateView });
 state.terminalUi=initTerminal({request,getSelection:()=>state.activeMarketInstrument,getBootstrap:()=>state.bootstrap,
   onSelection:instrument=>{state.activeMarketInstrument=instrument;state.marketInstrument=instrument;},onChart:chart=>{state.marketChart=chart;},showToast});
+state.deepAnalytics=createDeepAnalytics({panel:$('[data-view-panel=analytics]'),request,getBootstrap:()=>state.bootstrap,getSelected:()=>state.activeMarketInstrument,onOpenChart:meta=>{void state.terminalUi.openInstrument(meta);activateView('terminal');}});
+state.deepAnalytics.update(analyticsDisplayData());
+if(state.currentView==='analytics')void state.deepAnalytics.activate();
 openStream();
 setInterval(() => { void ensureCompanyFacts(); }, 60_000);
 document.addEventListener('visibilitychange', () => {sendMarketSubscription();if(!document.hidden){void ensureCompanyFacts();if(!state.stream&&!state.streamAuthorizationFailed){state.streamRetryAttempts=0;openStream();}}});

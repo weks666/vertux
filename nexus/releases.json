@@ -2,6 +2,38 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-demo-experience-2026-09-27",
+      "date": "2026-09-27",
+      "label": "INVEST DEMO",
+      "versions": {},
+      "title": {
+        "ru": "Воспроизведение, настройка графика и глубокая аналитика",
+        "en": "Replay, chart customization and deeper analysis"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "Выбирайте свечу или участок прямо на графике для воспроизведения истории. Доступны пауза, шаг и скорость, 18 видов графика, сгруппированные и собственные интервалы, избранное и часовые пояса.",
+          "en": "Choose a bar or range directly on the chart to replay history. Use pause, step and speed controls, 18 chart types, grouped and custom intervals, favorites and time zones."
+        },
+        {
+          "type": "changed",
+          "ru": "Сводку актива можно перемещать по горизонтальной сетке, менять её ширину и состав данных, скрывать и закреплять; раскладка сохраняется в браузере. Панель рисования размещается с любой стороны, у инструментов появились разные значки и справка.",
+          "en": "Move the instrument summary along a horizontal grid, resize it, choose its fields, hide or lock it; the layout is saved in your browser. Position drawing tools on any side and explore distinct icons and tool help."
+        },
+        {
+          "type": "added",
+          "ru": "Аналитика инструмента отделена от обзора портфеля: просадки и восстановление, распределение доходностей, динамика, сезонность, теханализ и финансовые показатели. Для закрытых сделок добавлены средний результат, серии выигрышей и проигрышей, время удержания.",
+          "en": "Instrument analysis is separate from the portfolio overview: drawdowns and recovery, return distribution, performance, seasonality, technical and financial metrics. Closed trades include average outcomes, winning and losing streaks and holding time."
+        },
+        {
+          "type": "changed",
+          "ru": "Панель покупки и продажи рассчитывает параметры заявки без исполнения. Демо использует вымышленные данные; секундный и тиковый архив, профиль объёма и квартальная история отчётности не подключены. Установщик Windows не меняется.",
+          "en": "The buy and sell panel previews order parameters without execution. The demo uses synthetic data; second and tick history, volume profiles and quarterly reporting history are not connected. Windows installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-demo-docking-2026-09-26",
       "date": "2026-09-26",
       "label": "INVEST DEMO",

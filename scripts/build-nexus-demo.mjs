@@ -42,8 +42,9 @@ for (const name of result.files) {
       .replace(/^const PERIOD_BOOTSTRAPS = .*;$/m,'const PERIOD_BOOTSTRAPS = {all:BASE_BOOTSTRAP,month:BASE_BOOTSTRAP};');
   }
   if (name === 'index.html') {
+    text=text.replace('./app.js?v=0.6.11-3','./app.js?v=20260927-terminal-experience').replace('href="./terminal-workbench.css"','href="./terminal-workbench.css?v=20260927-terminal-experience"');
     text = text.replace('<h1 id="viewTitle">Обзор портфеля</h1>', '<h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Демо · графики можно изменять</span>');
-    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260926-terminal-docking">\n</head>');
+    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260927-terminal-experience">\n</head>');
     // The website shows one fixed period. Keep date fields explicitly
     // read-only; all editing is locked by demo-service.js.
     text = text.replace(/<form[^>]+id="(?:statisticsPeriodForm|operationFilters)"[\s\S]*?<\/form>/gu, form => {
@@ -56,7 +57,7 @@ for (const name of result.files) {
         + `<p class="demo-period-note" id="${id}">${note}</p>`;
     });
     text = text.replace(/\s*<button[^>]+data-system-section="access"[\s\S]*?<\/button>/u, '');
-    text = text.replace('</body>', '  <footer class="demo-studio">Сделано в студии <a data-demo-studio href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux</a> · Вымышленные котировки</footer><script src="./demo-service.js" defer></script>\n</body>');
+    text = text.replace('</body>', '  <footer class="demo-studio">Сделано в студии <a data-demo-studio href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux</a> · Вымышленные котировки</footer><script src="./demo-service.js?v=20260927-terminal-experience" defer></script>\n</body>');
   }
   if (name === 'terminal-workbench.js') text=text.replace('indicators:{volume:true},drawings:[]',"indicators:{volume:true},studies:[{id:'demo-sma20',type:'sma',period:20,color:'#e1b264',visible:true},{id:'demo-ema50',type:'ema',period:50,color:'#b9a9ff',visible:true}],drawings:[]").replace('function dirty(key){','function dirty(key){if(getBootstrap()?.preview?.readOnly)return;').replace("freshness.fixture?'Тестовые данные':'Т‑Инвест'", "freshness.fixture?'Демо':'Демо'");
   if (name === 'terminal-market-activity.js') text=text.replace('clock=Date.now', "clock=()=>Date.parse('2026-08-12T12:00:00Z')").replace("fixture:'Тестовый поток'", "fixture:'Демонстрационный снимок'").replace('Последние 200 сделок с момента подключения.','Вымышленные сделки для просмотра ленты.');
