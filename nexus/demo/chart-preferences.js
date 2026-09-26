@@ -1,3 +1,4 @@
+import {indicatorCatalog} from './chart-indicators.js';
 import {drawingGroups,drawingTypes,drawingStyle} from './chart-tool-catalog.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const record=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
@@ -6,7 +7,7 @@ export const defaultChartColors={up:'#5ed0a0',down:'#ef7b76',line:'#b9a9ff',back
 export function normalizeChartColors(value){return Object.fromEntries(Object.keys(chartColorLabels).filter(k=>/^#[0-9a-f]{6}$/i.test(value?.[k]||'')).map(k=>[k,value[k].toLowerCase()]));}
 export function normalizeChartPreferences(value={}){
  value=record(value);const tools=record(value.tools),styles=record(value.styles);
- return {tools:Object.fromEntries(drawingGroups.map(g=>[g.id,g.tools.some(([t])=>t===tools[g.id])?tools[g.id]:g.tools[0][0]])),rememberTool:value.rememberTool!==false,rememberStyle:value.rememberStyle!==false,
+ return {favorites:{tools:[...new Set(Array.isArray(value.favorites?.tools)?value.favorites.tools:[])].filter(t=>drawingTypes.includes(t)).slice(0,80),indicators:[...new Set(Array.isArray(value.favorites?.indicators)?value.favorites.indicators:[])].filter(t=>indicatorCatalog.some(d=>d.type===t)).slice(0,80)},tools:Object.fromEntries(drawingGroups.map(g=>[g.id,g.tools.some(([t])=>t===tools[g.id])?tools[g.id]:g.tools[0][0]])),rememberTool:value.rememberTool!==false,rememberStyle:value.rememberStyle!==false,
   styles:Object.fromEntries(drawingTypes.filter(t=>Object.hasOwn(styles,t)).map(t=>[t,drawingStyle(styles[t],t)])),colors:normalizeChartColors(value.colors),
   instruments:Object.fromEntries(Object.entries(record(value.instruments)).filter(([k])=>k.length<=128&&!['__proto__','constructor','prototype'].includes(k)).slice(-80).map(([k,v])=>[k,normalizeChartColors(v)]))};
 }
@@ -43,7 +44,7 @@ export function createChartPreferences({onChange=()=>{},storage=globalThis.local
   };
  }
  document.addEventListener('invest:identity',e=>{const v=e.detail||{};scope=String(v.userId||v.id||v.displayName||v.name||'device');state=read();onChange(state);for(const{host,options}of [...hosts])if(host.isConnected)mount(host,options);});
- return {get:()=>state,styleFor,mount,colorsFor:uid=>state.instruments[uid]||state.colors,
+ return {get:()=>state,isFavorite:(kind,type)=>state.favorites[kind]?.includes(type)===true,toggleFavorite(kind,type){if(!['tools','indicators'].includes(kind))return;const list=state.favorites[kind];state.favorites[kind]=list.includes(type)?list.filter(t=>t!==type):[...list,type];save();},styleFor,mount,colorsFor:uid=>state.instruments[uid]||state.colors,
   chooseTool(type,index){if(state.rememberTool){state.tools[drawingGroups[index].id]=type;save();}},
   rememberStyle(type,style){if(state.rememberStyle){state.styles[type]=drawingStyle(style,type);save();}}};
 }

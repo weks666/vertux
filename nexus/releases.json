@@ -2,6 +2,38 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-demo-terminal-analysis-2026-09-26",
+      "date": "2026-09-26",
+      "label": "INVEST DEMO",
+      "versions": {},
+      "title": {
+        "ru": "Инструменты, котировки и анализ компаний",
+        "en": "Drawing tools, quotes and company analysis"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Свойства рисунка открываются в компактной панели над графиком. У прямоугольника восемь ручек изменения размера; уточнены границы захвата, исправлены закрытие нижних панелей и загрузка всей истории.",
+          "en": "Drawing properties open in a compact bar above the chart. Rectangles have eight resize handles. Edge targeting, bottom-panel closing and full-history loading are fixed."
+        },
+        {
+          "type": "added",
+          "ru": "80 инструментов рисования и 64 индикатора. Добавлены инструменты Ганна, паттерны, волны Эллиотта, циклы и значки. Рисунки и индикаторы можно добавлять в избранное.",
+          "en": "80 drawing tools and 64 indicators, including Gann tools, patterns, Elliott waves, cycles and symbols. Add drawing tools and indicators to favorites."
+        },
+        {
+          "type": "added",
+          "ru": "У котировок есть логотипы, настройка столбцов, сортировка, личные списки и развёрнутая таблица. Доступны статистика цены, сезонность, численный теханализ и финансовые показатели с пояснениями источника.",
+          "en": "Quotes include logos, configurable columns, sorting, personal lists and an expanded table. Explore price statistics, seasonality, numerical technical analysis and financial metrics with source context."
+        },
+        {
+          "type": "changed",
+          "ru": "Веб-демо использует вымышленные котировки и финансовые показатели. Полный архив квартальной отчётности, консенсус аналитиков и импорт Pine-скриптов не подключены. Установщик Windows не меняется.",
+          "en": "The web demo uses synthetic prices and financial metrics. Full quarterly reporting history, analyst consensus and Pine-script import are not connected. The Windows installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-demo-drawing-replay-2026-09-25",
       "date": "2026-09-25",
       "label": "INVEST DEMO",

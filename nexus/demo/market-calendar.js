@@ -62,14 +62,14 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
   const watchCatalog=marketWatchlist(state.catalog,getBootstrap()?.instruments,favorites);
   const held=watchCatalog.filter(r=>r.inPortfolio),scope=$('#instrumentListScope')?.value||'portfolio',search=($('#instrumentListSearch')?.value||'').trim().toLowerCase();
   const filter=scope+':'+search;if(filter!==watchFilter){watchLimit=80;watchFilter=filter;}
-  const quick=(scope==='favorites'?watchCatalog.filter(r=>favorites.has(r.instrumentUid)):scope==='all'?watchCatalog:['share','future'].includes(scope)?watchCatalog.filter(r=>r.assetType===scope):held).filter(row=>!search||label(row).toLowerCase().includes(search));
+  const quick=(scope==='favorites'?watchCatalog.filter(r=>favorites.has(r.instrumentUid)):scope==='all'?watchCatalog:scope.startsWith('custom:')?watchCatalog.filter(r=>JSON.parse(shortlist.dataset.customUids||'[]').includes(r.instrumentUid)):['share','future','currency','crypto','bond','etf'].includes(scope)?watchCatalog.filter(r=>r.assetType===scope):held).filter(row=>!search||label(row).toLowerCase().includes(search));
   $('#instrumentShortlistTitle').textContent='Список наблюдения';
   const quotes=getBootstrap()?.positions||[];
   let quickMarkup=quick.slice(0,watchLimit).map(r=>{
    const quote=quotes.find(p=>p.instrumentUid===r.instrumentUid),price=quote?.currentPriceNanos??quote?.priceNanos;
    const priceText=price==null?'':r.assetType==='future'?new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(Number(BigInt(price))/1e9)+' п.':money(price,r.currency||'RUB');
    return '<div class="instrument-watch-row"><button type="button" class="instrument-quick-item" data-chart-uid="'+esc(r.instrumentUid)+'">'+instrumentMark(r)+'<span><strong>'+esc(r.ticker||r.name)+'</strong><small>'+esc(r.name)+'</small></span>'+(price!=null?'<span class="watch-price">'+esc(priceText)+'</span>':'')+'</button>'+favoriteButton(r)+'</div>';
-  }).join('')||'<p class="empty-copy">'+(scope==='favorites'?'Добавьте активы в избранное с помощью звезды.':'Активы не найдены.')+'</p>';
+  }).join('')||'<p class="empty-copy">'+(scope==='favorites'?'Добавьте активы в избранное с помощью звезды.':['currency','crypto','bond','etf'].includes(scope)?'Источник пока не передал инструменты этой категории.':'Активы не найдены.')+'</p>';
   if(quick.length>watchLimit)quickMarkup+='<button type="button" class="terminal-watch-more" data-watch-more>Показать ещё '+Math.min(80,quick.length-watchLimit)+'</button>';
   const quickHost=$('#instrumentQuickList');
   if(quickHost.renderedMarkup!==quickMarkup){const focused=document.activeElement?.dataset?.favoriteUid||document.activeElement?.dataset?.chartUid;quickHost.innerHTML=quickMarkup;quickHost.renderedMarkup=quickMarkup;watchInstrumentImages(quickHost);if(focused)quickHost.querySelector('[data-favorite-uid="'+CSS.escape(focused)+'"],[data-chart-uid="'+CSS.escape(focused)+'"]')?.focus({preventScroll:true});}
@@ -303,6 +303,7 @@ export function initMarketCalendar({request,getBootstrap,onChartSelect,showToast
 
 
  for(const id of ['newsPeriod','newsRelevance','newsCompany','newsSource'])$('#'+id).addEventListener('change',()=>{state.newsCursor='';void loadNews();});
+ document.addEventListener('invest:terminal-news',e=>{void loadNews(e.detail?.instrumentUid||'');$('#marketNewsSurface').scrollIntoView({block:'start'});});
  $('#marketNewsAll').addEventListener('click',()=>void loadNews(''));
  let dueTimer;
  async function showDue(){

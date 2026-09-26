@@ -1,3 +1,4 @@
+import {extraIndicatorCatalog,calculateExtraStudy} from './chart-indicators-extra.js';
 // Pure calculations over ordered OHLCV. Warm-up observations are omitted.
 export function average(rows, period=20, exponential=false, field='close') {
  const out=[];let value=null,sum=0;
@@ -39,6 +40,7 @@ export const indicatorCatalog = [
  ['williams','Williams %R',14,'pane'],['obv','OBV · балансовый объём',1,'pane'],
  ['mfi','MFI · денежный поток',14,'pane'],['cmf','CMF · поток Чайкина',20,'pane'],
  ['ad','Накопление / распределение',1,'pane'],['stddev','Стандартное отклонение',20,'pane'],
+...extraIndicatorCatalog,
 ].map(([type,label,period,placement])=>({type,label,period,placement}));
 
 export function normalizeStudy(input) {
@@ -57,7 +59,7 @@ function smoothed(rows,p,field='close') {
 const tr=rows=>rows.map((r,i)=>({...r,close:Math.max(r.high-r.low,Math.abs(r.high-(rows[i-1]?.close??r.close)),Math.abs(r.low-(rows[i-1]?.close??r.close)))}));
 const line=data=>data.filter(r=>Number.isFinite(r.value));
 export function calculateStudy(rows,input) {
- const s=normalizeStudy(input);if(!s)return [];const p=s.period,type=s.type;
+ const s=normalizeStudy(input);if(!s)return [];const p=s.period,type=s.type;const extra=calculateExtraStudy(rows,s);if(extra!==null)return extra;
  const one=data=>[{data:line(data)}];
  if(type==='sma'||type==='ema')return one(average(rows,p,type==='ema'));
  if(type==='wma')return one(wma(rows,p));if(type==='rma')return one(smoothed(rows,p));
