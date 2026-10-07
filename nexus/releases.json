@@ -2,6 +2,28 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-workspace-launch-server-27-4-55",
+      "date": "2026-10-08",
+      "label": "NEXUS SERVER 27.4.55",
+      "versions": {},
+      "title": {
+        "ru": "Запуск Vertux Workspace в Windows",
+        "en": "Vertux Workspace launch on Windows"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Исправлена ошибка «Windows-приложение не открыло продукт» при запуске Vertux Workspace из Nexus.",
+          "en": "Fixed the “Windows application did not open the product” error when launching Vertux Workspace from Nexus."
+        },
+        {
+          "type": "changed",
+          "ru": "Исправление применяется на сервере и работает с установленным Nexus 0.6.46. Переустановка приложения не требуется.",
+          "en": "The server fix works with the installed Nexus 0.6.46. Reinstalling the application is not required."
+        }
+      ]
+    },
+    {
       "id": "invest-demo-experience-2026-09-27",
       "date": "2026-09-27",
       "label": "INVEST DEMO",
