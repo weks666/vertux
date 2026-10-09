@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-13",
+      "date": "2026-10-09",
+      "versions": {
+        "Invest": "0.6.13"
+      },
+      "title": {
+        "ru": "Обновлённое рабочее пространство Invest",
+        "en": "Updated Invest workspace"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Доработаны обзор портфеля, навигация и настройки рабочего пространства. Карточки и текст учитывают доступную ширину экрана.",
+          "en": "Refined the portfolio overview, navigation and workspace settings. Cards and text adapt to the available screen width."
+        },
+        {
+          "type": "added",
+          "ru": "Структура портфеля показывает подтверждённые суммы по классам активов и их долю от стоимости портфеля. Отсутствующие данные не подменяются нулём.",
+          "en": "Portfolio structure shows confirmed amounts by asset class and their share of portfolio value. Missing data is not replaced with zero."
+        },
+        {
+          "type": "fixed",
+          "ru": "Уточнены отступы, переносы текста и размеры блоков в разделах аналитики, исследований, уведомлений и терминала.",
+          "en": "Adjusted spacing, text wrapping and block sizes across analytics, research, notifications and the terminal."
+        }
+      ]
+    },
+    {
       "id": "nexus-workspace-launch-server-27-4-55",
       "date": "2026-10-08",
       "label": "NEXUS SERVER 27.4.55",
