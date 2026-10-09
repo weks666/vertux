@@ -2,6 +2,40 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-48-invest-0-6-14",
+      "date": "2026-10-09",
+      "versions": {
+        "Nexus": "0.6.48",
+        "Invest": "0.6.14"
+      },
+      "title": {
+        "ru": "Профиль Invest и запуск в Windows",
+        "en": "Invest profile and Windows launch"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Установщик на сайте и канал обновлений Nexus выдают версию 0.6.48 с поддержкой Invest 0.6.14.",
+          "en": "The website installer and Nexus update channel provide version 0.6.48 with support for Invest 0.6.14."
+        },
+        {
+          "type": "fixed",
+          "ru": "В режиме отдельных окон закрытие лаунчера сохраняет открытый Invest. Кнопка «Продукты» возвращает к выбору; режим одного рабочего экрана сохраняется после перезапуска.",
+          "en": "In separate-window mode, closing the launcher keeps Invest open. Products returns to the launcher, and the single-workspace setting persists after restart."
+        },
+        {
+          "type": "fixed",
+          "ru": "В Invest уточнено отображение имени профиля, роли и подтверждённого статуса доступа в кабинете и разделе подписки.",
+          "en": "Invest now shows the profile name, role and confirmed access status consistently across the workspace and subscription section."
+        },
+        {
+          "type": "changed",
+          "ru": "Обновление Invest сохраняет локальную историю, рабочие настройки и подключение брокера. Ограничения исходных данных остаются видимыми в расчётах.",
+          "en": "The Invest update preserves local history, workspace settings and the broker connection. Source-data limitations remain visible in calculations."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-13",
       "date": "2026-10-09",
       "versions": {
