@@ -2,6 +2,33 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-account-access-2026-10-12",
+      "date": "2026-10-12",
+      "versions": {},
+      "label": "NEXUS / INVEST",
+      "title": {
+        "ru": "Личный доступ и подписка Invest",
+        "en": "Personal Invest access and subscription"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Доступ к общему продукту Invest назначается личному аккаунту. В карточке отображается имя пользователя; срок доступа не зависит от подписки компании.",
+          "en": "Access to the shared Invest product is assigned to a personal account. The product card shows the user's name, and access duration is independent of the company subscription."
+        },
+        {
+          "type": "added",
+          "ru": "Раздел подписки показывает назначенный план и срок, включая бессрочный бета-доступ. Администратор может выдать или продлить личный доступ с сохранением истории.",
+          "en": "The subscription section shows the assigned plan and duration, including ongoing beta access. Administrators can grant or extend personal access with a recorded history."
+        },
+        {
+          "type": "fixed",
+          "ru": "Устройства и обращения Invest разделены по аккаунтам. Для входа другого пользователя нужен отдельный компьютер или профиль Windows, чтобы сохранить раздельные локальные данные.",
+          "en": "Invest devices and support requests are separated by account. Another user needs a separate computer or Windows profile to keep local data separate."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-16",
       "date": "2026-10-11",
       "versions": {
