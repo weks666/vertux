@@ -2,6 +2,67 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-16",
+      "date": "2026-10-11",
+      "versions": {
+        "Invest": "0.6.16"
+      },
+      "title": {
+        "ru": "Синхронизация и настройка Invest",
+        "en": "Invest synchronization and workspace settings"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Синхронизация показывает этапы и итог обновления, последовательно обрабатывает запросы и обновляет разделы после загрузки. Ограничения исходных данных остаются рядом с затронутыми показателями.",
+          "en": "Synchronization shows its stages and outcome, processes requests in order and refreshes sections after loading. Source-data limitations remain beside the affected metrics."
+        },
+        {
+          "type": "changed",
+          "ru": "Терминал получил компактное меню интервалов, сводку инструмента и автоматическую дозагрузку истории. Сведения о данных обновляются вместе с графиком и остаются открытыми при работе с деталями.",
+          "en": "The terminal has a compact interval menu, instrument summary and automatic history loading. Data details update with the chart and remain open while you explore them."
+        },
+        {
+          "type": "added",
+          "ru": "Расположение и оформление панелей редактируются в черновике с сохранением и отменой. Перенос панелей доступен в режиме редактирования; для числовых карточек предусмотрены цвета по знаку результата.",
+          "en": "Panel layout and appearance can be edited as a draft with Save and Cancel. Panels move in edit mode, and supported numeric cards can use colors based on positive or negative results."
+        },
+        {
+          "type": "fixed",
+          "ru": "Упорядочены действия и логотипы в таблицах, навигация и раздел подписки. В кабинете сайта исправлено отображение подтверждённого доступа и владельца продукта.",
+          "en": "Refined table actions and logos, navigation and subscription details. The website account area now displays confirmed access and product ownership correctly."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-15",
+      "date": "2026-10-10",
+      "versions": {
+        "Invest": "0.6.15"
+      },
+      "title": {
+        "ru": "Запуск и рабочие панели Invest",
+        "en": "Invest startup and workspace panels"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Расчёты портфеля при запуске Invest выполняются отдельно от запросов интерфейса и проверки сеанса.",
+          "en": "Portfolio calculations at Invest startup run separately from interface requests and session checks."
+        },
+        {
+          "type": "fixed",
+          "ru": "Исправлен оставшийся слой крестиков-ноликов при смене вида графика. Восстановлены разделы подписки и поддержки.",
+          "en": "Switching chart types removes the point-and-figure overlay correctly. Subscription and support sections have been restored."
+        },
+        {
+          "type": "changed",
+          "ru": "Сводку инструмента и рабочие блоки можно размещать по сторонам соседнего блока, менять пропорции и сохранять расположение.",
+          "en": "Instrument summaries and workspace panels can be placed beside adjacent panels, resized and saved."
+        }
+      ]
+    },
+    {
       "id": "nexus-0-6-48-invest-0-6-14",
       "date": "2026-10-09",
       "versions": {
