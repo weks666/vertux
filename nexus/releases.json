@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-50",
+      "date": "2026-10-12",
+      "versions": {
+        "Nexus": "0.6.50"
+      },
+      "title": {
+        "ru": "Обновление Nexus для Windows",
+        "en": "Nexus update for Windows"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Установщик на сайте и канал обновлений Nexus переведены на версию 0.6.50 с поддержкой Invest 0.6.16.",
+          "en": "The website installer and Nexus update channel now provide version 0.6.50 with support for Invest 0.6.16."
+        },
+        {
+          "type": "fixed",
+          "ru": "Переход к выбору продуктов и закрытие окон дожидаются сохранения изменений терминала. При ошибке сохранения окно остаётся открытым для повторной попытки.",
+          "en": "Returning to the product chooser and closing windows wait for terminal changes to be saved. If saving fails, the window stays open so you can retry."
+        },
+        {
+          "type": "fixed",
+          "ru": "Уточнена работа режима отдельных окон: открытые продукты продолжают работать после закрытия окна Nexus, а кнопка «Продукты» возвращает к выбору.",
+          "en": "Refined separate-window behavior: open products keep running after the Nexus window closes, and the Products button returns to the chooser."
+        }
+      ]
+    },
+    {
       "id": "invest-account-access-2026-10-12",
       "date": "2026-10-12",
       "versions": {},
