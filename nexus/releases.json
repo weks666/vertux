@@ -2,6 +2,40 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-51-invest-0-6-17",
+      "date": "2026-10-12",
+      "versions": {
+        "Nexus": "0.6.51",
+        "Invest": "0.6.17"
+      },
+      "title": {
+        "ru": "Восстановление показателей Invest",
+        "en": "Restoring Invest metrics"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Подтверждённая статистика сделок больше не скрывается из-за независимых старых комиссий и дивидендов с неоднозначной денежной суммой.",
+          "en": "Verified trade statistics are no longer hidden by unrelated older fees or dividends with ambiguous cash amounts."
+        },
+        {
+          "type": "fixed",
+          "ru": "История цен загружается сначала для текущих позиций и последних периодов. Уже обработанные диапазоны больше не задерживают обход остальных инструментов.",
+          "en": "Price history prioritizes current positions and recent periods. Previously processed ranges no longer delay the remaining instruments."
+        },
+        {
+          "type": "changed",
+          "ru": "Для профит-фактора фьючерсов показано пояснение, если денежный результат каждой закрытой сделки ещё не подтверждён.",
+          "en": "The futures profit factor includes an explanation when the cash result of each closed trade has not yet been verified."
+        },
+        {
+          "type": "changed",
+          "ru": "Установщик и канал обновлений Nexus переведены на версию 0.6.51 с поддержкой Invest 0.6.17.",
+          "en": "The Nexus installer and update channel now provide version 0.6.51 with support for Invest 0.6.17."
+        }
+      ]
+    },
+    {
       "id": "nexus-0-6-50",
       "date": "2026-10-12",
       "versions": {
