@@ -2,6 +2,40 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-52-invest-0-6-18",
+      "date": "2026-10-12",
+      "versions": {
+        "Nexus": "0.6.52",
+        "Invest": "0.6.18"
+      },
+      "title": {
+        "ru": "Обновление Invest и отдельные окна",
+        "en": "Invest refresh and separate windows"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Обычное обновление портфеля больше не выглядит как постоянное жёлтое предупреждение. Убраны некорректные счётчики прогресса и лишняя пауза после обработки данных.",
+          "en": "Normal portfolio refresh no longer appears as a persistent yellow warning. Invalid progress counters and the extra delay after processing have been removed."
+        },
+        {
+          "type": "fixed",
+          "ru": "Исправлены масштабы графиков, повторная загрузка истории и отображение длинных названий инструментов. Логотипы сохраняются для следующих запусков.",
+          "en": "Chart scales, history retries and long instrument names have been corrected. Logos are cached for subsequent launches."
+        },
+        {
+          "type": "changed",
+          "ru": "Уточнены настройки панелей, уведомления и выделение разделов. Текущая дата в календаре получила аккуратное выделение числа с сохранением рамки ячейки.",
+          "en": "Panel settings, alerts and section selection have been refined. Today’s calendar numeral has a padded highlight while the cell outline is preserved."
+        },
+        {
+          "type": "added",
+          "ru": "В Nexus 0.6.52 разделы продуктов и вкладки графиков можно открыть в отдельных окнах через контекстное меню. Установщик и канал обновлений поддерживают Invest 0.6.18.",
+          "en": "Nexus 0.6.52 can open product sections and chart tabs in separate windows from their context menus. The installer and update channel support Invest 0.6.18."
+        }
+      ]
+    },
+    {
       "id": "workspace-access-2026-10-12",
       "date": "2026-10-12",
       "versions": {},
