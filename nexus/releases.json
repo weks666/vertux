@@ -2,6 +2,33 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "workspace-access-2026-10-12",
+      "date": "2026-10-12",
+      "versions": {},
+      "label": "NEXUS / WORKSPACE",
+      "title": {
+        "ru": "Команда и приглашения в Workspace",
+        "en": "Workspace team and invitations"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Владелец внутреннего Vertux Workspace отображается в участниках вместе с действующей командой.",
+          "en": "The internal Vertux Workspace owner appears in the member list alongside the existing team."
+        },
+        {
+          "type": "fixed",
+          "ru": "В разделе «Доступы» доступны приглашения сотрудников и управление их ролями — в браузере и приложении Nexus для Windows.",
+          "en": "The Access section now supports inviting team members and managing their roles in both the browser and Nexus for Windows."
+        },
+        {
+          "type": "fixed",
+          "ru": "Изменения прав ограничены текущим Workspace. Доступ участников к другим продуктам сохраняется.",
+          "en": "Permission changes are limited to the current Workspace. Members retain their access to other products."
+        }
+      ]
+    },
+    {
       "id": "nexus-0-6-51-invest-0-6-17",
       "date": "2026-10-12",
       "versions": {
