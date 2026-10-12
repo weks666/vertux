@@ -7,8 +7,8 @@
       "versions": {},
       "label": "NEXUS / WORKSPACE",
       "title": {
-        "ru": "Карточки продуктов и просмотр КовроCity",
-        "en": "Product cards and KovroCity viewing access"
+        "ru": "Карточки продуктов и маршрут администратора",
+        "en": "Product cards and administrator launch routing"
       },
       "changes": [
         {
@@ -18,8 +18,8 @@
         },
         {
           "type": "fixed",
-          "ru": "Исправлен запуск КовроCity для администратора платформы через предусмотренный сеанс просмотра. Ограничения доступа и отдельное защищённое окно сохраняются.",
-          "en": "Fixed KovroCity launch for platform administrators through the existing read-only session. Access restrictions and the separate protected window remain in place."
+          "ru": "Открытие КовроCity из аккаунта администратора теперь использует предусмотренный режим просмотра. Серверные проверки доступа и отдельное защищённое окно сохранены.",
+          "en": "Opening KovroCity from a platform administrator account now uses the existing read-only route. Server access checks and the separate protected window are preserved."
         }
       ]
     },
