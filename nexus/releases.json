@@ -2,6 +2,109 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-56-invest-0-6-22",
+      "date": "2026-10-14",
+      "versions": {
+        "Nexus": "0.6.56",
+        "Invest": "0.6.22"
+      },
+      "title": {
+        "ru": "Обновление Invest и сохранение настроек",
+        "en": "Invest refresh and persistent settings"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "«Риск и план» использует общий выбор счёта. Исправлены повторное открытие редактора идеи, расположение полей и восстановление журнала после сохранения.",
+          "en": "Risk and Plan uses the shared account selector. The idea editor, field alignment and journal refresh after saving have been corrected."
+        },
+        {
+          "type": "added",
+          "ru": "«Запросы» доступны обычной кнопкой. Карта рынка вынесена в отдельную вкладку аналитики; для международной карты TradingView есть переход в браузер при недоступности встроенной карты.",
+          "en": "Queries has a regular navigation button. The market heatmap has its own analytics tab; an external browser link is available when the embedded international TradingView map cannot load."
+        },
+        {
+          "type": "fixed",
+          "ru": "Выбор показа времени обновления сохраняется после полного закрытия приложения. При ошибке сохранения возвращается последнее подтверждённое значение.",
+          "en": "The refresh-status preference survives a full app restart. A failed save restores the last confirmed value."
+        },
+        {
+          "type": "changed",
+          "ru": "Общедоступный установщик Nexus и канал обновлений переведены на 0.6.56 с поддержкой Invest 0.6.22 и предыдущих исправлений.",
+          "en": "The public Nexus installer and update channel now deliver 0.6.56 with Invest 0.6.22 and the preceding fixes."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-21",
+      "date": "2026-10-13",
+      "versions": {
+        "Invest": "0.6.21"
+      },
+      "title": {
+        "ru": "Расчёт аналитики и навигация",
+        "en": "Analytics calculation and navigation"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Ускорены выборки цен и свечей при расчёте аналитики. Исправлены переключение редактора идеи, поля и обновление журнала.",
+          "en": "Price and candle queries for analytics are faster. Idea-editor toggling, field layout and journal updates have been corrected."
+        },
+        {
+          "type": "changed",
+          "ru": "«Запросы» получили обычную вкладку. Карта рынка отделена от анализа выбранного инструмента.",
+          "en": "Queries has a regular tab. The market heatmap is separate from analysis of the selected instrument."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-20",
+      "date": "2026-10-13",
+      "versions": {
+        "Invest": "0.6.20"
+      },
+      "title": {
+        "ru": "Проверки обновления и понятные ошибки",
+        "en": "Refresh verification and clearer errors"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Одновременные запросы объединяют повторяющуюся полную проверку файлов. Проверка подлинности каждого запроса сохраняется.",
+          "en": "Concurrent requests share a pending full file verification while every request still validates authenticity."
+        },
+        {
+          "type": "changed",
+          "ru": "Длительное активное обновление отделено от ошибки. Ошибка получения данных и ошибка подготовки экрана показываются раздельно.",
+          "en": "A long-running refresh is distinguished from a failure. Data retrieval and screen preparation errors are reported separately."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-19",
+      "date": "2026-10-13",
+      "versions": {
+        "Invest": "0.6.19"
+      },
+      "title": {
+        "ru": "Свежесть данных и срок доступа",
+        "en": "Data freshness and access duration"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Время обновления перенесено в верхнюю панель и показывает возраст данных на экране. Его отображение можно отключить в настройках.",
+          "en": "Refresh time has moved to the top bar and reflects the data currently displayed. It can be hidden in settings."
+        },
+        {
+          "type": "fixed",
+          "ru": "План и срок доступа отображаются рядом с подпиской. Для подтверждённого бессрочного доступа показаны ∞ дней и полная полоса срока.",
+          "en": "The plan and remaining access appear beside the subscription. Confirmed perpetual access shows ∞ days and a full duration bar."
+        }
+      ]
+    },
+    {
       "id": "kovrocity-launch-cards-2026-10-12",
       "date": "2026-10-12",
       "versions": {},
