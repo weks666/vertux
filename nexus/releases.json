@@ -2,6 +2,68 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-58-invest-0-6-24",
+      "date": "2026-10-14",
+      "versions": {
+        "Nexus": "0.6.58",
+        "Invest": "0.6.24"
+      },
+      "title": {
+        "ru": "Обновление портфеля и подписка",
+        "en": "Portfolio refresh and subscription"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Возвращена карточка Free с прежним статусом подготовки. В подписке снова видны четыре варианта доступа.",
+          "en": "The Free card is restored with its existing planned status. Subscription comparison shows four access options again."
+        },
+        {
+          "type": "fixed",
+          "ru": "Индикатор выбранного раздела расположен снаружи слева и остаётся внутри области прокрутки. Разделитель над текущим планом стал белым.",
+          "en": "The selected-section marker sits outside the left edge and stays clipped within navigation. The divider above the current plan is white."
+        },
+        {
+          "type": "changed",
+          "ru": "Интервал запросов учитывает тариф и время загрузки. Пять счетов обновляются параллельно; независимые части аналитики рассчитываются одновременно с сохранением единого среза данных.",
+          "en": "The request interval follows the plan and includes loading time. Five accounts refresh in parallel, while independent analytics calculations share one consistent data snapshot."
+        },
+        {
+          "type": "changed",
+          "ru": "Установщик Nexus поддерживает Invest 0.6.24 с сохранением существующих настроек и локальных данных.",
+          "en": "The Nexus installer supports Invest 0.6.24 while preserving existing settings and local data."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-23",
+      "date": "2026-10-14",
+      "versions": {
+        "Invest": "0.6.23"
+      },
+      "title": {
+        "ru": "Личные подписки и управление доступом",
+        "en": "Personal subscriptions and access management"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "В Nexus добавлены управление личными планами Invest, история подписок и платежей, доступы бета-тестеров и обращения в поддержку.",
+          "en": "Nexus adds personal Invest plan management, subscription and payment history, beta access and support requests."
+        },
+        {
+          "type": "added",
+          "ru": "Добавлены реферальный баланс и заявки на выплату администратору. Начисления привязаны к подтверждённым платежам с учётом комиссии и возвратов; приём платежей включается отдельно.",
+          "en": "Referral balances and payout requests to the administrator are available. Rewards depend on confirmed payments after fees and refunds; payment collection is enabled separately."
+        },
+        {
+          "type": "fixed",
+          "ru": "Вкладки аналитики размещены в один ряд, выровнены элементы сброса оформления и уточнено пояснение недоступного профит-фактора.",
+          "en": "Analytics tabs share one row, appearance-reset controls are aligned and unavailable profit-factor explanations are clearer."
+        }
+      ]
+    },
+    {
       "id": "nexus-0-6-56-invest-0-6-22",
       "date": "2026-10-14",
       "versions": {
