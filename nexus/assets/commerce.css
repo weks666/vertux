@@ -8,7 +8,7 @@
 .nx-term-controls button[aria-pressed="true"] { background:#d7c3ff; color:#1b1527; }
 .nx-term-controls button:hover:not([aria-pressed="true"]) { background:#d7c3ff15; color:#f3f3f5; }
 .nx-term-controls button:focus-visible,.nx-screen-link:focus-visible,.nx-detail-screen:focus-visible { outline:2px solid #d7c3ff; outline-offset:4px; }
-.nx-tier-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; align-items:stretch; }
+.nx-tier-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; align-items:stretch; }
 .nx-tier-card { display:flex; flex-direction:column; min-width:0; padding:30px 27px; border:1px solid #dfc7ff38; border-radius:16px; background:#191622ed; }
 .nx-tier-card[data-tier-card="standard"] { border-color:#d7c3ff99; background:#241c32f5; }
 .nx-tier-title { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:flex-start; min-height:65px; }

@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "revision": "invest-npd-2026-09-22-r1",
+  "revision": "invest-npd-2026-10-14-r1",
   "approval": "approved",
   "salesEnabled": false,
   "currency": "RUB",
   "proposedOn": "2026-09-22",
-  "legacyOfferVersion": "invest-npd-2026-09-17-r2",
+  "legacyOfferVersion": "invest-npd-2026-09-22-r1",
   "terms": [
     {
       "id": "month",
@@ -34,20 +34,11 @@
   ],
   "plans": [
     {
-      "id": "free",
-      "name": "Бесплатный",
-      "en": "Free",
-      "monthlyRub": 0,
-      "status": "proposal",
-      "description": "Знакомство со своим портфелем.",
-      "descriptionEn": "Get to know your own portfolio."
-    },
-    {
       "id": "standard",
       "name": "Обычный",
       "en": "Standard",
       "monthlyRub": 1500,
-      "status": "prepared",
+      "status": "available",
       "description": "Для учёта и анализа личного портфеля.",
       "descriptionEn": "For tracking and understanding your portfolio."
     },
@@ -56,7 +47,7 @@
       "name": "Plus",
       "en": "Plus",
       "monthlyRub": 2500,
-      "status": "planned",
+      "status": "available",
       "description": "Для работы с графиками и инструментами.",
       "descriptionEn": "For working with charts and instruments."
     },
@@ -65,7 +56,7 @@
       "name": "Pro",
       "en": "Pro",
       "monthlyRub": 3500,
-      "status": "planned",
+      "status": "available",
       "description": "Для анализа позиций участников рынка.",
       "descriptionEn": "For studying market participant positions."
     }
@@ -76,7 +67,6 @@
       "ru": "Брокерские счета",
       "en": "Brokerage accounts",
       "values": [
-        "one",
         "multiple",
         "multiple",
         "multiple"
@@ -89,7 +79,6 @@
       "values": [
         "yes",
         "yes",
-        "yes",
         "yes"
       ]
     },
@@ -98,7 +87,6 @@
       "ru": "Аналитика и выбор периода",
       "en": "Analytics and period selection",
       "values": [
-        "basic",
         "yes",
         "yes",
         "yes"
@@ -109,7 +97,6 @@
       "ru": "Заметки, план и расчёт риска",
       "en": "Notes, plans and risk calculations",
       "values": [
-        "no",
         "yes",
         "yes",
         "yes"
@@ -120,7 +107,6 @@
       "ru": "Календарь и напоминания",
       "en": "Calendar and reminders",
       "values": [
-        "no",
         "yes",
         "yes",
         "yes"
@@ -133,7 +119,6 @@
       "values": [
         "three",
         "three",
-        "three",
         "three"
       ]
     },
@@ -143,54 +128,29 @@
       "en": "Terminal and multiple charts",
       "values": [
         "no",
-        "no",
-        "planned",
-        "planned"
-      ]
-    },
-    {
-      "id": "ai",
-      "ru": "Расширенные AI-разборы",
-      "en": "Extended AI analysis",
-      "values": [
-        "no",
-        "no",
-        "planned",
-        "planned"
-      ]
-    },
-    {
-      "id": "automation",
-      "ru": "Сделки по заданным условиям",
-      "en": "Orders based on your rules",
-      "values": [
-        "no",
-        "no",
-        "planned",
-        "planned"
+        "yes",
+        "yes"
       ]
     },
     {
       "id": "futoi",
-      "ru": "Позиции участников MOEX FUTOI",
-      "en": "MOEX FUTOI participant positions",
+      "ru": "История MOEX FUTOI · задержка 15 дней",
+      "en": "MOEX FUTOI history · 15-day delay",
       "values": [
         "no",
         "no",
-        "no",
-        "planned"
+        "yes"
       ]
     }
   ],
   "termApproval": "approved",
-  "priceApproval": "pending",
-  "freePlanApproval": "proposal",
+  "priceApproval": "approved",
   "trial": {
     "defaultDays": 7,
-    "invitedPilotDays": 30,
+    "invitedPilotDays": null,
     "deviceLimit": 3,
     "repeatTrial": false
   },
-  "approvedOn": "2026-09-22",
-  "approvalBasis": "Owner requested publication of the reviewed website and displayed proposed plans; sales remain disabled."
+  "approvedOn": "2026-10-14",
+  "approvalBasis": "Owner requested current Standard, Plus and Pro plans and working checkout in the next update. Merchant activation requires its actual configuration."
 }
