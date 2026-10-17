@@ -2,6 +2,39 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-31",
+      "date": "2026-10-17",
+      "versions": {
+        "Invest": "0.6.31"
+      },
+      "title": {
+        "ru": "Устойчивое обновление и компактный терминал",
+        "en": "Reliable refresh and a compact terminal"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Фоновое обновление восстанавливается после продления сессии. Поток котировок повторно подключается после временного разрыва; график показывает возраст последнего события источника в секундах.",
+          "en": "Background refresh resumes after session renewal. The quote stream reconnects after temporary disconnects; charts show the age of the latest source event in seconds."
+        },
+        {
+          "type": "fixed",
+          "ru": "Закрепление длинного списка котировок больше не растягивает панели. Настройки графика, цветовые поля и управление индикаторами стали компактнее; логотип инструмента сохраняет круглую форму.",
+          "en": "Pinning a long quote list no longer stretches panels. Chart settings, color controls and indicator management are more compact; instrument logos retain their circular shape."
+        },
+        {
+          "type": "changed",
+          "ru": "Показатели компании собраны в компактные карточки с общим блоком значений и источников. Верхние секции выровнены, контекст разделён на две колонки на широком экране.",
+          "en": "Company metrics use compact cards with a shared values-and-sources panel. Top sections are aligned, and context uses two columns on wide screens."
+        },
+        {
+          "type": "changed",
+          "ru": "Котировки получают первые цены одним пакетным запросом до загрузки истории. Компонент совместим с частным Nexus 0.6.66; публичный установщик остаётся 0.6.58.",
+          "en": "Quotes receive initial prices in one batch before history loads. The component supports private Nexus 0.6.66; the public installer remains 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-30",
       "date": "2026-10-17",
       "versions": {
