@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-30",
+      "date": "2026-10-17",
+      "versions": {
+        "Invest": "0.6.30"
+      },
+      "title": {
+        "ru": "Устойчивый выбор инструмента и дат",
+        "en": "Reliable instrument and date selection"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Щелчок по результату поиска в торговом плане выбирает нужный инструмент. Панель сохраняет фокус при переходе от поиска к результатам.",
+          "en": "Clicking a trading-plan search result selects the requested instrument. The panel keeps focus when moving from search to its results."
+        },
+        {
+          "type": "fixed",
+          "ru": "Фоновое обновление больше не закрывает выбор своих дат. Старые расчёты и отложенный ввод отменяются при новом выборе периода.",
+          "en": "Background refresh no longer closes the custom date editor. Older calculations and scheduled input are cancelled when a new period is selected."
+        },
+        {
+          "type": "fixed",
+          "ru": "Список счетов сохраняет свои элементы при обновлении данных. Компонент совместим с частным Nexus 0.6.65; публичный установщик остаётся 0.6.58.",
+          "en": "The account selector keeps its options during data refresh. The component supports private Nexus 0.6.65; the public installer remains 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-29",
       "date": "2026-10-17",
       "versions": {
