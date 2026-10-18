@@ -2,6 +2,39 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-32",
+      "date": "2026-10-18",
+      "versions": {
+        "Invest": "0.6.32"
+      },
+      "title": {
+        "ru": "Мировые рынки и ускорение расчётов портфеля",
+        "en": "World markets and faster portfolio calculations"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "В терминале появились мировые рынки с официальным графиком TradingView и поиском по его доступному каталогу: акции, валюты, металлы, сырьё, индексы и криптовалюты. Золото к доллару и фьючерс на золото обозначены отдельно. Доступность и задержка зависят от источника.",
+          "en": "The terminal now includes world markets through the official TradingView chart and its available symbol search: stocks, currencies, metals, commodities, indices and crypto. Gold/USD and gold futures are identified separately. Availability and delays depend on the source."
+        },
+        {
+          "type": "changed",
+          "ru": "Повторные расчёты используют подготовленные курсы и проверки сохранённых данных. Проверка происхождения, точность сумм и единый снимок нескольких счетов сохранены; внешние мировые цены не подставляются в брокерский портфель.",
+          "en": "Repeated calculations reuse prepared exchange rates and saved-data proofs. Source verification, exact amounts and one consistent snapshot across accounts are preserved; external world prices are not substituted into the broker portfolio."
+        },
+        {
+          "type": "fixed",
+          "ru": "Поиск инструментов учитывает слова названия, тикер, ISIN, площадку и идентификатор. Кнопки индикатора расположены рядом с его названием, длинные показатели компании не обрезаются. Неудачные последние обновления больше не возвращают ранее подключённый счёт на экран первого запуска.",
+          "en": "Instrument search matches name words, ticker, ISIN, venue and identifier. Indicator controls sit beside their names, long company metrics remain readable, and recent refresh failures no longer return an already connected account to first-run onboarding."
+        },
+        {
+          "type": "changed",
+          "ru": "Добавлены охват каталога по классам активов и безопасная диагностика ответов брокера. Компонент совместим с частным Nexus 0.6.67; публичный установщик остаётся 0.6.58.",
+          "en": "Catalog coverage by asset class and safe broker-response diagnostics have been added. The component supports private Nexus 0.6.67; the public installer remains 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-31",
       "date": "2026-10-17",
       "versions": {
