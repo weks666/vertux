@@ -2,6 +2,72 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-35",
+      "date": "2026-10-19",
+      "versions": {
+        "Invest": "0.6.35"
+      },
+      "title": {
+        "ru": "Лента брокера рядом с TradingView",
+        "en": "Broker tape alongside TradingView"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Лента сделок и стакан выбранного брокерского инструмента продолжают получать события, когда все открытые графики используют TradingView. Для этой подписки больше не нужен отдельный график локальных свечей.",
+          "en": "The selected broker instrument's trade tape and order book keep receiving events when every open chart uses TradingView. The subscription no longer requires a separate local candle chart."
+        },
+        {
+          "type": "fixed",
+          "ru": "Сводка сопоставленного инструмента показывает источник TradingView и площадку вместо ожидания локальных свечей. Внешняя цена не подменяет брокерскую оценку портфеля.",
+          "en": "A mapped instrument's summary identifies TradingView and its venue instead of waiting for local candles. External chart prices do not replace the broker's portfolio valuation."
+        },
+        {
+          "type": "fixed",
+          "ru": "Открытые графики TradingView обновляют фон, сетку и тему при изменении оформления. Перезагрузка виджета может сбросить добавленные в нём индикаторы и рисунки.",
+          "en": "Open TradingView charts update their background, grid and theme when appearance settings change. Reloading the widget may reset indicators and drawings added inside it."
+        },
+        {
+          "type": "changed",
+          "ru": "Компонент совместим с частным Nexus 0.6.70. Публичный установщик Nexus остаётся версии 0.6.58; доступность инструментов и задержка внешних котировок определяются TradingView и источником данных.",
+          "en": "The component supports private Nexus 0.6.70. The public Nexus installer remains at 0.6.58; TradingView and its data sources determine instrument availability and external quote delays."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-34",
+      "date": "2026-10-19",
+      "versions": {
+        "Invest": "0.6.34"
+      },
+      "title": {
+        "ru": "Готовые графики TradingView в терминале",
+        "en": "Original TradingView charts in the terminal"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Для инструментов с подтверждённой площадкой и сопоставимым символом, включая MOEX, терминал открывает готовый график TradingView с его панелями индикаторов, рисования и настроек. Фон и сетка соответствуют выбранной теме Nexus. Доступность и задержка котировок зависят от источника.",
+          "en": "For instruments with a confirmed venue and matching symbol, including MOEX, the terminal opens the original TradingView chart with its indicator, drawing and settings panels. Background and grid colors follow the selected Nexus theme. Quote availability and delays depend on the source."
+        },
+        {
+          "type": "fixed",
+          "ru": "В раскладке из нескольких графиков выбор инструмента заменяет нужную ячейку и сохраняет соседнюю. Выбор восстанавливается после перезапуска. Панели локального графика остаются доступны при выборе соседа.",
+          "en": "In layouts with multiple charts, choosing an instrument replaces the intended cell and preserves its neighbor. Selections are restored after restart. Local chart controls remain available when a neighboring chart is selected."
+        },
+        {
+          "type": "fixed",
+          "ru": "После временной ошибки сохранения терминал повторно проверяет владельца и версию настроек и восстанавливает сохранение. Конфликтующие изменения не перезаписываются автоматически.",
+          "en": "After a temporary save failure, the terminal rechecks the owner and settings revision and recovers saving. Conflicting changes are never overwritten automatically."
+        },
+        {
+          "type": "changed",
+          "ru": "Брокерский график доступен через переключатель источника; прежняя локальная разметка сохраняется. Портфель рассчитывается по данным Т-Банка. Компонент совместим с частным Nexus 0.6.69; публичный установщик Nexus остаётся версии 0.6.58.",
+          "en": "The broker chart remains available through the source switch, with previous local drawings retained. Portfolio calculations use T-Bank data. The component supports private Nexus 0.6.69; the public Nexus installer remains at 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-33",
       "date": "2026-10-19",
       "versions": {
