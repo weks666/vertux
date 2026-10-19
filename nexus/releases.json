@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-38",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.38"
+      },
+      "title": {
+        "ru": "Обзор актива в Focus",
+        "en": "Asset overview in Focus"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Показатели в узкой панели «Обзор актива» размещены в двух читаемых колонках. Значения и подписи больше не сжимаются до четырёх колонок.",
+          "en": "The narrow asset overview uses two readable columns. Values and labels are no longer squeezed into four columns."
+        },
+        {
+          "type": "fixed",
+          "ru": "При открытом TradingView обзор объясняет, что ему нужны брокерские свечи, и предлагает открыть график Т-Банка одной кнопкой вместо постоянного ожидания данных.",
+          "en": "When TradingView is open, the overview explains that it needs broker candles and offers a button to open the T-Bank chart instead of waiting indefinitely."
+        },
+        {
+          "type": "changed",
+          "ru": "Обновление совместимо с частным Nexus 0.6.73. Оформление Focus, вкладки активов и отдельные источники цены сохранены; публичный установщик Nexus остаётся 0.6.58.",
+          "en": "The update supports private Nexus 0.6.73. Focus styling, asset tabs and distinct price sources are preserved; the public Nexus installer remains at 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-37",
       "date": "2026-10-20",
       "versions": {
