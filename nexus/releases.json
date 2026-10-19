@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-36",
+      "date": "2026-10-19",
+      "versions": {
+        "Invest": "0.6.36"
+      },
+      "title": {
+        "ru": "Обновление портфеля с открытыми заявками",
+        "en": "Portfolio refresh with open orders"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Нулевой остаток инструмента с открытой заявкой больше не прерывает сверку и обновление портфеля.",
+          "en": "A zero net holding with an open order no longer interrupts portfolio reconciliation and refresh."
+        },
+        {
+          "type": "fixed",
+          "ru": "Количество учитывает доступную и заблокированную части с точностью брокера; реальные расхождения продолжают показываться как ошибка. Исходные ответы брокера сохраняются для проверки.",
+          "en": "Quantities include available and blocked amounts at broker precision; actual discrepancies still report an error. Original broker responses remain available for verification."
+        },
+        {
+          "type": "changed",
+          "ru": "Компонент совместим с частным Nexus 0.6.71. Публичный установщик Nexus остаётся версии 0.6.58. Графики TradingView, лента сделок и стакан сохраняют поведение предыдущего выпуска.",
+          "en": "The component supports private Nexus 0.6.71. The public Nexus installer remains at 0.6.58. TradingView charts, trade tape and order book retain the behavior of the preceding release."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-35",
       "date": "2026-10-19",
       "versions": {
