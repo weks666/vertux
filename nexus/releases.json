@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-37",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.37"
+      },
+      "title": {
+        "ru": "Терминал Focus",
+        "en": "Focus terminal"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Компактные вкладки активов и единая область контекста: котировки, стакан, лента, план и обзор переключаются рядом с графиком. Общие окна получили согласованное оформление.",
+          "en": "Compact asset tabs and one context area place quotes, order book, tape, plan and overview beside the chart. Shared windows now follow a consistent style."
+        },
+        {
+          "type": "fixed",
+          "ru": "Сводка брокерского инструмента показывает доступную цену с источником и временем, а также известные параметры контракта. Логотипы сохраняют пропорции; лишняя строка под TradingView убрана.",
+          "en": "Broker instruments show an available price with its source and timestamp, plus known contract details. Logos preserve their proportions; the duplicate row below TradingView has been removed."
+        },
+        {
+          "type": "changed",
+          "ru": "Оригинальные графики TradingView и независимые ячейки сохранены. Компонент совместим с частным Nexus 0.6.72; публичный установщик Nexus остаётся 0.6.58.",
+          "en": "Original TradingView charts and independent chart cells are preserved. The component supports private Nexus 0.6.72; the public Nexus installer remains at 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-36",
       "date": "2026-10-19",
       "versions": {
