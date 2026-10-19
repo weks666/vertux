@@ -2,6 +2,39 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-33",
+      "date": "2026-10-19",
+      "versions": {
+        "Invest": "0.6.33"
+      },
+      "title": {
+        "ru": "Единый каталог и общие вкладки графиков",
+        "en": "Unified catalog and shared chart tabs"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Брокерские и мировые инструменты теперь выбираются в одном каталоге. Графики TradingView открываются в общих вкладках терминала и могут стоять рядом с брокерскими в одной сетке; раскладки сохраняются отдельно для каждого счёта.",
+          "en": "Broker and world instruments are now selected from one catalog. TradingView charts open in shared terminal tabs and can sit alongside broker charts in the same grid, with layouts saved separately for each account."
+        },
+        {
+          "type": "added",
+          "ru": "Общий поиск дополнен публичным справочником более 6 700 акций и фондов Nasdaq/NYSE, валютами, металлами, индексами, сырьём и криптопарами. Можно искать по названию, тикеру, площадке и типу или ввести полный символ. Доступность свечей и задержка зависят от провайдера.",
+          "en": "Shared search now includes a public directory of over 6,700 Nasdaq/NYSE stocks and funds, plus currencies, metals, indices, commodities and crypto pairs. Search by name, ticker, venue and type, or enter a qualified symbol. Candle availability and delays depend on the provider."
+        },
+        {
+          "type": "fixed",
+          "ru": "Исправлена загрузка восстановленного графика при быстром переходе в терминал во время запуска. Брокерские свечи продолжают обновляться при выборе соседнего мирового графика, а фьючерсные цены сохраняют обозначение пунктов.",
+          "en": "Restored charts now load when the terminal is selected during startup. Broker candles continue to update while a neighboring world chart is selected, and futures prices retain their point unit."
+        },
+        {
+          "type": "changed",
+          "ru": "Компонент совместим с частным Nexus 0.6.68. Публичный установщик Nexus остаётся версии 0.6.58; внешние цены TradingView не используются для расчёта брокерского портфеля.",
+          "en": "The component supports private Nexus 0.6.68. The public Nexus installer remains at 0.6.58; external TradingView prices are not used to value the broker portfolio."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-32",
       "date": "2026-10-18",
       "versions": {
