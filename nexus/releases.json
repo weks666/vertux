@@ -2,6 +2,62 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-41",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.41"
+      },
+      "title": {
+        "ru": "Устойчивая раскладка Focus",
+        "en": "Stable Focus layout"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Исправлена раскладка после закрепления стакана и открытия копии графика: сводка инструмента остаётся над графиками и больше не растягивается в отдельную высокую колонку.",
+          "en": "Fixed the layout after pinning the order book and opening a chart copy: the instrument summary stays above the charts instead of expanding into a tall separate column."
+        },
+        {
+          "type": "changed",
+          "ru": "Новый график добавляется в существующую область графиков. Размещение остальных панелей и их пропорции сохраняются при переключении вкладок и повторном открытии Workspace.",
+          "en": "New charts join the existing chart area. Other panels keep their positions and proportions when switching tabs and reopening the Workspace."
+        },
+        {
+          "type": "fixed",
+          "ru": "Исправление доставляется через частный Nexus 0.6.76. Схема данных и логика локального Nexus AI не меняются; публичный установщик Nexus остаётся 0.6.58.",
+          "en": "The fix is delivered through private Nexus 0.6.76. The data schema and local Nexus AI logic are unchanged; the public Nexus installer remains at 0.6.58."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-40",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.40"
+      },
+      "title": {
+        "ru": "Focus и локальный Nexus AI",
+        "en": "Focus and local Nexus AI"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "В Focus обновлены правые кнопки и меню разделов, закрепление панелей, вкладки и цвета. Стакан показывает уровни продажи над спредом и покупки под ним, глубину 10/20 уровней и баланс видимых объёмов; в ленте появился фильтр по лотам.",
+          "en": "Focus updates the right-side controls, section menu, pinned panels, tabs and colours. The order book shows asks above the spread and bids below it, 10/20 levels and visible-volume balance; the trade tape gains a lot-size filter."
+        },
+        {
+          "type": "added",
+          "ru": "Вкладка Nexus AI работает с установленной локальной моделью Ollama: диалоги, разбор и сравнение планов, история и отдельно подтверждаемые предложения. Настройки находят локальные модели и позволяют запустить установленную Ollama. Облачная передача и платные вызовы не включены.",
+          "en": "The Nexus AI tab works with an installed local Ollama model: conversations, plan analysis and comparison, history and separately confirmed proposals. Settings discover local models and can start an existing Ollama installation. Cloud transfer and paid calls are disabled."
+        },
+        {
+          "type": "fixed",
+          "ru": "Исправлена ширина закреплённых панелей во вложенных раскладках. Цветовая обработка оригинального TradingView сохраняет доступ к его инструментам и подпись провайдера. Частный Nexus обновлён до 0.6.75; публичный установщик остаётся 0.6.58.",
+          "en": "Pinned panels retain their width in nested layouts. Colour treatment of the original TradingView widget preserves its controls and provider attribution. Private Nexus is updated to 0.6.75; the public installer remains at 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-39",
       "date": "2026-10-20",
       "versions": {
