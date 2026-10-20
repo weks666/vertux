@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-39",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.39"
+      },
+      "title": {
+        "ru": "Читаемые панели Focus",
+        "en": "Readable Focus panels"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "В раскладках с несколькими графиками название актива, цена и кнопки остаются читаемыми. Источник и статус подключения вынесены во вторую строку; цена в общей сводке не разрывается при сужении окна.",
+          "en": "Multi-chart layouts keep asset names, prices and controls readable. Source and connection status use a second row, while the summary price stays on one line in narrow windows."
+        },
+        {
+          "type": "fixed",
+          "ru": "Исправлен контраст карточки плана в боковом меню при светлой теме.",
+          "en": "The sidebar plan card now keeps readable contrast in light theme."
+        },
+        {
+          "type": "changed",
+          "ru": "Обновление совместимо с частным Nexus 0.6.74. Вкладки Focus, обзор актива и отдельные источники котировок сохранены; публичный установщик Nexus остаётся 0.6.58.",
+          "en": "The update supports private Nexus 0.6.74. Focus tabs, asset overview and distinct quote sources are preserved; the public Nexus installer remains at 0.6.58."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-38",
       "date": "2026-10-20",
       "versions": {
