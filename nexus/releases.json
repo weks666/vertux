@@ -2,6 +2,62 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-43",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.43"
+      },
+      "title": {
+        "ru": "Первый ответ локального Nexus AI",
+        "en": "First local Nexus AI response"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Первый ответ локальной модели больше не прерывается через 90 секунд: Nexus AI учитывает время её загрузки и показывает пояснение об ожидании.",
+          "en": "The first local model response is no longer interrupted after 90 seconds: Nexus AI allows for model loading and explains the wait."
+        },
+        {
+          "type": "fixed",
+          "ru": "Кнопка запуска Ollama дожидается готовности службы. Ожидание первого ответа ограничено четырьмя минутами; запрос можно отменить.",
+          "en": "The Ollama start button waits for the service to become ready. The first response has a four-minute limit and can be cancelled."
+        },
+        {
+          "type": "changed",
+          "ru": "Обновление доставляется через частный Nexus 0.6.78. Разговоры, планы и раскладка Focus сохраняются; публичный установщик Nexus 0.6.58 остаётся прежним.",
+          "en": "The update is delivered through private Nexus 0.6.78. Conversations, plans and the Focus layout are preserved; the public Nexus 0.6.58 installer is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-42",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.42"
+      },
+      "title": {
+        "ru": "Запуск локального Nexus AI",
+        "en": "Local Nexus AI startup"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Исправлена передача системного пути и профиля Windows при запуске Ollama из установленного Nexus. Ожидание готовности службы и первого ответа дополнено в следующей версии 0.6.43.",
+          "en": "The local Ollama process now receives the required Windows system path and user profile. Waiting for service readiness and the first response is improved in the following version, 0.6.43."
+        },
+        {
+          "type": "fixed",
+          "ru": "После запуска Nexus AI находит уже установленные модели в настроенной пользователем папке. Повторно скачивать модели не требуется.",
+          "en": "After startup, Nexus AI finds existing models in the configured model folder. Models do not need to be downloaded again."
+        },
+        {
+          "type": "changed",
+          "ru": "Исправление доставляется через частный Nexus 0.6.77. Разговоры, планы и раскладка Focus сохраняются; схема данных и публичный установщик Nexus 0.6.58 не меняются.",
+          "en": "The fix is delivered through private Nexus 0.6.77. Conversations, plans and the Focus layout are preserved; the data schema and public Nexus 0.6.58 installer are unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-41",
       "date": "2026-10-20",
       "versions": {
