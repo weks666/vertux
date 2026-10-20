@@ -2,6 +2,62 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-45",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.45"
+      },
+      "title": {
+        "ru": "Быстрое открытие Invest",
+        "en": "Faster Invest startup"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Профиль, навигация и Nexus AI открываются до завершения расчёта финансовой истории. Аналитика готовится в фоне.",
+          "en": "Profile, navigation and Nexus AI open before financial history finishes calculating. Analytics continues loading in the background."
+        },
+        {
+          "type": "fixed",
+          "ru": "Во время подготовки аналитики показано состояние загрузки. При ошибке можно повторить расчёт, сохраняя доступ к чату.",
+          "en": "Analytics shows a loading state while being prepared. A calculation failure can be retried while chat remains available."
+        },
+        {
+          "type": "fixed",
+          "ru": "Nexus ограничивает ожидание начальных сетевых ответов и предлагает повтор загрузки. Обновление через частный Nexus 0.6.80 сохраняет данные и настройки; публичный установщик Nexus 0.6.58 остаётся прежним.",
+          "en": "Nexus limits the wait for initial network responses and offers a retry. Updating through private Nexus 0.6.80 preserves data and settings; the public Nexus 0.6.58 installer is unchanged."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-44",
+      "date": "2026-10-20",
+      "versions": {
+        "Invest": "0.6.44"
+      },
+      "title": {
+        "ru": "Компактный чат Nexus AI",
+        "en": "Compact Nexus AI chat"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Полный раздел и компактный виджет используют одну переписку. Сохранённые чаты открываются коротким списком, а дополнительные действия — возле поля ввода.",
+          "en": "The full section and compact widget share one conversation. Saved chats open in a compact list, with additional actions beside the composer."
+        },
+        {
+          "type": "fixed",
+          "ru": "Виджет, выбор модели и списки вложений остаются внутри окна, включая узкий экран и увеличенный масштаб.",
+          "en": "The widget, model picker and attachment lists stay inside the window, including narrow screens and increased zoom."
+        },
+        {
+          "type": "changed",
+          "ru": "Восстановлена прежняя палитра с сохранением пользовательского оформления. Обновление через частный Nexus 0.6.79 сохраняет историю, планы и раскладку; публичный установщик Nexus 0.6.58 остаётся прежним.",
+          "en": "The previous palette is restored while retaining user customizations. The update through private Nexus 0.6.79 preserves history, plans and layout; the public Nexus 0.6.58 installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-43",
       "date": "2026-10-20",
       "versions": {
