@@ -2,6 +2,72 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-47",
+      "date": "2026-10-22",
+      "versions": {
+        "Invest": "0.6.47"
+      },
+      "title": {
+        "ru": "Визуальная система Invest",
+        "en": "Invest visual system"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Invest перешёл на основу Vertux Nexus: шрифт Manrope, нейтральные тёмные поверхности и единый вид кнопок, вкладок, таблиц и раскрывающихся блоков. Карточки больше не перекрашиваются в цвет результата — знак показывает само число.",
+          "en": "Invest now uses the Vertux Nexus foundation: the Manrope typeface, neutral dark surfaces and one consistent style for buttons, tabs, tables and expandable sections. Cards are no longer tinted by the result; the number itself shows the sign."
+        },
+        {
+          "type": "changed",
+          "ru": "Расшифровка «Как получился результат» открывается из карточки результата за период. Настройка сводки терминала стала отдельным окном с переключателями, а колонки списка наблюдения больше не обрезаются.",
+          "en": "The “How the result was calculated” breakdown opens from the period result card. Terminal summary settings are now a dedicated window with switches, and watchlist columns are no longer cut off."
+        },
+        {
+          "type": "changed",
+          "ru": "Новая компоновка ценовых уведомлений, настроек, анализа компании и календаря событий. На телефоне шапка занимает два ряда, а поиск раскрывается из иконки.",
+          "en": "New layouts for price alerts, settings, company analysis and the events calendar. On phones the header takes two rows and search expands from an icon."
+        },
+        {
+          "type": "fixed",
+          "ru": "Обновление поставляется через частный Nexus 0.6.82; публичный установщик Nexus 0.6.58 сохранён. Данные, расчёты и доступы не менялись.",
+          "en": "The update ships through private Nexus 0.6.82; the public Nexus 0.6.58 installer is unchanged. Data, calculations and access are unchanged."
+        }
+      ]
+    },
+    {
+      "id": "invest-0-6-46",
+      "date": "2026-10-21",
+      "versions": {
+        "Invest": "0.6.46"
+      },
+      "title": {
+        "ru": "Компактные меню и настройки Invest",
+        "en": "Compact Invest menus and settings"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Модель выбирается коротким списком возле ввода. Подключение, предпочтения ответов и хранение вынесены в отдельное окно настроек помощника.",
+          "en": "Choose a model from a short list beside the composer. Connection, response preferences and storage now have a separate assistant settings window."
+        },
+        {
+          "type": "changed",
+          "ru": "История диалогов открывается кнопкой, веб-поиск включается прямо в строке ввода, а вложения выбираются без вложенных раскрывающихся форм. После ответа ввод остаётся у нижнего края окна.",
+          "en": "Conversation history opens on demand, web search is available directly in the composer, and attachments use simple sequential lists. After a reply, the composer stays at the bottom of the window."
+        },
+        {
+          "type": "changed",
+          "ru": "Общие кнопки, меню и типографика приведены к единой системе. Настройки приложения разделены на шесть страниц; сохранённая тема и личные параметры остаются прежними.",
+          "en": "Shared buttons, menus and typography follow one consistent system. App settings are organized into six pages while preserving saved themes and personal preferences."
+        },
+        {
+          "type": "fixed",
+          "ru": "Яркость тёмных панелей TradingView подстраивается под тему приложения. Обновление поставляется через частный Nexus 0.6.81; публичный установщик Nexus 0.6.58 сохранён.",
+          "en": "Dark TradingView panels adjust their brightness to the app theme. The update uses private Nexus 0.6.81; the public Nexus 0.6.58 installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-45",
       "date": "2026-10-20",
       "versions": {
