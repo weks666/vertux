@@ -2,6 +2,39 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-49",
+      "date": "2026-10-22",
+      "versions": {
+        "Invest": "0.6.49"
+      },
+      "title": {
+        "ru": "Удобнее терминал и сделки",
+        "en": "Easier terminal and deals"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Сводка инструмента в терминале остаётся в одну строку при любой ширине окна: показатели, которым не хватает места, скрываются целиком, а переключатель «TradingView / Т‑Банк» и действия не переносятся вниз.",
+          "en": "The terminal instrument summary stays on one line at any window width: metrics that do not fit are hidden whole, and the TradingView / T-Bank switch and actions no longer wrap below."
+        },
+        {
+          "type": "changed",
+          "ru": "В рейке терминала все разделы — отдельные кнопки: «Уровни», «Позиции участников» и «Заявка» больше не спрятаны в меню «Ещё».",
+          "en": "Every section in the terminal rail is its own button: Levels, Participant positions and Order are no longer hidden in the More menu."
+        },
+        {
+          "type": "changed",
+          "ru": "Карточки «Сделок и операций» получили иконки, как в «Обзоре»; строка «в плюсе / в минусе» уточняет, у скольких позиций есть денежный результат.",
+          "en": "Deals and operations cards gained icons like the Overview; the gains / losses line notes how many positions have a money result."
+        },
+        {
+          "type": "fixed",
+          "ru": "Кнопка Nexus AI в верхних и левых углах больше не наезжает на шапку и боковую панель. В калькуляторе позиции у кнопки «Подготовить план из расчёта» появились отступы, подпись схемы не налезает на график. Обновление поставляется через частный Nexus 0.6.84; публичный установщик Nexus 0.6.58 сохранён.",
+          "en": "The Nexus AI button in the top and left corners no longer overlaps the header and side rail. In the position calculator the Prepare plan button has proper spacing and the scenario caption no longer overlaps the chart. The update ships through private Nexus 0.6.84; the public Nexus 0.6.58 installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-48",
       "date": "2026-10-22",
       "versions": {
