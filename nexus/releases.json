@@ -2,6 +2,39 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-48",
+      "date": "2026-10-22",
+      "versions": {
+        "Invest": "0.6.48"
+      },
+      "title": {
+        "ru": "Терминал, аналитика и Nexus AI",
+        "en": "Terminal, analytics and Nexus AI"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Над графиком терминала больше нет отдельной полосы: источник «TradingView / Т‑Банк», копия и отдельное окно перенесены в сводку инструмента. Панель инструментов и график по данным брокера оформлены как у TradingView.",
+          "en": "The terminal chart no longer has a separate strip above it: the TradingView / T-Bank source switch, chart copy and separate window now live in the instrument summary. The toolbar and broker-data chart follow the TradingView look."
+        },
+        {
+          "type": "changed",
+          "ru": "Кнопку и панель Nexus AI можно перетащить мышью в любой угол экрана. Помощник отвечает на вопросы об инвестициях, рынках, портфеле и работе в Invest.",
+          "en": "The Nexus AI button and panel can be dragged to any screen corner. The assistant answers questions about investing, markets, your portfolio and working in Invest."
+        },
+        {
+          "type": "changed",
+          "ru": "Карточки показателей получили строку пояснения и шкалы, раздел «Сделки и операции» — компактную сводку. Переработаны калькулятор позиции, обеспечение счёта, строки плана, результаты сделок и личные параметры. Карта рынка переключается между Мосбиржей и мировыми рынками TradingView.",
+          "en": "Metric cards gained a context line and meters; Deals and operations has a compact summary. The position calculator, account margin, plan rows, trade results and personal settings were redesigned. The market map switches between the Moscow Exchange and TradingView world markets."
+        },
+        {
+          "type": "fixed",
+          "ru": "«Результат в деньгах» без сохранённых оценок показывает оценку по истории стоимости вместо пустых значений. Ценовые уведомления больше не остаются в бесконечной проверке, если сервис доставки недоступен. Обновление поставляется через частный Nexus 0.6.83; публичный установщик Nexus 0.6.58 сохранён.",
+          "en": "Money result shows a value-history estimate instead of empty values when saved valuations are missing. Price alerts no longer stay in an endless check when the delivery service is unavailable. The update ships through private Nexus 0.6.83; the public Nexus 0.6.58 installer is unchanged."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-47",
       "date": "2026-10-22",
       "versions": {
