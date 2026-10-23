@@ -2,6 +2,40 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-85-invest-0-6-50",
+      "date": "2026-10-23",
+      "versions": {
+        "Nexus": "0.6.85",
+        "Invest": "0.6.50"
+      },
+      "title": {
+        "ru": "Быстрее переходы и обновления",
+        "en": "Faster navigation and refresh"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Переходы между разделами и фоновые обновления выполняют меньше лишней работы: скрытые таблицы получают последние данные при открытии, а панели и маркеры меню не запускают повторную раскладку без изменений.",
+          "en": "Navigation and background refresh do less unnecessary work: hidden tables show the latest data when opened, while panels and menu indicators avoid repeated layout when nothing has changed."
+        },
+        {
+          "type": "fixed",
+          "ru": "Совпадающие запросы обзора используют один незавершённый расчёт. Это устраняет лишнюю очередь, которая могла приводить к ошибке занятости во время фоновой записи данных.",
+          "en": "Matching overview requests share one calculation already in progress. This removes duplicate queued work that could cause a busy error while background data was being saved."
+        },
+        {
+          "type": "changed",
+          "ru": "Расчёт по сохранённой истории повторно использует проверенные данные в пределах одного чтения и пропускает ненужные записи. Финансовые формулы и проверки источников сохранены.",
+          "en": "Calculations over saved history reuse verified data within a single read and skip unnecessary records. Financial formulas and source integrity checks are preserved."
+        },
+        {
+          "type": "fixed",
+          "ru": "Убраны лишние переводы фокуса Nexus AI; в разделе выплат фокус кнопки сохраняется при повторной попытке загрузки. Дизайн Invest 0.6.49 сохранён; пакет поставляется с Nexus 0.6.85, установщик на сайте обновлён.",
+          "en": "Unnecessary Nexus AI focus changes have been removed; the payments retry button keeps keyboard focus during loading. The Invest 0.6.49 design is preserved; the package ships with Nexus 0.6.85, and the website installer has been updated."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-49",
       "date": "2026-10-22",
       "versions": {
