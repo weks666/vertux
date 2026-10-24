@@ -2,6 +2,29 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-52",
+      "date": "2026-10-24",
+      "versions": {
+        "Invest": "0.6.52"
+      },
+      "title": {
+        "ru": "График стоимости показывает текущую оценку",
+        "en": "Value chart shows the current valuation"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "График «Изменение стоимости за период» после каждого обновления доходит до текущей оценки портфеля. Раньше он оставался на диапазоне первого показа, и новая точка уходила за правый край, хотя стоимость и результат за период были уже актуальными.",
+          "en": "The value-over-period chart now reaches the current portfolio valuation after every refresh. Previously it kept the range of its first display, so the new point fell beyond the right edge even though the value and period result were already current."
+        },
+        {
+          "type": "changed",
+          "ru": "Если вы сами прокрутили или приблизили график, обновление сохраняет выбранный диапазон; приближение у правого края продолжает следовать за новой оценкой.",
+          "en": "If you scrolled or zoomed the chart yourself, a refresh keeps your range; a zoom anchored at the right edge keeps following the new valuation."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-51",
       "date": "2026-10-24",
       "versions": {
