@@ -1,0 +1,2346 @@
+{
+  "commit": "18c449eaf67f2b73a773d8507badfbe6085bc475",
+  "checkedAt": "2026-10-25T00:29:18.283Z",
+  "base": "https://vertux.online/",
+  "files": [
+    {
+      "path": "nexus/demo/account-layout.js",
+      "status": 200,
+      "match": true,
+      "sha256": "101155cd8931d74ad8a0955104ae63ce27a75cc2562b8dbbcd6ef4e7039d1a83"
+    },
+    {
+      "path": "nexus/demo/account-quick-pick.js",
+      "status": 200,
+      "match": true,
+      "sha256": "3f9005e60a7464a411f90dacc8e35d022566dcbaa4b65d21518c1ffe6d2c969c"
+    },
+    {
+      "path": "nexus/demo/allocation-plan-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1dea7cc97985a651a97f7d5a765bf1214d60f9a434c70ce4752e8908a947e0d2"
+    },
+    {
+      "path": "nexus/demo/allocation-plan-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "0dafebda00a52de7fdb37b7b58827c3a3b6171c05aeed2a80351e069a5b09b3e"
+    },
+    {
+      "path": "nexus/demo/analytics-depth-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cc4002ea9e23d72f0d8a363eb97f577ef924de1b7a47ddbebc4b341e9e642edb"
+    },
+    {
+      "path": "nexus/demo/analytics-filters.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ec48adb6b31738e67b6a1438fe9f9e30114db9e77836612d80a6e9d61c1121d9"
+    },
+    {
+      "path": "nexus/demo/analytics-presentation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ccc1a02b90b2232d1c71f7a27cc2693c0d9e8994f3562178ac75d4fd1de4834a"
+    },
+    {
+      "path": "nexus/demo/asset-facts-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ee9f845a33e316c7d81f039481acc05dfbc2a38371df1df5246013b4e5b25c1b"
+    },
+    {
+      "path": "nexus/demo/asset-facts-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "323d638a61ed18abdc3c4727f63d5c5c50eafe2cf4c5ab45c431616b1e320473"
+    },
+    {
+      "path": "nexus/demo/allocation-plan.css",
+      "status": 200,
+      "match": true,
+      "sha256": "c4a88cc80cddd7f836d79bbe5f09a0846fee199c17f95838b119ae1d832b59d5"
+    },
+    {
+      "path": "nexus/demo/account-center-v2.css",
+      "status": 200,
+      "match": true,
+      "sha256": "c53c2241acce2c1e54b0a7c36286c50678fac55cea0cff21e41712fcbcefcb2d"
+    },
+    {
+      "path": "nexus/demo/asset-facts.css",
+      "status": 200,
+      "match": true,
+      "sha256": "3258f135b42f72b75ad087cb5b8b1c072d790576a841cb65c631abb6dc14b992"
+    },
+    {
+      "path": "nexus/demo/app.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c208374df49a2fce94cce39ee3263a87a9c5d8d9de921a120711cb82d023f1f5"
+    },
+    {
+      "path": "nexus/demo/auto-refresh.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e98cfbe650ddc634b6da52611074f2c8bbe8697af67b17e3fed81a0426cbf3d4"
+    },
+    {
+      "path": "nexus/demo/bond-cashflow-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fb687f5db2bbb9b857db12ead17b04657af1aeeec37cc743bbc638ed39893138"
+    },
+    {
+      "path": "nexus/demo/bond-cashflow-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4409276de3f028b13e560c25096a04ea4bc35d2c8e9f0bf7bf751489225dda20"
+    },
+    {
+      "path": "nexus/demo/bond-cashflow.css",
+      "status": 200,
+      "match": true,
+      "sha256": "528776d7e12ef9652e7ce85ba3e4071b0b0ed76e206082da631545eb4343bd0b"
+    },
+    {
+      "path": "nexus/demo/bond-lifecycle-history-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ab977a4225cc3649a238d25b963911eb7fbc73316e340b504a76df30708be574"
+    },
+    {
+      "path": "nexus/demo/bond-order-estimate.js",
+      "status": 200,
+      "match": true,
+      "sha256": "77bf3b820d4a358dbb43c990277c72ac1f24a80712783494aeb7050b24ed5f2e"
+    },
+    {
+      "path": "nexus/demo/bond-position-metrics.js",
+      "status": 200,
+      "match": true,
+      "sha256": "0828357390d43fe9a6fee9a047a41bc58b785ecd05cefbe15d8148664307eebe"
+    },
+    {
+      "path": "nexus/demo/bond-position-value.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a62b52c46c595ca75b9642d80c05a8d8f3fb9a71cbdec2cbe59d9eb39c710be0"
+    },
+    {
+      "path": "nexus/demo/bond-schedule-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f3f07f345bf1794b24d88583050d81dd8b10e33ff58052302a483a336d6d6314"
+    },
+    {
+      "path": "nexus/demo/bond-schedule-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "dfe1ee0d954bcd08138e4462c74fc013d866e2ae475e5821951ffff06d7ae174"
+    },
+    {
+      "path": "nexus/demo/bond-sensitivity-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "555ca900c4d24d6f80aacf5e3d76fab2c26ac45774edcad10b9f6eb911c80262"
+    },
+    {
+      "path": "nexus/demo/bond-schedule.css",
+      "status": 200,
+      "match": true,
+      "sha256": "96c84912460a6bb1733f6e39aa2a389858fea6defd63983dc06e91d38b5fe186"
+    },
+    {
+      "path": "nexus/demo/bond-sensitivity-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "53880647adf7ee3c04d23910d07f3767e218c9e41f6c8a282425e1b0da252b03"
+    },
+    {
+      "path": "nexus/demo/bond-yield-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1ce792c55632dbff9f340e37935d0a84bbdc8793d38269096592a4f174c9c3e7"
+    },
+    {
+      "path": "nexus/demo/bond-yield-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cd15b9288c8a2d3c164bf0b9406259f8cb70f0f3dd0f865744ecd19ed8587bad"
+    },
+    {
+      "path": "nexus/demo/bond-yield-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b4ccefcd17129a38ee969663290cc851f2ed6dc55487d745f9ca3d3b568e89dd"
+    },
+    {
+      "path": "nexus/demo/bond-yield.css",
+      "status": 200,
+      "match": true,
+      "sha256": "ccd04424baf73d45c1a72e928f45426aae76771c76fd90a2397c8ad7709f9bf7"
+    },
+    {
+      "path": "nexus/demo/booked-components-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6c9d2e343982aa756f2ef020976dfb8f4b90abe5f8580f41cf5bf2783e57fb45"
+    },
+    {
+      "path": "nexus/demo/booked-components-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "0ad1e893c95d6988b0a3c497ee4d2a52a5a2a1a61609c6f11f374cc0c441ade0"
+    },
+    {
+      "path": "nexus/demo/booked-components-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e53d811dd3ef82614f11f3baeb6c686c044eeae10c3c9771a103ed9081ce9aaa"
+    },
+    {
+      "path": "nexus/demo/brand-icons.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d1fec98d51bc706a3328077688e63361b26835fb5595d94d1307fd8126d35115"
+    },
+    {
+      "path": "nexus/demo/broker-report-commission-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a25aeedc6fb40cd8fdb24496a89bbf501461c4955003fb93747e5a26a0896c0b"
+    },
+    {
+      "path": "nexus/demo/broker-report-payment-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "58efe3b5ade5ecee11cc7241ccccfe38db106b2cd66ed37711127704f0cd3a84"
+    },
+    {
+      "path": "nexus/demo/bootstrap-payload.js",
+      "status": 200,
+      "match": true,
+      "sha256": "68207ded5d8b17f0af9597ad0d57af17dfa09cfca5a73719a8bd7958a17a30f3"
+    },
+    {
+      "path": "nexus/demo/broker-report-timing-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cf0f7e02f236a02ecd87c571d4c41caf014e71a2877569bf8f8caad117ae2436"
+    },
+    {
+      "path": "nexus/demo/broker-report-timing-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "579b85bc54abb1437ebb6f8fc01079fdbacec42022cdec8cca01876bd0b47281"
+    },
+    {
+      "path": "nexus/demo/broker-reports-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "3750632407189349e6d9c3a70dd4f5b84c4116f362d78542af39a0c8239ce683"
+    },
+    {
+      "path": "nexus/demo/broker-reports-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b0ea4951d96e53e7e3dd19b0386361c32f1b2b7f9e9238b38346420a57b26707"
+    },
+    {
+      "path": "nexus/demo/cash-comparison-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "8b963f999f9dddd146371f14ccc490066d310f2e1e7a74289e703c8269911c1b"
+    },
+    {
+      "path": "nexus/demo/cash-comparison-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fcb2b36a7007b5db8fc4e863aaca27ff691abef42684518996048e53443ab575"
+    },
+    {
+      "path": "nexus/demo/chart-cursor.js",
+      "status": 200,
+      "match": true,
+      "sha256": "42a7d4d0787db657da777ea19c9402dbaa9125abd478613db568ea4e5bc1cf67"
+    },
+    {
+      "path": "nexus/demo/cash-comparison-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f1930e7e0b6b593fed0e3d17af796fcf382207c1a56c7cfb8fcfc19d64459fa8"
+    },
+    {
+      "path": "nexus/demo/chart-drawing-toolbar.js",
+      "status": 200,
+      "match": true,
+      "sha256": "316591a879ca659deff331a2d9495754d8c921671fef310558520a5542faf069"
+    },
+    {
+      "path": "nexus/demo/chart-drawings-advanced.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fe738203b263430656238e586246438411ed97f19a75913d07e88e315ff2da9c"
+    },
+    {
+      "path": "nexus/demo/chart-drawings.js",
+      "status": 200,
+      "match": true,
+      "sha256": "24adc21aeeffe9a0e93601fd8dcb61d6159429d31c4975efd2a2bfdca4847df8"
+    },
+    {
+      "path": "nexus/demo/chart-freshness.js",
+      "status": 200,
+      "match": true,
+      "sha256": "510938643ff74d8398561d6a3322a7ec7d9a3d698f058a6c085715f7b426cbd6"
+    },
+    {
+      "path": "nexus/demo/chart-geometry.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a782f012b4740399c98c82003f8961e26c22b237afabb99d71267c8387bca30b"
+    },
+    {
+      "path": "nexus/demo/chart-indicators-extra.js",
+      "status": 200,
+      "match": true,
+      "sha256": "3660cdfd0d5537632c9f57b7482fa319cd243b0a31c40bfdd07bf14c6cc16b6f"
+    },
+    {
+      "path": "nexus/demo/chart-indicators.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7324421191961b9c8aadcef476a726e80bc7fa1c3fcbb7407cf8ccb060c84094"
+    },
+    {
+      "path": "nexus/demo/chart-live-tail.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d63ca47b84ebb4239c4dc985d10ecc014ee40ee39d28e85c4e873e7e85c0699e"
+    },
+    {
+      "path": "nexus/demo/chart-menu-preferences.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c85a1aca81b774d23ec0075462d0e5014361cddd1d3803fc5f471bf13ce3f2e6"
+    },
+    {
+      "path": "nexus/demo/chart-preferences-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9d3f8d3def174ed4de9fd7ab4336568e5fe848728ca818adad0c74591d199d47"
+    },
+    {
+      "path": "nexus/demo/chart-preferences.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c473d376a534e61c7f5f872434662f09c9ddacfe69fa568fde57c02c05090918"
+    },
+    {
+      "path": "nexus/demo/chart-resolutions.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a1fec2da19ed4c1a16e332145ee68740c8ba96659dce3b742ea488f04519152e"
+    },
+    {
+      "path": "nexus/demo/chart-series-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c759bb89d20774cc190fac1fb8c59cd5f3f5c56efbab46281f0043b246ab2343"
+    },
+    {
+      "path": "nexus/demo/chart-study-legend.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f0a449cbb8b865b33447a282ef6a0e05bffce7c63879dc2c671955ebbda49dc5"
+    },
+    {
+      "path": "nexus/demo/chart-tool-catalog.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d18707822443ca4e17a69aad636be346a5cc50b8d0177911fc6f13097284bb8b"
+    },
+    {
+      "path": "nexus/demo/charts.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a7a294c70cc2001501c10715f97e8155ea1db5e77cfce327070ca49deb36fb7d"
+    },
+    {
+      "path": "nexus/demo/claim-evidence.css",
+      "status": 200,
+      "match": true,
+      "sha256": "ecaead4b057226776652ba20dfbd24f18cdc2ac7299a330e36a4876dab4ca57a"
+    },
+    {
+      "path": "nexus/demo/claim-evidence.js",
+      "status": 200,
+      "match": true,
+      "sha256": "5d974ded6b7bf10b1c1f5e83a7f80d8eb4954b04b7b3a53a2b454a85f43893cd"
+    },
+    {
+      "path": "nexus/demo/company-comparison-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7c3b0d9f16a2bd611219abb48faf50362d62171348cb258a4bf6b7ecbf1a59ec"
+    },
+    {
+      "path": "nexus/demo/company-comparison-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fc3ac4e91d282ee381a53d443aa831962212b7f808ef006c1b57236ae70f915f"
+    },
+    {
+      "path": "nexus/demo/context-evidence-adapters.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8353b8c5aeb6356cd0f5abf6ba96b4cb6929338f53d3d060079aaca377fcfdbc"
+    },
+    {
+      "path": "nexus/demo/context-evidence.css",
+      "status": 200,
+      "match": true,
+      "sha256": "a565005878caf7687a0e5de28dc79acb3fec9b0da0d05ba56951dd07e8fbd8e1"
+    },
+    {
+      "path": "nexus/demo/context-evidence.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e592189bf2f5d281eefa3d5f71c736cb0eca55d43d65b695df34fe65a32f331f"
+    },
+    {
+      "path": "nexus/demo/current-position-result.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f0f3d698de9d75d3bd411852a56194093a5c7af9ff54436f14e67cade501cb50"
+    },
+    {
+      "path": "nexus/demo/decision-timeline-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f57a9a6496818c0f5de476cb2f7b1135c1705e86d3e88e829b9d1289da8459b5"
+    },
+    {
+      "path": "nexus/demo/decision-timeline-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cca41cd550141fec0481e225b58d4a7c3cf5e2ab46e15128a97ca53dd719d817"
+    },
+    {
+      "path": "nexus/demo/demo-frame.css",
+      "status": 200,
+      "match": true,
+      "sha256": "fe3185f20275356ac72d9ca4a85d3593ebee6da06469cd21699a143c4d13cd1e"
+    },
+    {
+      "path": "nexus/demo/deep-analytics.js",
+      "status": 200,
+      "match": true,
+      "sha256": "10b9223d727e2ca827af1d22b2378ae5df78f12069c75ad377f318cf65e0fdfa"
+    },
+    {
+      "path": "nexus/demo/demo-runtime.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cdba48b0af55867de7b8999489f7ab106a18ef33063bf4e1c986b706769e6ff7"
+    },
+    {
+      "path": "nexus/demo/demo-service.js",
+      "status": 200,
+      "match": true,
+      "sha256": "557f9f83f061afa9c8be81bcb96eeaebbede5bf7f77d85c38ddbead6d236cca6"
+    },
+    {
+      "path": "nexus/demo/direct-share-comparison-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "77f49d2bf6bb18d24aa1db4496a36f8ef131fb564e72723075e3fbe8af43f868"
+    },
+    {
+      "path": "nexus/demo/direct-share-comparison-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "25aa09a0ff8d15aeaf4f39e3671c37e226ca2c424dfdee25119e1735bb06e7d3"
+    },
+    {
+      "path": "nexus/demo/direct-share-concentration-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1381a11962262b3bf564ed939fc0d0556baca1f3b1a4b9dd7b5e1787a3d8e1ac"
+    },
+    {
+      "path": "nexus/demo/direct-share-concentration-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "9d10ce9c490562f239a2978f6afb32750d9ab496e4a23ec4d688c7e0f122ab91"
+    },
+    {
+      "path": "nexus/demo/direct-share-concentration-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "5734d54b2321cbf1fb58dc6565004210a2aa706cb8b17a95741948bc9c66bf88"
+    },
+    {
+      "path": "nexus/demo/direct-share-sector-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6db8fef82321a2574fd6f558bdda6616592e6559edb76f2fab8e02ee285ba610"
+    },
+    {
+      "path": "nexus/demo/direct-share-sector-view.js",
+      "status": 200,
+      "match": true,
+      "sha256": "15615624795983bf7fe683c5f26500d5e1a3cc6f5070493d33214e64e5fd3f8b"
+    },
+    {
+      "path": "nexus/demo/direct-share-shock-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "66756a494199b0e049ba8a66ba93e481cdbed5e21eb1fde69ff1aabac083635a"
+    },
+    {
+      "path": "nexus/demo/direct-share-shock-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fb95efdf07df3c1d081bbcc9048d3f24732c136fface3fbd889bf2da0004b29f"
+    },
+    {
+      "path": "nexus/demo/execution-observations-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4409c19a661a01645edcb4f39ad861abba5f8a105a65f30ad889561835b338a8"
+    },
+    {
+      "path": "nexus/demo/execution-quantity-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "5894948931817712a1e8070cef67e3fd52dda5e89d0b41a08adbee13c5cd972a"
+    },
+    {
+      "path": "nexus/demo/filter-select.js",
+      "status": 200,
+      "match": true,
+      "sha256": "dfa8c32e6583df608df232ab2d5c338046215746268fbf4d1586e02b293d1f93"
+    },
+    {
+      "path": "nexus/demo/financial-formulas.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b38426caae79a62208dd5c31fb1b87558c1e8524f00b60e7769388c09e2303e6"
+    },
+    {
+      "path": "nexus/demo/financial-metric.js",
+      "status": 200,
+      "match": true,
+      "sha256": "da147abe22f858fb9d604028a8d55126719f9fbc8ea0ec27eefb1cae6f378b37"
+    },
+    {
+      "path": "nexus/demo/focus-workspace.css",
+      "status": 200,
+      "match": true,
+      "sha256": "122028c31f9a417b69d83b784ba45d7299e367c741182171def1eb363862bca9"
+    },
+    {
+      "path": "nexus/demo/fundamental-history-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "1e126227f1eb9c4a3c8cdaca6732a22d720392713f5812f3f9da299065e07598"
+    },
+    {
+      "path": "nexus/demo/fundamental-history-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a5c8535675b9f83c0a27d707a19dd1935a1a37058c9d4959188c7cb3b411903f"
+    },
+    {
+      "path": "nexus/demo/future-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "2fbb29d0f7d75e4123b18385c3e230656ff11a36585b5b89a5da698095e8d9bb"
+    },
+    {
+      "path": "nexus/demo/future-exposure-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "64acc73d51b9a9e39fcaf68553d07abae82f0a1b4ea60681a145e95d5ea9d78c"
+    },
+    {
+      "path": "nexus/demo/future-exposure-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7a62310e0004f62715f31322fd7bafe71a21ed77d985a917251021a8df22f662"
+    },
+    {
+      "path": "nexus/demo/future-exposure.css",
+      "status": 200,
+      "match": true,
+      "sha256": "457de35bdfd48bf9d6bae7ae1fe72fbd01dddf0cccaf56fc1940bd84c45a1974"
+    },
+    {
+      "path": "nexus/demo/future-position-metrics.js",
+      "status": 200,
+      "match": true,
+      "sha256": "dd88642bfa42c1ff55b6eedaffe0e69068ef5e58809d424d2dc39d92c2aeb254"
+    },
+    {
+      "path": "nexus/demo/futures-basis-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6becd6b25fc110008e8eef887e874b46659ff3b9558ff919c7363f9cc93ff755"
+    },
+    {
+      "path": "nexus/demo/futures-basis-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "0921667bdf7414a4c82ff5c91f7b411361a6476a567485eb09ffcc9ff6ab4bbc"
+    },
+    {
+      "path": "nexus/demo/futures-basis.css",
+      "status": 200,
+      "match": true,
+      "sha256": "fc464e692dd2e9da3c95e651cb6336805758da750590f32e5928539fabda36bf"
+    },
+    {
+      "path": "nexus/demo/history-backfill.js",
+      "status": 200,
+      "match": true,
+      "sha256": "771e2480f06988bfeb398c3a6828163844eb85070e2ccfa33f1291167de6399a"
+    },
+    {
+      "path": "nexus/demo/icon.svg",
+      "status": 200,
+      "match": true,
+      "sha256": "6a5feada86d07917ab4b94e3f82cda7ed979a592102a2a914c336fbba7349317"
+    },
+    {
+      "path": "nexus/demo/instrument-context-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7e72ad41327d3eb12371b48e247e754a2e4a0156b298587e81dcb62b89758748"
+    },
+    {
+      "path": "nexus/demo/instrument-catalog-links.js",
+      "status": 200,
+      "match": true,
+      "sha256": "844d86ccf2df257e006f195a508fc846f152c79411fe8139b48b5e1fb6583d01"
+    },
+    {
+      "path": "nexus/demo/index.html",
+      "status": 200,
+      "match": true,
+      "sha256": "70f4ba79a87fb17d53ac70cd1b63153d428686d31776c4323cf86747a33ca9bd"
+    },
+    {
+      "path": "nexus/demo/instrument-context.css",
+      "status": 200,
+      "match": true,
+      "sha256": "4c4de9710f721320d92e035e37f83573645b06047b2b2c3c217d44d18d9e8fb4"
+    },
+    {
+      "path": "nexus/demo/instrument-context.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e7a8cb0b75b4c1172cf6cfb1e603d55a3f7ca0d69e797ba3d8d1717ebaaa2db1"
+    },
+    {
+      "path": "nexus/demo/instrument-insights.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ec0bfb5ff2f67abdacd536f47197001cb3e46f0c1818bf78b480f70e1fda8e2b"
+    },
+    {
+      "path": "nexus/demo/instrument-mark.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1640cbc473fc913b3cb6ca2b1b0e33d902b9dc6dc349c2f8d1e48553508fab03"
+    },
+    {
+      "path": "nexus/demo/instrument-picker.js",
+      "status": 200,
+      "match": true,
+      "sha256": "aa8626c25b111f976038cf201246c6a3f339f0d6ac8bb45839c48989e901ccb5"
+    },
+    {
+      "path": "nexus/demo/instrument-search-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "3e6bbdff11f063778a308102cd651e1e8a12b47dfc239b0a04cbe826a95b68db"
+    },
+    {
+      "path": "nexus/demo/interface-controls.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7fe715a6dd2c701f7d7d8a963f1a2600dd684e22bef5f8ca38bed44ed5eb620b"
+    },
+    {
+      "path": "nexus/demo/interface-system.css",
+      "status": 200,
+      "match": true,
+      "sha256": "8088f2d2ca2ba13b210e7773bed6addfa51bdbd3e6b34393306d1619f4e177d5"
+    },
+    {
+      "path": "nexus/demo/internal-cash-transfers-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "8b7c324d6c5e36377e308246db095b476243337772a58bb9058acd0fb836f251"
+    },
+    {
+      "path": "nexus/demo/internal-cash-transfers-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "00978fbcd0d4593bb30b6437e333f3af0d59d5f85c58c41050a5cf447c932023"
+    },
+    {
+      "path": "nexus/demo/invest-feedback029.css",
+      "status": 200,
+      "match": true,
+      "sha256": "b56fe4300e1035a9e7a645f76586fa80f3ea60d32b0bf59ad6c0894aac18810e"
+    },
+    {
+      "path": "nexus/demo/invest-analytics-refinement.css",
+      "status": 200,
+      "match": true,
+      "sha256": "c53eb73b12c4371ed1ffd0bec3fea71c7b896076bbf8d7b44244ee698cf70def"
+    },
+    {
+      "path": "nexus/demo/invest-feedback031.css",
+      "status": 200,
+      "match": true,
+      "sha256": "7529c39191cf0c1c2b43725f8c5e252198e5bf13f9a52b8c26e170c1395a966e"
+    },
+    {
+      "path": "nexus/demo/invest-refinement.css",
+      "status": 200,
+      "match": true,
+      "sha256": "4b699f3eccfe9c5bbc3793e952aa18ad6d220b3dd90a6087544d903502bdbb9f"
+    },
+    {
+      "path": "nexus/demo/invest-visual-v2-048.css",
+      "status": 200,
+      "match": true,
+      "sha256": "ec88e17108e73506c2598db9a39f684dba74f84644c0da31ee2368a16160a6b6"
+    },
+    {
+      "path": "nexus/demo/knowledge-workspace.css",
+      "status": 200,
+      "match": true,
+      "sha256": "20112b49ebd2a306228580077713ca33cda191330a7f8423b0373bbf833df6f2"
+    },
+    {
+      "path": "nexus/demo/knowledge-workspace.js",
+      "status": 200,
+      "match": true,
+      "sha256": "49ce1daab01b5b0374812a165ba7d0fc105d52e12fb4c996cb933434515b9aa0"
+    },
+    {
+      "path": "nexus/demo/invest-visual-v2.css",
+      "status": 200,
+      "match": true,
+      "sha256": "ee58b2a1c400f9073801d054b95fb594c639f8457f524708f7a746ee32610dd4"
+    },
+    {
+      "path": "nexus/demo/launch-scrubber.js",
+      "status": 200,
+      "match": true,
+      "sha256": "0a594620dfc01621895d8efd7f99550bf554f60b9ca6d4ea4d6afa24e42abf9b"
+    },
+    {
+      "path": "nexus/demo/layout-draft-session.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7df0a54bf4db765a4ac49b105d4b6e4fedf4b480c3f009a2944fcd084bdbbc05"
+    },
+    {
+      "path": "nexus/demo/local-context-json.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fa3d73518d52fb28f7424dcdb3360f5d9c68f7f8d9a386fd2885a6c43ee8a04f"
+    },
+    {
+      "path": "nexus/demo/local-method-explanation-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "7045e1edff43e0278371d97eed55f607ad481106032619238a993a41b33d2f27"
+    },
+    {
+      "path": "nexus/demo/local-method-explanation-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b390642b22c59672bc91a6f4892dd798073a66808b0faebfafbf3945edcc48c9"
+    },
+    {
+      "path": "nexus/demo/local-method-workspace.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a08a85b1b5b1e900b431695a7d3e8b0c9dd8707091053f2e37edc3af21486bc0"
+    },
+    {
+      "path": "nexus/demo/local-observed-risk-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "9adaeb1f40a672a9223a1015521f0dbd5f2a1263feea874b83f2ff1b1e2767f7"
+    },
+    {
+      "path": "nexus/demo/local-observed-risk-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b3f4ca2e644ad314569b69a92ff5910e59b56ac47a464a74c13d2093681be987"
+    },
+    {
+      "path": "nexus/demo/local-observed-risk-workspace.js",
+      "status": 200,
+      "match": true,
+      "sha256": "86585dd8a7b33386a62091e5f5b4e5e0a2b29343154f3727c32e81359cfbb77f"
+    },
+    {
+      "path": "nexus/demo/local-result-controller.js",
+      "status": 200,
+      "match": true,
+      "sha256": "91a6d84ab6de33fab4d11c52c3f41b4a7e1e5b8b5b83fb1eb61e671ea225fb50"
+    },
+    {
+      "path": "nexus/demo/local-result-explanation-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "e2673aae7ced6091156793cc15d050228ac7ce1b81650fed2e5f04f3854c09d5"
+    },
+    {
+      "path": "nexus/demo/local-result-explanation-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6ed9df5b4e64d26f1769b66c9d65c3e3161f668dad7c42db0326e4dc44889df8"
+    },
+    {
+      "path": "nexus/demo/local-result-template.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7c9ce4a4e0b04dd569b39cf147740ffb5019bcffcaa5550a5126f89a58fa9878"
+    },
+    {
+      "path": "nexus/demo/local-result-workspace.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f7a5ed84d1db58d3975b92e9d7c1dae307805a57b77a5aae48dde9570f68368c"
+    },
+    {
+      "path": "nexus/demo/market-calendar.css",
+      "status": 200,
+      "match": true,
+      "sha256": "f1d3e0e209106ce732ac5361fbff61de3758bb2360a8514ceee2519f17d59e98"
+    },
+    {
+      "path": "nexus/demo/market-calendar.js",
+      "status": 200,
+      "match": true,
+      "sha256": "0c4bfe90e21d0e54c9b19de05892b5a1aa0a21212dc30bcf15f83a07d7cb4eea"
+    },
+    {
+      "path": "nexus/demo/market-cap-map-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ec7e14947ed876a14baee2d7551371135f957ab43538fe09332fdcdc9f77fe22"
+    },
+    {
+      "path": "nexus/demo/market-chart.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b97cb97b48ed7e15c79568cf3a38fecc3a48708678e2b36ef1fb0ab08c9c64dd"
+    },
+    {
+      "path": "nexus/demo/market-participants.js",
+      "status": 200,
+      "match": true,
+      "sha256": "603356c1e587aeea87221478e0eca778d05ca06374a365e6c8e1d19313eb5382"
+    },
+    {
+      "path": "nexus/demo/market-session.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e8ea7f7d0c2302a71ff6d05e0cbff0b174d832a769cf6ad6c71b1abea0dbf8e9"
+    },
+    {
+      "path": "nexus/demo/market-watchlist.js",
+      "status": 200,
+      "match": true,
+      "sha256": "50c9bf8286db9f515f1239446eab4c0f4abfa329bc14ce34a3f2ad7d6e97b995"
+    },
+    {
+      "path": "nexus/demo/native-watchlists-transfer-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "d78933203b95a7710b80bfb858a559703ebb871a3946e956923dead8c0ddb0ff"
+    },
+    {
+      "path": "nexus/demo/native-watchlists-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "142379e96184d0647f034e350f254927b52ef1fae745eb7462874e3efdb6f8bc"
+    },
+    {
+      "path": "nexus/demo/native-watchlists-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ca37c7e3874c527c6b2b9b83395109c686c97029b4f80180cdabddf5ac276a3f"
+    },
+    {
+      "path": "nexus/demo/news-content-history-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ccb8196346693ed85b649ee61e35c724a9aba1d0e5af00214504df46c3c58d0e"
+    },
+    {
+      "path": "nexus/demo/news-panel.js",
+      "status": 200,
+      "match": true,
+      "sha256": "2affef26e365a9dd045f0692b9e026436aee79116f2cf2ef7c1b8df1b080a60f"
+    },
+    {
+      "path": "nexus/demo/news-source-context.js",
+      "status": 200,
+      "match": true,
+      "sha256": "337fe40fe211f905992d31f36958ce3f3d2fe56407761507a22d606b4e0e192c"
+    },
+    {
+      "path": "nexus/demo/nexus-ai-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "11a839fde81cec01d4e85c3c4b5423c63abd62cb021838b2ddd481f644068a49"
+    },
+    {
+      "path": "nexus/demo/nexus-ai-history-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9ccbce74c69bfa11a9f0a58d8064082fe26f3b14c86f9f6e49622b51e5284379"
+    },
+    {
+      "path": "nexus/demo/nexus-ai-instruments-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7d824a48de97b033625a23320929d993ef66118193a36a431245745f3a1062cd"
+    },
+    {
+      "path": "nexus/demo/nexus-ai-proposals.css",
+      "status": 200,
+      "match": true,
+      "sha256": "42d153870e3c0580c23499e3533280974c9693f1ed6c9bed02a2b442b86b8042"
+    },
+    {
+      "path": "nexus/demo/nexus-ai-report-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9a4ecf6f3eb311e7488f2e4a0d22aa6ca15c2d1d476edf16d071b0eebfdf8c07"
+    },
+    {
+      "path": "nexus/demo/nexus-ai-settings-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c1f71f67530a94c1840f7f04c5f25460a88d6a5f87161f59fae907d2ab71d3cb"
+    },
+    {
+      "path": "nexus/demo/nexus-ai.css",
+      "status": 200,
+      "match": true,
+      "sha256": "08d4a43f36d1a82b2c4611cd7da188f582ebb0a8064495350ef2b4a2d1425b55"
+    },
+    {
+      "path": "nexus/demo/nexus-ai-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a3c4e394e1f8115d25b08fe86dbc57be7842edb8126b8ba5a5bdda6858959976"
+    },
+    {
+      "path": "nexus/demo/nexus-workbench-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b89ea1d5deffe024b8bcf6e473254fbc115120f1dd8c996f0b79ee3eaf2d85fd"
+    },
+    {
+      "path": "nexus/demo/nexus-workbench.css",
+      "status": 200,
+      "match": true,
+      "sha256": "9ec7d4789ce2823d75353c1d448939f652415c8ce829102ddb0f174b597a4f49"
+    },
+    {
+      "path": "nexus/demo/number-format.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c2d74d72faf2220582da2ee27234c12468cc65f99992cd3734e6f9e6e939491c"
+    },
+    {
+      "path": "nexus/demo/observed-nav-risk-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "87e4b058d177b802a2a823f90d6ab61a622f54da152a2e0bfa819cb3ed12429e"
+    },
+    {
+      "path": "nexus/demo/observed-nav-risk-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d2f121e9a2a144f3b0613a4df9fd15d2722faf70e549cee90c779d2e47c543ea"
+    },
+    {
+      "path": "nexus/demo/observed-risk-explanation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fd245981a77f4cad51a4d8ff050f02c449af307ed8f7dc881a7f6d5bed7c9f39"
+    },
+    {
+      "path": "nexus/demo/observed-risk-reasons.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d6ba967194abeab872a0f6a514e9b91acdecf6d647274613f4aafba75dbb2b40"
+    },
+    {
+      "path": "nexus/demo/operation-details-dialog.js",
+      "status": 200,
+      "match": true,
+      "sha256": "58c99a733c3a864759908541218ef7e36e1605eeea4b95cc50807fb75e95e51f"
+    },
+    {
+      "path": "nexus/demo/overview-refinement.css",
+      "status": 200,
+      "match": true,
+      "sha256": "0bb3d2f74798fc055564bf25409b0239b8a5ff4ab25ab8dd7b02cf74d67f4cc8"
+    },
+    {
+      "path": "nexus/demo/owner-feedback.css",
+      "status": 200,
+      "match": true,
+      "sha256": "bf4f79c64b97e07cc79e80e765caa54c3943b814720abbbb75bf13ed768e7a4e"
+    },
+    {
+      "path": "nexus/demo/panel-appearance.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e8e3f63e5aa940e05b9693f3cbc66c96854d8920c235deb7796f096e88747f7e"
+    },
+    {
+      "path": "nexus/demo/performance-method-explanation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "490b96494b2d962f2ff030f201161250ffd9cbc0a88b4fa4e11258013bf79fb9"
+    },
+    {
+      "path": "nexus/demo/performance-method-reasons.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8153b1e236b0fdee202c08d7f76038d39f5430c7cf102cdb745fb52dbae97914"
+    },
+    {
+      "path": "nexus/demo/performance-methods-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "15d3d5c2937b51b6ae91264c3aa1949e8df8ddcfec3a9fecb1b283347d249726"
+    },
+    {
+      "path": "nexus/demo/performance-methods-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "509d5d133bfa745f8b365f8cea2796c99bd8bff468d34c8fec63f09fe8f5c586"
+    },
+    {
+      "path": "nexus/demo/personal-preferences-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9b1876f309e29037b646d4500e6989be8887a40bd647b76596dff791a9df4123"
+    },
+    {
+      "path": "nexus/demo/personal-preferences-transfer-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "c1f3670aa5882329a38003312265f6f6a941cbc0c82ab9a6af75837e0f1acc73"
+    },
+    {
+      "path": "nexus/demo/personal-preferences-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6ca857fd598e284ca06896d126abeb7f4e38151294cb9ec81a755f5fac77f139"
+    },
+    {
+      "path": "nexus/demo/personal-reminders-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9b77e562095cd0999f40a29115741050a343862cd5ea668d18f029bccab6c107"
+    },
+    {
+      "path": "nexus/demo/personal-reminders-transfer-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "4dc78890ec4f7694f5f71b548e885c2cc4da3be6e915ece9c77a97fe1630b567"
+    },
+    {
+      "path": "nexus/demo/personal-reminders-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "85ee6bea6c1757d560466b490e4b05722cd51593e46093ccb668440b4ae9b0a4"
+    },
+    {
+      "path": "nexus/demo/personal-workspace.css",
+      "status": 200,
+      "match": true,
+      "sha256": "590c2d100652a15f79de8c1ab2eaa759be28a9bac6178b5c055e3c2ea9bbf8cf"
+    },
+    {
+      "path": "nexus/demo/personal-workspace.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7224a419adcec32058ad270085367b5dc7d405834c2b06e6ba5f0d996e4a3ab9"
+    },
+    {
+      "path": "nexus/demo/plan-archive-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f0fd3020d579f5b48f3ea0acc7c2e1e16fff13edb18025e8bbd81db0896a7507"
+    },
+    {
+      "path": "nexus/demo/plan-archive.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9b2b60880e272598424cfef075c76bedd63d1051c424d5735d7c942de622b8d3"
+    },
+    {
+      "path": "nexus/demo/plan-catalog.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c869274068e1fba693c3c84de867406639634a92ad9720c8b8e5cf12310c4259"
+    },
+    {
+      "path": "nexus/demo/plan-details-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ddce4741cabcca9132732b243691d78bd648ace0e07dbdc43068d5ddd0d66859"
+    },
+    {
+      "path": "nexus/demo/plan-details.css",
+      "status": 200,
+      "match": true,
+      "sha256": "fc163e48c7c1f47cf7dddc8b708a14f7a4c9dba7b865965428bf263dc6f4e0ed"
+    },
+    {
+      "path": "nexus/demo/plan-execution-links-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "718ea9dfe6d2ed43741700a2769c486fc405222cbe87e553f3bac0af39283b5e"
+    },
+    {
+      "path": "nexus/demo/plan-execution-links-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "ac85f0994799e6d19ea2ddcef82c30313ab8799e976d8d636ac511078bc05704"
+    },
+    {
+      "path": "nexus/demo/plan-execution-size-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "3b11f2a685116813a75968743331d7abc303dec5522ce9824d9363d5189d7f96"
+    },
+    {
+      "path": "nexus/demo/plan-execution-links-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "13e1ea0d5b041b6c07bd846f8fbfdb4c83cf522100182eb3a8609b19d9cd77b4"
+    },
+    {
+      "path": "nexus/demo/plan-execution-size.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9d6252d8491b1b08cf1cd44441734f8070c09a8273d336b5787a46812e467e9e"
+    },
+    {
+      "path": "nexus/demo/plan-history-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4c8e77d8faf2098734496beb6d0276ed32ea30487017d8f24837481dfb3ca96f"
+    },
+    {
+      "path": "nexus/demo/plan-instrument-picker.js",
+      "status": 200,
+      "match": true,
+      "sha256": "773bd11fb3c2e902f8e728e13bf04246673763548d08b144c72320542c62d296"
+    },
+    {
+      "path": "nexus/demo/plan-price-basis.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1e2eca8b7dbee52df4bf8d7622ec8bf21b9786ffc783f354b311d5baef7e9ec7"
+    },
+    {
+      "path": "nexus/demo/plan-risk-scenario-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "dae53970596b07e3adddaf275e632735f2bf8cb37fccd141b4c55891e3aebbbf"
+    },
+    {
+      "path": "nexus/demo/plan-risk-scenario-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "bff4add184fd52bd03b0da1d54f19c5be935df415ee257018a6b450fb099def4"
+    },
+    {
+      "path": "nexus/demo/plan-review-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4054156b5db34b02c8f7370262da1f257433d0b5720390fee0e517003db7be46"
+    },
+    {
+      "path": "nexus/demo/plan-risk-scenario.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f651315e60410a0f807228b3dc53f56dc4fc967b527d4164d73b9aba84dc8c8f"
+    },
+    {
+      "path": "nexus/demo/portfolio-result-breakdown.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e72187014fad7f9ce770a078f176b2d330f91303b833ce9308d67eda6e66d5be"
+    },
+    {
+      "path": "nexus/demo/portfolio-review-archive-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fd69fb476704ae6003bf6c9268334ee53a2798b63eeb73152e9763a3e682dd72"
+    },
+    {
+      "path": "nexus/demo/portfolio-review-archive-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8b16aa3a2f765e7bc62816b35ffe4630516852e15cd2759f06e17a751f832b37"
+    },
+    {
+      "path": "nexus/demo/portfolio-review-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d91d7684b7b14815daa241bbec29328591f78c2287c6a7c8433d24cbf006189a"
+    },
+    {
+      "path": "nexus/demo/portfolio-review-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "1b7d6268aaf43e41fce4763ee5db6cdf237a6c758cd3ff3d8f97fef8f95977b7"
+    },
+    {
+      "path": "nexus/demo/portfolio-review-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "19566dac6290fb911a6ad33fc7c5a9eb60262e617370135e233eeb49554c9135"
+    },
+    {
+      "path": "nexus/demo/portfolio-workspace-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "eaefe90cff26cc8ca9a4848b8e0b02fa4827cb908302c4beae926d88dccb17c0"
+    },
+    {
+      "path": "nexus/demo/portfolio-workspace-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "5d062fab58470a17893b1ab8247b6a29be7bd0c2a2d7fe931d847ed8269e2a74"
+    },
+    {
+      "path": "nexus/demo/position-balance-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "51ba8b5ea9a6b2c24d0689731805bbdbe42bd2482028884849e8cab9c4c743c3"
+    },
+    {
+      "path": "nexus/demo/position-reconciliation.css",
+      "status": 200,
+      "match": true,
+      "sha256": "ea5757c8bd626b88ae428555fa8fc17663b571931050cb219fb5a13d8f466caa"
+    },
+    {
+      "path": "nexus/demo/position-reconciliation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "5c9f2831f0ce3859dd5868b1a39ea5590af56238f21ee737d26e39032cae95a3"
+    },
+    {
+      "path": "nexus/demo/price-alert-archive-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c93ae249ead7e171fff1352d04e1799d98cc25f93244cbb0ad95b095f53b0f5c"
+    },
+    {
+      "path": "nexus/demo/price-alert-archive-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "4f77e346625534180f59cfd78dbb3377a3c16db4ff02c5bc876bd475d4207989"
+    },
+    {
+      "path": "nexus/demo/price-alert-archive-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8a257d1376b061346c8b77057153855f5831ca9bd412c392f16e0a2b1de6af7b"
+    },
+    {
+      "path": "nexus/demo/price-alert-protocol.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6d070a2413bd001620fa3c024de7be79bc5c190490e4002d27b5005e31210386"
+    },
+    {
+      "path": "nexus/demo/price-alert-rule-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "455d29279b3a20241ba8563e76850ee0cbc0d58a524636fa479779c41c14f080"
+    },
+    {
+      "path": "nexus/demo/price-alerts-controller.js",
+      "status": 200,
+      "match": true,
+      "sha256": "93e728bab52062539307f88a272825b3bc7b3d33acf708c71752d2445a4ccb33"
+    },
+    {
+      "path": "nexus/demo/price-alerts-versioned.css",
+      "status": 200,
+      "match": true,
+      "sha256": "739fe110ec53da1fa18e775e4d6f04f5e5079de805bc1e084bd735d31076bce6"
+    },
+    {
+      "path": "nexus/demo/price-rules-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "25c97f35dd0f7a73d4e6eeddb0db86d845ba7cf53b817f0bfb8836d046de21b0"
+    },
+    {
+      "path": "nexus/demo/price-alerts.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8c8571a0242fb02d06d2abaa0e5d9fcb6bcb019da4847abd526d1665c827ec32"
+    },
+    {
+      "path": "nexus/demo/price-rules-transfer-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "a16837a62fda3d77e5ff76566a8826de5b79ccc7983da86b3cf07b9af16cdd46"
+    },
+    {
+      "path": "nexus/demo/price-rules-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7f5ef6cbd9284c14189b6c3aa5899d174a3b2ed3aafb604fcfd840ca3494944c"
+    },
+    {
+      "path": "nexus/demo/product-features.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7222ee680c7d5581131ade261b931b231fc96a37f8fcb4445d1e2ada9f9d6583"
+    },
+    {
+      "path": "nexus/demo/rail-selection.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8713f23b3df3cb777a28f1c843a03bdea0bdbf4a55d1a74eeb800cfd1aabdc61"
+    },
+    {
+      "path": "nexus/demo/readiness-refinement.css",
+      "status": 200,
+      "match": true,
+      "sha256": "f7477de84c9d4179e8d3d6a8bc02abc3aa31b2758f4b945835b330a75bb9118c"
+    },
+    {
+      "path": "nexus/demo/reference-price-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "39ac49edf62805a9feb8666dffe23960a73f7e25efd4b40f788f362557588ee6"
+    },
+    {
+      "path": "nexus/demo/reference-price-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "bbcd1fbbe1d2903d07e8c893277cff0746e341eea97c5af8703dd09f34e27764"
+    },
+    {
+      "path": "nexus/demo/reference-details.css",
+      "status": 200,
+      "match": true,
+      "sha256": "3918fa9a95d65381b980c587397fc07c093252fd546188d24a8c60b3aa0ce8d5"
+    },
+    {
+      "path": "nexus/demo/reference-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1785cebd5517d90a5fe021ef7d25c9b5347b5c652a92716f0711c10d79dc4224"
+    },
+    {
+      "path": "nexus/demo/reference-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "e98f57cb404f762884b4e8d8bae3705b468ca72697820164b7f53781159e41bd"
+    },
+    {
+      "path": "nexus/demo/refresh-display-preference.js",
+      "status": 200,
+      "match": true,
+      "sha256": "dcb63d9dcb4492f1b8da49e8f1836820af9f600f3fdf04740d794e3606330ea2"
+    },
+    {
+      "path": "nexus/demo/research-lifecycle.js",
+      "status": 200,
+      "match": true,
+      "sha256": "fcbddcb9457fc5b0af067972929198a163978a3d3a4fc26a07a89dac4ce1a038"
+    },
+    {
+      "path": "nexus/demo/research-notes-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "2632b584c555e0a0f554ec876208684d7bc916f2fa677b9517781685f78f6e48"
+    },
+    {
+      "path": "nexus/demo/research-notes-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "5d689465f4370fb9244a6049f8df4e5b3e27b92b651326dcdde499528fa2b62f"
+    },
+    {
+      "path": "nexus/demo/research-query-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c3cb7965fa9af1e5356b1011df42f3665ac57512b7a0118df4c059edda3f7a41"
+    },
+    {
+      "path": "nexus/demo/research-query-record.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e908854dccf85522f5902b2edad4ebcc615d6a9588c6ef2bc83dd086b5babce8"
+    },
+    {
+      "path": "nexus/demo/research-query-search.js",
+      "status": 200,
+      "match": true,
+      "sha256": "418341c9db5599fb8ec7104699d2d4f96cd29e52dec16d844b3714edf8783d18"
+    },
+    {
+      "path": "nexus/demo/research-query-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "43a6f2b034b93646b20ed0486f203930029b4ff74e02df8fc3eaf081e2b49de5"
+    },
+    {
+      "path": "nexus/demo/research-query-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4de86dfc30b020addbeaa8f3b4218a64f4fa9175e360eea396af5369e146e577"
+    },
+    {
+      "path": "nexus/demo/risk-calculator.js",
+      "status": 200,
+      "match": true,
+      "sha256": "420a8086a335548abc13373ec0ea8c0c734214a2b3f6e97fad448dd9903fe4af"
+    },
+    {
+      "path": "nexus/demo/robots.txt",
+      "status": 200,
+      "match": true,
+      "sha256": "331ea9090db0c9f6f597bd9840fd5b171830f6e0b3ba1cb24dfa91f0c95aedc1"
+    },
+    {
+      "path": "nexus/demo/saved-asset-classes-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "07ba30540124fe9dfaf451986c8815a6e6ff3193736c8de93731c6066554ce4e"
+    },
+    {
+      "path": "nexus/demo/saved-asset-classes-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9f232acb5fe789719d4fea6073906d3aa86857d072eb6e63db9eb02ca03f4523"
+    },
+    {
+      "path": "nexus/demo/saved-research-controller.js",
+      "status": 200,
+      "match": true,
+      "sha256": "91b49e61af2124386f36f614d59999a52e4663ea8fce7dc509d9ab16b24c18a4"
+    },
+    {
+      "path": "nexus/demo/saved-research-memory-transport.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cf0a2b965660134ab3876a05e3b91f63ad378aef1d469841bd5735396dfb4d13"
+    },
+    {
+      "path": "nexus/demo/saved-research-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6033907c8b72eecf20d0526c22388301804cdddf2c11bc7f3d1224576123e6e6"
+    },
+    {
+      "path": "nexus/demo/saved-research-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e76bed5197475b4af06053183c0a74b8937f5846b54334b81db75451c4979ee8"
+    },
+    {
+      "path": "nexus/demo/saved-research-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "71c1b3b6d75a5531701495c2e4cf247e692eabf852b6f2c48ed5e76709f10c45"
+    },
+    {
+      "path": "nexus/demo/saved-research-transfer.js",
+      "status": 200,
+      "match": true,
+      "sha256": "30ef22c2328d1ebf241c2581b58f06dd626ac77f5d8021a2c013f93b8133134a"
+    },
+    {
+      "path": "nexus/demo/saved-research-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b65e8efe978b553100749003d63ab7d4790d0dffd0520d89137547f6cc09da79"
+    },
+    {
+      "path": "nexus/demo/saved-research-workspace.js",
+      "status": 200,
+      "match": true,
+      "sha256": "97ffd9edc6163223d2137ea13c71029869c50b222027c602eaddb94ecf20129d"
+    },
+    {
+      "path": "nexus/demo/search-actions.js",
+      "status": 200,
+      "match": true,
+      "sha256": "3e0be62c4d75891dce889c4e82ac0165a7a531fa3d77132ec60ac43bf0f9f745"
+    },
+    {
+      "path": "nexus/demo/search-continuation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "59c5c6067dedd10bc1dea40ea4d5e9e7024d82924c387141399cbba557d806e2"
+    },
+    {
+      "path": "nexus/demo/runtime.js",
+      "status": 200,
+      "match": true,
+      "sha256": "202165c16d74d8c14d071f3ac1f2b4b91aa17cdf6e026e1180db9f89c9661271"
+    },
+    {
+      "path": "nexus/demo/search-transport.js",
+      "status": 200,
+      "match": true,
+      "sha256": "19a76178ca75179c587fdd16e8d84cdf349aa6184824c44a9803c6b6f0d12461"
+    },
+    {
+      "path": "nexus/demo/search-worker.js",
+      "status": 200,
+      "match": true,
+      "sha256": "2b096ce3b87eb2de7d562baef2b01cf8bcbecd4206b99b2630bf1ee7eda65e87"
+    },
+    {
+      "path": "nexus/demo/security-position-metrics.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1333cb6d3aa8b3c1bbd47b1094dc474c46ad6d5552a1f7326540e2cf269888c0"
+    },
+    {
+      "path": "nexus/demo/session-result-review-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e1efdda3c7e460275b8a2fd57a73014ea04386c2abac5cd6698bac5e48f3701d"
+    },
+    {
+      "path": "nexus/demo/search-continuation.css",
+      "status": 200,
+      "match": true,
+      "sha256": "59e8f905baf9c7e8d2e4761e939447021e193d52c379f48ae80af82c1af04bcf"
+    },
+    {
+      "path": "nexus/demo/search-product.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a386a71f1fb60def9f0aacc2c2baec3300a024e33f6d6f77cc6549519790830e"
+    },
+    {
+      "path": "nexus/demo/session-result-review.js",
+      "status": 200,
+      "match": true,
+      "sha256": "49d835259b754caa091ee2cd85db0dc237b2499fb698e8f80d8d885be67141b3"
+    },
+    {
+      "path": "nexus/demo/settings-layout.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c0542c2cb0928e67b965c52197b7943b24ca2398be49b5ae00870d58c6d68849"
+    },
+    {
+      "path": "nexus/demo/share-transfer-valuation-contract.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b92cbdf0e5c0cee3db60b1f4b34fb236ef5f6c294ed5d0e35dac4b02475a81bc"
+    },
+    {
+      "path": "nexus/demo/source.json",
+      "status": 200,
+      "match": true,
+      "sha256": "7ca33b2ac6117aff132b736596f2e96e0c9ddccd927814cb8d010ecc5d15358b"
+    },
+    {
+      "path": "nexus/demo/sticky-table.js",
+      "status": 200,
+      "match": true,
+      "sha256": "62ba3e44112f16c4a2169ba5e34036001721c8ceac0f3dc49c60e91f571cf63d"
+    },
+    {
+      "path": "nexus/demo/share-transfer-valuations-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "64c74e1e0ef9a4af0d447ee0288d5ede9b2878c93b94adfe9e24f269bd15bd7b"
+    },
+    {
+      "path": "nexus/demo/styles.css",
+      "status": 200,
+      "match": true,
+      "sha256": "4397b60101b602140b7770dbf5640e3a460ff3b7c0d2a605dbf5cb50367dfa1a"
+    },
+    {
+      "path": "nexus/demo/sync-controller.js",
+      "status": 200,
+      "match": true,
+      "sha256": "f5ce26fa0e1331e6357cd8f2e7a09826e31385710dd2016e3d325953915b0af2"
+    },
+    {
+      "path": "nexus/demo/table-sort.js",
+      "status": 200,
+      "match": true,
+      "sha256": "33724b5cdfe97f4cacd21a2684ffd5ea963e8497749a48efa3293b5d98dae5b3"
+    },
+    {
+      "path": "nexus/demo/task-navigation-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "53b47cee8fab8cd82c0ce0fb387f86fbf97aa9c24bbf6496e9f7fdfff2dd07da"
+    },
+    {
+      "path": "nexus/demo/task-navigation-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "595d623c3d09870d08652cf3096b11e355a61073909db0021bc6e9aa4a4ba037"
+    },
+    {
+      "path": "nexus/demo/task-navigation.css",
+      "status": 200,
+      "match": true,
+      "sha256": "3e2ebc8ad7eec5270994e65c031cdb5e5f163d8aabca31a98605be82a1c588e6"
+    },
+    {
+      "path": "nexus/demo/telegram-connection.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cee4e0e591aec475f54a440b2b7a3e42106e2443063a329270ee17acc89f55ce"
+    },
+    {
+      "path": "nexus/demo/term-examples.js",
+      "status": 200,
+      "match": true,
+      "sha256": "819b2f10c6cdf6a10240c9c68055b2f160f6359271179a7452b42b89c0aec9a7"
+    },
+    {
+      "path": "nexus/demo/terminal-chart-menus.js",
+      "status": 200,
+      "match": true,
+      "sha256": "18feadda7c2de19a407f64a7470ab9659dddd8d242bdeaf9304bddd6cde1637f"
+    },
+    {
+      "path": "nexus/demo/terminal-chart-slots.js",
+      "status": 200,
+      "match": true,
+      "sha256": "862af7fbe060b11ebebea235d97585313809614f3eb303b92252ca4f469c00c1"
+    },
+    {
+      "path": "nexus/demo/terminal-context-navigation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8f57437a3d7033882f13e81ff9626ebe9512829061dee451832d3db119668b15"
+    },
+    {
+      "path": "nexus/demo/terminal-customization-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "23cb316f1e34f89ab0d2612faa9657484f9059a516fe6260e4fa9d91bfca1be3"
+    },
+    {
+      "path": "nexus/demo/terminal-customization.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7ac434f2e8684083840db32319269a4af17c28a0cc574fba739207df6bf7e244"
+    },
+    {
+      "path": "nexus/demo/terminal-chart-source.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4bf6b62d8ac3aff640655d50a3ea4419f5d9be4604c644cd58d19403b80ea9cf"
+    },
+    {
+      "path": "nexus/demo/terminal-docking-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "5dbfdfe1ad80387a0ff180590dee3976e9db7d34eb1a6e1f971be75b2c3ac769"
+    },
+    {
+      "path": "nexus/demo/terminal-docking-state.js",
+      "status": 200,
+      "match": true,
+      "sha256": "41326118a95f2fd0412c8eca1f58e6d2c153eedd484e2ed75f43c6f94599ca12"
+    },
+    {
+      "path": "nexus/demo/terminal-docking-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "2e6c9174a08df8b14bc62ea4b866723f3922501dba7375407de12ef37a8ca3a9"
+    },
+    {
+      "path": "nexus/demo/terminal-docking-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "efa8aee699af2ea8144d0e6f72b8f0fa9fe7f99a3122bbfbccec9836baa5942c"
+    },
+    {
+      "path": "nexus/demo/terminal-docking.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1bb5328a147fb737b7d3e0665336da5752160211a8f17d43649edddf81c0ff48"
+    },
+    {
+      "path": "nexus/demo/terminal-editors.js",
+      "status": 200,
+      "match": true,
+      "sha256": "2a8940a781e83eca117faa6086973ae2175a00e57e1fffd3c9d579498d1f5fd0"
+    },
+    {
+      "path": "nexus/demo/terminal-live-cache.js",
+      "status": 200,
+      "match": true,
+      "sha256": "7b9aeb3b07595badf0131fc9d646d046c3d21294198c8fd8d12783ab6f4f952d"
+    },
+    {
+      "path": "nexus/demo/terminal-market-activity.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ce72719ca7b8784c3c6da33bd472657eeceeb2b9b93aac242358e5551a9be670"
+    },
+    {
+      "path": "nexus/demo/terminal-order-ticket.js",
+      "status": 200,
+      "match": true,
+      "sha256": "59a53c9261bd203457f41a2499bf4b8da33b6f446b6dc4868ef2ad610cd9fca4"
+    },
+    {
+      "path": "nexus/demo/terminal-preset-actions.js",
+      "status": 200,
+      "match": true,
+      "sha256": "0321e0420d7120e12c2bb8a786af6a75e72fedbd7419142fda9d5b45cadaf6a6"
+    },
+    {
+      "path": "nexus/demo/terminal-replay.js",
+      "status": 200,
+      "match": true,
+      "sha256": "057f2e8146e0356e66f0f337ab6ddfc7f98a68a1c82f554860b4dcdf54f2d14c"
+    },
+    {
+      "path": "nexus/demo/terminal-scoped-settings.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4f1ea17055233006b6068af1411249e5131ef8b81247d1f997f25e8390fb78ce"
+    },
+    {
+      "path": "nexus/demo/terminal-series-passport-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e5633f3174376ac525ce1bd103a264988872e218f9c077cdcb4c16719ab56b7a"
+    },
+    {
+      "path": "nexus/demo/terminal-series-passport.css",
+      "status": 200,
+      "match": true,
+      "sha256": "52e8be2a22227f98802109bc12dce66773ff10c497dd748905bc6a708d3bec95"
+    },
+    {
+      "path": "nexus/demo/terminal-series-passport.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9b26e7f9c8376cbe293ec200769b620c21d428656d419c70457d002e888ca612"
+    },
+    {
+      "path": "nexus/demo/terminal-settings-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d1c3f1f265dd855b5ee7cd6da64576bbf98259d08e7b46abe4a3ae052e1e6a5c"
+    },
+    {
+      "path": "nexus/demo/terminal-settings-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "21aeac555bd041368e1782e38eb9e8cfaa2c475bcd7bee2ce57f53d70de1314d"
+    },
+    {
+      "path": "nexus/demo/terminal-sma-explanation-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "3e1ca3b5481f22ccd712e60f84fbbdcde2c24831f151c85126c39b7e2da33c2f"
+    },
+    {
+      "path": "nexus/demo/terminal-sma-explanation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9cde4b80120546641287bc59fea17fe5d1639ef67d5dc1bccbedddfffdf47bcd"
+    },
+    {
+      "path": "nexus/demo/terminal-study-explanation-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "af6628a4c7371ccfd1b6cf28e08f6e29c140febfc6a7b973a97aa3c388895700"
+    },
+    {
+      "path": "nexus/demo/terminal-study-explanation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c7db220bb5836db65a220c7e1970f7e027c9af8cda60ae0ab742588254acc499"
+    },
+    {
+      "path": "nexus/demo/terminal-task-presets.js",
+      "status": 200,
+      "match": true,
+      "sha256": "6923a66cb6a9125a778fc9986c133d4fe8ca7d16bab66196837ec273bdbe054d"
+    },
+    {
+      "path": "nexus/demo/terminal-volume-explanation-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "260f6bddd6ffe97148d96f551a9853f499b40efeb5683abdb4c3c150d9c176c0"
+    },
+    {
+      "path": "nexus/demo/terminal-volume-explanation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c668ea2ab6dce399e2c3e90de8ed184dfb3d26f4ab8550e8f319db103033671a"
+    },
+    {
+      "path": "nexus/demo/terminal-watch-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b3b3a908b5617a7f1ff6691a5dce80f2793c8e305ba338dee24977ea639a9a3b"
+    },
+    {
+      "path": "nexus/demo/terminal-watch-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "34be36f7dff581851e3a56631156ace1988e9e5d65eb44bf30311e57ca03d722"
+    },
+    {
+      "path": "nexus/demo/terminal-watchlist-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1a31142b22303a34e877339847d357afc6cad8f8777c7f22853034cabe9e73a9"
+    },
+    {
+      "path": "nexus/demo/terminal-watchlist-quotes.js",
+      "status": 200,
+      "match": true,
+      "sha256": "27af879f3e8ba7a5f943ab38439f59f2cbb365e33b549f835f641919372da9dd"
+    },
+    {
+      "path": "nexus/demo/terminal-watchlist.js",
+      "status": 200,
+      "match": true,
+      "sha256": "87e2f781d18b01c5f806435ebf890f5f242ce598482ea4bee38beaac8fc044e8"
+    },
+    {
+      "path": "nexus/demo/terminal-workbench.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e93172092befd7981f40fcc33b2253d9566884cf57aa0dbe52f2bc52f5dd62ca"
+    },
+    {
+      "path": "nexus/demo/terminal-workspace-document.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4a84eddb9b18c1a452abdf10c6d87a08f9aa0d3d3d0db4b70779732c3a05075a"
+    },
+    {
+      "path": "nexus/demo/terminal-workspace-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "291276ea6297355567a38c3016ce2a3ddee7e481a1f50ffe7a3dc15c989d6743"
+    },
+    {
+      "path": "nexus/demo/terminal-workbench.css",
+      "status": 200,
+      "match": true,
+      "sha256": "1d2369c89c10c8f4efb860de525e48870406299d799ad6f94118f7256b768dca"
+    },
+    {
+      "path": "nexus/demo/terminal-workspace-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "31df802b5f200c35ec8113f8e743b07627430aded7a834bf34d958b305a6aa79"
+    },
+    {
+      "path": "nexus/demo/terminal.js",
+      "status": 200,
+      "match": true,
+      "sha256": "d1d7fba8669318170010ccaafb0fe9d67cf6390b12e06434e941c0d288893740"
+    },
+    {
+      "path": "nexus/demo/today-calendar-bridge.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1750f51fb23fec63ea38f0128eb37e137b2247b5fc6c9ea8c858ddf7cd2e8b2d"
+    },
+    {
+      "path": "nexus/demo/today-overview-binder.js",
+      "status": 200,
+      "match": true,
+      "sha256": "1e03b3a9761d58fd8f024a70d6bb62876a5304c853e6b6aa8a5d15cb5fcea32e"
+    },
+    {
+      "path": "nexus/demo/today-overview-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "3c9c2905b22b3d2c1169a01a9f41b711decbfb10e00d2fef05bd52cd396ae06a"
+    },
+    {
+      "path": "nexus/demo/today-overview-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4a74bee29ec762eed705197117793521392d65cec6dfd143fdb81b4125a74b9f"
+    },
+    {
+      "path": "nexus/demo/today-overview.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9f453e175e31cbb6c1fb4bc84a52e70383bb203eaaf70b0265a004c2b570f6b9"
+    },
+    {
+      "path": "nexus/demo/trade-episodes-ui.css",
+      "status": 200,
+      "match": true,
+      "sha256": "898a4a7f36d4d234d73ac3c91685ded1c550e84149df88bee6b961ef475c8474"
+    },
+    {
+      "path": "nexus/demo/trade-episodes-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "9574f09d0b432389eef959cce3692d0926ada24aad81db46c7e582f9fe76b9d5"
+    },
+    {
+      "path": "nexus/demo/trade-group-review.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a9af9ec4eb2ff45f0653d3dbf3f1753217d4f6a94c031a5fac10470104acc009"
+    },
+    {
+      "path": "nexus/demo/ui-language.js",
+      "status": 200,
+      "match": true,
+      "sha256": "777fe4a9bb46c79d0127df77a0510d504fe5fe6dd81d8aeb1cd984eec7fa00f9"
+    },
+    {
+      "path": "nexus/demo/visual-workspace.js",
+      "status": 200,
+      "match": true,
+      "sha256": "225ffb5acf7be53add68b7fd348ee9753f34282a3a95767d0a833c33fdbee60d"
+    },
+    {
+      "path": "nexus/demo/visual-workspace.css",
+      "status": 200,
+      "match": true,
+      "sha256": "055a67a255f5e866cff036bd9774ade6cf27b1f53d4b540baa73913450db6f4b"
+    },
+    {
+      "path": "nexus/demo/workspace-context.css",
+      "status": 200,
+      "match": true,
+      "sha256": "63bc2e91e830bd584dc3c3cfc8d7327a56be067d8ac1975b004d02bf408b1e50"
+    },
+    {
+      "path": "nexus/demo/workspace-customization.css",
+      "status": 200,
+      "match": true,
+      "sha256": "7abebed89efda6bbe4c94a0b5c64964dde807d619279cc43f04561b5def8780e"
+    },
+    {
+      "path": "nexus/demo/workspace-customization.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ed129759bfdf34bd4ba3fe5cf9cbfdd6c9b1061b676ed9b5b4157ff52690ee8f"
+    },
+    {
+      "path": "nexus/demo/trading-plan-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "155dc4312f4bf68767389e3ec29a62086797a910cf74c2e2a44b390885bbc15d"
+    },
+    {
+      "path": "nexus/demo/workspace-navigation-history.js",
+      "status": 200,
+      "match": true,
+      "sha256": "09d1ded29281c147ef0185c199ff95d14854e325690a52cc03ea3655922373e7"
+    },
+    {
+      "path": "nexus/demo/workspace-notifications.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a7d9f60d1715ac3c637c093c4c100b023355a96e22215501d17416a7d6a47dd8"
+    },
+    {
+      "path": "nexus/demo/workspace-panels-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8e905e33a2d3591ca36071a8d61261401e521343d72e2c5cee48994050fe972e"
+    },
+    {
+      "path": "nexus/demo/workspace-panels.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b6e2a1a628ec21e9eb5559d37abfefaa624e6b646b316312f0b3a15022064edc"
+    },
+    {
+      "path": "nexus/demo/workspace-refinements.css",
+      "status": 200,
+      "match": true,
+      "sha256": "a1fbd4373d320b034a387e8f708da3bc167ea3ac12baab9ef00afdf42a3ef9ce"
+    },
+    {
+      "path": "nexus/demo/workspace-refinements.js",
+      "status": 200,
+      "match": true,
+      "sha256": "b03525c451dba22d55566adf5ee6dca232d4f8bb9e3d95e29a3880a94993639b"
+    },
+    {
+      "path": "nexus/demo/workspace-settings-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cf5ec52dd46fe9b78757c6b863e33316e7dde9da2c2d56bfa0dfb654697cb70e"
+    },
+    {
+      "path": "nexus/demo/workspace-panel-docking.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e4123d86ad8c2b99a546eddda7046f0b199336750de41882baa8097b4a68a302"
+    },
+    {
+      "path": "nexus/demo/workspace-settings-store.js",
+      "status": 200,
+      "match": true,
+      "sha256": "dd94b0af00ac524d899f5cdde1d7ecf60cb17daa889cee67988d52c0ec0bcd27"
+    },
+    {
+      "path": "nexus/demo/workspace-settings-transfer-model.js",
+      "status": 200,
+      "match": true,
+      "sha256": "8c86e56cf0b0a51c0f06d3426e30ec4865a97baecc702c6b2c85e96452cdec0a"
+    },
+    {
+      "path": "nexus/demo/world-market-catalog.js",
+      "status": 200,
+      "match": true,
+      "sha256": "bd7359c39be92480473e3e1021ce2fccebae5efd4ad94c7fd6644dba50661082"
+    },
+    {
+      "path": "nexus/demo/world-market-chart.js",
+      "status": 200,
+      "match": true,
+      "sha256": "69c10d01a48d7c376b6b9410083711ca4f0611a14a402acc34f96ca1bad79196"
+    },
+    {
+      "path": "nexus/demo/workspace-settings-transfer-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "0a1ccc55f90d27c84d6e074e7e9a7c490bfb66538985a5ec100a510824e071d0"
+    },
+    {
+      "path": "nexus/demo/world-market-directory.json",
+      "status": 200,
+      "match": true,
+      "sha256": "ec715359bb57889f2b1520eccc669ac2481298520b7a82f0e567d0673536277a"
+    },
+    {
+      "path": "nexus/demo/world-market-tone.js",
+      "status": 200,
+      "match": true,
+      "sha256": "311e5c91c74d4dba979d89d83f34302675a2b5192f7c1ad43ff24df2888b3082"
+    },
+    {
+      "path": "nexus/demo/vendor/LIGHTWEIGHT-CHARTS-LICENSE.txt",
+      "status": 200,
+      "match": true,
+      "sha256": "70c9d5382506dd184465425c08a99ad9bd6d9ac1313c252968ba0b585e5ef823"
+    },
+    {
+      "path": "nexus/demo/vendor/LIGHTWEIGHT-CHARTS-NOTICE.txt",
+      "status": 200,
+      "match": true,
+      "sha256": "0521aef9adc80917ef847d057684b039d0c3683d16beb7378c9894781e4af4a0"
+    },
+    {
+      "path": "nexus/demo/service-module/v1.4.7/subscription-mountains.webp",
+      "status": 200,
+      "match": true,
+      "sha256": "e0746f39d88a91476ddcaf8c095f6bf5146ab147a439be9346075fc18193dcd3"
+    },
+    {
+      "path": "nexus/demo/service-module/v1.4.7/vertux-service-center.css",
+      "status": 200,
+      "match": true,
+      "sha256": "45bfa34461364228c92aa5f4d724f847ee9e5f46d91b90902af00ace2b09d217"
+    },
+    {
+      "path": "nexus/demo/fonts/choice-09472f217ad1.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "09472f217ad1ebb61a7669cf532f9f2f80685e07652ee862fde9a79665aef479"
+    },
+    {
+      "path": "nexus/demo/service-module/v1.4.7/vertux-service-center.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cb60bf83bbc02e175d9ce94e82baf61303795130e086743f21a056e8d080bf20"
+    },
+    {
+      "path": "nexus/demo/fonts/choice-35e30483bb79.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "35e30483bb79be6fd8de0fec4e038fda9e637fc7337f6ff61418c7d08077878b"
+    },
+    {
+      "path": "nexus/demo/vendor/lightweight-charts.standalone.production.js",
+      "status": 200,
+      "match": true,
+      "sha256": "e21cc5caa0226ef30bd8549c50b9ef926615f2a4ee6b4e486353477a55f598cf"
+    },
+    {
+      "path": "nexus/demo/fonts/choice-bdb2b33ab916.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "bdb2b33ab916e9e7b42edb61f8aea5f5dd83ad773d6ee4e9b55665daf8954ce8"
+    },
+    {
+      "path": "nexus/demo/fonts/choice-691cd1d9b4c0.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "691cd1d9b4c0cdf31a1dcf04259c86f92c85e69f6622abab7964d81e36890691"
+    },
+    {
+      "path": "nexus/demo/fonts/f00.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "83c005d49d8a6a50474c73a5a36ac0468076e9c4a29da7bdb14995d80560a5be"
+    },
+    {
+      "path": "nexus/demo/fonts/f01.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "e17cfd15fb96909d64095015f958207063a0c07191da3512df7d560a781aebdf"
+    },
+    {
+      "path": "nexus/demo/fonts/f02.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "c268b459a9329e59fecf39a17618efd44c71735532048d60b12aab76a8c14914"
+    },
+    {
+      "path": "nexus/demo/fonts/f03.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972"
+    },
+    {
+      "path": "nexus/demo/fonts/f04.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6"
+    },
+    {
+      "path": "nexus/demo/fonts/f05.woff2",
+      "status": 200,
+      "match": true,
+      "sha256": "e30bf6a6063b6a47232bbd657e24c7cf4fdaf76fc2c50d92d9ee63e2ad2087cf"
+    },
+    {
+      "path": "nexus/demo/fonts/Rubik-OFL.txt",
+      "status": 200,
+      "match": true,
+      "sha256": "3cb6a6084f5d942a8f3b5fda0f6a90dde18d7f7f1798886f4043d18f8c1a811e"
+    },
+    {
+      "path": "nexus/demo/fonts/fonts.css",
+      "status": 200,
+      "match": true,
+      "sha256": "bf37b8b7d158b92c166e4d49c09c6d7d079a7f09c93a0389c7409a5469fb9a66"
+    },
+    {
+      "path": "nexus/demo/fonts/rubik.css",
+      "status": 200,
+      "match": true,
+      "sha256": "f79283bc6c54546ae615b0df3aae9124e9a1a4059c69c4cc61ad712017b0dc7a"
+    },
+    {
+      "path": "nexus/demo/assets/issuers/apple.png",
+      "status": 200,
+      "match": true,
+      "sha256": "c410723c48614d9172635a21202b9e9999288dc20819a4384e18721a5aa9da9c"
+    },
+    {
+      "path": "nexus/demo/assets/issuers/gazprom.png",
+      "status": 200,
+      "match": true,
+      "sha256": "b1773c16fb60ef05faf49b4a0ad00340891bf59b58d08a17fd61670fff5fc1e4"
+    },
+    {
+      "path": "nexus/demo/assets/issuers/lukoil.png",
+      "status": 200,
+      "match": true,
+      "sha256": "f6ce5980c41fd6d4c3b7495bd8de199e60e735dec994c413ceb8991e2dabafef"
+    },
+    {
+      "path": "nexus/demo/assets/issuers/README.md",
+      "status": 200,
+      "match": true,
+      "sha256": "431c76800a8c93fce1ab5bf9f548bda1b726c38996b672e005f4d764a6dab3c3"
+    },
+    {
+      "path": "nexus/demo/assets/issuers/sber.png",
+      "status": 200,
+      "match": true,
+      "sha256": "414bd00c2b06102291006720be390ae1fcbdbeeb2e6a06447c986b903203eb88"
+    },
+    {
+      "path": "nexus/demo/assets/issuers/yandex.png",
+      "status": 200,
+      "match": true,
+      "sha256": "bdda8c060eea2d30376a7a777b1ca6c3b31ea684a50b5b2452d8f3352be60c96"
+    },
+    {
+      "path": "nexus/demo/assets/commodities/coffee.svg",
+      "status": 200,
+      "match": true,
+      "sha256": "09cba10d36927517f8d6ca6577b039279760f03f2160d1b221e9605dad3c2f93"
+    },
+    {
+      "path": "nexus/demo/account-module/v1.3.0/account-center.css",
+      "status": 200,
+      "match": true,
+      "sha256": "fba180316f182e0703b9490bde1197a9936dd838d05c6bfa8f9b7feb9915f8da"
+    },
+    {
+      "path": "nexus/demo/account-module/v1.3.0/profile-security.js",
+      "status": 200,
+      "match": true,
+      "sha256": "679b2582d91d1cd28e518d670ee4c0234966d166af43606c67d7499f97eaea86"
+    },
+    {
+      "path": "nexus/demo/account-module/v1.3.0/personal-account.js",
+      "status": 200,
+      "match": true,
+      "sha256": "c8793ee51a5eb5ac10a04d862a5c4e9d162d57c90d5d8c0de533bb66579fbdaf"
+    },
+    {
+      "path": "nexus/demo/account-module/v1.3.0/template.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a957c252a03a08b245e9852e3923c9e0363529110612af5904eda501c08af37e"
+    },
+    {
+      "path": "nexus/demo/account-module/v1.3.0/vertux-account-center.js",
+      "status": 200,
+      "match": true,
+      "sha256": "ea5624adaab004683d822cd0cd961ed19890dbe09eb6159fa3a8d25fcd26f2f9"
+    },
+    {
+      "path": "nexus/demo/account-module/v1.3.0/workspace-navigation.js",
+      "status": 200,
+      "match": true,
+      "sha256": "78f3af823cc49b94aeaa97e1951909be8cb02aaacb71d9e7329926693fb2fa0b"
+    },
+    {
+      "path": "nexus/index.html",
+      "status": 200,
+      "match": true,
+      "sha256": "21ba70a6b728bdfc2523c0ff286e71a5744818bd0df9b0aa51e893a53a370012"
+    },
+    {
+      "path": "nexus/pricing.html",
+      "status": 200,
+      "match": true,
+      "sha256": "8055b7574d33b7a0088143348abb8c3cdccc0dc1d70e9abbd74707ea8727a21d"
+    },
+    {
+      "path": "nexus/invest.html",
+      "status": 200,
+      "match": true,
+      "sha256": "bd6382e4f1fea4b1f2a38b5049e2c6e3659b6f67f5970d3b269073a5f7396a00"
+    },
+    {
+      "path": "nexus/workspace.html",
+      "status": 200,
+      "match": true,
+      "sha256": "97261d8b5952a1dae725da8da3db144864439dee2f9d619ec56c72ecb63b800e"
+    },
+    {
+      "path": "nexus/security.html",
+      "status": 200,
+      "match": true,
+      "sha256": "e9d4a5f9cf86efbb7adcd4db0425c6cb5279d87c98c019b1830196099552b2bb"
+    },
+    {
+      "path": "nexus/download.html",
+      "status": 200,
+      "match": true,
+      "sha256": "a15fa904ecee5cefd19ba5e665dc7bcce2ba17104524733699aea54df06518ad"
+    },
+    {
+      "path": "nexus/updates.html",
+      "status": 200,
+      "match": true,
+      "sha256": "b2caa6a4c51429dd5bf149e5f23af684c121c7ea84cad773c9cdc8b9759b2dbe"
+    },
+    {
+      "path": "nexus/offer.html",
+      "status": 200,
+      "match": true,
+      "sha256": "1cfd7e9e1cb7a091d21c807c48cb40b90c86f14c46a722c76c97b54561ac2de0"
+    },
+    {
+      "path": "nexus/privacy.html",
+      "status": 200,
+      "match": true,
+      "sha256": "36c859cd978ee6e3463f00c904db0e2ff37aed91dd36dcd243e6dcb924971a25"
+    },
+    {
+      "path": "nexus/assets/demo-frame.css",
+      "status": 200,
+      "match": true,
+      "sha256": "fe3185f20275356ac72d9ca4a85d3593ebee6da06469cd21699a143c4d13cd1e"
+    },
+    {
+      "path": "nexus/assets/demo-runtime.js",
+      "status": 200,
+      "match": true,
+      "sha256": "cdba48b0af55867de7b8999489f7ab106a18ef33063bf4e1c986b706769e6ff7"
+    },
+    {
+      "path": "nexus/consent.html",
+      "status": 200,
+      "match": true,
+      "sha256": "410e79a6b16c3e2e83fa03f7550f75f5202805df2c6ba22473a8023c0e2a92d1"
+    },
+    {
+      "path": "nexus/assets/demo-service.js",
+      "status": 200,
+      "match": true,
+      "sha256": "557f9f83f061afa9c8be81bcb96eeaebbede5bf7f77d85c38ddbead6d236cca6"
+    }
+  ],
+  "browserErrors": [],
+  "demoNetworkAttempts": [],
+  "source": {
+    "version": "0.6.52",
+    "commit": "917468b5c73e9fff0847054bdf40f4792e83a3ca",
+    "serviceModule": "1.4.7",
+    "synthetic": true,
+    "brokerNetwork": false,
+    "modelNetwork": false
+  },
+  "status": "LIVE_VERIFIED"
+}
