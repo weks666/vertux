@@ -2,6 +2,29 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-87",
+      "date": "2026-10-25",
+      "versions": {
+        "Nexus": "0.6.87"
+      },
+      "title": {
+        "ru": "TradingView без VPN",
+        "en": "TradingView without a VPN"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Графики TradingView в терминале и карта мировых рынков открываются без VPN. В сетях, где адреса TradingView недоступны, Nexus направляет только их через защищённый ретранслятор Vertux; остальные соединения идут напрямую, а при недоступности ретранслятора — тоже напрямую.",
+          "en": "TradingView charts in the terminal and the world market map now open without a VPN. In networks where TradingView addresses are unavailable, Nexus routes only those through the secure Vertux relay; all other connections stay direct, and if the relay is unavailable they go direct as well."
+        },
+        {
+          "type": "changed",
+          "ru": "Пакет поставляется с Invest 0.6.52: график стоимости после каждого обновления доходит до текущей оценки портфеля. Установщик на сайте обновлён.",
+          "en": "The package ships with Invest 0.6.52: the value chart reaches the current portfolio valuation after every refresh. The website installer has been updated."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-52",
       "date": "2026-10-24",
       "versions": {

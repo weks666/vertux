@@ -44,7 +44,8 @@ test('a new release cannot pass using an old changelog', async () => {
 test('missing translations, duplicate versions and wrong date order fail', async () => {
   for (const corrupt of [
     (data) => { data.releases[0].changes[0].en = ''; },
-    (data) => { data.releases[1].versions.Invest = current.Invest; },
+    // Duplicate the current Invest version on another entry; the newest entry may be Nexus-only.
+    (data) => { const other = data.releases.find(release => release.versions.Invest && release.versions.Invest !== current.Invest); other.versions.Invest = current.Invest; },
     (data) => { data.releases[1].date = '9999-12-31'; },
     (data) => { data.releases[0].date = '2026-02-30'; },
   ]) {
