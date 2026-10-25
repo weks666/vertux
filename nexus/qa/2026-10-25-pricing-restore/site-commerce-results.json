@@ -1,0 +1,189 @@
+{
+  "startedAt": "2026-10-25T09:40:31.546Z",
+  "baseURL": "http://127.0.0.1:8766/",
+  "channel": "msedge",
+  "scope": "commerce",
+  "networkPolicy": "Only GET/HEAD to the preview origin. Known header session GET may receive an anonymous fixture; all other external requests are blocked. No user session is loaded.",
+  "cases": [
+    {
+      "name": "pricing",
+      "width": 1440,
+      "status": "PASS",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "localHttpErrors": [],
+      "localRequestFailures": [],
+      "languages": [
+        {
+          "lang": "ru",
+          "viewport": 1440,
+          "document": 1425,
+          "body": 1425,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        },
+        {
+          "lang": "en",
+          "viewport": 1440,
+          "document": 1425,
+          "body": 1425,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        }
+      ]
+    },
+    {
+      "name": "pricing",
+      "width": 1120,
+      "status": "PASS",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "localHttpErrors": [],
+      "localRequestFailures": [],
+      "languages": [
+        {
+          "lang": "ru",
+          "viewport": 1120,
+          "document": 1105,
+          "body": 1105,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        },
+        {
+          "lang": "en",
+          "viewport": 1120,
+          "document": 1105,
+          "body": 1105,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        }
+      ]
+    },
+    {
+      "name": "pricing",
+      "width": 1024,
+      "status": "PASS",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "localHttpErrors": [],
+      "localRequestFailures": [],
+      "languages": [
+        {
+          "lang": "ru",
+          "viewport": 1024,
+          "document": 1009,
+          "body": 1009,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        },
+        {
+          "lang": "en",
+          "viewport": 1024,
+          "document": 1009,
+          "body": 1009,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        }
+      ]
+    },
+    {
+      "name": "pricing",
+      "width": 390,
+      "status": "PASS",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "localHttpErrors": [],
+      "localRequestFailures": [],
+      "languages": [
+        {
+          "lang": "ru",
+          "viewport": 390,
+          "document": 375,
+          "body": 375,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        },
+        {
+          "lang": "en",
+          "viewport": 390,
+          "document": 375,
+          "body": 375,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        }
+      ]
+    },
+    {
+      "name": "pricing",
+      "width": 320,
+      "status": "PASS",
+      "consoleErrors": [],
+      "pageErrors": [],
+      "localHttpErrors": [],
+      "localRequestFailures": [],
+      "languages": [
+        {
+          "lang": "ru",
+          "viewport": 320,
+          "document": 305,
+          "body": 305,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        },
+        {
+          "lang": "en",
+          "viewport": 320,
+          "document": 305,
+          "body": 305,
+          "terms": [
+            1,
+            3,
+            12
+          ],
+          "sellerFits": true
+        }
+      ]
+    }
+  ],
+  "failures": [],
+  "blockedRequests": [],
+  "stubbedRequests": [],
+  "finishedAt": "2026-10-25T09:40:46.362Z",
+  "status": "PASS"
+}

@@ -1,5 +1,5 @@
 
-/* Three plan comparison and real product screens, 22 September 2026. */
+/* Four plan comparison and real product screens, 22 September 2026. */
 .nx-review-note { position:relative; margin-top:110px; padding:12px 18px; border:1px solid #d7c3ff66; border-radius:10px; color:#e4d7ff; background:#241b32; font-size:13px; text-align:center; }
 .nx-review-note + .nx-pricing-hero { padding-top:46px; }
 .nx-term-controls { display:flex; gap:5px; align-items:stretch; justify-content:center; width:fit-content; max-width:100%; margin:28px auto 0; padding:5px; border:1px solid var(--nx-line); border-radius:13px; background:#171320; }
@@ -8,11 +8,12 @@
 .nx-term-controls button[aria-pressed="true"] { background:#d7c3ff; color:#1b1527; }
 .nx-term-controls button:hover:not([aria-pressed="true"]) { background:#d7c3ff15; color:#f3f3f5; }
 .nx-term-controls button:focus-visible,.nx-screen-link:focus-visible,.nx-detail-screen:focus-visible { outline:2px solid #d7c3ff; outline-offset:4px; }
-.nx-tier-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; align-items:stretch; }
+.nx-tier-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:18px; align-items:stretch; }
 .nx-tier-card { display:flex; flex-direction:column; min-width:0; padding:30px 27px; border:1px solid #dfc7ff38; border-radius:16px; background:#191622ed; }
 .nx-tier-card[data-tier-card="standard"] { border-color:#d7c3ff99; background:#241c32f5; }
 .nx-tier-title { display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:flex-start; min-height:65px; }
-.nx-tier-title h2 { font-size:26px; margin:0; line-height:1.2; letter-spacing:-.025em; }
+.nx-tier-title h2 { display:flex; align-items:center; gap:10px; font-size:26px; margin:0; line-height:1.2; letter-spacing:-.025em; }
+.nx-tier-title h2 .nx-icon { width:24px; height:24px; flex:none; color:#d7c3ff; }
 .nx-tier-status { color:#d7c3ff; background:#d7c3ff15; border-radius:5px; padding:4px 7px; font-size:11px; }
 .nx-tier-description { color:var(--nx-muted); font-size:14px; line-height:1.55; min-height:44px; margin:16px 0 26px; max-width:28ch; }
 .nx-tier-price { display:flex; flex-direction:column; gap:5px; font-variant-numeric:tabular-nums; }
@@ -21,7 +22,7 @@
 .nx-tier-equivalent { color:#c0bacf; font-size:12px; line-height:1.6; min-height:39px; margin:13px 0 20px; font-variant-numeric:tabular-nums; }
 .nx-tier-card > .nx-button { width:100%; justify-content:center; font-size:13px; min-height:48px; padding-inline:12px; }
 .nx-tier-access { color:#c0bacf; font-size:11px; text-align:center; margin:12px 0 24px; }
-.nx-tier-features { list-style:none; padding:22px 0 0; margin:0; border-top:1px solid var(--nx-line); display:flex; flex-direction:column; gap:15px; }
+.nx-tier-features { list-style:none; padding:22px 0 26px; margin:0; border-top:1px solid var(--nx-line); display:flex; flex-direction:column; gap:15px; flex:1; }
 .nx-tier-features li { display:grid; grid-template-columns:17px 1fr; gap:10px; align-items:start; color:#e8e0f1; font-size:13px; line-height:1.45; min-height:32px; }
 .nx-tier-features .nx-icon { width:16px; height:16px; margin-top:2px; color:#d7c3ff; }
 .nx-tier-features small { display:block; font-size:10px; color:#c0bacf; margin-top:3px; }
@@ -116,7 +117,7 @@
 .nx-tier-card[data-tier-card="plus"] { background:linear-gradient(145deg,#c094ff29,#b896ec0c 70%); border-color:#d7b3ff72; }
 .nx-tier-title { min-height:64px; }
 .nx-tier-status { font-size:10px; color:#f0e5ff; background:#c3a0fc21; }
-.nx-tier-card > .nx-button { margin-bottom:26px; }
+.nx-tier-card > .nx-button { margin-top:auto; margin-bottom:0; }
 .nx-tier-card.nx-annual::before { padding:2px; }
 .nx-site .footer-bottom { display:flex; flex-direction:column; align-items:center; gap:16px; padding-block:27px; border-top:1px solid #cab3ef26; text-align:center; }
 .nx-site .footer-bottom > span { font-size:10px; order:3; }

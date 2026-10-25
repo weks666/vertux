@@ -32,6 +32,15 @@
       "discount": null
     }
   ],
+  "freePlan": {
+    "id": "free",
+    "name": "Бесплатный",
+    "en": "Free",
+    "monthlyRub": 0,
+    "status": "proposal",
+    "description": "Знакомство со своим портфелем.",
+    "descriptionEn": "Get to know your own portfolio."
+  },
   "plans": [
     {
       "id": "standard",
@@ -64,6 +73,7 @@
   "features": [
     {
       "id": "portfolio",
+      "freeValue": "one",
       "ru": "Брокерские счета",
       "en": "Brokerage accounts",
       "values": [
@@ -74,6 +84,7 @@
     },
     {
       "id": "operations",
+      "freeValue": "yes",
       "ru": "История сделок и операций",
       "en": "Trade and transaction history",
       "values": [
@@ -84,6 +95,7 @@
     },
     {
       "id": "analytics",
+      "freeValue": "basic",
       "ru": "Аналитика и выбор периода",
       "en": "Analytics and period selection",
       "values": [
@@ -94,6 +106,7 @@
     },
     {
       "id": "plan",
+      "freeValue": "no",
       "ru": "Заметки, план и расчёт риска",
       "en": "Notes, plans and risk calculations",
       "values": [
@@ -104,6 +117,7 @@
     },
     {
       "id": "calendar",
+      "freeValue": "no",
       "ru": "Календарь и напоминания",
       "en": "Calendar and reminders",
       "values": [
@@ -114,6 +128,7 @@
     },
     {
       "id": "devices",
+      "freeValue": "three",
       "ru": "Устройства",
       "en": "Devices",
       "values": [
@@ -124,6 +139,7 @@
     },
     {
       "id": "terminal",
+      "freeValue": "no",
       "ru": "Терминал и несколько графиков",
       "en": "Terminal and multiple charts",
       "values": [
@@ -134,6 +150,7 @@
     },
     {
       "id": "futoi",
+      "freeValue": "no",
       "ru": "История MOEX FUTOI · задержка 15 дней",
       "en": "MOEX FUTOI history · 15-day delay",
       "values": [

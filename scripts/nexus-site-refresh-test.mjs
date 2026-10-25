@@ -99,12 +99,14 @@ async function runCase(name, width, callback) {
 }
 
 try {
-  for (const width of [1440, 390, 320]) {
+  for (const width of [1440, 1120, 1024, 390, 320]) {
     await runCase('pricing', width, async (page, result) => {
       await page.goto(localPage('pricing.html'), {waitUntil: 'networkidle'});
-      assert.equal(await page.locator('[data-tier-card]').count(), 3);
+      assert.equal(await page.locator('[data-tier-card]').count(), 4);
       const data = await page.locator('#nexus-pricing-data').textContent().then(JSON.parse);
-      assert.deepEqual(data.plans.map(p => p.id), ['standard', 'plus', 'pro']);
+      assert.deepEqual(data.plans.map(p => p.id), ['free', 'standard', 'plus', 'pro']);
+      assert.equal(await page.locator('.nx-tier-title h2 svg').count(), 4);
+      assert.equal(await page.locator('.nx-tier-comparison thead th').count(), 5);
       result.languages = [];
       for (const lang of ['ru', 'en']) {
         await language(page, lang);
@@ -115,7 +117,16 @@ try {
           for (const plan of data.plans) {
             const card = page.locator(`[data-tier-card="${plan.id}"]`);
             assert.equal(await card.locator('[data-tier-total] [data-price-rub]').getAttribute('data-price-rub'), String(Math.round(plan.monthlyRub * term.factor)));
-            const link = new URL(await card.locator('a[href*="account.html"]').getAttribute('href'));
+            const action = card.locator(':scope > .nx-button');
+            const featureBounds = await card.locator('.nx-tier-features').boundingBox();
+            const actionBounds = await action.boundingBox();
+            assert.ok(actionBounds.y >= featureBounds.y + featureBounds.height - 1, 'Plan action follows its features');
+            if (plan.id === 'free') {
+              assert.equal(plan.status, 'proposal');
+              assert.equal(await action.getAttribute('href'), 'invest.html#demo');
+              continue;
+            }
+            const link = new URL(await action.getAttribute('href'));
             assert.equal(link.searchParams.get('plan'), `invest-${plan.id}`);
             assert.equal(link.searchParams.get('months'), String(term.months));
             assert.equal(link.origin, 'https://nexus.vertux.online');
@@ -132,6 +143,17 @@ try {
         assert.ok(await page.locator('a[href="offer.html#section-6"]').count());
         await seller(page);
         const size = await noOverflow(page);
+        const headingsFit = await page.locator('[data-tier-card]').evaluateAll(cards => cards.every(card => {
+          const title = card.querySelector('.nx-tier-title h2').getBoundingClientRect();
+          const bounds = card.getBoundingClientRect();
+          return title.left >= bounds.left + 10 && title.right <= bounds.right - 10;
+        }));
+        assert.ok(headingsFit, 'Plan titles and icons fit inside the cards');
+        if (width === 1440) {
+          const actions = await page.locator('.nx-tier-card > .nx-button').evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().bottom));
+          assert.ok(Math.max(...actions) - Math.min(...actions) < 2, 'Four actions align at the bottom of the row');
+          await page.locator('.nx-tier-grid').screenshot({path: resolve(out, `pricing-cards-${width}-${lang}.png`), animations: 'disabled'});
+        }
         await page.locator('footer').screenshot({path: resolve(out, `pricing-${width}-${lang}-footer.png`), animations: 'disabled'});
         await page.evaluate(() => { scrollTo(0, 0); return new Promise(done => requestAnimationFrame(() => requestAnimationFrame(done))); });
         await page.screenshot({path: resolve(out, `pricing-${width}-${lang}.png`), fullPage: true, animations: 'disabled'});
