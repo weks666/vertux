@@ -1,0 +1,67 @@
+{
+  "source": "E:/VertuxBuilds/invest-focus040-ai-20261020",
+  "base": "http://127.0.0.1:8766",
+  "checks": [
+    {
+      "section": "operations",
+      "visible": true
+    },
+    {
+      "section": "analytics",
+      "visible": true
+    },
+    {
+      "section": "glossary",
+      "visible": true
+    },
+    {
+      "section": "risk-plan",
+      "visible": true
+    },
+    {
+      "section": "terminal",
+      "visible": true
+    },
+    {
+      "section": "alerts",
+      "visible": true
+    },
+    {
+      "section": "events",
+      "visible": true
+    },
+    {
+      "section": "ai",
+      "visible": true
+    },
+    {
+      "section": "nexus-ai",
+      "visible": true
+    },
+    {
+      "section": "settings",
+      "visible": true
+    },
+    {
+      "section": "overview",
+      "visible": true
+    },
+    {
+      "viewport": 390,
+      "mobileNavigation": true
+    },
+    {
+      "viewport": 320,
+      "mobileNavigation": true
+    }
+  ],
+  "errors": [],
+  "networkAttempts": [],
+  "boundary": {
+    "static": true,
+    "readOnly": true,
+    "plans": 2,
+    "rejected": 20
+  },
+  "status": "passed"
+}

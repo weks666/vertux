@@ -1,0 +1,14 @@
+.plan-details-editor { grid-column: 1 / -1; min-width: 0; border-top: 1px solid var(--line); padding-top: 12px; }
+.plan-details-editor summary, .plan-details-read summary { min-height: 44px; display: list-item; cursor: pointer; padding-block: 12px; color: var(--text); }
+.plan-details-editor summary:focus-visible, .plan-details-read summary:focus-visible { outline: 2px solid var(--focus, var(--text)); outline-offset: 2px; }
+.plan-details-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-block: 8px 16px; }
+.plan-details-grid label { display: grid; gap: 6px; min-width: 0; }
+.plan-details-grid input, .plan-details-grid select, .plan-details-grid textarea { width: 100%; min-height: 44px; box-sizing: border-box; }
+.plan-details-wide { grid-column: 1 / -1; }
+.plan-details-read { min-width: 0; font-size: inherit; }
+.plan-details-read dl { display: grid; gap: 6px; margin: 0; }
+.plan-details-read dt { color: var(--muted); margin-top: 8px; }
+.plan-details-read dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 600px) { .plan-details-grid { grid-template-columns: minmax(0,1fr); } }
+
+#mainContent #tradingPlanEditor .plan-details-editor > button.button { min-height: 44px; }

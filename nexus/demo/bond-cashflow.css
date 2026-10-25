@@ -1,0 +1,51 @@
+.bond-cashflow { min-width:0; color:var(--text); font-size:14px; line-height:1.55; }
+.bond-cashflow [hidden] { display:none!important; }
+.bond-cashflow p { max-width:75ch; overflow-wrap:anywhere; }
+.bond-cashflow-status,.bond-cashflow-period { color:var(--muted); }
+.bond-cashflow .financial-section-head { align-items:center; }
+.bond-cashflow .financial-section-head .button { flex:none; min-height:44px; }
+.bond-cashflow-total { margin:20px 0 12px; font-size:16px; font-variant-numeric:tabular-nums; }
+.bond-cashflow-boundary { margin-bottom:22px; }
+.bond-cashflow-months { border-block:1px solid var(--line-strong); }
+.bond-cashflow-month,.bond-cashflow-empty-month { border-bottom:1px solid var(--line); }
+.bond-cashflow-month:last-child,.bond-cashflow-empty-month:last-child { border-bottom:0; }
+.bond-cashflow-month-label { min-height:64px; padding:14px 8px; display:grid; grid-template-columns:minmax(120px,1fr) minmax(0,2fr); gap:4px 16px; align-items:center; font-variant-numeric:tabular-nums; }
+.bond-cashflow-month>summary { cursor:pointer; list-style:revert; }
+.bond-cashflow-month>summary:hover { background:var(--surface); }
+.bond-cashflow-month-label>span { text-transform:capitalize; }
+.bond-cashflow-month-label>strong { text-align:right; overflow-wrap:anywhere; font-weight:500; }
+.bond-cashflow-month-label>small { grid-column:1/-1; color:var(--muted); }
+.bond-cashflow-month[open]>summary { background:var(--surface); border-bottom:1px solid var(--line); }
+.bond-cashflow-month-body { padding:16px 8px 20px; }
+.bond-cashflow-breakdown { display:flex; flex-wrap:wrap; gap:12px 24px; margin:0 0 22px; }
+.bond-cashflow-breakdown dt { color:var(--muted); }
+.bond-cashflow-breakdown dd { margin:3px 0 0; font-size:16px; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.bond-cashflow-records,.bond-cashflow-positions { list-style:none; padding:0; margin:0; }
+.bond-cashflow-record,.bond-cashflow-positions>li { padding:18px 0; border-top:1px solid var(--line); }
+.bond-cashflow-record-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.bond-cashflow-record-head strong { font-size:15px; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+.bond-cashflow-record-head>div { min-width:0; }
+.bond-cashflow-record-head>div span { display:block; color:var(--muted); margin-top:4px; }
+.bond-cashflow-record-head>strong { max-width:45%; text-align:right; }
+.bond-cashflow-facts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 24px; margin:16px 0 8px; }
+.bond-cashflow-facts dt { color:var(--muted); }
+.bond-cashflow-facts dd { margin:3px 0 0; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+.bond-cashflow-disclosure { margin-top:20px; border-top:1px solid var(--line); }
+.bond-cashflow-disclosure>summary { min-height:48px; padding:12px 0; cursor:pointer; font-weight:500; }
+.bond-cashflow-positions h4 { font-size:16px; margin:0 0 8px; overflow-wrap:anywhere; }
+.bond-cashflow-positions ul { padding-left:20px; color:var(--muted); }
+.bond-cashflow-positions ul li { margin:5px 0; overflow-wrap:anywhere; }
+.bond-cashflow-source-actions { display:flex; flex-wrap:wrap; gap:8px 16px; }
+.bond-cashflow .text-button { min-height:44px; height:auto; padding-block:10px; white-space:normal; font:inherit; text-align:left; color:var(--vertux-soft); text-decoration:underline; text-underline-offset:4px; }
+.bond-cashflow :is(button,summary):focus-visible { outline:2px solid var(--focus); outline-offset:3px; }
+.bond-cashflow [aria-busy=true] { cursor:progress; }
+.bond-cashflow ::selection { background:var(--accent-surface); color:var(--text); }
+@media(max-width:700px) {
+ .bond-cashflow .financial-section-head { align-items:flex-start; flex-direction:column; }
+ .bond-cashflow-month-label { grid-template-columns:minmax(0,1fr); gap:6px; }
+ .bond-cashflow-month-label>strong { text-align:left; }
+ .bond-cashflow-record-head { flex-direction:column; gap:6px; }
+ .bond-cashflow-record-head>strong { max-width:100%; text-align:left; }
+ .bond-cashflow-facts { grid-template-columns:minmax(0,1fr); gap:12px; }
+}
+@media(prefers-reduced-motion:reduce) { .bond-cashflow * { scroll-behavior:auto; transition:none; animation:none; } }

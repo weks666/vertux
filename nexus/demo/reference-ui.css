@@ -721,3 +721,20 @@ main { padding-top:12px; }
   .account-pin,.instrument-favorite { min-height:44px; min-width:40px; }
   .catalog-tabs button,.catalog-surface .button,.list-pagination .button { min-height:40px; }
 }
+.portfolio-breakdown[hidden] { display:none!important; }
+.overview-grid:has(> .portfolio-breakdown[hidden]) { grid-template-columns:minmax(0,1fr); }
+@media(max-width:500px) {
+  [data-view-panel="operations"] .ledger-summary { gap:4px; }
+  [data-view-panel="operations"] .ledger-summary > div { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); align-items:center; gap:4px 8px; min-height:0; padding:8px 12px; }
+  [data-view-panel="operations"] .ledger-summary dt { display:flex; align-items:center; gap:6px; min-width:0; min-height:0; padding-right:0; font-size:var(--type-caption); }
+  [data-view-panel="operations"] .ledger-summary dt .term-help { position:static; flex:0 0 auto; width:24px; height:24px; margin:0; }
+  [data-view-panel="operations"] .ledger-summary dd { min-width:0; margin:0; text-align:right; font:600 var(--type-body)/1.35 var(--body); overflow-wrap:anywhere; }
+  [data-view-panel="operations"] .ledger-summary small { grid-column:1/-1; }
+}
+
+/* A conflicted plan keeps its typed fields until an explicit replacement. */
+.plan-conflict-recovery{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;padding:0 16px 16px;box-sizing:border-box;overflow-wrap:anywhere}
+.plan-conflict-recovery[hidden]{display:none}
+.plan-conflict-recovery p{flex-basis:100%;margin:0;max-width:75ch;line-height:1.6}
+.plan-conflict-recovery .button{min-height:44px;height:auto;white-space:normal}
+.plan-conflict-recovery .button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}

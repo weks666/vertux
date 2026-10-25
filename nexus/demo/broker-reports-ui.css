@@ -1,0 +1,45 @@
+.broker-reports{margin:12px 0;min-width:0;font-size:13px;line-height:1.5;color:var(--text)}
+.broker-reports-disclosure{border:1px solid var(--line);border-radius:var(--radius-large);background:var(--surface)}
+.broker-reports-disclosure>summary{display:flex;align-items:center;gap:16px;min-height:44px;padding:16px 20px;cursor:pointer;list-style:none}
+.broker-reports-disclosure>summary::before{content:'';width:7px;height:7px;flex:none;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);color:var(--muted)}
+.broker-reports-disclosure[open]>summary::before{transform:rotate(45deg)}
+.broker-reports-disclosure>summary::-webkit-details-marker{display:none}
+.broker-reports-disclosure>summary>span:first-of-type{flex:1;min-width:0}
+.broker-reports-disclosure>summary strong{display:block;font-size:15px;font-weight:550}
+.broker-reports-disclosure>summary small{display:block;margin-top:3px;color:var(--muted);font-size:12px}
+.broker-reports-disclosure>summary>span:last-child{font-size:12px;color:var(--muted)}
+.broker-reports-body{padding:0 20px 18px;min-width:0}
+.broker-reports :is(p,label,small,dd,h4){overflow-wrap:anywhere}
+.broker-reports-note{font-size:12px;color:var(--muted)}
+.broker-reports h4{font-size:14px;font-weight:550;margin:0 0 6px}
+.broker-reports-inputs{display:grid;grid-template-columns:2fr 1fr 1fr;gap:14px;margin:14px 0}
+.broker-reports :is(label,.broker-reports-history){display:grid;gap:6px;min-width:0}
+.broker-reports :is(select,input){width:100%;min-width:0;text-overflow:ellipsis;box-sizing:border-box}
+.broker-reports :is(select,input,button){min-height:44px;border:1px solid var(--line);border-radius:var(--radius-small);background:var(--surface-2,var(--surface));color:var(--text);font:inherit;padding:9px 12px;max-width:100%;white-space:normal;color-scheme:inherit}
+.broker-reports button{cursor:pointer}
+.broker-reports :is(button,select,input):disabled{opacity:.55;cursor:default}
+.broker-reports-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.broker-reports-rows{list-style:none;padding:0;margin:14px 0}
+.broker-reports-rows>li{border-top:1px solid var(--line);padding:16px 0}
+.broker-reports-comparison{margin:0 0 10px;color:var(--muted);font-size:12px}
+.broker-reports-payment{margin-top:18px}
+.broker-reports-payment>p:first-child{margin-top:0}
+.broker-reports-fees{margin-top:12px;border-top:1px solid var(--line)}
+.broker-reports-fees>summary{min-height:44px;box-sizing:border-box;padding:12px 0;cursor:pointer;overflow-wrap:anywhere;scroll-margin-block:210px 24px}
+.broker-reports-fees>p{margin:10px 0}
+.broker-reports-fee-currency{margin:14px 0}
+.broker-reports-fee-currency h5{font-size:13px;font-weight:550;margin:0 0 8px}
+.broker-reports dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 18px;margin:0;font-variant-numeric:tabular-nums}
+.broker-reports dt{font-size:12px;color:var(--muted)}
+.broker-reports dd{margin:3px 0 0}
+.broker-reports :is(summary,button,select,input):focus-visible{outline:2px solid var(--vertux-soft);outline-offset:2px}
+.broker-reports summary:focus-visible{outline-offset:-3px}
+@media(max-width:650px){
+ .broker-reports-disclosure>summary{padding:14px;gap:10px;flex-wrap:wrap}
+ .broker-reports-disclosure>summary>span:last-child{flex-basis:100%;padding-left:17px}
+ .broker-reports-disclosure>summary strong{font-size:14px}
+ .broker-reports-body{padding:0 14px 14px}
+ .broker-reports-inputs{grid-template-columns:1fr}
+ .broker-reports dl{grid-template-columns:1fr 1fr;gap:12px}
+ .broker-reports dl>div:first-child{grid-column:1/-1}
+}

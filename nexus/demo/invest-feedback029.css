@@ -1,0 +1,40 @@
+/* Existing workspace tokens; compact operating controls for the 0.6.29 flow. */
+.portfolio-result-breakdown{margin:0 0 16px;color:var(--muted);font-size:13px;max-width:760px}
+.portfolio-result-breakdown>summary{width:fit-content;cursor:pointer;padding:8px 0;color:var(--text)}
+.portfolio-result-breakdown dl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 20px;padding:12px 0;margin:0;border-block:1px solid var(--line)}
+.portfolio-result-breakdown :is(dt,dd){margin:0;font-size:13px;line-height:1.5}.portfolio-result-breakdown dd{text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+.portfolio-result-breakdown p{margin:10px 0;line-height:1.6;font-size:13px}
+.plan-instrument-picker{position:relative;min-width:0}
+.plan-instrument-choice{display:flex;align-items:center;gap:8px;width:100%;min-height:42px;padding:7px 10px;text-align:left}
+.plan-instrument-choice>span:not(.instrument-mark){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-instrument-choice>svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;flex:none}
+.plan-instrument-picker .instrument-mark{width:28px;height:28px;flex:none}
+.plan-instrument-results{position:absolute;z-index:30;top:calc(100% + 5px);left:0;width:min(430px,calc(100vw - 48px));padding:12px;background:var(--surface-raised);border:1px solid var(--line-strong);border-radius:10px}
+.plan-instrument-results>input{width:100%;font-size:16px}
+.plan-picker-hint,.plan-picker-status{margin:8px 0;color:var(--muted);font-size:12px;line-height:1.4}
+.plan-instrument-options{max-height:300px;overflow-y:auto;overscroll-behavior:contain}
+.plan-instrument-options>button{display:flex;width:100%;align-items:center;gap:10px;text-align:left;padding:9px;border:0;border-radius:5px;background:transparent}
+.plan-instrument-options>button[aria-selected=true],.plan-instrument-options>button:hover{background:var(--surface-strong)}
+.plan-instrument-options>button>span:not(.instrument-mark){display:grid;gap:2px;min-width:0}
+.plan-instrument-options small{color:var(--muted);white-space:normal;overflow-wrap:anywhere;font-size:12px}
+.chart-study-legends{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+.chart-study-legend-group{position:absolute;left:8px;display:flex;flex-direction:column;gap:2px;max-width:calc(100% - 82px)}
+.chart-study-legend{display:flex;align-items:center;gap:5px;align-self:flex-start;max-width:100%;min-height:26px;padding:0 3px;background:var(--surface);border-radius:4px;pointer-events:auto;color:var(--text)}
+.chart-study-legend .study-title{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.chart-study-legend .study-color{width:8px;height:8px;border-radius:50%;flex:none}
+.chart-study-legend.is-hidden .study-title{text-decoration:line-through;color:var(--muted)}
+.chart-study-legend button,.terminal-study-row>button{display:grid;place-items:center;width:28px;min-width:28px;height:28px;min-height:28px;padding:5px;border:0;background:transparent;border-radius:4px;color:var(--muted)}
+.chart-study-legend button:hover,.terminal-study-row>button:hover{background:var(--surface-strong);color:var(--text)}
+.chart-study-legend button:focus-visible,.terminal-study-row>button:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.chart-study-legend svg,.terminal-study-row>button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.terminal-study-current .terminal-study-row{display:grid;grid-template-columns:minmax(0,1fr) 28px 28px;align-items:center;gap:6px;padding:7px 0}
+.terminal-study-current .terminal-study-row>label{display:flex;align-items:center;gap:8px;margin:0}
+.terminal-study-current input[type=checkbox]{width:16px;min-height:16px;height:16px;margin:0}
+.terminal-popover[data-editing=study]{width:300px;max-width:calc(100vw - 16px)}
+.terminal-study-settings{display:grid;gap:12px;padding:6px 0}
+.terminal-study-settings>label{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:13px;margin:0}
+.terminal-study-settings input[type=number]{width:94px;min-height:34px;height:34px}
+.terminal-study-settings .study-color-control input[type=color]{width:38px;min-width:38px;height:30px;min-height:30px;padding:3px;cursor:pointer}
+.terminal-study-settings .study-visibility-control{justify-content:flex-start;gap:8px}
+.terminal-study-settings input[type=checkbox]{width:16px;min-height:16px;height:16px;margin:0}
+@media(max-width:700px){.plan-instrument-results{width:min(340px,calc(100vw - 48px))}.chart-study-legend{min-height:30px}.chart-study-legend button{width:30px;height:30px}.chart-study-legend-group{left:4px}}

@@ -1,6 +1,7 @@
 import {renderAdvancedDrawing} from './chart-drawings-advanced.js';
 import {drawingTypes,onePointTools,threePointTools,drawingPointCount,drawingStyle} from './chart-tool-catalog.js';
 import {regressionChannel,snapToCandle,boxHandles,resizeBox} from './chart-geometry.js';
+import {anchoredVwap} from './chart-indicators.js';
 const NS='http://www.w3.org/2000/svg';
 const clone=value=>JSON.parse(JSON.stringify(value));
 function el(tag,attrs={},text=''){const node=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))node.setAttribute(k,String(v));if(text)node.textContent=text;return node;}
@@ -9,7 +10,7 @@ export function validDrawings(items) {
   &&Array.isArray(item.points)&&item.points.length>=drawingPointCount(item.type)&&item.points.length<=500&&item.points.every(p=>Number.isFinite(p.time)&&Number.isFinite(p.price)));
 }
 /** Annotations never become price series: drawing cannot rescale its own coordinates. */
-export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{},onMode=()=>{},onSelect=()=>{},getDefaults=type=>drawingStyle({},type),onStyle=()=>{}}) {
+export function createDrawingLayer({host,chart,getSeries,getRows,getCalculationRows=getRows,onChange=()=>{},onMode=()=>{},onSelect=()=>{},getDefaults=type=>drawingStyle({},type),onStyle=()=>{}}) {
  const svg=el('svg',{'class':'chart-drawings','aria-label':'Разметка графика'});host.append(svg);
  let sink=svg;
  let drawings=[],undo=[],redo=[],mode=null,start=null,preview=null,selected=null,drag=null,frame=0,dead=false,alerts=[],events=[],scenario=null,hidden=false;
@@ -98,8 +99,7 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
    }else label(a.x,a.y,'Укажите вход, стоп, затем цель');
   }
   if(item.type==='anchoredVwap'){
-   let total=0,weighted=0;const values=[];
-   for(const row of getRows().filter(r=>r.time>=item.points[0].time)){total+=row.volume;weighted+=(row.high+row.low+row.close)/3*row.volume;if(total>0)values.push(xy({time:row.time,price:weighted/total}));}
+   const values=anchoredVwap(getCalculationRows(),item.points[0].time).map(row=>xy({time:row.time,price:row.value})).filter(p=>p.x!==null&&p.y!==null);
    if(values.length)group.append(el('polyline',{points:values.map(p=>`${p.x},${p.y}`).join(' ')}));
   }
   renderAdvancedDrawing({item,points,style,width,height,group,el,line,label,infinite,priceText});
@@ -159,7 +159,7 @@ export function createDrawingLayer({host,chart,getSeries,getRows,onChange=()=>{}
   if(!start){start=point;preview={id:crypto.randomUUID(),type:mode,points:[point,point],style:clone(defaults(mode))};}
   else {preview.points[preview.points.length-1]=point;if(preview.points.length<drawingPointCount(mode)){preview.points.push(point);schedule();return;}const id=preview.id;commit([...drawings,preview]);setMode(null);select(id);}
  }
- function move(event){const point=at(event);if(!point)return;
+ function move(event){if(drag&&event.buttons===0){cancel();return;}const point=at(event);if(!point)return;
   if(drag){
    if(event.pointerId!==drag.pointerId)return;event.preventDefault();event.stopPropagation();
    const item=drawings.find(d=>d.id===drag.id);if(!item)return;

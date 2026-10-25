@@ -1,0 +1,101 @@
+#myTradingPlan .plan-execution-links{margin-block:18px;padding-block-start:16px;border-top:1px solid var(--line);min-width:0;overflow-wrap:anywhere}
+#myTradingPlan .plan-execution-links[hidden]{display:none}
+#myTradingPlan .plan-execution-links h5{margin:0 0 10px;font-size:15px}
+#myTradingPlan .plan-execution-links p{white-space:normal;line-height:1.55;margin-block:8px}
+#myTradingPlan .plan-execution-links .plan-link-note{white-space:pre-wrap}
+#myTradingPlan .plan-execution-links .plan-link-caption{color:var(--muted);font-size:12px}
+#myTradingPlan .plan-link-list{display:grid;gap:10px;margin-block:12px}
+#myTradingPlan :is(.plan-link-record,.plan-link-add,.plan-link-method){border:1px solid var(--line);border-radius:8px;padding:0 12px;min-width:0}
+#myTradingPlan .plan-link-add{margin-block:14px}
+#myTradingPlan .plan-execution-links summary{min-height:44px;padding-block:12px;box-sizing:border-box;cursor:pointer;white-space:normal;line-height:1.5}
+#myTradingPlan .plan-link-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px}
+#myTradingPlan .plan-execution-links label{display:grid;gap:6px;margin-block:10px;min-width:0;font-size:13px;color:var(--text)}
+#myTradingPlan .plan-execution-links :is(input,select,textarea){min-width:0;width:100%;max-width:100%;box-sizing:border-box;min-height:44px;color:var(--text);background:var(--surface-raised);border:1px solid var(--line);border-radius:6px;padding:10px;font:inherit}
+#myTradingPlan .plan-execution-links textarea{resize:vertical;min-height:88px}
+#myTradingPlan .plan-execution-links button,#myTradingPlan [data-plan-link-action=toggle]{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere;margin-block:6px}
+#myTradingPlan .plan-link-preview{border-inline-start:2px solid var(--line);padding-inline-start:12px;margin-block:12px}
+#myTradingPlan .plan-execution-links :is(button,input,select,textarea,summary,[tabindex]):focus-visible,#myTradingPlan [data-plan-link-action=toggle]:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+#myTradingPlan .plan-execution-links :is(button,input,select,textarea,summary,[tabindex]){scroll-margin-block:170px 24px}
+#myTradingPlan .plan-link-size{margin-block:14px;padding-block:4px;border-block:1px solid var(--line);min-width:0}
+#myTradingPlan .plan-link-size-metrics{display:grid;gap:10px;margin-block:14px}
+#myTradingPlan .plan-link-size-metrics>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+#myTradingPlan .plan-link-size-metrics :is(dt,dd){margin:0;min-width:0;white-space:normal;overflow-wrap:anywhere;color:var(--text);font-size:13px;line-height:1.55}
+#myTradingPlan .plan-link-size-metrics dd{font-variant-numeric:tabular-nums;text-align:end}
+#myTradingPlan .plan-link-size-evidence button{display:block}
+
+/* The journal review keeps a visible answer and a single source area. */
+#myTradingPlan :is(.plan-ledger-head,.manual-plan-row){grid-template-columns:minmax(115px,1fr) minmax(150px,1.2fr) minmax(100px,.8fr) 134px minmax(100px,1fr) 140px;gap:12px}
+#myTradingPlan .manual-plan-row>[data-plan-review-open]{width:auto;height:auto;min-height:44px;min-width:0;max-width:100%;padding:9px 12px;font:600 14px/1.4 var(--body);white-space:normal;justify-self:stretch;grid-column:6;grid-row:1}
+#myTradingPlan .manual-plan-row>.plan-review-workspace{grid-column:1/-1;grid-row:auto;min-width:0;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+#myTradingPlan .plan-review-workspace[hidden],#myTradingPlan .plan-review-pane[hidden],#myTradingPlan .plan-review-source[hidden]{display:none!important}
+#myTradingPlan .plan-review-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:16px}
+#myTradingPlan .plan-review-header>div:first-child{min-width:0}
+#myTradingPlan .plan-review-header h4{font-size:20px;line-height:1.4;overflow-wrap:anywhere;margin:0}
+#myTradingPlan .plan-review-header .plan-review-context{font-size:13px;color:var(--muted);margin-top:6px}
+#myTradingPlan .plan-review-actions{display:flex;flex-wrap:wrap;gap:8px;min-width:0;max-width:100%;flex-shrink:1}
+#myTradingPlan .plan-review-workspace :is(button,select,summary){min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#myTradingPlan .plan-review-nav{display:flex;flex-wrap:wrap;gap:6px;border-block:1px solid var(--line);padding-block:8px;margin-bottom:20px}
+#myTradingPlan .plan-review-nav button{margin:0;padding:9px 13px;font-size:14px;color:var(--muted);background:transparent;border:1px solid transparent}
+#myTradingPlan .plan-review-nav button[aria-pressed=true]{background:var(--surface-raised);border-color:var(--line);color:var(--text)}
+#myTradingPlan .plan-review-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}
+#myTradingPlan .plan-review-layout[data-source-open=true]{grid-template-columns:minmax(0,1.2fr) minmax(290px,1fr)}
+#myTradingPlan :is(.plan-review-content,.plan-review-pane){min-width:0}
+#myTradingPlan .plan-review-workspace p{white-space:normal;line-height:1.55;font-size:14px;margin-block:8px;overflow-wrap:anywhere}
+#myTradingPlan .plan-review-workspace :is(.plan-link-note,.plan-history-note,.timeline-review-note){white-space:pre-wrap}
+#myTradingPlan .plan-review-workspace .plan-review-limit{padding:10px 12px;border-left:3px solid var(--line);background:var(--surface-raised);color:var(--text);font-size:13px}
+#myTradingPlan .plan-review-workspace :is(.plan-link-caption,.observation-caption){font-size:13px;color:var(--muted)}
+#myTradingPlan .plan-review-workspace :is(.plan-execution-links,.plan-history,.execution-observations){border:0;margin:0;padding:0}
+#myTradingPlan .plan-review-workspace .plan-link-size-review{margin:0 0 16px;padding:0;border:0}
+#myTradingPlan .plan-review-workspace h5{font-size:16px;line-height:1.45;margin:0 0 10px}
+#myTradingPlan .plan-link-size-review>label{max-width:520px;margin:12px 0}
+#myTradingPlan .plan-link-size-review .plan-link-size-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
+#myTradingPlan .plan-link-size-review .plan-link-size-metrics>div{display:flex;flex-direction:column;gap:8px;align-items:flex-start;border-top:1px solid var(--line);padding-top:12px;min-width:0}
+#myTradingPlan .plan-link-size-review .plan-link-size-metrics dt{font-size:13px;color:var(--muted)}
+#myTradingPlan .plan-link-size-review .plan-link-size-metrics dd{font-size:27px;line-height:1.35;font-weight:600;text-align:left;letter-spacing:-.02em}
+#myTradingPlan .plan-review-workspace .plan-review-version{font-weight:600;color:var(--text)}
+#myTradingPlan .plan-review-workspace :is(.plan-link-record,article.plan-history-version,article.observation-record){padding:14px 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;min-width:0}
+#myTradingPlan .plan-review-workspace :is(.plan-review-record-title,h6){margin:0 0 8px;font-size:14px;font-weight:600;line-height:1.5;color:var(--text)}
+#myTradingPlan .plan-review-workspace .plan-review-execution{font-variant-numeric:tabular-nums;font-size:15px;color:var(--text)}
+#myTradingPlan .plan-review-record-summary{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#myTradingPlan .plan-review-record-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+#myTradingPlan .plan-review-record-actions [data-plan-link-action=withdraw]{color:var(--muted);border-color:transparent;background:transparent;font-size:13px}
+#myTradingPlan .plan-review-workspace .plan-link-status:empty{display:none}
+#myTradingPlan .plan-review-source{min-width:0;background:var(--surface-raised);border:1px solid var(--line);border-radius:8px;padding:16px;overflow-wrap:anywhere}
+#myTradingPlan .plan-review-source>[data-plan-review-source-close]{margin:0 0 16px}
+#myTradingPlan .plan-review-source>h5{font-size:17px;line-height:1.5}
+#myTradingPlan .plan-review-source .plan-risk-scenario{padding:12px;margin-block:16px}
+#myTradingPlan .plan-review-workspace :is(button,select,summary,[tabindex]):focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+#myTradingPlan .plan-review-workspace :is(button,select,summary,[tabindex]){scroll-margin-block:150px 20px}
+@media(max-width:1300px){
+  #myTradingPlan :is(.plan-ledger-head,.manual-plan-row){grid-template-columns:minmax(110px,1fr) minmax(150px,1.1fr) minmax(100px,.8fr) 134px 140px}
+  #myTradingPlan .plan-ledger-head>span:nth-child(5){display:none}
+  #myTradingPlan .manual-plan-row>[data-plan-review-open]{grid-column:5}
+  #myTradingPlan .manual-plan-row>.plan-draft-note{grid-column:1/-2;grid-row:2}
+}
+@media(max-width:1000px){
+  #myTradingPlan .plan-review-layout[data-source-open=true]{grid-template-columns:minmax(0,1fr)}
+  #myTradingPlan .plan-review-header{flex-wrap:wrap;gap:12px}
+}
+@media(max-width:850px){
+  #myTradingPlan .plan-ledger-head{display:none}
+  #myTradingPlan .manual-plan-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+  #myTradingPlan .manual-plan-row>.plan-draft-identity{grid-column:1/-1;grid-row:1}
+  #myTradingPlan .manual-plan-row>.plan-draft-plan{grid-column:1/-1;grid-row:2}
+  #myTradingPlan .manual-plan-row>.plan-draft-review{grid-column:1;grid-row:3}
+  #myTradingPlan .manual-plan-row>.plan-draft-state{grid-column:2;grid-row:3}
+  #myTradingPlan .manual-plan-row>.plan-draft-note{grid-column:1/-1;grid-row:4}
+  #myTradingPlan .manual-plan-row>[data-plan-review-open]{grid-column:1/-1;grid-row:5;justify-self:start}
+  #myTradingPlan .manual-plan-row>.plan-review-workspace{padding:14px}
+  #myTradingPlan .plan-review-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  #myTradingPlan .plan-review-nav button{padding:8px;font-size:13px;text-align:left}
+}
+@media(max-width:600px){
+  #myTradingPlan .plan-review-header h4{font-size:18px}
+  #myTradingPlan .plan-link-size-review .plan-link-size-metrics{grid-template-columns:minmax(0,1fr);gap:12px}
+  #myTradingPlan .plan-link-size-review .plan-link-size-metrics>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+  #myTradingPlan .plan-link-size-review .plan-link-size-metrics dd{font-size:23px;text-align:right}
+  #myTradingPlan .plan-review-source{padding:12px}
+  #myTradingPlan .plan-review-workspace p{font-size:13px}
+  #myTradingPlan .plan-review-record-actions{gap:4px}
+}
+@media(prefers-reduced-motion:reduce){#myTradingPlan .plan-review-workspace *{scroll-behavior:auto;animation:none;transition:none}}

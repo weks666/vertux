@@ -1,0 +1,8 @@
+.personal-preferences-transfer .native-lists-body{max-width:75ch}
+[data-personal-transfer-values]{margin:0}
+[data-personal-transfer-values]>div{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;border-top:1px solid var(--line);padding-block:14px;min-width:0}
+[data-personal-transfer-values] dt{grid-column:1/-1;font-weight:600}
+[data-personal-transfer-values] dd{margin:0;min-width:0;overflow-wrap:anywhere;display:grid;gap:4px}
+[data-personal-transfer-values] dd span{color:var(--muted);font-size:13px}
+[data-personal-transfer-values] dd strong{font-size:14px;font-weight:500;line-height:1.5}
+@media(max-width:480px){[data-personal-transfer-values]>div{grid-template-columns:1fr}}

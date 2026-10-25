@@ -1,0 +1,8 @@
+{
+  "version": "0.6.52",
+  "commit": "917468b5c73e9fff0847054bdf40f4792e83a3ca",
+  "serviceModule": "1.4.7",
+  "synthetic": true,
+  "brokerNetwork": false,
+  "modelNetwork": false
+}

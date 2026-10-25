@@ -1,0 +1,29 @@
+.future-exposure{min-width:0;overflow-wrap:anywhere;padding:0 4px}
+.future-exposure :is(p,li){max-width:80ch;line-height:1.6;font-size:14px}
+.future-exposure h3{font-size:20px;line-height:1.4;margin:0 0 8px}
+.future-exposure h4{font-size:17px;line-height:1.45;margin:20px 0 8px}
+.future-exposure-account{border-top:1px solid var(--line);margin-top:20px;min-width:0}
+.future-exposure :is(.future-exposure-scope,.future-exposure-date,caption,dt){color:var(--muted)}
+.future-exposure-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:18px 0}
+.future-exposure-totals>div{min-width:0}
+.future-exposure dt{font-size:14px;line-height:1.5}
+.future-exposure dd{font-size:20px;font-weight:600;line-height:1.5;margin:6px 0 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.future-exposure table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px;margin:20px 0;white-space:normal}
+.future-exposure caption{text-align:left;margin-bottom:8px;line-height:1.5}
+.future-exposure :is(th,td){padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;line-height:1.5;white-space:normal;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.future-exposure details{border-top:1px solid var(--line);margin-top:14px;min-width:0}
+.future-exposure summary{cursor:pointer;min-height:48px;box-sizing:border-box;padding:12px 4px;line-height:1.5;font-size:14px;scroll-margin-top:180px}
+.future-exposure summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.future-exposure-positions{padding:0;list-style:none;margin:0}
+.future-exposure-positions>li{border-top:1px solid var(--line);padding:16px 4px;min-width:0}
+.future-exposure-positions p{margin:8px 0 0}
+.future-exposure-method{padding:0 4px 8px}
+.future-exposure-mobile-label{display:none}
+@media(max-width:800px){.future-exposure-totals{grid-template-columns:1fr;gap:18px}}
+@media(max-width:600px){
+ .future-exposure table,.future-exposure tbody,.future-exposure caption{display:block}
+ .future-exposure thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+ .future-exposure tr{display:grid;grid-template-columns:1fr;min-width:0;border-top:1px solid var(--line);padding:8px 0}
+ .future-exposure :is(th,td){display:block;min-width:0;border:0;padding:6px 4px}
+ .future-exposure-mobile-label{display:block;color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:3px}
+}

@@ -1,4 +1,5 @@
-import {extraIndicatorCatalog,calculateExtraStudy} from './chart-indicators-extra.js';
+import {extraIndicatorCatalog,calculateExtraStudy,isMeasuredVolume} from './chart-indicators-extra.js';
+export {volumeDependentStudies} from './chart-indicators-extra.js';
 // Pure calculations over ordered OHLCV. Warm-up observations are omitted.
 export function average(rows, period=20, exponential=false, field='close') {
  const out=[];let value=null,sum=0;
@@ -74,9 +75,13 @@ export function calculateStudy(rows,input) {
  if(type==='bb'){const data=bollinger(rows,p,s.deviations);return ['upper','value','lower'].map(key=>({data:data.map(r=>({time:r.time,value:r[key]}))}));}
  if(type==='keltner'){const atr=new Map(smoothed(tr(rows),p).map(r=>[r.time,r.value])),mid=average(rows,p,true);return [1,0,-1].map(sign=>({data:mid.map(r=>({time:r.time,value:r.value+sign*s.deviations*atr.get(r.time)}))}));}
  if(type==='roc'||type==='momentum')return one(rows.slice(p).map((r,i)=>({time:r.time,value:type==='roc'?(rows[i].close===0?NaN:(r.close/rows[i].close-1)*100):r.close-rows[i].close})));
- if(type==='obv'||type==='ad'){let value=0;return one(rows.map((r,i)=>({time:r.time,value:value+=type==='obv'?(i?Math.sign(r.close-rows[i-1].close)*r.volume:0):(r.high===r.low?0:(2*r.close-r.high-r.low)/(r.high-r.low)*r.volume)})));}
+ if(type==='obv'||type==='ad'){let value=0;return one(rows.map((r,i)=>{
+  if((type==='ad'||i>0)&&!isMeasuredVolume(r))value=NaN;
+  value+=type==='obv'?(i?Math.sign(r.close-rows[i-1].close)*r.volume:0):(r.high===r.low?0:(2*r.close-r.high-r.low)/(r.high-r.low)*r.volume);
+  if(!Number.isFinite(value)||Math.abs(value)>Number.MAX_SAFE_INTEGER)value=NaN;return {time:r.time,value};
+ }));}
  if(type==='stochrsi'){const values=rsi(rows,p).map(r=>({...r,close:r.value}));return one(values.slice(p-1).map((r,i)=>{const window=values.slice(i,i+p).map(x=>x.value),lo=Math.min(...window),hi=Math.max(...window);return {time:r.time,value:hi===lo?50:100*(r.value-lo)/(hi-lo)};}));}
- const values=rows.slice(p-1).map((r,i)=>{const window=rows.slice(i,i+p),high=Math.max(...window.map(x=>x.high)),low=Math.min(...window.map(x=>x.low)),volume=window.reduce((s,x)=>s+x.volume,0),mean=window.reduce((s,x)=>s+x.close,0)/p;
+ const values=rows.slice(p-1).map((r,i)=>{const window=rows.slice(i,i+p),high=Math.max(...window.map(x=>x.high)),low=Math.min(...window.map(x=>x.low)),sum=window.every(isMeasuredVolume)?window.reduce((s,x)=>s+x.volume,0):NaN,volume=sum<=Number.MAX_SAFE_INTEGER?sum:NaN,mean=window.reduce((s,x)=>s+x.close,0)/p;
   let value;
   if(type==='vwma')value=volume?window.reduce((s,x)=>s+x.close*x.volume,0)/volume:NaN;
   if(type==='stochastic')value=high===low?50:100*(r.close-low)/(high-low);
@@ -84,16 +89,25 @@ export function calculateStudy(rows,input) {
   if(type==='stddev')value=Math.sqrt(window.reduce((s,x)=>s+(x.close-mean)**2,0)/p);
   if(type==='cci'){const tp=window.map(x=>(x.high+x.low+x.close)/3),m=tp.reduce((s,x)=>s+x,0)/p,dev=tp.reduce((s,x)=>s+Math.abs(x-m),0)/p;value=dev?(tp.at(-1)-m)/(.015*dev):0;}
   if(type==='cmf')value=volume?window.reduce((s,x)=>s+(x.high===x.low?0:(2*x.close-x.high-x.low)/(x.high-x.low)*x.volume),0)/volume:NaN;
-  if(type==='mfi'){let pos=0,neg=0;window.forEach((x,j)=>{const prev=rows[i+j-1];if(!prev)return;const tp=(x.high+x.low+x.close)/3,old=(prev.high+prev.low+prev.close)/3;if(tp>old)pos+=tp*x.volume;else if(tp<old)neg+=tp*x.volume;});value=!pos&&!neg?50:!neg?100:100-100/(1+pos/neg);}
+  if(type==='mfi'&&Number.isFinite(volume)){let pos=0,neg=0;window.forEach((x,j)=>{const prev=rows[i+j-1];if(!prev)return;const tp=(x.high+x.low+x.close)/3,old=(prev.high+prev.low+prev.close)/3;if(tp>old)pos+=tp*x.volume;else if(tp<old)neg+=tp*x.volume;});value=!Number.isFinite(pos)||!Number.isFinite(neg)?NaN:!pos&&!neg?50:!neg?100:100-100/(1+pos/neg);}
   return {time:r.time,value,high,low};});
  if(type==='donchian')return ['high','middle','low'].map(key=>({data:values.map(r=>({time:r.time,value:key==='middle'?(r.high+r.low)/2:r[key]}))}));
  if(type==='stochastic'){const k=average(values,3,false,'value');return [{data:k},{data:average(k,3,false,'value'),color:'#d79c39'}];}
  return one(type==='mfi'?values.slice(1):values);
 }
+export function anchoredVwap(rows,from) {
+ let total=0,weighted=0;const out=[];
+ for(const row of rows){if(row.time<from)continue;if(!isMeasuredVolume(row))break;
+  total+=row.volume;weighted+=(row.high+row.low+row.close)/3*row.volume;
+  if(total>Number.MAX_SAFE_INTEGER||!Number.isFinite(weighted))break;
+  if(total>0){const value=weighted/total;if(!Number.isFinite(value))break;out.push({time:row.time,value});}
+ }return out;
+}
 export function vwap(rows) {
- let day='',sum=0,volume=0;const out=[];
+ let day='',sum=0,volume=0,known=true;const out=[];
  for(const row of rows){const key=new Date((row.time+10800)*1000).toISOString().slice(0,10);
-  if(key!==day){day=key;sum=0;volume=0;}sum+=(row.high+row.low+row.close)/3*row.volume;volume+=row.volume;
+  if(key!==day){day=key;sum=0;volume=0;known=true;}if(!isMeasuredVolume(row))known=false;if(!known)continue;
+  sum+=(row.high+row.low+row.close)/3*row.volume;volume+=row.volume;if(!Number.isFinite(sum)||!Number.isFinite(volume)||volume>Number.MAX_SAFE_INTEGER){known=false;continue;}
   if(volume>0)out.push({time:row.time,value:sum/volume});}return out;
 }
 export function radarMeasure(rows,levels=[]) {

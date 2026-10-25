@@ -1,0 +1,41 @@
+.position-reconciliation{margin:12px 0;min-width:0;border:1px solid var(--line);border-radius:var(--radius-large);background:var(--surface);padding:18px 20px;font-size:13px;line-height:1.5}
+.position-reconciliation-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.position-reconciliation h3{margin:0;font-size:17px;font-weight:550}
+.position-reconciliation-head p{margin:4px 0 0;color:var(--muted)}
+.position-reconciliation-state{font-size:12px;font-weight:500;flex:none;max-width:45%;color:var(--muted)}
+.position-reconciliation[data-state=mismatch] .position-reconciliation-state{color:var(--warning)}
+.position-reconciliation-summary{margin:14px 0 10px}
+.position-reconciliation-fixture,.position-reconciliation-method,.position-reconciliation-limit,.position-reconciliation-boundary{color:var(--muted)}
+.position-reconciliation-fixture{margin:12px 0 0;font-size:12px}
+.position-reconciliation-periods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px;margin:12px 0}
+.position-reconciliation dt{color:var(--muted);font-size:12px}
+.position-reconciliation dd{margin:3px 0 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.position-reconciliation summary{cursor:pointer;min-height:44px;padding:10px 0;overflow-wrap:anywhere}
+.position-reconciliation summary:focus-visible{outline:2px solid var(--vertux-soft);outline-offset:3px;border-radius:3px}
+.position-reconciliation details{border-top:1px solid var(--line)}
+.position-reconciliation-method{margin:4px 0 14px;font-size:12px}
+.position-reconciliation-row{padding:14px 0;border-top:1px solid var(--line)}
+.position-reconciliation-row header{display:flex;justify-content:space-between;gap:14px}
+.position-reconciliation-row h4{margin:0;font-size:14px;font-weight:550;overflow-wrap:anywhere}
+.position-reconciliation-row header p{margin:3px 0 0;color:var(--muted);overflow-wrap:anywhere}
+.position-reconciliation-row header>span{color:var(--muted);font-size:12px}
+.position-reconciliation-row dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 20px;margin:14px 0}
+.position-reconciliation-row dd{font-size:16px}
+.position-reconciliation-row>p{margin:8px 0;font-size:12px}
+.position-reconciliation ul{margin:5px 0 12px;padding-left:20px;color:var(--muted);font-size:12px}
+.position-reconciliation li+li{margin-top:5px}
+.position-reconciliation-boundary{margin:12px 0 0;font-size:12px}
+.position-reconciliation-source{display:grid;gap:5px;margin:14px 0 8px;max-width:340px;color:var(--muted);font-size:12px}
+.position-reconciliation-source select{width:100%;min-width:0;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--radius-small,6px);background:var(--surface);color:var(--text);font:inherit;font-size:13px}
+.position-reconciliation-source select:focus-visible{outline:2px solid var(--vertux-soft);outline-offset:3px}
+.position-reconciliation-parts h5{margin:10px 0 0;font-size:13px;font-weight:550}
+.position-reconciliation-parts p{color:var(--muted);font-size:12px}
+@media(max-width:600px){
+ .position-reconciliation{padding:14px}
+ .position-reconciliation-head{display:block}
+ .position-reconciliation-state{display:block;max-width:none;margin-top:10px}
+ .position-reconciliation-periods{grid-template-columns:1fr}
+ .position-reconciliation-row header{display:block}
+ .position-reconciliation-row header>span{display:block;margin-top:5px}
+ .position-reconciliation-row dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+}

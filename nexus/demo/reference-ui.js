@@ -9,7 +9,9 @@ export function metricNote(value, note) {
   if (!cell) return;
   const help = cell.querySelector('.term-help');
   if (help && note) help.dataset.evidenceNote = note;
-  value.title = note || '';
+  else if (help) delete help.dataset.evidenceNote;
+  // The help button owns the explanation; the amount is not a second hover target.
+  value.removeAttribute?.('title');
 }
 
 export function resultTrend(value, rate) {

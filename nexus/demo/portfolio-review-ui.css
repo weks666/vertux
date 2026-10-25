@@ -1,0 +1,42 @@
+.portfolio-reviews{margin-top:16px;min-width:0;overflow-wrap:anywhere}
+.portfolio-reviews>details{border:1px solid var(--line);border-radius:var(--radius-large);background:var(--surface)}
+.portfolio-reviews summary{min-height:44px;padding:14px 16px;cursor:pointer;line-height:1.5}
+.portfolio-reviews>details>summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;list-style:none}
+.portfolio-reviews>details>summary::before{content:'';width:7px;height:7px;flex:none;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);color:var(--muted)}
+.portfolio-reviews>details[open]>summary::before{transform:rotate(45deg)}
+.portfolio-reviews>details>summary::-webkit-details-marker{display:none}
+.portfolio-reviews>details>summary>span:first-of-type{flex:1 1 180px;min-width:0}
+.portfolio-reviews summary small{display:block;color:var(--muted);font-size:12px}
+.portfolio-reviews>details>summary>span:last-child{font-size:12px;color:var(--muted)}
+.portfolio-review-body{padding:0 16px 16px;min-width:0}
+.portfolio-review-body p{max-width:75ch;line-height:1.6}
+.portfolio-review-caption{color:var(--muted);font-size:12px}
+.portfolio-review-status:empty{display:none}
+.portfolio-review-controls,.portfolio-review-confirm{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.portfolio-review-confirm p{flex-basis:100%;margin:0}
+.portfolio-reviews .button{min-height:44px;height:auto;white-space:normal}
+.portfolio-reviews .button[aria-disabled=true]{opacity:.65;cursor:default}
+.portfolio-review-records,.portfolio-review-values{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 24px;margin:16px 0}
+.portfolio-reviews dt{color:var(--muted);font-size:12px}
+.portfolio-reviews dd{margin:6px 0 0;font-variant-numeric:tabular-nums;line-height:1.6}
+.portfolio-review-records>div{min-width:0}
+.portfolio-review-changes{margin:12px 0;padding:0;list-style:none}
+.portfolio-review-changes li{border-bottom:1px solid var(--line);padding:12px 0}
+.portfolio-review-changes p{margin:6px 0 0}
+.portfolio-review-comparison h4{font-size:16px;margin:24px 0 10px;font-weight:600}
+.portfolio-review-body>details,.portfolio-review-comparison>details{border-top:1px solid var(--line);margin-top:16px}
+.portfolio-review-body>details>summary,.portfolio-review-comparison>details>summary{padding-inline:0}
+.portfolio-reviews table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px;white-space:normal}
+.portfolio-reviews caption{text-align:left;color:var(--muted);margin-bottom:10px}
+.portfolio-reviews :is(th,td){padding:10px 8px;white-space:normal;overflow-wrap:anywhere;text-align:left;vertical-align:top;line-height:1.5;letter-spacing:normal;font-family:inherit;border-bottom:1px solid var(--line)}
+.portfolio-review-reason td{color:var(--muted);padding-top:0}
+.portfolio-reviews :is(summary,button):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.portfolio-reviews>details>summary:focus-visible{outline-offset:-3px}
+.portfolio-review-archive-selectors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.portfolio-review-archive label{display:grid;gap:8px;min-width:0;line-height:1.5}
+.portfolio-review-archive :is(select,input){width:100%;min-width:0;max-width:100%;min-height:44px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--text);font:inherit;padding:10px 8px}
+.portfolio-review-archive input::file-selector-button{min-height:44px;margin-right:8px;border:1px solid var(--line);border-radius:6px;background:var(--surface-raised,var(--surface));color:var(--text);font:inherit;white-space:normal}
+.portfolio-review-archive :is(input,select):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.portfolio-review-archive [data-review-archive-status]:empty{display:none}
+@media(max-width:600px){.portfolio-review-archive-selectors{grid-template-columns:1fr}}
+@media(max-width:600px){.portfolio-review-records,.portfolio-review-values{grid-template-columns:1fr}.portfolio-review-body{padding-inline:12px}.portfolio-reviews :is(th,td){padding-inline:5px}}

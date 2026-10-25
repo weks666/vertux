@@ -1,0 +1,252 @@
+/* Invest 046. Shared controls inherit the user's Workspace palette. */
+:root{--ui-control-height:36px;--ui-control-radius:7px;--ui-menu-radius:11px;--ui-overlay-shadow:0 12px 36px #0003;--ui-motion:140ms cubic-bezier(.16,1,.3,1);--ui-font:13px;--ui-small:12px;--ui-label:11px}
+:root[data-text-size=large]{--ui-font:15px;--ui-small:14px;--ui-label:13px}
+:root[data-text-size=extra-large]{--ui-font:17px;--ui-small:16px;--ui-label:14px}
+.ui-sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.ui-icon{display:block;width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+body .button,body #mainContent .button,.ui-button{min-height:var(--ui-control-height);padding:7px 12px;border-radius:var(--ui-control-radius);font:500 var(--ui-font)/1.4 var(--body);letter-spacing:0;box-shadow:none;transition:background-color var(--ui-motion),color var(--ui-motion),border-color var(--ui-motion)}
+body .button:hover:not(:disabled),body #mainContent .button:hover:not(:disabled){transform:none;box-shadow:none}
+.ui-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit}
+.ui-button:hover:not(:disabled){background:var(--surface-strong)}
+.ui-button.primary{background:var(--action-fill);border-color:transparent;color:var(--action-text,#fff)}
+.ui-button:disabled{opacity:.5;cursor:default}
+.ui-icon-button{width:32px;min-width:32px;min-height:32px;padding:7px;border:0;background:transparent;color:var(--muted)}
+.ui-icon-button:hover{color:var(--text);background:var(--surface-strong)}
+.ui-text-button{display:inline-flex;align-items:center;justify-content:flex-start;gap:7px;min-height:36px;padding:5px 0;border:0;background:transparent;color:var(--muted);font:500 var(--ui-font)/1.4 var(--body);text-align:left;cursor:pointer}
+.ui-text-button:hover{color:var(--text)}
+.ui-menu{position:fixed;inset:auto;margin:0;width:min(288px,calc(100vw - 24px));max-height:min(460px,calc(100dvh - 24px));padding:6px;overflow:auto;border:0;border-radius:var(--ui-menu-radius);background:var(--surface-raised,var(--surface));color:var(--text);font-family:inherit;box-shadow:var(--ui-overlay-shadow);scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+.ui-menu:not(:popover-open){display:none}
+.ui-menu:popover-open{animation:ui-menu-reveal var(--ui-motion)}
+@keyframes ui-menu-reveal{from{opacity:.35;clip-path:inset(0 0 12px 0 round 11px)}to{opacity:1;clip-path:inset(0 round 11px)}}
+.ui-menu-heading{display:flex;align-items:center;justify-content:space-between;min-height:30px;padding:0 5px 2px 10px;color:var(--muted);font-size:var(--ui-small);font-weight:500}
+.ui-menu-item{display:flex;align-items:center;gap:9px;width:100%;min-height:36px;padding:8px 10px;border:0;border-radius:6px;background:transparent;color:var(--text);font:400 var(--ui-font)/1.4 var(--body);text-align:left;cursor:pointer}
+.ui-menu-item>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ui-menu-item:hover:not(:disabled),.ui-menu-item:focus-visible{background:var(--surface-strong)}
+.ui-menu-item:disabled{opacity:.5;cursor:default}
+.ui-menu-group{margin:8px 10px 4px;color:var(--muted);font-size:var(--ui-label);font-weight:500}
+.ui-menu-status{margin:6px 10px 10px;color:var(--muted);font-size:var(--ui-small);line-height:1.5}
+.ui-settings-dialog{width:min(680px,calc(100vw - 32px));height:min(510px,calc(100dvh - 40px));max-width:none;max-height:none;margin:auto;padding:0;border:0;border-radius:14px;background:var(--surface-raised,var(--surface));color:var(--text);box-shadow:0 24px 80px #0005;overflow:hidden;font-family:inherit}
+.ui-settings-dialog:not([open]){display:none}
+.ui-settings-dialog[open]{display:flex;flex-direction:column}
+.ui-settings-dialog::backdrop{background:#0005;backdrop-filter:none}
+.ui-dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.ui-dialog-heading h2{margin:0;font-size:16px;line-height:1.5;font-weight:550;letter-spacing:-.015em}
+.ui-settings-body{display:flex;flex:1;min-height:0;min-width:0}
+.ui-settings-nav{display:flex;flex-direction:column;flex:0 0 156px;gap:3px;padding:16px 10px;background:var(--surface)}
+.ui-settings-tab{width:100%;min-height:36px;padding:9px 12px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-family:inherit;font-size:var(--ui-font);font-weight:400;text-align:left;cursor:pointer}
+.ui-settings-tab:hover{color:var(--text)}
+.ui-settings-tab[aria-current=page]{background:var(--surface-strong);color:var(--text);font-weight:500}
+.ui-settings-page{flex:1;min-height:0;overflow:auto;padding:23px 26px;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+.ui-settings-page[hidden]{display:none!important}
+.ui-settings-page h3{margin:0 0 20px;font-size:15px;font-weight:550;letter-spacing:0}
+.ui-field{display:grid;gap:7px;margin:0 0 17px;min-width:0;font-size:var(--ui-small);font-weight:500;color:var(--text)}
+.ui-settings-dialog :is(input:not([type=checkbox]),select,textarea){width:100%;min-width:0;min-height:36px;padding:8px 10px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--text);font:400 var(--ui-font)/1.5 var(--body);font-family:inherit;box-shadow:none}
+.ui-settings-dialog textarea{resize:vertical;min-height:100px}
+.ui-settings-dialog input::placeholder,.ui-settings-dialog textarea::placeholder{color:var(--muted);opacity:1}
+.ui-field-help{margin:10px 0;color:var(--muted);font-size:var(--ui-small);line-height:1.65;font-weight:400}
+.ui-inline-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ui-segmented{display:flex;width:max-content;max-width:100%;gap:3px;padding:3px;margin-bottom:20px;border-radius:8px;background:var(--surface)}
+.ui-segment{min-height:32px;padding:7px 12px;border:0;border-radius:6px;background:transparent;color:var(--muted);font:500 var(--ui-small)/1.4 var(--body);font-family:inherit;cursor:pointer}
+.ui-segment[aria-pressed=true]{color:var(--text);background:var(--surface-strong)}
+.ui-switch-row{display:flex!important;align-items:center;justify-content:space-between;gap:14px;min-height:38px;margin:0 0 14px;font-size:var(--ui-font);font-weight:500}
+.ui-switch-row input[type=checkbox]{appearance:none;flex:none;position:relative;width:32px;height:18px;min-height:18px;margin:0;padding:0;border:0;border-radius:999px;background:var(--line-strong);cursor:pointer;transition:background var(--ui-motion)}
+.ui-switch-row input[type=checkbox]::before{content:'';display:block;width:12px;height:12px;margin:3px;border-radius:50%;background:var(--text);transition:transform var(--ui-motion)}
+.ui-switch-row input[type=checkbox]:checked{background:var(--action-fill)}
+.ui-switch-row input[type=checkbox]:checked::before{transform:translateX(14px);background:#fff}
+.ui-switch-row input[type=checkbox]:disabled{opacity:.45;cursor:default}
+.ui-dialog-footer{display:flex;align-items:center;justify-content:flex-end;gap:16px;flex:none;padding:14px 24px;border-top:1px solid var(--line);background:var(--surface-raised,var(--surface))}
+.ui-dialog-footer>[hidden]{display:none!important}
+.ui-form-status{flex:1;margin:0;min-width:0;color:var(--muted);font-size:var(--ui-small);line-height:1.45}
+.ui-form-status:empty{display:none}
+.ui-information-row{margin:0 0 21px}
+.ui-information-row h4{margin:0 0 6px;font-size:var(--ui-font);font-weight:500}
+.ui-information-row p{margin:0;color:var(--muted);font-size:var(--ui-small);line-height:1.65}
+.ui-disclosure>summary{min-height:36px;padding:8px 0;color:var(--muted);font-size:var(--ui-small);cursor:pointer}
+.ui-disclosure[open]>.ui-field{margin-top:10px}
+.ui-settings-dialog :focus-visible,.ui-menu :focus-visible,.nexus-ai-model-trigger:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:none}
+
+/* Consistent hierarchy and controls on the existing application surfaces. */
+body .nav-item{font-weight:500;border-radius:7px;letter-spacing:0}
+body .nav-item.active::before{display:none}
+body .nav-item.active{background:var(--accent-surface);color:var(--text)}
+body .topbar{min-height:64px}
+body .topbar-title>span{display:none}
+body .topbar h1{margin:0;font-weight:550;font-size:18px;letter-spacing:-.02em}
+body .owner-button strong,body .shell-control strong{font-weight:500}
+body .workspace-tab-indicator{background:var(--vertux-soft)}
+body .workspace-tab-indicator::before{display:none}
+body :is(.terminal-popover,.terminal-dock-menu,.terminal-layout-menu>div,.shell-menu){border-radius:var(--ui-menu-radius);font-weight:400}
+body :is(.terminal-popover,.terminal-dock-menu) button{font-weight:400}
+body :is(.terminal-popover,.terminal-dock-menu) :is(input,select){border-radius:var(--ui-control-radius)}
+body :is(.terminal-popover,.terminal-dock-menu,.shell-menu) :is(h3,h4,strong){font-weight:550}
+body #mainContent label{font-weight:500}
+body #mainContent :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]),select){border-radius:var(--ui-control-radius)}
+body .terminal-world-frame,body .terminal-world-frame iframe{border:0;background:var(--chart-bg)}
+body[data-visual-workspace] #mainContent :is(.terminal-popover,.chart-options-menu,.ticker-settings-popup){border:0;border-radius:var(--ui-menu-radius);box-shadow:var(--ui-overlay-shadow);background:var(--surface-raised);padding:10px;font-size:var(--ui-small)}
+body[data-visual-workspace] #mainContent :is(.terminal-popover,.chart-options-menu)>header{padding:2px 5px 10px;font-size:var(--ui-small)}
+body[data-visual-workspace] #mainContent :is(.terminal-popover,.chart-options-menu)>header strong{font-weight:500}
+body[data-visual-workspace] #mainContent .terminal-popover[data-editing=scale]{width:min(280px,calc(100vw - 24px))}
+.terminal-scale-options [role=menu]{margin-bottom:14px}
+.terminal-scale-options .ui-menu-item>.ui-icon{width:15px;height:15px;visibility:hidden}
+.terminal-scale-options .ui-menu-item[aria-checked=true]>.ui-icon{visibility:visible}
+.terminal-scale-options .ui-menu-item[aria-checked=true]{background:var(--accent-surface)}
+body[data-visual-workspace] #mainContent .terminal-scale-options .ui-switch-row{padding:9px 10px;margin:0;font-size:var(--ui-small);font-weight:400}
+
+/* A settings page has one subject, a quiet section rail and a readable column. */
+[data-settings-layout=sections]>.section-head{display:none}
+.settings-workspace{display:grid;grid-template-columns:190px minmax(0,760px);gap:36px;align-items:start;max-width:1040px;padding:16px 4px 48px}
+.settings-navigation{display:flex;flex-direction:column;gap:3px;position:sticky;top:20px;min-width:0}
+.settings-nav-item{display:flex;align-items:center;min-height:38px;padding:9px 12px;border:0;border-radius:7px;background:transparent;color:var(--muted);font:400 var(--ui-font)/1.4 var(--body);text-align:left;cursor:pointer}
+.settings-nav-item:hover{background:var(--surface);color:var(--text)}
+.settings-nav-item[aria-current=page]{background:var(--surface-strong);color:var(--text);font-weight:500}
+.settings-content{min-width:0}
+.settings-content>.workspace-customization{display:contents}
+.settings-page{min-width:0;padding:0;border:0;background:transparent}
+.settings-page[hidden]{display:none!important}
+.settings-page>.settings-page-title{margin:0 0 24px;font-size:20px;line-height:1.4;font-weight:500;letter-spacing:-.02em}
+.settings-page>:is(section,article,details),.settings-page>.settings-control-group{margin:0 0 26px;padding:0 0 26px;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none}
+.settings-page>:last-child{border-bottom:0}
+.settings-page :is(h4,h3:not(.settings-page-title)){margin:0 0 12px;font-size:var(--ui-font);font-weight:500;letter-spacing:0}
+.settings-page p{margin:6px 0 16px;color:var(--muted);font-size:var(--ui-small);line-height:1.6}
+.settings-page :is(label,strong){font-size:var(--ui-small);font-weight:500}
+.settings-page .workspace-palette{margin:20px 0 28px;padding:0;border:0;grid-template-columns:minmax(120px,1.5fr) repeat(2,minmax(70px,1fr)) auto}
+.settings-page .visual-theme-options{gap:12px;margin:0 0 18px}
+.settings-page .visual-theme-option{padding:4px 4px 9px;border-radius:9px;background:transparent;border-color:transparent;box-shadow:none}
+.settings-page .visual-theme-option[aria-pressed=true]{background:var(--surface);border-color:var(--line-strong)}
+.settings-page .visual-theme-sample{height:80px;border-radius:6px}
+.settings-page .visual-theme-option>span{font-size:var(--ui-small);font-weight:400}
+.settings-page .workspace-light-options{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.settings-page .workspace-light-options button{min-height:70px;padding:8px 5px;border-radius:7px;background:var(--surface);border-color:transparent;font-weight:400}
+.settings-page .workspace-light-options button[aria-pressed=true]{border-color:var(--line-strong)}
+.settings-page .workspace-light-sample{height:28px}
+.settings-page :is(.workspace-light-controls,.workspace-background-controls){gap:14px;margin-top:16px}
+.settings-page .workspace-menu-row{padding:8px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;background:transparent}
+.settings-page .workspace-menu-label small{display:none}
+.settings-page .workspace-menu-label strong{font-size:var(--ui-small);font-weight:400}
+.settings-page .workspace-menu-order{gap:0}
+.settings-page .workspace-option{padding:12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;box-shadow:none}
+.settings-page .workspace-option small{font-size:var(--ui-small);line-height:1.5;font-weight:400}
+.settings-content>.workspace-customization>.workspace-customization-status{margin:12px 0;font-size:var(--ui-small)}
+.settings-content>.workspace-customization>.workspace-customization-status:empty{display:none}
+body #mainContent .settings-page :is(button,input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]),select){min-height:var(--ui-control-height);font-size:var(--ui-small);font-weight:400;border-radius:var(--ui-control-radius);box-shadow:none}
+.settings-page :is(.workspace-menu-controls button,.workspace-menu-shortcut input){min-height:30px!important}
+.settings-page .workspace-menu-controls button{background:transparent;border-color:transparent}
+.settings-page .chart-preferences-compact .chart-preferences-form{display:block}
+.settings-page .chart-preference-tabs{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px;padding:0 0 18px;border:0}
+.settings-page .chart-preference-tabs>[role=tab]{min-height:36px;padding:8px 10px;border:0;background:transparent;color:var(--muted);font-weight:400}
+.settings-page .chart-preference-tabs>[aria-selected=true]{background:var(--surface-strong);color:var(--text)}
+.settings-page .chart-preferences-form>details{padding:12px 0;border:0;background:transparent}
+.settings-page .chart-preferences-form .chart-tool-defaults{grid-template-columns:repeat(2,minmax(0,1fr))}
+.settings-nav-item:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+body[data-visual-workspace] #mainContent .settings-page :is(.terminal-settings-transfer,.workspace-settings-transfer) :is(button,input[type=file]){min-height:44px}
+body[data-visual-workspace] #mainContent .settings-nav-item{font:400 var(--ui-font)/1.5 var(--body);min-height:38px}
+body[data-visual-workspace] #mainContent .settings-nav-item[aria-current=page]{font-weight:500}
+body[data-visual-workspace] #mainContent .settings-page>.settings-page-title{font-size:20px;font-weight:500}
+body[data-visual-workspace] .rail :is(.nav-item,.task-nav-item).active::before{display:none}
+body[data-visual-workspace] .rail :is(.nav-item,.task-nav-item){font-weight:400}
+body[data-visual-workspace] .rail :is(.nav-item,.task-nav-item).active{font-weight:500}
+@media(max-width:900px){.settings-workspace{grid-template-columns:165px minmax(0,1fr);gap:20px}.settings-page .workspace-palette{grid-template-columns:repeat(3,minmax(0,1fr))}.settings-page .workspace-palette>button{grid-column:1/-1;justify-self:start}}
+@media(max-width:650px){.settings-workspace{display:flex;flex-direction:column;gap:24px;padding-top:4px}.settings-navigation{position:static;flex-direction:row;flex-wrap:wrap;gap:4px}.settings-nav-item{min-height:40px;padding:8px 10px;font-size:var(--ui-small)}.settings-content{width:100%}.settings-page>.settings-page-title{font-size:18px;margin-bottom:20px}.settings-page .workspace-light-options{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-page .visual-theme-sample{height:62px}.settings-page .workspace-menu-row{grid-template-columns:minmax(0,1fr) auto}.settings-page .workspace-drag{display:none}.settings-page .workspace-menu-shortcut{grid-column:1/-1}}
+
+/* The model menu is a selection; account setup and preferences are separate. */
+.nexus-ai-model-trigger{display:flex;align-items:center;gap:5px;max-width:100%;min-height:36px;padding:7px 8px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-family:inherit;font-size:var(--ui-small);font-weight:400;cursor:pointer}
+.nexus-ai-model-trigger>span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.nexus-ai-model-trigger>.ui-icon{width:13px;height:13px}
+.nexus-ai-model-trigger:hover,.nexus-ai-model-trigger[aria-expanded=true]{background:var(--surface-strong);color:var(--text)}
+.nexus-ai-model-list{max-height:min(330px,55dvh);overflow:auto;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+.nexus-ai-model-option>.ui-icon{width:15px;height:15px;visibility:hidden;color:var(--vertux-soft)}
+.nexus-ai-model-option[aria-checked=true]>.ui-icon{visibility:visible}
+.nexus-ai-model-option[aria-checked=true]{background:var(--accent-surface)}
+.nexus-ai-settings-link{margin-top:6px;border-top:1px solid var(--line);border-radius:0 0 6px 6px;color:var(--muted)}
+.nexus-ai-settings-dialog .nexus-ai-settings-form{position:static;inset:auto;display:flex;flex:1;flex-direction:column;min-width:0;min-height:0;width:auto;max-height:none;margin:0;padding:0;overflow:hidden;background:transparent;color:inherit;border:0;border-radius:0;box-shadow:none;font:inherit}
+.nexus-ai-settings-dialog .nexus-ai-settings-form>*{grid-column:auto}
+.nexus-ai-settings-dialog .nexus-ai-cloud{display:block}
+.nexus-ai-settings-dialog .nexus-ai-cloud[hidden],.nexus-ai-settings-dialog .nexus-ai-local-settings[hidden]{display:none!important}
+.nexus-ai-settings-dialog .nexus-ai-local-settings{display:block}
+.nexus-ai-settings-dialog .nexus-ai-cloud p{margin:10px 0}
+.nexus-ai-workspace .nexus-ai-sidebar-head{padding-inline:8px}
+.nexus-ai-workspace .nexus-ai-sidebar-head h2{font-size:var(--ui-font);font-weight:500;color:var(--muted)}
+#mainContent #nexusAiWorkspace [data-ai-new]{width:32px;min-width:32px;min-height:32px;margin:0;padding:7px;border:0;background:transparent;color:var(--muted)}
+#mainContent #nexusAiWorkspace [data-ai-new]:hover{color:var(--text);background:var(--surface-strong)}
+.nexus-ai-sidebar-head>[data-ai-new]>.nexus-ai-control-label{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+.nexus-ai-history input{min-height:36px;border:0;background:transparent;margin-bottom:8px;padding-inline:8px}
+.nexus-ai-history input:focus{background:var(--ink)}
+.nexus-ai-conversation{min-height:36px;padding:9px 8px}
+.nexus-ai-conversation small{display:none}
+.nexus-ai-conversation-title{font-size:var(--ui-small)}
+.nexus-ai-chat-head{min-height:48px;padding-inline:24px}
+.nexus-ai-chat-head h3{font-size:var(--ui-font);font-weight:400;color:var(--muted)}
+.nexus-ai-compose-area{padding-bottom:20px}
+.nexus-ai-composer{padding:10px 10px 7px;border-radius:16px;border-color:var(--line);background:var(--surface)}
+.nexus-ai-composer:focus-within{border-color:var(--line-strong);box-shadow:none}
+.nexus-ai-composer textarea{padding:4px 8px;min-height:44px;font-size:14px}
+#mainContent #nexusAiWorkspace .nexus-ai-icon-button,body>.nexus-ai-panel .nexus-ai-icon-button{width:36px;min-width:36px;min-height:36px;padding:9px;border-radius:7px}
+#mainContent #nexusAiWorkspace [data-ai-send],body>.nexus-ai-panel [data-ai-send]{width:32px;min-width:32px;min-height:32px;padding:7px;border-radius:50%}
+.nexus-ai-toolbar{gap:3px}
+.nexus-ai-toolbar>.nexus-ai-settings{flex:0 1 auto;margin-left:auto}
+.nexus-ai-toolbar>.nexus-ai-composer-actions{margin-left:5px}
+.nexus-ai-search-control{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:7px 8px;border:0;border-radius:6px;background:transparent;color:var(--muted);font:400 var(--ui-small)/1.4 var(--body);font-family:inherit;cursor:pointer}
+.nexus-ai-search-control .ui-icon{width:16px;height:16px}
+.nexus-ai-search-control:hover{color:var(--text);background:var(--surface-strong)}
+.nexus-ai-search-control[aria-pressed=true]{color:var(--vertux-soft);background:var(--accent-surface)}
+.nexus-ai-search-control:disabled{opacity:.45;cursor:default}
+.nexus-ai-user{border-radius:14px;padding:10px 15px;background:var(--surface)}
+.nexus-ai-message>strong{font-size:var(--ui-label);font-weight:400}
+.nexus-ai-message p{line-height:1.7}
+.nexus-ai-panel{box-shadow:0 12px 40px #0004;border:0;border-radius:16px}
+.nexus-ai-panel-head{padding:6px 8px}
+.nexus-ai-drag{font-size:var(--ui-font);font-weight:500}
+.nexus-ai-panel .nexus-ai-toolbar{flex-wrap:wrap}
+.nexus-ai-panel .nexus-ai-search-control>span{display:none}
+.nexus-ai-panel .nexus-ai-settings{max-width:175px}
+.nexus-ai-attachments.ui-menu,.nexus-ai-skills.ui-menu,.nexus-ai-panel-options.ui-menu{width:min(288px,calc(100vw - 24px));padding:6px;border:0;box-shadow:var(--ui-overlay-shadow)}
+.nexus-ai-attachments [hidden]{display:none!important}
+.nexus-ai-attachment-home .ui-menu-item{font-weight:400}
+.nexus-ai-attachments .ui-menu-item>svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;flex:none}
+.nexus-ai-attachments>.ui-menu-heading{justify-content:flex-start;gap:4px;padding:0 0 6px}
+.nexus-ai-attachments .nexus-ai-picker>div{padding:0;gap:3px;max-height:min(320px,45dvh)}
+.nexus-ai-attachments .nexus-ai-plan-option{min-height:36px;padding:8px 10px;border:0;border-radius:6px;background:transparent;box-shadow:none;font:400 var(--ui-small)/1.5 var(--body);text-align:left}
+.nexus-ai-attachments .nexus-ai-plan-option:hover{background:var(--surface-strong)}
+.nexus-ai-attachments .nexus-ai-plan-option strong{font-size:var(--ui-small);font-weight:400}
+.nexus-ai-attachments .nexus-ai-plan-option small{margin:0;font-size:var(--ui-label);font-weight:400}
+.nexus-ai-attachments .nexus-ai-instrument-popover{padding:0;max-height:min(380px,55dvh)}
+.nexus-ai-attachments .nexus-ai-instrument-options{gap:2px}
+.nexus-ai-attachments .nexus-ai-instrument-picker input{min-height:36px;border:0;border-radius:6px;font-size:var(--ui-small);padding:8px 10px}
+.nexus-ai-skills .ui-menu-status{border-top:1px solid var(--line);margin:6px 4px 2px;padding:10px 6px 3px;font-size:var(--ui-label)}
+/* Override the historical blanket .view control sizing at the component boundary. */
+:is(#mainContent,.nexus-ai-panel) .ui-menu-item{min-height:36px;font:400 var(--ui-font)/1.4 var(--body);padding:8px 10px}
+:is(#mainContent,.nexus-ai-panel) .ui-menu-heading{font-size:var(--ui-small);font-weight:400}
+:is(#mainContent,.nexus-ai-panel) .ui-menu-group{font-size:var(--ui-label);font-weight:400;margin-block:6px 4px}
+:is(#mainContent,.nexus-ai-panel) .ui-menu-heading>.ui-icon-button{width:28px;min-height:28px;padding:6px}
+:is(#mainContent,.nexus-ai-panel) .nexus-ai-model-trigger{min-height:36px;font:400 var(--ui-small)/1.4 var(--body)}
+.ui-settings-dialog :is(.ui-settings-tab,.ui-segment,.ui-button,.ui-text-button){font-family:var(--body);font-weight:400}
+.ui-settings-dialog .ui-field{font-weight:400}
+.ui-settings-dialog .ui-settings-page{padding-top:20px}
+.ui-settings-dialog .ui-segmented{margin-bottom:14px}
+.ui-settings-dialog .ui-field-help{font-size:var(--ui-small);line-height:1.5}
+body .rail :is(.nav-item,.task-nav-item){min-height:36px;font-size:var(--ui-small);font-weight:400}
+body .rail :is(.nav-item,.task-nav-item).active{font-weight:500;box-shadow:none;border-color:transparent;background:var(--accent-surface)}
+body .rail :is(.nav-item,.task-nav-item).active::before{display:none}
+body .rail-footer{background-image:none}
+body .rail-footer::before{display:none}
+body .topbar :is(.button,.workspace-context select,.context-account .filter-field){font-weight:400}
+.nexus-ai-workspace[data-mode=full]{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.nexus-ai-workspace[data-mode=full] .nexus-ai-history{display:none}
+.nexus-ai-workspace[data-mode=full][data-history-open=true]{grid-template-columns:220px minmax(0,1fr)}
+.nexus-ai-workspace[data-mode=full][data-history-open=true] .nexus-ai-history{display:flex}
+.nexus-ai-workspace[data-mode=full][data-history-open=true] .nexus-ai-history-close{display:inline-flex!important}
+.nexus-ai-workspace[data-mode=full] .nexus-ai-chat:has(.nexus-ai-empty){display:grid;grid-template-rows:auto minmax(0,1fr) auto minmax(0,1.3fr)}
+.nexus-ai-workspace[data-mode=full] .nexus-ai-chat:has(.nexus-ai-empty)::after{content:'';grid-row:4}
+.nexus-ai-workspace[data-mode=full] .nexus-ai-messages:has(.nexus-ai-empty){align-self:end;padding-block:16px 18px;overflow:auto}
+.nexus-ai-workspace[data-mode=full] .nexus-ai-empty{margin:0;padding:0}
+.nexus-ai-empty h3{font-size:26px;font-weight:450}
+.nexus-ai-empty p{font-size:var(--ui-font)}
+.nexus-ai-chat-head>[data-ai-history-toggle]{margin-left:-8px}
+.nexus-ai-chat-head h3{margin:0}
+@media(max-width:800px){.nexus-ai-workspace[data-mode=full][data-history-open=true]{grid-template-columns:minmax(0,1fr)}.nexus-ai-workspace[data-mode=full][data-history-open=true] .nexus-ai-history{position:absolute;z-index:15;inset:0 auto 0 0;width:min(280px,calc(100% - 44px));padding:14px;box-shadow:12px 0 30px #0003}.nexus-ai-workspace[data-mode=full] .nexus-ai-history .nexus-ai-sidebar-head{position:static;pointer-events:auto}.nexus-ai-workspace[data-mode=full] .nexus-ai-history>details:first-of-type>summary{display:none}.nexus-ai-workspace[data-mode=full] .nexus-ai-history>.nexus-ai-storage>summary{position:static;display:flex;width:auto}.nexus-ai-workspace[data-mode=full] .nexus-ai-storage>summary>span{position:static;width:auto;height:auto;clip-path:none}.nexus-ai-workspace[data-mode=full] .nexus-ai-storage>summary>svg{display:none}}
+@media(max-width:800px){.nexus-ai-sidebar-head>[data-ai-new]{pointer-events:auto}.nexus-ai-sidebar-head{gap:8px}.nexus-ai-compose-area{padding-bottom:12px}}
+@media(max-width:600px){:root{--ui-control-height:44px}.ui-settings-dialog{width:calc(100vw - 24px);height:min(640px,calc(100dvh - 24px));border-radius:12px}.ui-dialog-heading{padding:12px 16px}.ui-settings-body{flex-direction:column}.ui-settings-nav{flex:none;flex-direction:row;padding:6px;gap:2px}.ui-settings-tab{min-height:44px;text-align:center;padding-inline:8px}.ui-settings-page{padding:18px}.ui-dialog-footer{padding:12px 18px}.ui-menu-item{min-height:44px}.ui-icon-button{min-width:36px;min-height:36px}.ui-settings-dialog :is(input:not([type=checkbox]),select){min-height:44px}.ui-segment{min-height:40px}.nexus-ai-search-control{min-height:36px}.nexus-ai-search-control>span{display:none}.nexus-ai-toolbar>.nexus-ai-settings{flex:1;min-width:0}.nexus-ai-model-trigger{max-width:100%;font-size:var(--ui-label)}.nexus-ai-chat-head{padding-inline:14px}}
+@media(pointer:coarse){.ui-menu-item,.ui-button,:is(#mainContent,.nexus-ai-panel) .ui-menu-item{min-height:44px}}
+@media(max-width:600px),(pointer:coarse){#mainContent #nexusAiWorkspace :is(.nexus-ai-icon-button,[data-ai-send],[data-ai-new],[data-ai-new-header]),body>.nexus-ai-panel :is(.nexus-ai-icon-button,[data-ai-send]){width:44px;min-width:44px;min-height:44px}.nexus-ai-search-control,.nexus-ai-model-trigger,.nexus-ai-conversation{min-height:44px}.nexus-ai-model-trigger{padding-inline:5px}.ui-menu-item,:is(#mainContent,.nexus-ai-panel) .ui-menu-item{min-height:44px}.settings-page .chart-preferences-form .chart-tool-defaults{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.ui-menu,.ui-settings-dialog,.ui-button,.ui-switch-row input,.ui-switch-row input::before{transition:none;animation:none}}
+@media(max-width:600px),(pointer:coarse){.nexus-ai-history input,:is(#mainContent,.nexus-ai-panel) .nexus-ai-model-trigger{min-height:44px}}

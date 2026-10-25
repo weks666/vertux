@@ -1,0 +1,602 @@
+/* Invest visual system v2 — 0.6.48 layer, loaded right after invest-visual-v2.css.
+   Owner remarks after 0.6.47: icon buttons, terminal chrome, KPI cards, risk &
+   plan, trade results, market map, account center and Nexus AI drag. */
+
+/* ---------- Icon-only buttons: no frame, a little air between neighbours ---------- */
+html[data-ui="v2"] body :is(.terminal-icon, .nexus-ai-icon-button, .icon-button) {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 8px;
+  color: var(--muted);
+  transition: background-color .15s ease, color .15s ease;
+}
+html[data-ui="v2"] body :is(.terminal-icon, .nexus-ai-icon-button, .icon-button):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--text) 9%, transparent) !important;
+  color: var(--text);
+}
+html[data-ui="v2"] body :is(.terminal-icon, .nexus-ai-icon-button, .icon-button)[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--vertux) 18%, transparent) !important;
+  color: var(--vertux-soft, var(--vertux));
+}
+html[data-ui="v2"] body :is(.terminal-icon, .nexus-ai-icon-button, .icon-button) + :is(.terminal-icon, .nexus-ai-icon-button, .icon-button) {
+  margin-left: 4px;
+}
+html[data-ui="v2"] body .nexus-ai-panel-head { gap: 4px; }
+
+/* ---------- Nexus AI: drag the launcher or the panel header to a corner ---------- */
+html[data-ui="v2"] body .nexus-ai-panel-head { cursor: grab; touch-action: none; user-select: none; }
+html[data-ui="v2"] body .nexus-ai-panel-head :is(button, select, input) { cursor: pointer; }
+html[data-ui="v2"] body .nexus-ai-launcher { touch-action: none; }
+html[data-ui="v2"] body :is(.nexus-ai-panel, .nexus-ai-launcher).nexus-ai-dragging {
+  cursor: grabbing;
+  transition: none !important;
+  box-shadow: 0 24px 60px #00000070, 0 0 0 1px color-mix(in srgb, var(--vertux) 45%, transparent) !important;
+  z-index: 400;
+}
+html[data-ui="v2"] body :is(.nexus-ai-panel, .nexus-ai-launcher).nexus-ai-snapping { transition: translate .24s cubic-bezier(.2, .8, .2, 1); }
+html[data-ui="v2"] body .nexus-ai-drag:focus-visible { outline: 2px solid var(--focus, var(--vertux)); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- Terminal: no strip above a single chart ---------- */
+html[data-ui="v2"] body .terminal-main[data-single-chart="true"] .terminal-chart-card > header { display: none !important; }
+html[data-ui="v2"] body .terminal-chart-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+html[data-ui="v2"] body .terminal-chart-actions[hidden] { display: none; }
+html[data-ui="v2"] body .terminal-source-toggle {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--v2-hairline);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+html[data-ui="v2"] body .terminal-source-toggle button {
+  min-height: 26px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 12px/1 var(--body);
+  white-space: nowrap;
+  cursor: pointer;
+}
+html[data-ui="v2"] body .terminal-source-toggle button[aria-pressed="true"] {
+  background: var(--surface-raised);
+  color: var(--text);
+  opacity: 1;
+  cursor: default;
+}
+html[data-ui="v2"] body .terminal-source-toggle button:not([aria-pressed="true"]):hover { color: var(--text); }
+
+/* Settings gear: square box, never squeezed by its neighbours. */
+html[data-ui="v2"] body :is(.ticker-settings, #terminalSettings, [data-cell-settings]) {
+  flex: none;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+}
+html[data-ui="v2"] body :is(.ticker-settings, #terminalSettings, [data-cell-settings]) svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* TradingView-like chart toolbar for broker-sourced charts. */
+html[data-ui="v2"] body .terminal-chart-controls {
+  min-height: 40px;
+  padding: 3px 8px;
+  gap: 2px;
+  border-bottom: 1px solid var(--v2-hairline);
+  background: var(--chart-bg, var(--surface));
+}
+html[data-ui="v2"] body .terminal-common-tools { gap: 2px; align-items: center; }
+html[data-ui="v2"] body .terminal-common-tools > button:not(.terminal-icon) {
+  min-height: 32px;
+  padding: 0 9px;
+  border: 0 !important;
+  border-radius: 7px;
+  background: transparent !important;
+  color: var(--text);
+  font: 600 13px/1 var(--body);
+  align-items: center;
+  gap: 6px;
+}
+html[data-ui="v2"] body .terminal-common-tools > :is(.terminal-tool, #terminalIndicators):not([hidden]) { display: inline-flex; }
+html[data-ui="v2"] body .terminal-common-tools > button:not(.terminal-icon):hover { background: color-mix(in srgb, var(--text) 9%, transparent) !important; }
+html[data-ui="v2"] body .terminal-common-tools > button.terminal-tool { width: auto; min-width: 32px; padding: 0 7px; justify-content: center; }
+html[data-ui="v2"] body .terminal-common-tools > button.terminal-tool svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+html[data-ui="v2"] body .terminal-common-tools .terminal-tool-fx { font: italic 700 14px/1 Georgia, "Times New Roman", serif; letter-spacing: -0.04em; color: var(--text); }
+html[data-ui="v2"] body .terminal-common-tools > :is(#terminalCompare, #terminalIndicators, #terminalSettings, [data-history="undo"], #terminalDataPassport) {
+  margin-left: 6px;
+  position: relative;
+}
+html[data-ui="v2"] body .terminal-common-tools > :is(#terminalCompare, #terminalIndicators, #terminalSettings, [data-history="undo"], #terminalDataPassport)::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 7px;
+  bottom: 7px;
+  width: 1px;
+  background: var(--v2-hairline);
+}
+html[data-ui="v2"] body .terminal-common-tools > [aria-pressed="true"]:not(.terminal-icon) { color: var(--vertux-soft, var(--vertux)); }
+
+/* ---------- KPI cards: compact, one context line, thin meters ---------- */
+html[data-ui="v2"] body #mainContent :is(.metric-ledger, .analytics-grid, .ledger-summary) > div { position: relative; }
+html[data-ui="v2"] body #mainContent .kpi-sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font: 500 12px/1.4 var(--body);
+}
+html[data-ui="v2"] body #mainContent .kpi-sub[hidden] { display: none; }
+html[data-ui="v2"] body #mainContent .kpi-meter {
+  position: relative;
+  display: block;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 9%, transparent);
+  overflow: visible;
+}
+html[data-ui="v2"] body #mainContent .kpi-meter i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--fill, 0%);
+  border-radius: inherit;
+  background: var(--vertux);
+}
+html[data-ui="v2"] body #mainContent .kpi-meter[data-kind="split"] { background: color-mix(in srgb, var(--negative) 55%, transparent); }
+html[data-ui="v2"] body #mainContent .kpi-meter[data-kind="split"] i { background: var(--positive); }
+html[data-ui="v2"] body #mainContent .kpi-meter b {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: var(--marker, 50%);
+  width: 2px;
+  border-radius: 1px;
+  background: var(--text);
+  opacity: .55;
+}
+html[data-ui="v2"] body #mainContent .kpi-meter b[hidden] { display: none; }
+
+/* Overview KPI row: content sits at the top, no tall empty boxes. */
+html[data-ui="v2"] body #mainContent .metric-ledger > div,
+html[data-ui="v2"] body #mainContent .analytics-grid > div {
+  min-height: 0 !important;
+  align-content: start;
+  justify-content: flex-start;
+}
+
+/* Deals and operations: one compact strip instead of three empty squares. */
+html[data-ui="v2"] body #mainContent .ledger-summary {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 !important;
+  padding: 0;
+  border: 1px solid var(--v2-hairline);
+  border-radius: var(--v2-radius-card);
+  background: var(--surface);
+  overflow: hidden;
+}
+html[data-ui="v2"] body #mainContent .ledger-summary > div {
+  min-height: 0 !important;
+  padding: 14px 18px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html[data-ui="v2"] body #mainContent .ledger-summary > div + div { border-left: 1px solid var(--v2-hairline) !important; }
+html[data-ui="v2"] body #mainContent .ledger-summary dd { font-size: 22px !important; }
+html[data-ui="v2"] body #mainContent .ledger-summary .closed-summary-link { margin-top: 4px; }
+@media (max-width: 780px) {
+  html[data-ui="v2"] body #mainContent .ledger-summary { grid-template-columns: 1fr; }
+  html[data-ui="v2"] body #mainContent .ledger-summary > div + div { border-left: 0 !important; border-top: 1px solid var(--v2-hairline) !important; }
+}
+
+/* ---------- Analytics: value-history estimate beside confirmed metrics ---------- */
+html[data-ui="v2"] body #mainContent .booked-estimate {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.1fr) minmax(0, 2fr);
+  gap: 16px 24px;
+  align-items: center;
+  margin: 4px 0 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--v2-hairline);
+  border-radius: var(--v2-radius-card);
+  background: color-mix(in srgb, var(--vertux) 5%, var(--surface));
+}
+html[data-ui="v2"] body #mainContent .booked-estimate-lead { display: grid; gap: 4px; }
+html[data-ui="v2"] body #mainContent .booked-estimate-lead > span { color: var(--muted); font: 500 12.5px/1.35 var(--body); }
+html[data-ui="v2"] body #mainContent .booked-estimate-lead > strong { font: 700 26px/1.15 var(--body); letter-spacing: -0.02em; }
+html[data-ui="v2"] body #mainContent .booked-estimate-lead > small { color: var(--muted); font: 450 12px/1.45 var(--body); }
+html[data-ui="v2"] body #mainContent .booked-estimate [data-number-tone="positive"] { color: var(--positive); }
+html[data-ui="v2"] body #mainContent .booked-estimate [data-number-tone="negative"] { color: var(--negative); }
+html[data-ui="v2"] body #mainContent .booked-estimate dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+html[data-ui="v2"] body #mainContent .booked-estimate dl div { display: grid; gap: 3px; padding-left: 14px; border-left: 1px solid var(--v2-hairline); }
+html[data-ui="v2"] body #mainContent .booked-estimate dt { color: var(--muted); font: 500 12px/1.35 var(--body); }
+html[data-ui="v2"] body #mainContent .booked-estimate dd { margin: 0; font: 650 15px/1.3 var(--body); font-variant-numeric: tabular-nums; }
+@media (max-width: 900px) {
+  html[data-ui="v2"] body #mainContent .booked-estimate { grid-template-columns: 1fr; }
+  html[data-ui="v2"] body #mainContent .booked-estimate dl { grid-template-columns: 1fr; }
+}
+/* Confirmed metrics without saved valuations stay visible but quiet. */
+html[data-ui="v2"] body #mainContent .booked-components-metrics[data-unconfirmed] > div { padding-block: 12px !important; min-height: 0 !important; }
+html[data-ui="v2"] body #mainContent .booked-components-metrics[data-unconfirmed] dd {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--muted);
+}
+
+/* Accounts offered right under "choose one account" messages. */
+html[data-ui="v2"] body #mainContent .account-quick-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 4px;
+}
+html[data-ui="v2"] body #mainContent .account-quick-pick .button { min-height: 34px; padding: 6px 14px; font-size: 13px; }
+
+/* ---------- Risk & plan ---------- */
+/* Plan cell: action chip and levels on one line, the note below. */
+html[data-ui="v2"] body #mainContent .plan-draft-plan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  align-self: center;
+}
+html[data-ui="v2"] body #mainContent .plan-draft-plan > strong {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  font: 650 12px/1 var(--body);
+}
+html[data-ui="v2"] body #mainContent .plan-draft-plan[data-action="buy"] > strong { background: color-mix(in srgb, var(--positive) 16%, transparent); color: var(--positive); }
+html[data-ui="v2"] body #mainContent .plan-draft-plan[data-action="sell"] > strong { background: color-mix(in srgb, var(--negative) 16%, transparent); color: var(--negative); }
+html[data-ui="v2"] body #mainContent .plan-draft-plan .plan-draft-prices { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0; }
+html[data-ui="v2"] body #mainContent .plan-draft-plan .plan-draft-prices > div { display: inline-flex; gap: 4px; align-items: baseline; }
+html[data-ui="v2"] body #mainContent .plan-draft-plan .plan-draft-prices dt { color: var(--muted); font-size: 12.5px; }
+html[data-ui="v2"] body #mainContent .plan-draft-plan .plan-draft-prices dd { margin: 0; font-weight: 650; font-variant-numeric: tabular-nums; }
+html[data-ui="v2"] body #mainContent .plan-draft-plan > small { flex-basis: 100%; color: var(--muted); font-size: 12px; }
+html[data-ui="v2"] body #mainContent .manual-plan-row { align-items: center; }
+html[data-ui="v2"] body #mainContent .manual-plan-row > * { align-self: center; }
+
+/* Position calculator: a compact form beside a sticky result. */
+html[data-ui="v2"] body #mainContent .calculator-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+html[data-ui="v2"] body #mainContent .calculator-form {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px 14px;
+  align-items: start;
+}
+html[data-ui="v2"] body #mainContent .calculator-form > label { grid-column: span 3; display: grid; gap: 6px; margin: 0; }
+html[data-ui="v2"] body #mainContent .calculator-form > label:has([name="entryPrice"]),
+html[data-ui="v2"] body #mainContent .calculator-form > label:has([name="stopPrice"]),
+html[data-ui="v2"] body #mainContent .calculator-form > label:has([name="targetPrice"]) { grid-column: span 2; }
+html[data-ui="v2"] body #mainContent .calculator-form > label > span { font: 600 12.5px/1.35 var(--body); color: var(--muted); }
+html[data-ui="v2"] body #mainContent .calculator-form > label :is(input, select) { min-height: 38px; height: 38px; }
+html[data-ui="v2"] body #mainContent .calculator-form > label > small,
+html[data-ui="v2"] body #mainContent .calculator-form .calculator-field-note {
+  margin: 0;
+  color: var(--muted);
+  font: 450 11.5px/1.4 var(--body);
+}
+html[data-ui="v2"] body #mainContent .calculator-form .calculator-field-note,
+html[data-ui="v2"] body #mainContent .calculator-form .calculator-future-fields { grid-column: 1 / -1; }
+html[data-ui="v2"] body #mainContent .calculator-form .calculator-future-fields:not([hidden]) {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 14px;
+}
+html[data-ui="v2"] body #mainContent .calculator-form > button[type="submit"] {
+  grid-column: 4 / -1;
+  align-self: end;
+  min-height: 38px;
+  background: var(--vertux);
+  border-color: var(--vertux);
+  color: #fff;
+}
+html[data-ui="v2"] body #mainContent .calculator-output {
+  position: sticky;
+  top: 12px;
+  min-height: 260px;
+  padding: 18px;
+  border: 1px solid var(--v2-hairline);
+  border-radius: var(--v2-radius-card);
+  background: color-mix(in srgb, var(--vertux) 4%, var(--surface));
+}
+html[data-ui="v2"] body #mainContent .calculator-output > h4 { margin: 0 0 10px; font: 650 15px/1.3 var(--body); }
+html[data-ui="v2"] body #mainContent .calculator-output .empty-copy { text-align: left; }
+@media (max-width: 1100px) {
+  html[data-ui="v2"] body #mainContent .calculator-columns { grid-template-columns: 1fr; }
+  html[data-ui="v2"] body #mainContent .calculator-output { position: static; min-height: 0; }
+}
+@media (max-width: 640px) {
+  html[data-ui="v2"] body #mainContent .calculator-form > label,
+  html[data-ui="v2"] body #mainContent .calculator-form > label:is(:has([name="entryPrice"]), :has([name="stopPrice"]), :has([name="targetPrice"])),
+  html[data-ui="v2"] body #mainContent .calculator-form > button[type="submit"] { grid-column: 1 / -1; }
+  html[data-ui="v2"] body #mainContent .calculator-form .calculator-future-fields:not([hidden]) { grid-template-columns: 1fr; }
+}
+
+/* Account margin: values line up at the bottom of every card. */
+html[data-ui="v2"] body #mainContent .margin-ledger > div {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 92px;
+  padding: 12px 14px !important;
+}
+html[data-ui="v2"] body #mainContent .margin-ledger dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font: 500 12px/1.35 var(--body);
+  color: var(--muted);
+}
+html[data-ui="v2"] body #mainContent .margin-ledger dt small { flex-basis: 100%; }
+html[data-ui="v2"] body #mainContent .margin-ledger dd { margin: 0; font: 700 20px/1.15 var(--body); letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }
+html[data-ui="v2"] body #mainContent .margin-account-empty {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  padding-block: 12px !important;
+}
+html[data-ui="v2"] body #mainContent .margin-account-empty > header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+html[data-ui="v2"] body #mainContent .margin-account-empty > header > small { color: var(--muted); font-size: 12px; }
+html[data-ui="v2"] body #mainContent .margin-account-empty > header > .status-chip { margin-left: auto; }
+html[data-ui="v2"] body #mainContent .margin-account-empty > p { margin: 0; color: var(--muted); font-size: 13px; }
+
+/* ---------- Trade results by instrument ---------- */
+html[data-ui="v2"] body #mainContent .ranking-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 4px 0 14px;
+  border: 1px solid var(--v2-hairline);
+  border-radius: 12px;
+  overflow: hidden;
+}
+html[data-ui="v2"] body #mainContent .ranking-summary[hidden] { display: none; }
+html[data-ui="v2"] body #mainContent .ranking-summary > div { display: grid; gap: 3px; padding: 12px 14px; }
+html[data-ui="v2"] body #mainContent .ranking-summary > div + div { border-left: 1px solid var(--v2-hairline); }
+html[data-ui="v2"] body #mainContent .ranking-summary dt { color: var(--muted); font: 500 12px/1.35 var(--body); }
+html[data-ui="v2"] body #mainContent .ranking-summary dd { margin: 0; font: 700 17px/1.2 var(--body); font-variant-numeric: tabular-nums; }
+html[data-ui="v2"] body #mainContent .ranking-summary dd.positive { color: var(--positive); }
+html[data-ui="v2"] body #mainContent .ranking-summary dd.negative { color: var(--negative); }
+html[data-ui="v2"] body #mainContent .ranking-summary small { color: var(--muted); font: 450 12px/1.35 var(--body); }
+@media (max-width: 900px) {
+  html[data-ui="v2"] body #mainContent .ranking-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-ui="v2"] body #mainContent .ranking-summary > div:nth-child(3) { border-left: 0; }
+  html[data-ui="v2"] body #mainContent .ranking-summary > div:nth-child(n+3) { border-top: 1px solid var(--v2-hairline); }
+}
+html[data-ui="v2"] body #mainContent .ranking-explanation { max-width: 72ch; color: var(--muted); font-size: 12.5px; }
+html[data-ui="v2"] body #mainContent #instrumentRankingTable td { padding-block: 10px; vertical-align: middle; }
+html[data-ui="v2"] body #mainContent #instrumentRankingTable td:nth-child(2) { width: 34%; }
+
+/* ---------- Market map: one switch, the country is chosen inside TradingView ---------- */
+html[data-ui="v2"] body #mainContent .market-cap-market-choice {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 3px;
+  border: 1px solid var(--v2-hairline);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+}
+html[data-ui="v2"] body #mainContent .market-cap-market-choice button {
+  min-height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font: 600 13px/1 var(--body);
+  cursor: pointer;
+}
+html[data-ui="v2"] body #mainContent .market-cap-market-choice button[aria-checked="true"] { background: var(--surface-raised); color: var(--text); box-shadow: 0 1px 2px #0000002e; }
+html[data-ui="v2"] body #mainContent .market-cap-market-choice button:disabled { opacity: .5; cursor: not-allowed; }
+html[data-ui="v2"] body #mainContent .booked-components-metrics[data-unconfirmed] ~ .booked-components-inputs dd {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--muted);
+}
+/* Older layers lay calculator labels out as "label | field" rows; v2 stacks them. */
+html[data-ui="v2"] body #mainContent .calculator-form { padding: 0 !important; }
+html[data-ui="v2"] body #mainContent .calculator-form > label {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-content: start;
+  gap: 6px !important;
+}
+html[data-ui="v2"] body #mainContent .calculator-form > label > * { grid-column: 1 !important; }
+html[data-ui="v2"] body #mainContent .margin-account-empty { padding: 12px 20px !important; }
+html[data-ui="v2"] body #mainContent .margin-account-empty > header { margin-bottom: 0 !important; min-height: 0; }
+html[data-ui="v2"] body #mainContent .margin-account-empty > p { margin-top: 2px !important; }
+html[data-ui="v2"] body #mainContent .calculator-form > button[type="submit"] {
+  background: var(--vertux) !important;
+  border-color: var(--vertux) !important;
+  color: #fff !important;
+}
+html[data-ui="v2"] body #mainContent .calculator-form > button[type="submit"]:hover { filter: brightness(1.08); }
+html[data-ui="v2"] body #mainContent .margin-ledger > div { position: relative; }
+html[data-ui="v2"] body #mainContent .margin-ledger dt { padding-right: 24px; }
+html[data-ui="v2"] body #mainContent .margin-ledger dt .term-help { position: absolute; top: 10px; right: 10px; margin: 0; }
+/* Workspace look buttons inside the account center use regular v2 controls. */
+html[data-ui="v2"] body #personalSettings .button,
+html[data-ui="v2"] body #personalSettings button:not([role="radio"]):not([aria-pressed]) { min-height: 34px; padding: 6px 14px; font-size: 13px; border-radius: 9px; }
+html[data-ui="v2"] body #mainContent .ranking-surface > .ranking-summary { grid-column: 1; }
+html[data-ui="v2"] body #mainContent .ranking-surface > .result-inspector { grid-row: 2 / span 3; align-self: start; }
+@media (max-width: 1100px) {
+  html[data-ui="v2"] body #mainContent .ranking-surface > .result-inspector { grid-row: auto; grid-column: 1; }
+}
+/* Comparison bars: a centred track, gains to the right of zero, losses to the left. */
+html[data-ui="v2"] body #mainContent #instrumentRankingTable .relative-bar {
+  position: relative;
+  width: 100%;
+  height: 8px !important;
+  margin: 0;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  overflow: visible;
+}
+html[data-ui="v2"] body #mainContent #instrumentRankingTable .relative-bar::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  width: 1px;
+  background: var(--line-strong);
+}
+html[data-ui="v2"] body #mainContent #instrumentRankingTable .relative-bar i {
+  position: absolute !important;
+  inset: 0 auto 0 50% !important;
+  width: calc(var(--bar, 0%) / 2) !important;
+  height: auto !important;
+  min-width: 2px;
+  margin: 0 !important;
+  transform: none !important;
+  border-radius: 0 4px 4px 0;
+  background: var(--positive) !important;
+}
+html[data-ui="v2"] body #mainContent #instrumentRankingTable .worst .relative-bar i {
+  inset: 0 50% 0 auto !important;
+  border-radius: 4px 0 0 4px;
+  background: var(--negative) !important;
+}
+html[data-ui="v2"] body #mainContent .plan-draft-plan .plan-draft-prices {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 2px 12px !important;
+  grid-template-columns: none !important;
+}
+html[data-ui="v2"] body #mainContent .plan-draft-plan .plan-draft-prices > div { display: inline-flex !important; gap: 4px !important; white-space: nowrap; }
+@media (min-width: 1181px) {
+  html[data-ui="v2"] body #mainContent #myTradingPlan :is(.plan-ledger-head, .manual-plan-row) {
+    grid-template-columns: minmax(120px, .9fr) minmax(250px, 1.7fr) minmax(110px, .8fr) 134px minmax(110px, 1fr) 140px;
+  }
+}
+/* Mobile terminal: the same two-row header as every other view (an older
+   terminal-only rule forced a three-column grid and pushed search to a 3rd row). */
+@media (max-width: 780px) {
+  html[data-ui="v2"] body[data-visual-workspace][data-current-view="terminal"] .workspace > .topbar { display: flex !important; flex-wrap: wrap; }
+}
+
+/* ---------- 0.6.49: corners inside the workspace ---------- */
+/* nexus-ai-ui.js measures the top bar and a docked rail; top and left corners
+   start after them so the launcher or panel never covers back/forward or the rail. */
+html[data-ui="v2"] body :is(.nexus-ai-panel, .nexus-ai-launcher)[data-anchor^="top"] { top: calc(var(--nexus-ai-safe-top, 0px) + 12px); }
+html[data-ui="v2"] body :is(.nexus-ai-panel, .nexus-ai-launcher)[data-anchor$="left"] { left: calc(var(--nexus-ai-safe-left, 0px) + 16px); }
+html[data-ui="v2"] body .nexus-ai-panel[data-anchor^="top"] { height: min(560px, calc(100dvh - var(--nexus-ai-safe-top, 0px) - 28px)); }
+
+/* ---------- 0.6.49: one-line instrument summary ---------- */
+/* With the TradingView / T-Bank switch and chart actions in the summary, the
+   metrics give way: whole metrics that do not fit move to a clipped second row
+   instead of pushing the actions onto a new line. Phones keep their own layout. */
+@media (min-width: 601px) {
+  html[data-ui="v2"] body #mainContent .terminal-workbench:not(.terminal-custom-layout) .terminal-ticker-strip { flex-wrap: nowrap; }
+  html[data-ui="v2"] body #mainContent .terminal-workbench:not(.terminal-custom-layout) .ticker-metrics {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-wrap: wrap;
+    row-gap: 0;
+    max-height: var(--ticker-metric-row, 48px);
+    overflow: hidden;
+    align-content: flex-start;
+  }
+  html[data-ui="v2"] body #mainContent .terminal-workbench:not(.terminal-custom-layout) .ticker-metrics > * { flex: none; }
+  html[data-ui="v2"] body #mainContent .terminal-workbench:not(.terminal-custom-layout) .terminal-chart-actions { flex: none; }
+}
+@media (min-width: 601px) and (max-width: 900px) {
+  html[data-ui="v2"] body #mainContent .terminal-workbench:not(.terminal-custom-layout) :is(.ticker-symbol, .ticker-last) { flex: 0 1 auto; min-width: 0; }
+  html[data-ui="v2"] body #mainContent .terminal-workbench:not(.terminal-custom-layout) .ticker-symbol :is(strong, small) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+/* Ten context sections in the rail: scroll quietly when the window is short. */
+@media (min-width: 901px) {
+  html[data-ui="v2"] body #mainContent .terminal-panel-rail { overflow-y: auto; scrollbar-width: none; }
+}
+/* A metric is never cut in half: when the box is narrower than one metric, it hides. */
+@media (min-width: 601px) {
+  html[data-ui="v2"] body #mainContent .terminal-workbench:not(.terminal-custom-layout) .ticker-metrics { container-type: inline-size; }
+}
+@container (max-width: 190px) {
+  html[data-ui="v2"] body #mainContent .ticker-metrics > * { visibility: hidden; }
+}
+/* Calculator result: the plan button and its status keep their own space. */
+html[data-ui="v2"] body #mainContent .calculator-output #riskPreparePlan:not([hidden]) {
+  display: inline-flex;
+  margin: 14px 0 14px;
+  min-height: 40px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  background: var(--vertux) !important;
+  border-color: var(--vertux) !important;
+  color: #fff !important;
+}
+html[data-ui="v2"] body #mainContent .calculator-output #riskPreparePlanStatus:not(:empty) { margin: 8px 0 0; padding-top: 10px; }
+html[data-ui="v2"] body #mainContent .calculator-output .risk-level-diagram .scenario-axis-label { font-size: 18px; font-weight: 500; fill: var(--muted); stroke: none; paint-order: normal; }
+/* Deals and operations cards carry the same leading icons as the overview cards. */
+html[data-ui="v2"] body #mainContent .ledger-summary dt { display: flex; align-items: center; gap: 8px; }
+html[data-ui="v2"] body #mainContent .ledger-summary dt > svg { flex: none; width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; opacity: .75; }
+html[data-ui="v2"] body #mainContent .ledger-summary dt > .term-help { margin-left: auto; }
+
+/* ---------- 0.6.51: owner audit after 0.6.50 ---------- */
+/* A launcher in a top corner reserves room above the page the same way a bottom
+   one reserves room below it, so it never covers the page title. */
+html[data-ui="v2"] body:has(> .nexus-ai-launcher[data-anchor^="top"]:not([hidden])):not([data-current-view="terminal"]):not([data-current-view="nexus-ai"]) #mainContent { padding-top: 62px; padding-bottom: 28px; }
+/* In the terminal the launcher always docks into the foot of the panel rail. */
+html[data-ui="v2"] body[data-current-view="terminal"] .nexus-ai-launcher:not([data-anchor="bottom-right"]) {
+  top: auto; left: auto; right: 10px; bottom: 14px;
+  width: 40px; min-width: 40px; height: 40px; min-height: 40px; padding: 0; justify-content: center;
+}
+html[data-ui="v2"] body[data-current-view="terminal"] .nexus-ai-launcher:not([data-anchor="bottom-right"]) .nexus-ai-control-label { display: none; }
+/* Participant positions in the narrow terminal panel: the title keeps its own row
+   instead of being squeezed to one letter per line by the range buttons. */
+html[data-ui="v2"] body .participants-head { flex-wrap: wrap; row-gap: 8px; }
+html[data-ui="v2"] body .participants-head > div:first-child { flex: 1 1 180px; min-width: 0; }
+/* Results by instrument: the method note aligns with the period caption, and the
+   table takes the full width while there is no selected row to inspect. */
+html[data-ui="v2"] body #mainContent .surface-head .ranking-explanation { padding: 0; margin: 4px 0 0; }
+html[data-ui="v2"] body #mainContent .ranking-surface:has(> .result-inspector[hidden]) { grid-template-columns: minmax(0, 1fr); }
+/* Settings › About: the running version and where the data lives. */
+html[data-ui="v2"] body .app-about-facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 24px; margin: 14px 0 16px; font-size: 13px; }
+html[data-ui="v2"] body .app-about-facts > div { display: contents; }
+html[data-ui="v2"] body .app-about-facts dt { color: var(--muted); }
+html[data-ui="v2"] body .app-about-facts dd { margin: 0; color: var(--text); font-weight: 500; }
+/* Margin buffer: neutral while healthy, warning only when it is actually thin. */
+html[data-ui="v2"] body #mainContent .margin-ledger .margin-buffer dd { color: var(--text); }
+html[data-ui="v2"] body #mainContent .margin-ledger .margin-buffer[data-buffer-level="tight"] dd { color: var(--warning); }
+html[data-ui="v2"] body #mainContent .margin-ledger .margin-buffer[data-buffer-level="low"] dd { color: var(--negative); }
+/* Plan journal: an active idea past its review date. */
+html[data-ui="v2"] body #mainContent .plan-draft-review[data-overdue="true"] > strong { color: var(--warning); }
+html[data-ui="v2"] body #mainContent .plan-draft-overdue { color: var(--warning); font-weight: 600; }

@@ -1,0 +1,17 @@
+import {workspaceColors} from './workspace-customization.js';
+const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const themes=[['inherit','Как во всём пространстве'],['invest','Тёмная · Invest'],['graphite','Графит'],['light','Светлая']];
+const keys=Object.keys(workspaceColors().variables);
+const luminance=color=>{const c=color.slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
+const readable=(color,background)=>{const a=luminance(color),b=luminance(background);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5?color:b>.179?'#000000':'#ffffff';};
+export function panelAppearanceFields(value={},prefix='panel',conditional=false){return '<fieldset class="panel-appearance-fields"><legend>'+ (prefix==='section'?'Оформление раздела':'Оформление блока')+'</legend><label class="panel-appearance-select"><span>Тема</span><select data-appearance="theme" data-appearance-target="'+prefix+'">'+themes.map(([key,label])=>'<option value="'+key+'" '+((value.theme||'inherit')===key?'selected':'')+'>'+label+'</option>').join('')+'</select></label><label class="panel-appearance-check"><input type="checkbox" data-appearance="custom" data-appearance-target="'+prefix+'" '+(value.background?'checked':'')+'><span>Свой фон</span><input aria-label="Цвет фона '+(prefix==='section'?'раздела':'блока')+'" type="color" data-appearance="background" data-appearance-target="'+prefix+'" value="'+esc(value.background||'#171a27')+'" '+(!value.background?'disabled':'')+'></label>'+ (conditional?'<label class="panel-appearance-check"><input type="checkbox" data-appearance="conditional" data-appearance-target="panel" '+(value.conditional?'checked':'')+'><span>Цвет по знаку показателя</span></label><div class="panel-result-colors"><label>Плюс<input type="color" data-appearance="positive" data-appearance-target="panel" value="'+esc(value.positive||'#174a3a')+'"></label><label>Минус<input type="color" data-appearance="negative" data-appearance-target="panel" value="'+esc(value.negative||'#572331')+'"></label></div><small>Цвет меняется только для рассчитанного значения; отсутствие данных сохраняет обычный фон.</small>':'')+'</fieldset>';}
+export function applyPanelAppearance(node,value={},base={}){
+ const sign=node.dataset.panelResult||node.querySelector('[data-panel-result]')?.dataset.panelResult;
+ let background=value.background;if(value.conditional&&['positive','negative'].includes(sign))background=value[sign]||(sign==='positive'?'#174a3a':'#572331');
+ const custom=!!background||value.theme&&value.theme!=='inherit';node.toggleAttribute('data-custom-appearance',Boolean(custom));
+ if(!custom){for(const key of keys)node.style.removeProperty(key);node.style.removeProperty('--panel-custom-background');return;}
+ const colors=workspaceColors({...base,theme:value.theme&&value.theme!=='inherit'?value.theme:base.theme,background:background||(value.theme&&value.theme!=='inherit'?undefined:base.background)});
+ if(background){colors.variables['--surface']=background;for(const key of ['--text','--muted','--faint','--vertux-soft','--positive','--negative','--warning'])colors.variables[key]=readable(colors.variables[key],background);}
+ for(const [key,color]of Object.entries(colors.variables))node.style.setProperty(key,color);
+ node.style.setProperty('--panel-custom-background',colors.variables['--surface']);
+}

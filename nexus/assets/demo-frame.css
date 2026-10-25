@@ -1,100 +1,40 @@
-/* Real Invest chrome, with a fixed scrollable window for the site. */
+/* Frame the current Invest UI. Layout, typography and colours belong to Invest. */
+:root { --demo-footer-height: 30px; }
 html, body { height: 100%; min-height: 0; min-width: 0; overflow: hidden; }
-:root { --rail: 202px; }
-.app-shell { height: 100%; min-height: 0; }
+.app-shell { height: calc(100dvh - var(--demo-footer-height)) !important; min-height: 0 !important; }
 .workspace { height: 100%; min-height: 0; display: flex; flex-direction: column; }
-.workspace > main { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 20px 22px 44px; }
-.rail { height: 100%; padding: 18px 12px 12px; }
-.navigation { margin-top: 18px; flex: 1; }
-.nav-item { font-size: 12px; gap: 9px; }
-.nav-heading { font-size: 10px; }
-/* Public preview exposes the core product, without account and service controls. */
-.rail-footer { display: grid !important; }
-.rail-footer > :not([data-view="settings"]) { display:none!important; }
-.topbar { min-height: 72px; padding: 14px 22px; gap: 12px; flex-shrink: 0; }
-.topbar h1 { font-size: 19px; }
-.topbar-title > .demo-stamp { display: block !important; font-size: 10px; letter-spacing: .04em; color: #b9a9ff; margin-top: 4px; }
-.topbar-search, #navProductSwitcher, .runtime-evidence, .environment-banner { display: none; }
-#equityVersion, #analyticsVersion { display: none; }
-.quality-strip { margin: 0 0 18px; grid-template-columns: repeat(3,minmax(0,1fr)); }
-.quality-strip > div:nth-child(4), .quality-strip > div:nth-child(5), .quality-strip small, #autoRefreshStatus { display: none; }
-.quality-strip > div { padding: 10px; }
-.headline-value { font-size: clamp(26px,3.8vw,44px); }
-.portfolio-headline { padding: 20px; gap: 16px; }
-.headline-pnl { min-width: 155px; padding-left: 16px; }
-.headline-pnl strong { font-size: 21px; }
-.view.active { animation: none; }
-.demo-period-note { color:var(--muted); font-size:12px; line-height:1.5; margin:0 0 16px; }
-input[type="date"][readonly] { cursor:default; color:var(--muted); }
-input[type="date"][readonly]::-webkit-calendar-picker-indicator { display:none; }
-.portfolio-ledger { grid-template-columns: minmax(0,1fr); }
-.portfolio-ledger > *, .overview-grid > * { min-width: 0; }
-.demo-service { max-width: 760px; }
-.workspace:has(.demo-service:not([hidden])) .quality-strip { display: none; }
-.demo-service h2 { font-size: 27px; margin: 0 0 10px; }
-.demo-service p { color: var(--muted); line-height: 1.65; }
-.demo-service dl { padding-block: 20px; border-block: 1px solid var(--line); display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; overflow-wrap: anywhere; }
-.demo-service dt { color: var(--muted); }
-.demo-service dd { margin: 0; text-align: right; }
-.demo-service a { color: var(--vertux-soft); }
-@media(min-width:700px) {
-  .app-shell { grid-template-columns: var(--rail) minmax(0,1fr); }
-  .rail { position: sticky; transform: none; width: auto; visibility: visible; }
-  .mobile-menu,.rail-close { display: none; }
-  .workspace { grid-column: auto; }
+.workspace > .topbar { flex-shrink: 0; }
+.workspace > main { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.rail { height: calc(100dvh - var(--demo-footer-height)) !important; max-height: 100%; }
+.demo-studio { position: fixed; bottom: 0; inset-inline: 0; z-index: 95; min-height: var(--demo-footer-height); box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 5px 14px; background: var(--ink); color: var(--muted); border-top: 1px solid var(--line); font: 11px/1.4 var(--body); }
+.demo-studio a { color: var(--vertux-soft); text-underline-offset: 3px; }
+.demo-studio a:focus-visible { outline: 2px solid var(--vertux-soft); outline-offset: 2px; }
+.demo-period-note { display: none; }
+/* Local navigation and chart exploration stay available; account actions do not. */
+#syncButton, #navProductSwitcher, #notificationToggle, #identityStatus,
+#refreshStatus, #resetStatisticsPeriod, .runtime-evidence, .environment-banner,
+[data-detach-chart], .nav-item[data-view="sync"], .nav-item[data-system-section],
+.workspace-profile-shortcut, .workspace-menu-row[data-menu-view="subscription"],
+.workspace-menu-row[data-menu-view="support"], .workspace-menu-row[data-menu-view="sync"],
+.nexus-ai-launcher, #personalSettings { display: none !important; }
+input[type="date"][readonly] { cursor: default; }
+input[type="date"][readonly]::-webkit-calendar-picker-indicator { display: none; }
+button:disabled, input:disabled, select:disabled, textarea:disabled { cursor: default; }
+.nexus-ai-input:disabled { opacity: .65; }
+.demo-poster .demo-studio { justify-content: flex-end; }
+.demo-poster .demo-studio > span:last-child { display: none; }
+body[data-current-view="terminal"] { --terminal-bottom-inset: var(--demo-footer-height); }
+@media (max-width: 700px) {
+  :root { --demo-footer-height: 44px; }
+  .demo-studio { flex-wrap: wrap; justify-content: flex-start; gap: 0 10px; padding: 4px 10px; font-size: 10px; }
 }
-@media(max-width:699px) {
-  .overview-grid { grid-template-columns: minmax(0,1fr); }
-  .range-switch { flex-wrap: wrap; }
-  .app-shell { grid-template-columns: minmax(0,1fr); }
-  .workspace > main { padding: 16px 14px 40px; }
-  .rail { height: 100%; }
-  .topbar { padding: 12px 14px; }
-  .topbar h1 { font-size: 17px; }
-  .topbar-title > span { display: none; }
-  .quality-strip { grid-template-columns: 1fr 1fr; }
-  .quality-strip > div:nth-child(3) { display: none; }
-  .headline-value { font-size: 27px; }
-  .topbar-actions .button { min-width: 40px; padding: 8px; }
-  .topbar-actions .button span { display: none; }
+@media (max-width: 600px) {
+  html[data-ui="v2"] body #mainContent .terminal-ticker-strip { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  html[data-ui="v2"] body #mainContent .ticker-symbol { grid-column: 1 / -1; min-width: 0; width: 100%; }
+  html[data-ui="v2"] body #mainContent .ticker-symbol :is(strong, small) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html[data-ui="v2"] body #mainContent .ticker-last { grid-column: 1 / -1; }
+  html[data-ui="v2"] body #mainContent .ticker-metrics { grid-column: 1 / -1; }
 }
-@media(max-width:360px) {
-  .topbar { padding: 10px; gap: 8px; }
-  .topbar h1 { font-size: 14px; }
-  .workspace > main { padding-inline: 10px; }
-  .portfolio-headline { padding: 14px; }
-  .headline-value { font-size: 25px; }
-  .demo-service h2 { font-size: 23px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; scroll-behavior: auto !important; transition: none !important; }
 }
-@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation: none !important; scroll-behavior: auto !important; transition: none !important; } }
-/* The product UI with local chart interaction and a read-only account example. */
-#syncButton,.topbar-actions,[data-detach-chart],.demo-period-note { display:none!important; }
-.nav-item[data-view="sync"],.nav-item[data-system-section],.nav-heading:has(+.nav-item[data-system-section]) { display:none!important; }
-
-input:disabled,select:disabled,textarea:disabled { opacity:1; color:var(--text); -webkit-text-fill-color:var(--text); cursor:default; }
-button:disabled { cursor:default; }
-
-
-
-.portfolio-headline { padding:21px; }.portfolio-ledger { gap:20px; }
-.topbar-title > .demo-stamp { display:none!important; }
-.demo-poster .mobile-menu { display:none!important; }
-@media(min-width:900px) { html { zoom:.88; } }
-.demo-poster { zoom:1; }
-
-
-.terminal-save-state,.term-help,#resetStatisticsPeriod,#portfolioDayChange { display:none!important; }
-
-
-.terminal-drawing-tools button:disabled,.terminal-common-tools button:disabled,.terminal-timeframes button:disabled { opacity:.82; }
-
-.demo-studio { position:fixed; bottom:0; inset-inline:0; z-index:95; padding:5px 12px; background:var(--ink); color:var(--muted); text-align:right; font-size:10px; }
-.demo-studio a { color:var(--vertux-soft); text-underline-offset:3px; }
-.terminal-fullscreen .demo-studio { display:none; }
-
-html:has(body[data-current-view="terminal"]) { zoom:1; }
-
-[data-view-panel="settings"] > :not(.workspace-customization),.workspace-profile-shortcut,.workspace-menu-row[data-menu-view="subscription"],.workspace-menu-row[data-menu-view="support"],.workspace-menu-row[data-menu-view="sync"] { display:none!important; }
-
-/* Keep the studio credit outside the chart workspace. */
-body[data-current-view="terminal"] { --terminal-bottom-inset:26px; }

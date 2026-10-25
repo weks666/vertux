@@ -39,21 +39,36 @@ export function sumMoneyByCurrency(rows, valueKey, currencyKey = 'currency') {
 }
 
 export function summarizeOperationFees(rows) {
-  rows = rows.filter(row => !row.state || row.state === 'OPERATION_STATE_EXECUTED');
+  rows = rows.filter(row => Object.hasOwn(row, 'cashFeeNanos')
+    ? !['OPERATION_STATE_CANCELED', 'OPERATION_STATE_CANCELLED', 'OPERATION_STATE_PROGRESS', 'OPERATION_STATE_PENDING'].includes(row.state)
+    : !row.state || row.state === 'OPERATION_STATE_EXECUTED');
   const currencyOf = row => String(row.currency || 'RUB').toUpperCase().replace(/^RUR$/u, 'RUB');
   const key = row => `${row.portfolioId || ''}:${currencyOf(row)}`;
   const separateBrokerDebits = new Set(rows.filter(row => row.type === 'OPERATION_TYPE_BROKER_FEE').map(key));
   const fees = rows.map(row => {
     // The API resolves parent/debit links across the full account ledger.
     // Keep that decision when this table shows only a filtered subset.
-    if (Object.hasOwn(row, 'cashFeeNanos')) return {currency:currencyOf(row),amount:row.cashFeeNanos};
+    if (Object.hasOwn(row, 'cashFeeNanos')) return {
+      currency: Object.hasOwn(row, 'cashFeeCurrency') ? row.cashFeeCurrency : currencyOf(row), amount: row.cashFeeNanos,
+    };
     const separate = /FEE$|COMMISSION|^OPERATION_TYPE_OVER_COM$|^OPERATION_TYPE_OUTPUT_PENALTY$/u.test(row.type || '');
     let amount = separate ? row.paymentNanos && BigInt(row.paymentNanos) !== 0n ? row.paymentNanos : row.commissionNanos
       : separateBrokerDebits.has(key(row)) ? '0' : row.commissionNanos;
     if (amount != null) { amount = BigInt(amount); amount = (amount < 0n ? -amount : amount).toString(); }
     return { currency: currencyOf(row), amount };
   });
-  return sumMoneyByCurrency(fees, 'amount');
+  const sums = new Map(); let known = 0, missing = 0;
+  for (const fee of fees) {
+    const currency = typeof fee.currency === 'string' && /^[A-Z]{3}$/u.test(fee.currency) ? fee.currency : null;
+    if (fee.amount == null || !/^-?\d+$/u.test(String(fee.amount))) { missing++; continue; }
+    const value = BigInt(fee.amount);
+    // A current API zero with no currency is an operation with no fee. Missing
+    // units on a nonzero or unknown amount must never fall back to RUB.
+    if (!currency && value !== 0n) { missing++; continue; }
+    known++;
+    if (currency) sums.set(currency, (sums.get(currency) || 0n) + value);
+  }
+  return { amounts: [...sums].map(([currency, nanos]) => ({ currency, nanos: nanos.toString() })), known, missing };
 }
 
 // Widths compare only compatible, known observations; zero stays zero.

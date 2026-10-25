@@ -1,0 +1,24 @@
+.instrument-context{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:12px 0;margin-bottom:12px;border-bottom:1px solid var(--border,#293344);min-width:0}
+.instrument-context [hidden]{display:none!important}
+.instrument-context-main{display:flex;align-items:center;gap:10px;min-width:0;flex:1 1 260px}
+.instrument-context-label{display:grid;gap:4px;min-width:0}
+.instrument-context .instrument-context-label strong{font-size:14px;overflow-wrap:anywhere}
+.instrument-context .instrument-context-label span{font-size:12px}
+.instrument-context [data-context-mark] .instrument-mark{width:30px;height:30px}
+.instrument-context-label span,.instrument-context-state,.instrument-context-details{font-size:12px;color:var(--text-secondary,#abb7ca)}
+.instrument-context-actions{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.instrument-context-actions .button{min-height:34px;padding:7px 10px;font-size:12px}
+.instrument-context-actions [aria-pressed=true]{border-color:var(--accent,#ae98ff);color:var(--accent,#c3b4ff)}
+.instrument-context-state{margin:0;flex:1 1 240px}
+.instrument-context-details{margin-left:auto;max-width:100%;min-width:0}
+.instrument-context-details summary{cursor:pointer;padding:6px 0}
+.instrument-context-details[open]{flex-basis:100%;margin-left:0}
+.instrument-context-details dl{margin:8px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 20px}
+.instrument-context-details dl>div{min-width:0;display:grid;gap:3px}
+.instrument-context-details dt{font-weight:500;color:var(--text-primary,#e5eaf4)}
+.instrument-context-details dd{margin:0;overflow-wrap:anywhere}
+.instrument-context button:focus-visible,.instrument-context summary:focus-visible{outline:2px solid var(--accent,#b9a9ff);outline-offset:3px}
+.company-context-unavailable{padding:20px 0}
+.company-workspace .company-selection [hidden]{display:none!important}
+.company-workspace .company-selection{grid-template-columns:minmax(0,.8fr) minmax(0,1fr);min-height:0}
+@media(max-width:600px){.instrument-context{gap:8px}.instrument-context-main,.instrument-context-actions{flex-basis:100%}.instrument-context-details{margin-left:0}.instrument-context-details dl{grid-template-columns:1fr}.instrument-context-actions .button{min-height:40px}.instrument-context-state{flex-basis:100%}}

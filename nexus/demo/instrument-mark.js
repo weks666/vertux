@@ -31,9 +31,15 @@ export function instrumentMark(row,display=row) {
   const image=imageSource?`<img src="${escape(imageSource)}" alt="" loading="lazy" decoding="async">`:'';
   return `<span class="instrument-mark mark-${category}${bundled?' mark-'+bundled:''}" aria-hidden="true"><svg viewBox="0 0 24 24">${categories[category]}</svg>${image}</span>`;
 }
+const watchedImages=new WeakSet();
 export function watchInstrumentImages(root) {
   for(const image of root.querySelectorAll('.instrument-mark img')) {
-    image.addEventListener('error',()=>{image.hidden=true;},{once:true});
-    if(image.complete&&!image.naturalWidth)image.hidden=true;
+    if(watchedImages.has(image))continue;watchedImages.add(image);
+    const mark=image.closest?.('.instrument-mark');
+    const loaded=()=>{image.hidden=false;mark?.classList.add('has-logo');};
+    const failed=()=>{image.hidden=true;mark?.classList.remove('has-logo');};
+    image.addEventListener('load',loaded,{once:true});
+    image.addEventListener('error',failed,{once:true});
+    if(image.complete){if(image.naturalWidth)loaded();else failed();}
   }
 }

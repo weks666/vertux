@@ -1,0 +1,53 @@
+.performance-methods{margin:12px 0;min-width:0;font-size:13px;line-height:1.5}
+.performance-methods-disclosure{border:1px solid var(--line);border-radius:var(--radius-large);background:var(--surface)}
+.performance-methods summary{cursor:pointer;min-height:44px}
+.performance-methods summary:focus-visible,.performance-methods button:focus-visible{outline:2px solid var(--vertux-soft);outline-offset:3px}
+.performance-methods-disclosure>summary{padding:16px 20px;display:flex;gap:16px;align-items:center;justify-content:space-between}
+.performance-methods-disclosure>summary::before{content:'▸';color:var(--muted)}
+.performance-methods-disclosure[open]>summary::before{content:'▾'}
+.performance-methods-disclosure>summary>span:first-of-type{flex:1;min-width:0}
+.performance-methods-disclosure>summary strong{display:block;font-size:15px;font-weight:550}
+.performance-methods-disclosure>summary small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.performance-methods-status{color:var(--muted);font-size:12px;max-width:35%}
+.performance-methods-body{padding:0}
+.performance-methods-evidence,.performance-methods-note,.performance-methods-boundary{color:var(--muted);font-size:12px}
+.performance-methods-periods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;margin:14px 0}
+.performance-methods dt{color:var(--muted);font-size:12px}
+.performance-methods dd{margin:3px 0 0;overflow-wrap:anywhere}
+.performance-methods-partial{color:var(--warning);font-size:12px}
+.performance-methods-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:16px 0}
+.performance-method{min-width:0;border-top:1px solid var(--line);padding-top:12px}
+.performance-method header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.performance-method h4,.performance-methods-inputs h4{margin:0;font-size:14px;font-weight:550}
+.performance-method header>span{color:var(--muted);font-size:12px;flex:none}
+.performance-method>p{margin:8px 0;color:var(--muted);font-size:12px}
+.performance-methods-primary{margin:14px 0}
+.performance-methods-primary>span{display:block;font-size:12px;color:var(--muted)}
+.performance-methods-primary>strong{display:block;margin-top:3px;font-size:24px;font-weight:550;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.performance-methods-secondary{display:flex;gap:12px;justify-content:space-between;color:var(--muted);font-size:12px}
+.performance-methods-secondary strong{font-weight:500;white-space:nowrap}
+.performance-methods-inputs{border-top:1px solid var(--line);font-size:12px}
+.performance-methods-inputs>summary{padding:12px 0}
+.performance-methods-inputs>p{margin:8px 0;overflow-wrap:anywhere}
+.performance-methods-policies{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;margin:12px 0 18px}
+.performance-methods-policies dd{color:var(--muted)}
+.performance-methods-blockers{padding-left:20px;color:var(--muted)}
+.performance-methods-flows{list-style:none;margin:10px 0;padding:0}
+.performance-methods-flows li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.7fr);gap:6px 14px;align-items:baseline;border-top:1px solid var(--line);padding:9px 0}
+.performance-methods-flows time{color:var(--muted)}
+.performance-methods-flows strong{text-align:right;font-weight:500;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.performance-methods-flows small{grid-column:1/-1;color:var(--muted)}
+.performance-methods-pagination{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:12px 0}
+.performance-methods-pagination>span{margin-right:auto;color:var(--muted)}
+.performance-methods-pagination button{min-height:36px;border:1px solid var(--line);border-radius:5px;padding:6px 12px;background:var(--surface);color:var(--text);font:inherit;cursor:pointer}
+.performance-methods-pagination button:disabled{opacity:.45;cursor:default}
+@media(max-width:600px){
+ .performance-methods-disclosure>summary{padding:14px;gap:10px;flex-wrap:wrap}
+ .performance-methods-status{max-width:none;flex-basis:100%;margin-left:18px}
+ .performance-methods-body{padding:0}
+ .performance-methods-grid,.performance-methods-periods,.performance-methods-policies{grid-template-columns:1fr}
+ .performance-method header{display:block}
+ .performance-method header>span{display:block;margin-top:4px}
+ .performance-methods-flows li{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .performance-methods-flows time{grid-column:1/-1}
+}

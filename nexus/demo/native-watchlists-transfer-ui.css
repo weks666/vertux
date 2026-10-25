@@ -1,0 +1,23 @@
+.native-lists-transfer{margin:18px 0;color:var(--text,#f0eef7);min-width:0}
+.native-lists-transfer>details{border:1px solid var(--line,#40384e);border-radius:12px;background:var(--surface,#201b2b);overflow:visible}
+.native-lists-transfer summary{min-height:48px;cursor:pointer;padding:12px;overflow-wrap:anywhere;scroll-margin-block:90px 20px}
+.native-lists-transfer>details>summary span{display:block;margin-top:4px;color:var(--muted,#c4bdce);font-size:13px}
+.native-lists-body{padding:0 16px 16px;display:grid;gap:12px;min-width:0}
+.native-lists-body p,.native-lists-body h4{margin:0;line-height:1.6;overflow-wrap:anywhere}
+.native-lists-body h4{font-size:15px}
+.native-lists-body section,.native-lists-body article{display:grid;gap:12px;min-width:0}
+.native-lists-body article{padding:12px 0;border-bottom:1px solid var(--line,#40384e)}
+.native-lists-actions{display:flex;gap:8px;flex-wrap:wrap}
+.native-lists-transfer button,.native-lists-transfer select,.native-lists-transfer input[type=file]{font:inherit;min-height:44px;border:1px solid var(--line,#40384e);border-radius:8px;background:var(--surface-raised);color:inherit;padding:10px 12px;max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere}
+.native-lists-transfer button{cursor:pointer}.native-lists-transfer button:disabled{cursor:default;opacity:.55}
+.native-lists-file,.native-lists-body label{display:grid;gap:8px;min-width:0}
+.native-lists-file input{width:100%;box-sizing:border-box}
+.native-lists-transfer input::file-selector-button{min-height:44px;background:var(--surface-raised);color:inherit;border:1px solid var(--line,#40384e);border-radius:6px;margin-right:8px}
+.native-lists-confirm{display:flex!important;align-items:center;min-height:44px;cursor:pointer}
+.native-lists-confirm input{width:20px;height:20px;flex:0 0 20px;accent-color:var(--focus)}
+.native-lists-caption,.native-lists-refs time{color:var(--muted,#c4bdce);font-size:13px}
+.native-lists-transfer li{overflow-wrap:anywhere;line-height:1.6}.native-lists-transfer li time{display:block}
+.native-lists-transfer :is(button,select,input,summary,[tabindex]):focus-visible{outline:2px solid var(--focus);outline-offset:3px;scroll-margin-block:100px 24px}
+.native-lists-transfer [hidden]{display:none!important}
+@media(max-width:600px){.native-lists-body{padding-inline:12px}.native-lists-actions{display:grid}.native-lists-transfer button,.native-lists-transfer select{width:100%}.native-lists-transfer ol,.native-lists-transfer ul{padding-left:24px}}
+@media(prefers-reduced-motion:reduce){.native-lists-transfer *{scroll-behavior:auto;transition:none;animation:none}}

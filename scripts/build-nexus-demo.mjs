@@ -1,12 +1,19 @@
 import {websiteFixture} from './nexus-demo-fixture.mjs';
 import { resolve, dirname, join } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
-import { readFile, writeFile, copyFile, mkdtemp, cp, readdir } from 'node:fs/promises';
+import { readFile, writeFile, copyFile, mkdtemp, cp, realpath, rm } from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
 import { tmpdir } from 'node:os';
 // Only the public synthetic Pages export is an input, never a customer database.
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '../nexus');
-const source = resolve(process.argv[2] || join(site, '../../vertux-invest-workspace'));
-const { buildPagesPreview, PAGES_PUBLIC_FILES } = await import(pathToFileURL(join(source, 'scripts/build-pages-preview.mjs')));
+if(!process.argv[2])throw new Error('Pass the reviewed Invest checkout explicitly: node scripts/build-nexus-demo.mjs <source>. The historical sibling checkout is not a release source.');
+const source = resolve(process.argv[2]);
+const git=(...args)=>execFileSync('git',['-C',source,...args],{encoding:'utf8'}).trim();
+const sourceCommit=git('rev-parse','HEAD');
+if(git('status','--porcelain','--untracked-files=no'))throw new Error('Use a clean, reviewed Invest source snapshot.');
+const {version:sourceVersion}=JSON.parse(await readFile(join(source,'package.json'),'utf8'));
+const replaceRequired=(text,from,to,label)=>{if(!text.includes(from))throw new Error('Demo export contract changed: '+label);return text.replace(from,to);};
+const { buildPagesPreview } = await import(pathToFileURL(join(source, 'scripts/build-pages-preview.mjs')));
 const { standardRuntimeBytes } = await import(pathToFileURL(join(source, 'scripts/standard-product-profile.mjs')));
 const {verifyNexusDemoModule}=await import('./verify-nexus-demo-module.mjs');
 const staging = await mkdtemp(join(tmpdir(), 'nexus-public-demo-'));
@@ -14,17 +21,7 @@ const tutorial = await websiteFixture(source);
 const fixtureFile=join(staging,'tutorial.json');
 await writeFile(fixtureFile,JSON.stringify(tutorial));
 const outputDirectory=join(staging,'public');
-let result;
-try { result=await buildPagesPreview({outputDirectory,fixtureFile,historyFrom:'2025-08-01T00:00:00.000Z',clean:false}); }
-catch(error) {
- // The reviewed working UI adds four local assets. Preserve an exact allowlist;
- // do not weaken the producer's network guards or copy arbitrary extra files.
- if(!error.message.startsWith('Pages artifact allowlist mismatch:'))throw error;
- const files=(await readdir(outputDirectory,{recursive:true,withFileTypes:true})).filter(f=>f.isFile()).map(f=>join(f.parentPath,f.name).slice(outputDirectory.length+1).replaceAll('\\','/')).sort();
- const allowed=[...PAGES_PUBLIC_FILES,'chart-tool-catalog.js','terminal-editors.js','workspace-customization.css','workspace-customization.js'];
- if(files.some(f=>!allowed.includes(f))||PAGES_PUBLIC_FILES.some(f=>!files.includes(f)))throw error;
- result={outputDirectory,files};
-}
+const result=await buildPagesPreview({outputDirectory,fixtureFile,historyFrom:'2025-08-01T00:00:00.000Z',clean:false});
 
 for (const name of result.files) {
   if (!/\.(?:js|html|svg)$/u.test(name)) continue;
@@ -42,9 +39,9 @@ for (const name of result.files) {
       .replace(/^const PERIOD_BOOTSTRAPS = .*;$/m,'const PERIOD_BOOTSTRAPS = {all:BASE_BOOTSTRAP,month:BASE_BOOTSTRAP};');
   }
   if (name === 'index.html') {
-    text=text.replace('./app.js?v=0.6.11-3','./app.js?v=20260927-terminal-experience').replace('href="./terminal-workbench.css"','href="./terminal-workbench.css?v=20260927-terminal-experience"');
-    text = text.replace('<h1 id="viewTitle">Обзор портфеля</h1>', '<h1 id="viewTitle">Обзор портфеля</h1><span class="demo-stamp">Демо · графики можно изменять</span>');
-    text = text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20260927-terminal-experience">\n</head>');
+    text=text.replace(/\.\/app\.js\?v=[^"']+/u,'./app.js?v='+sourceVersion+'-website');
+    text=text.replace('</head>', '  <link rel="stylesheet" href="./demo-frame.css?v=20261025">\n</head>');
+    text=text.replace('<div id="accountSettingsHost"></div>','<div id="accountSettingsHost"><p class="empty-copy">Личные параметры доступны в установленном Nexus. Демо не подключено к аккаунту.</p></div>');
     // The website shows one fixed period. Keep date fields explicitly
     // read-only; all editing is locked by demo-service.js.
     text = text.replace(/<form[^>]+id="(?:statisticsPeriodForm|operationFilters)"[\s\S]*?<\/form>/gu, form => {
@@ -57,13 +54,14 @@ for (const name of result.files) {
         + `<p class="demo-period-note" id="${id}">${note}</p>`;
     });
     text = text.replace(/\s*<button[^>]+data-system-section="access"[\s\S]*?<\/button>/u, '');
-    text = text.replace('</body>', '  <footer class="demo-studio">Сделано в студии <a data-demo-studio href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux</a> · Вымышленные котировки</footer><script src="./demo-service.js?v=20260927-terminal-experience" defer></script>\n</body>');
+    text = text.replace('</body>', '  <footer class="demo-studio"><span>Демо · вымышленные данные · без подключения к брокеру</span><span>Сделано в студии <a data-demo-studio href="https://vertux.online" target="_blank" rel="noopener noreferrer">Vertux</a></span></footer><script src="./demo-service.js?v=20261025" defer></script>\n</body>');
   }
   if (name === 'terminal-workbench.js') text=text.replace('indicators:{volume:true},drawings:[]',"indicators:{volume:true},studies:[{id:'demo-sma20',type:'sma',period:20,color:'#e1b264',visible:true},{id:'demo-ema50',type:'ema',period:50,color:'#b9a9ff',visible:true}],drawings:[]").replace('function dirty(key){','function dirty(key){if(getBootstrap()?.preview?.readOnly)return;').replace("freshness.fixture?'Тестовые данные':'Т‑Инвест'", "freshness.fixture?'Демо':'Демо'");
   if (name === 'terminal-market-activity.js') text=text.replace('clock=Date.now', "clock=()=>Date.parse('2026-08-12T12:00:00Z')").replace("fixture:'Тестовый поток'", "fixture:'Демонстрационный снимок'").replace('Последние 200 сделок с момента подключения.','Вымышленные сделки для просмотра ленты.');
   if (name === 'terminal-workbench.js') {
-    text=text.replace('activity.select(meta);','activity.select(meta);demoMarketSnapshot(meta);');
-    text=text.replace(' function selection(id)', `
+    text=replaceRequired(text,"view:{type:'candles',indicators:","view:{range:{from:1780272000,to:1786536000},type:'candles',indicators:",'initial chart window');
+    text=replaceRequired(text,'activity.select(meta);','activity.select(meta);demoMarketSnapshot(meta);','static market snapshot');
+    text=replaceRequired(text,' function selection(', `
  function demoMarketSnapshot(meta){
   const row=(getBootstrap()?.candles||[]).filter(r=>r.instrumentUid===meta.instrumentUid).at(-1);if(!row)return;
   const price=row.close,step=Math.max(.01,Math.round(price*.00005*100)/100),at='2026-08-12T12:00:00Z';
@@ -73,18 +71,33 @@ for (const name of result.files) {
    asks:Array.from({length:20},(_,i)=>({price:price+step*(i+1),quantity:18+i*5}))});
   for(let i=0;i<20;i++)activity.receive({type:'market.trade',instrumentUid:meta.instrumentUid,price:price+(i%2?1:-1)*step,quantity:1+i%8,side:i%2?'buy':'sell',sourceEventTime:new Date(Date.parse(at)-(19-i)*1000).toISOString(),connectorReceivedAt:at,simulated:true});
  }
- function selection(id)`);
+ function selection(`,'market snapshot function');
   }
   if (name === 'market-participants.js') text = text.replace('Задержка 15 дней', 'Вымышленный пример').replace('Московская биржа · срез', 'Демонстрация FUTOI · срез');
   if (name === 'app.js') text = text.replace("from './runtime.js'", "from './demo-runtime.js'").replaceAll('Показатели обновляются автоматически.', 'Пример готового отчёта. Показатели вымышлены.');
+  if(name==='app.js')text=replaceRequired(text,'  renderRefreshStatus();\n}\n\nfunction renderAnalyticsStartup()',"  renderRefreshStatus();\n  requestAnimationFrame(()=>{document.documentElement.dataset.demoBootstrapReady='true';document.dispatchEvent(new Event('nexus:demo-bootstrap-ready'));});\n}\n\nfunction renderAnalyticsStartup()",'bootstrap readiness');
+  if(name==='app.js')text=replaceRequired(text,'savedResearch:state.savedResearchWorkspace,now:()=>new Date().toISOString()',"savedResearch:state.savedResearchWorkspace,now:()=>'2026-08-12T12:00:00.000Z'",'fixed demo date');
+  if(name==='search-transport.js')text=replaceRequired(text,"createWorker=()=>new Worker(new URL('./search-worker.js',import.meta.url),{type:'module'})","createWorker=()=>{throw new Error('Website preview uses in-page search');}",'offline search fallback');
+  if(name==='nexus-ai-ui.js'){
+    text=replaceRequired(text,"allowed=b?.capabilities?.nexusAi===true&&b?.identity?.role==='owner'&&b?.preview?.static!==true&&b?.preview?.localReview!==true;","allowed=b?.preview?.websiteDemo===true;",'AI preview boundary');
+    text=text.replace('Подключите модель, чтобы начать разговор.','Предпросмотр Nexus AI. Модель и отправка сообщений доступны в приложении.')
+      .replace("node('p','Задайте вопрос или прикрепите план.')","node('p','В приложении здесь можно задать вопрос и прикрепить торговый план. В демо модель не подключена и сообщения не отправляются.')");
+  }
   if (name === 'market-calendar.js') text = text
     .replace('!getBootstrap()?.preview?.static', '(!getBootstrap()?.preview?.static || getBootstrap()?.preview?.interactiveTutorial === true)')
     .replace('async function loadCalendar(refresh=false){','async function loadCalendar(refresh=false){if(getBootstrap()?.preview?.readOnly)refresh=false;')
     .replace('clearTimeout(calendarTimer);if(disposed)return;','clearTimeout(calendarTimer);if(disposed||getBootstrap()?.preview?.readOnly)return;')
-    .replace("month:moscowDate().slice(0,7),day:moscowDate()","month:'2026-09',day:'2026-09-22'");
+    .replace("month:moscowDate().slice(0,7),day:moscowDate()","month:'2026-08',day:'2026-08-12'");
+  if(!/^(?:service|account)-module\//u.test(name))text=text.replace(/(?:\r?\n){2,}$/u,'\n');
   await writeFile(path, text);
 }
-await cp(result.outputDirectory,join(site,'demo'),{recursive:true});
-for (const name of ['demo-frame.css', 'demo-runtime.js', 'demo-service.js']) await copyFile(join(site, 'assets', name), join(site, 'demo', name));
-await verifyNexusDemoModule(source,join(site,'demo'));
-console.log(JSON.stringify({ status: 'synthetic-demo-built', files: result.files.length + 3, brokerNetwork: false, output: result.outputDirectory }));
+for (const name of ['demo-frame.css', 'demo-runtime.js', 'demo-service.js']) await copyFile(join(site, 'assets', name), join(outputDirectory, name));
+const serviceModule=await verifyNexusDemoModule(source,outputDirectory);
+if(git('rev-parse','HEAD')!==sourceCommit||git('status','--porcelain','--untracked-files=no'))throw new Error('Invest changed during export; rebuild from a stable snapshot.');
+await writeFile(join(outputDirectory,'source.json'),JSON.stringify({version:sourceVersion,commit:sourceCommit,serviceModule:serviceModule.version,synthetic:true,brokerNetwork:false,modelNetwork:false},null,2)+'\n');
+// Only replace this generated directory, after the complete export has passed.
+const destination=join(await realpath(site),'demo');
+if(await realpath(destination)!==destination)throw new Error('Demo output must not be a junction or symlink.');
+await rm(destination,{recursive:true});
+await cp(outputDirectory,destination,{recursive:true});
+console.log(JSON.stringify({status:'synthetic-demo-built',sourceVersion,sourceCommit,serviceModule,files:result.files.length+4,brokerNetwork:false,output:destination}));

@@ -1,0 +1,130 @@
+/* Invest visual system v2 for the Nexus account center. app.js adds this sheet
+   to the component's shadow root; the vendored account-module files stay as
+   Nexus ships them. Colours come from the --account-* hooks set by Invest. */
+
+.account-heading,
+.eyebrow { display: none !important; }
+
+#settingsPage { display: grid; gap: 12px; }
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: none;
+}
+.panel-head {
+  min-height: 0;
+  padding: 16px 18px 10px;
+  border-bottom: 0;
+  align-items: flex-start;
+  gap: 12px;
+}
+.panel-head h3 {
+  margin: 0;
+  font: 650 15px/1.35 var(--font);
+  letter-spacing: -0.005em;
+}
+.panel-head .settings-copy,
+.settings-copy,
+.settings-feedback,
+#startupHint {
+  color: var(--muted);
+  font: 500 13px/1.5 var(--font);
+}
+.panel-head .settings-copy { margin: 4px 0 0; }
+.account-card-body,
+.app-update-body,
+.startup-settings-body,
+.product-update-boundary-body,
+.desktop-device-list,
+.account-devices-card > .settings-copy,
+.account-devices-card > .settings-feedback { padding-inline: 18px; }
+.account-card-body,
+.app-update-body,
+.startup-settings-body,
+.product-update-boundary-body { padding-bottom: 18px; }
+.account-devices-card > :last-child { padding-bottom: 16px; }
+
+#startupForm { display: grid; gap: 10px; }
+#startupForm label { display: grid; gap: 6px; font: 600 13px/1.4 var(--font); }
+select {
+  min-height: 36px;
+  padding: 0 34px 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background-color: var(--surface-2);
+  color: var(--text);
+  font: 500 13.5px var(--font);
+}
+.launch-button,
+.account-retry {
+  justify-self: start;
+  width: auto;
+  min-height: 36px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  font: 650 13px/1.2 var(--font);
+}
+.button,
+.button.ghost,
+.text-button {
+  min-height: 34px;
+  padding: 6px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  font: 600 13px/1.2 var(--font);
+}
+.button:hover,
+.button.ghost:hover { background: var(--surface-2); }
+
+.settings-state {
+  max-width: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font: 600 11.5px/1.35 var(--font);
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.app-settings-grid { gap: 12px; }
+.platform-facts,
+.app-identity-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 18px;
+  margin: 0;
+  padding: 0 18px 18px;
+  font: 500 13px/1.45 var(--font);
+}
+.platform-facts dt { color: var(--muted); }
+.platform-facts dd { margin: 0; font: 600 13px/1.45 var(--font); font-variant-numeric: tabular-nums; }
+
+.workspace-shortcuts-moved {
+  margin: 0;
+  padding: 14px 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  color: var(--muted);
+  font: 500 13px/1.5 var(--font);
+}
+.workspace-shortcuts-moved button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-2);
+  font: inherit;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.platform-facts,
+.app-identity-facts { grid-template-columns: minmax(0, 1fr); }
+.platform-facts > div { display: flex; justify-content: space-between; gap: 16px; min-width: 0; }
+.account-startup-card,
+.account-devices-card { min-height: 0; }
+.account-startup-card .account-card-body { padding-bottom: 16px; }

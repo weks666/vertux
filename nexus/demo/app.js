@@ -1,27 +1,80 @@
+import {renderPortfolioResultBreakdown} from './portfolio-result-breakdown.js';
+import { currentPositionResultPresentation } from './current-position-result.js';
+import {createInstrumentPicker} from './instrument-picker.js';
+import {initRailSelection} from './rail-selection.js';
+var companyPicker;
+import { renderSecurityPositionAverage, renderSecurityPositionValue, renderSecurityPositionResult, validSecurityPositionMetrics } from './security-position-metrics.js';
 import {createDeepAnalytics} from './deep-analytics.js';
+import {createSavedResearchWorkspace} from './saved-research-workspace.js';
+import {createTodayOverviewUi} from './today-overview-ui.js';
+import {createTodayOverviewBinder} from './today-overview-binder.js';
+import {createPositionReconciliation} from './position-reconciliation.js';
+import {createPerformanceMethodsUi} from './performance-methods-ui.js';
+import {createObservedNavRiskUi} from './observed-nav-risk-ui.js';
+import {createSavedAssetClassesUi} from './saved-asset-classes-ui.js';
+import {createAllocationPlanUi} from './allocation-plan-ui.js';
+import {createCashComparisonUi} from './cash-comparison-ui.js';
+import {createInternalCashTransfersUi} from './internal-cash-transfers-ui.js';
+import {createShareTransferValuationsUi} from './share-transfer-valuations-ui.js';
+import {createBrokerReportsUi} from './broker-reports-ui.js';
+import {createDirectShareShockUi} from './direct-share-shock-ui.js';
+import {createDirectShareConcentrationUi} from './direct-share-concentration-ui.js';
+import {createFutureExposureUi} from './future-exposure-ui.js';
+import {createPortfolioReviewUi} from './portfolio-review-ui.js';
+import {createBookedComponentsUi} from './booked-components-ui.js';
+import {installAccountQuickPick} from './account-quick-pick.js';
+import {createLocalResultWorkspace} from './local-result-workspace.js';
+import {createLocalMethodWorkspace} from './local-method-workspace.js';
+import {createLocalObservedRiskWorkspace} from './local-observed-risk-workspace.js';
+import {createReferencePriceUi} from './reference-price-ui.js';
+import {createBondCashflowUi} from './bond-cashflow-ui.js';
+import {createInstrumentContext} from './instrument-context.js';
+import {mountInstrumentContextHeader, instrumentContextReason} from './instrument-context-ui.js';
 import { expandBootstrapPayload } from './bootstrap-payload.js';
 import { initTerminal } from './terminal.js';
 import { createHistoryLoader, historyProgressCopy } from './history-backfill.js';
 import {tbankIcon} from './brand-icons.js';
 import { sortRows, connectTableSort } from './table-sort.js';
-import { instrumentContributions, cashFlowChartMarkup } from './analytics-presentation.js';
+import { instrumentContributions, cashFlowChartMarkup, operationExecutionPresentation, operationChildPaymentsMarkup, variationMarginPresentation } from './analytics-presentation.js';
 import { filterLedgerRows, validDateRange, sumMoneyByCurrency, summarizeOperationFees, relativeBarWidth, createFilterScheduler } from './analytics-filters.js';
-import { money, decimalNanos, positionQuantity, convertNanos } from './number-format.js';
+import { money, decimalNanos, positionQuantity, convertNanos, financialMetric } from './number-format.js';
+import {fundamentalMetricBody} from './financial-metric.js';
+import {companyClaimEvidence,renderClaimEvidence} from './claim-evidence.js';
+import {renderContextEvidence} from './context-evidence.js';
+import {buildCompanyContextEvidence} from './context-evidence-adapters.js';
 import { instrumentMark, issuerName, watchInstrumentImages } from './instrument-mark.js';
 import { ui, setLanguage, startTranslation } from './ui-language.js';
 import { createWorkspaceNavigation } from './account-module/v1.3.0/workspace-navigation.js';
 import {workspaceNavigationActions,initWorkspaceCustomization} from './workspace-customization.js';
+import {createWorkspaceSettingsStore} from './workspace-settings-store.js';
+import {createRefreshDisplayPreference} from './refresh-display-preference.js';
+import {createDirectNavigation} from './task-navigation-ui.js';
+import {initNexusWorkbench} from './nexus-workbench-ui.js';
+import {mountSettingsLayout} from './settings-layout.js';
+import {resolveTaskRoute} from './task-navigation-model.js';
 import { initWorkspacePreferences } from './personal-workspace.js';
-import { FEATURE_TERMS, searchProduct } from './product-features.js';
+import {createPersonalPreferencesTransferUi} from './personal-preferences-transfer-ui.js';
+import { FEATURE_TERMS } from './product-features.js';
+import { createSearchActions } from './search-actions.js';
+import {createResearchQuerySearch} from './research-query-search.js';
+import { createSearchContinuation } from './search-continuation.js';
 import { initMarketCalendar } from './market-calendar.js';
+import {createOperationDetailsDialog} from './operation-details-dialog.js';
+import { createSyncController, createDisplayedRefreshClock, syncProgressCopy, syncWarningCopy, syncRefreshPresentation } from './sync-controller.js';
 import { createEquityChart, createMarketChart, createAnalyticsReturnChart, normalizeEquityPoints, normalizeMarketCandles, setChartPresentation } from './charts.js';
 import { runtimeAdapter } from './demo-runtime.js';
 import { initPriceAlerts } from './price-alerts.js';
 import { initWorkspaceNotifications } from './workspace-notifications.js';
 import { calculateRiskDraft } from './risk-calculator.js';
+import { renderBondPositionValue, validBondPositionValue } from './bond-position-value.js';
+import { renderBondPositionAverage, renderBondPositionResult, validBondPositionMetrics } from './bond-position-metrics.js';
+import { renderFuturePositionAverage, renderFuturePositionValue, renderFuturePositionMetrics, validFuturePositionMetrics } from './future-position-metrics.js';
 import { initTradingPlan } from './trading-plan-ui.js';
+import { createNexusAiUi } from './nexus-ai-ui.js';
+import { planCatalogInstrument } from './plan-catalog.js';
 import { initLedgerTabs, metricNote, signedClass, resultTrend } from './reference-ui.js';
 import { glossaryEntries, glossaryMarkup, initRiskTabs } from './knowledge-workspace.js';
+import { financialFormula, financialFormulaVariables } from './financial-formulas.js';
 import { orderAccounts, readAccountPins, writeAccountPins, dailyPositionSummary } from './account-layout.js';
 
 const state = {
@@ -30,6 +83,8 @@ const state = {
   displayCurrency: 'RUB',
   language: 'ru',
   currentView: 'overview',
+  navigationRevision: 0,
+  analyticsView: 'instrument',
   equityChart: null,
   marketChart: null,
   analyticsReturnChart: null,
@@ -50,15 +105,17 @@ const state = {
   instrumentLabels: new Map(),
   portfolioLabels: new Map(),
   selectedPeriod: { period: 'month' },
+  pendingPeriod: null,
   periodRequest: 0,
   periodLoading: false,
   listPages: new Map(),
   analyticsAccount: '',
-  analyticsChartMode: 'percent',
+  analyticsChartMode: 'rubles',
   analyticsChartModeTouched: false,
   marketOverview: null,
   marketOverviewPending: false,
   tradingPlanUi: null,
+  referencePriceUi: null,
   companyAvailability: null,
   companyRequest: 0,
   companyViews: new Map(),
@@ -67,9 +124,12 @@ const state = {
   companyFacts: new Map(),
 };
 
+let chartOrigin=null,terminalContextHeader=null;
+const instrumentContext = createInstrumentContext();
+const displayedRefreshClock = createDisplayedRefreshClock();
+const pendingPeriodViews = new Set();
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-if (runtimeAdapter) $('#alertsNav')?.remove();
 
 function escapeText(value) {
   return String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
@@ -78,21 +138,40 @@ function escapeText(value) {
 function formatMoney(value, currency = 'RUB', { native = false } = {}) {
   return money(value,currency,{locale:state.language,target:native?currency:state.displayCurrency,rates:state.bootstrap?.displayFx?.rates});
 }
-function signedMoney(value,currency='RUB') {
-  const formatted=formatMoney(value,currency);
+function signedMoney(value,currency='RUB',options={}) {
+  const formatted=formatMoney(value,currency,options);
   return value!=null && BigInt(value)>0n && formatted!=='—' ? '+'+formatted : formatted;
 }
 function formatQuantity(value) { return decimalNanos(value,{digits:9,locale:state.language}); }
+function assetLabel(type) { return ({share:'Акция',future:'Фьючерс',futures:'Фьючерс',bond:'Облигация',etf:'Фонд',currency:'Валюта',crypto:'Криптовалюта',option:'Опцион',sp:'Структурная нота',dfa:'ЦФА'})[type]||'Инструмент'; }
 function quoteMoney(value,currency) { return formatMoney(value,currency,{native:true}); }
 function positionShare(row,data=state.bootstrap) {
   // Futures use the same denominator, but are explicitly labelled as exposure.
-  if(row.positionValueNanos==null)return null;
+  if(row.positionValueNanos==null||['share','etf'].includes(row.assetType)&&!validSecurityPositionMetrics(row.securityPositionMetrics,row)||row.assetType==='bond'&&!validBondPositionValue(row.bondPositionValue,row)||row.assetType==='future'&&!validFuturePositionMetrics(row.futurePositionMetrics,row))return null;
   const total=data?.portfolio?.currentTotalNanos??data?.portfolio?.totalNanos;
   const value=convertNanos(row.positionValueNanos,row.positionValueCurrency||row.priceCurrency,'RUB',data?.displayFx?.rates);
   return value!=null&&total!=null&&BigInt(total)>0n?Number(BigInt(value)*1000000n/BigInt(total))/1000000:null;
 }
 const positionReaders={name:r=>instrumentDisplay(r).ticker||instrumentDisplay(r).name,type:r=>r.assetType+':'+r.direction,openedAt:r=>r.openedAt?Date.parse(r.openedAt):null,quantityNanos:r=>r.quantityNanos==null?null:BigInt(r.quantityNanos)<0n?-BigInt(r.quantityNanos):BigInt(r.quantityNanos),averagePriceNanos:r=>r.entryPriceNanos??r.averagePriceNanos,share:r=>positionShare(r,analyticsDisplayData())};
 
+// Compact KPI cards carry one short context line and, where it reads at a
+// glance, a thin meter. The words stay in the DOM; the bar is decorative.
+function kpiDetail(valueNode, { line = null, meter = null, split = null, marker = null } = {}) {
+  // Decorative only: test stubs and detached values are skipped.
+  const card = typeof Element !== 'undefined' && valueNode instanceof Element ? valueNode.closest('div') : null;
+  if (!card) return;
+  let sub = card.querySelector(':scope > .kpi-sub');
+  if (!sub && line) { sub = document.createElement('span'); sub.className = 'kpi-sub'; valueNode.after(sub); }
+  if (sub) { sub.textContent = line || ''; sub.hidden = !line; }
+  let bar = card.querySelector(':scope > .kpi-meter');
+  const fill = split ?? meter;
+  if (fill == null || !Number.isFinite(fill)) { bar?.remove(); return; }
+  if (!bar) { bar = document.createElement('span'); bar.className = 'kpi-meter'; bar.setAttribute('aria-hidden', 'true'); bar.innerHTML = '<i></i><b></b>'; card.append(bar); }
+  bar.dataset.kind = split != null ? 'split' : 'fill';
+  bar.style.setProperty('--fill', Math.max(0, Math.min(1, fill)) * 100 + '%');
+  bar.querySelector('b').hidden = marker == null;
+  if (marker != null) bar.style.setProperty('--marker', marker * 100 + '%');
+}
 function formatPercentage(value, { signed = false } = {}) {
   if (value === null || value === undefined || !Number.isFinite(Number(value))) return '—';
   const number = Number(value) * 100;
@@ -110,8 +189,8 @@ function evidenceLabel(kind, data = state.bootstrap) {
   return labels[kind] || ({ direct: 'Прямое поле', derived: 'Расчёт', estimated: 'Оценка', unsupported: 'Нет источника', fixture: 'Учебные данные' })[kind] || 'Не подтверждено';
 }
 
-function formatMoneyAndRate(amountNanos, rate, currency = 'RUB') {
-  const amount = signedMoney(amountNanos, currency);
+function formatMoneyAndRate(amountNanos, rate, currency = 'RUB', options = {}) {
+  const amount = signedMoney(amountNanos, currency, options);
   const percent = formatPercentage(rate, { signed: true });
   return `<strong>${escapeText(amount)}</strong><small class="return-rate">${escapeText(percent)}</small>`;
 }
@@ -120,12 +199,17 @@ function formatDate(value, withSeconds = false) {
   if (!value) return '—';
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return '—';
-  return `${new Intl.DateTimeFormat(state.language==='en'?'en-GB':'ru-RU', { timeZone: 'Europe/Moscow', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', second: withSeconds ? '2-digit' : undefined }).format(date)} ${state.language==='en'?'MSK':'мск'}`;
+  const locale=state.language==='en'?'en-GB':'ru-RU',key=locale+':'+Boolean(withSeconds);
+  const formatters=formatDate.formatters??=new Map();
+  if(!formatters.has(key))formatters.set(key,new Intl.DateTimeFormat(locale,{timeZone:'Europe/Moscow',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',second:withSeconds?'2-digit':undefined}));
+  return `${formatters.get(key).format(date)} ${state.language==='en'?'MSK':'мск'}`;
 }
 
 function formatShortDate(value) {
   if (!value || !Number.isFinite(Date.parse(value))) return '—';
-  return new Intl.DateTimeFormat(state.language === 'en' ? 'en-GB' : 'ru-RU', {timeZone:'Europe/Moscow',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(value));
+  const locale=state.language==='en'?'en-GB':'ru-RU',formatters=formatShortDate.formatters??=new Map();
+  if(!formatters.has(locale))formatters.set(locale,new Intl.DateTimeFormat(locale,{timeZone:'Europe/Moscow',day:'2-digit',month:'2-digit',year:'numeric'}));
+  return formatters.get(locale).format(new Date(value));
 }
 
 function formatAge(milliseconds) {
@@ -355,21 +439,39 @@ const viewMeta = {
   'risk-plan': ['Риск и торговый план', 'Оценка риска и план действий'],
   terminal: ['Терминал', 'График, позиции участников и уведомления'],
   ai: ['Фундаментальный анализ', 'Показатели компании и источники'],
+  'nexus-ai': ['Nexus AI', 'Помощник по вашим идеям и исследованиям'],
   sync: ['Синхронизация', 'Качество данных и история проверок'],
   system: ['Системный раздел', 'Vertux Service Center'],
   glossary: ['Словарь терминов', 'Инвестиционный справочник и формулы'],
 };
 
-function activateView(view, trigger = null, { focusMain = true } = {}) {
+function invalidateLocalExplanations(){state.allocationPlanUi?.contextChanged();state.bondCashflowUi?.contextChanged();state.directShareConcentrationUi?.contextChanged();state.brokerReportsUi?.contextChanged();state.internalTransfersUi?.contextChanged();state.shareValuationsUi?.contextChanged();state.portfolioReviewUi?.contextChanged();state.localResultWorkspace?.contextChanged();state.localMethodWorkspace?.contextChanged();state.localObservedRiskWorkspace?.contextChanged();syncPortfolioReviewVisibility();}
+function syncPortfolioReviewVisibility(){queueMicrotask(()=>{state.portfolioReviewUi?.setActive(state.currentView==='analytics'&&state.analyticsView==='reviews');state.allocationPlanUi?.setActive(state.currentView==='analytics'&&['portfolio','capital'].includes(state.analyticsView)&&state.deepAnalytics?.getPortfolioArea()==='risk'&&!$('#allocationPlan').hidden);});}
+
+function activateView(view, trigger = null, { focusMain = true, activateResearch = true, ensureEventNews = true, taskRoute = null } = {}) {
+  state.navigationRevision++;
   // Preserve existing workspace shortcuts and links to the former Instruments route.
   if (view === 'instruments') view = 'terminal';
-  state.terminalUi?.activate(view);
   const viewChanged = state.currentView !== view;
+  // Reset the old surface before changing layout. Doing this after toggling
+  // every panel forces an extra synchronous reflow in the navigation handler.
+  if (viewChanged) {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    $('#mainContent').scrollTop = 0;
+  }
+  if(view==='analytics'&&document.body.dataset.navigationMode==='classic'&&['capital','trading'].includes(state.analyticsView))state.deepAnalytics?.showTaskView('portfolio');
+  state.terminalUi?.activate(view);
+  if(view==='terminal')terminalContextHeader?.update();
   state.currentView = view;
   document.body.dataset.currentView=view;
+  renderSurfacePeriod();
   document.dispatchEvent(new CustomEvent('invest:view-changed',{detail:view}));
   $('.quality-strip').hidden=view!=='sync';
   $$('.view').forEach((panel) => panel.classList.toggle('active', panel.dataset.viewPanel === view));
+  if(view!=='terminal'&&state.deferredBootstrap&&state.bootstrap)renderBootstrap(state.bootstrap,{background:true});
+  flushPeriodViews(view);
+  state.deepAnalytics?.refreshQueryArchive();
+  invalidateLocalExplanations();
   $$('.nav-item').forEach((button) => {
     const active = button === trigger || (button.dataset.view === view && !trigger);
     button.classList.toggle('active', active);
@@ -381,23 +483,62 @@ function activateView(view, trigger = null, { focusMain = true } = {}) {
   $('#viewContext').textContent = context;
   document.body.classList.remove('rail-open');
   $('[data-open-rail]').setAttribute('aria-expanded', 'false');
-  if (viewChanged) {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    $('#mainContent').scrollTop = 0;
-  }
   if (view === 'terminal') requestAnimationFrame(renderMarketChart);
   if (view === 'overview') requestAnimationFrame(renderEquityChart);
-  if (view === 'analytics') { void state.deepAnalytics?.activate(); requestAnimationFrame(renderAnalyticsChartOnView); void refreshMarketVision(); }
+  if(view==='overview')requestAnimationFrame(renderAnalyticsChartOnView);
+  if (view === 'analytics' && activateResearch) { void state.deepAnalytics?.activate(); requestAnimationFrame(renderAnalyticsChartOnView); void refreshMarketVision(); }
   if (view === 'glossary') requestAnimationFrame(renderGlossary);
-  if (view === 'ai') { renderSelectedCompany(); void ensureCompanyFacts(); }
-  if (view === 'events') void state.marketCalendarUi?.ensureNews();
+  if (view === 'ai') syncCompanyContext();
+  if (view === 'events' && ensureEventNews) void state.marketCalendarUi?.ensureNews();
   if (['settings','profile'].includes(view)) void mountAccountCenter(view);
   if (focusMain) $('#mainContent').focus({ preventScroll: true });
+  state.taskNavigation?.sync(taskNavigationContext(),taskRoute);
+}
+
+function renderSurfacePeriod() {
+  const applicable = ['overview', 'operations'].includes(state.currentView)
+    || (state.currentView === 'analytics' && ['portfolio','capital','trading','reviews'].includes(state.analyticsView));
+  $('#statisticsPeriodForm').dataset.periodApplicable = String(applicable);
+  renderAnalyticsStartup();
 }
 
 let accountCenter = null;
-const workspaceNavigation=createWorkspaceNavigation({key:'vertux-invest',title:'Invest Workspace',actions:workspaceNavigationActions(),
+const navigationActions=workspaceNavigationActions(),workspaceSettings=createWorkspaceSettingsStore({actions:navigationActions,menuIds:[...document.querySelectorAll('.rail .nav-item')].map(button=>button.dataset.view||button.dataset.systemSection)});
+const workspaceNavigation=createWorkspaceNavigation({key:'vertux-invest',title:'Invest Workspace',actions:navigationActions,storage:workspaceSettings.shortcutStorage,
  navigate:view=>['subscription','support'].includes(view)?document.querySelector(`[data-system-section="${view}"]`)?.click():activateView(view)});
+function syncAccountWorkspaceSettings(clearDraft=false) {
+  if(!accountCenter?.controller)return;
+  const root=accountCenter.shadowRoot,confirmed=workspaceSettings.status();
+  accountCenter.state.appSettings={...accountCenter.state.appSettings,shortcuts:workspaceNavigation.read()};
+  if(clearDraft)for(const input of root.querySelectorAll('#shortcutForm input')){delete input.dataset.dirty;delete input.dataset.error;input.removeAttribute('aria-invalid');}
+  accountCenter.controller.viewChanged(accountCenter.getAttribute('section')||'settings');
+  if(!confirmed.ready){for(const control of root.querySelectorAll('#shortcutForm input,#shortcutForm button,#resetShortcutsButton'))control.disabled=true;root.querySelector('#shortcutFeedback').textContent=confirmed.message;}
+}
+workspaceSettings.subscribe(reason=>syncAccountWorkspaceSettings(reason==='identity'||reason==='error'));
+// The account center is a vendored Nexus module. Invest adds its v2 sheet to
+// the shadow root and hides the module's shortcut card: Invest's own menu and
+// shortcuts live in Настройки → «Работа с приложением».
+function decorateAccountCenter(center) {
+  const root = center?.shadowRoot;
+  if (!root) return;
+  if (document.documentElement.dataset.ui === 'v2' && !root.querySelector('link[data-invest-v2]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = new URL('./account-center-v2.css?v=0.6.48', document.baseURI).href; link.dataset.investV2 = '';
+    root.append(link);
+  }
+  const card = root.querySelector('#shortcutForm')?.closest('article');
+  if (card && !card.hidden) {
+    card.hidden = true;
+    const note = document.createElement('p');
+    note.className = 'workspace-shortcuts-moved';
+    note.append('Меню и сочетания клавиш Invest настраиваются в разделе ');
+    const open = document.createElement('button');
+    open.type = 'button'; open.textContent = '«Работа с приложением»';
+    open.addEventListener('click', () => document.querySelector('[data-settings-tab="workspace"]')?.click());
+    note.append(open, '.');
+    card.after(note);
+  }
+}
 async function mountAccountCenter(section) {
   const host = $(section === 'profile' ? '#accountProfileHost' : '#accountSettingsHost');
   if (!host) return;
@@ -411,6 +552,7 @@ async function mountAccountCenter(section) {
     if (!accountCenter) {
       accountCenter = document.createElement('vertux-account-center');
       accountCenter.workspaceNavigation=workspaceNavigation;
+      accountCenter.addEventListener('vertux-account-ready',()=>{decorateAccountCenter(accountCenter);syncAccountWorkspaceSettings(true);});
       $('#personalSettings').hidden = false;
       $('#personalSettings').slot = 'workspace-settings';
       accountCenter.append($('#personalSettings'));
@@ -421,16 +563,32 @@ async function mountAccountCenter(section) {
     accountCenter.setAttribute('section',section);
     if (accountCenter.parentElement !== host) host.replaceChildren(accountCenter);
     else await accountCenter.refresh();
+    syncAccountWorkspaceSettings();
   } catch { host.innerHTML = '<div class="empty-state"><h3>Не удалось открыть аккаунт</h3><p>Перезапустите Workspace и повторите.</p></div>'; }
 }
-function applyInvestTheme(value, { persist = !runtimeAdapter } = {}) {
+function applyInvestTheme(value) {
   const theme = ['graphite','light'].includes(value) ? value : 'invest';
   document.documentElement.dataset.workspaceTheme = theme;
   const selector = $('#workspaceTheme');if (selector) selector.value=theme;
-  if (persist) { try { localStorage.setItem('vertux-invest:appearance',theme); } catch { /* Device preference is optional. */ } }
 }
-try { applyInvestTheme(runtimeAdapter ? 'invest' : localStorage.getItem('vertux-invest:appearance'), { persist: false }); } catch { applyInvestTheme('invest', { persist: false }); }
-initWorkspaceCustomization({navigation:workspaceNavigation});
+applyInvestTheme('invest');
+state.customization=initWorkspaceCustomization({navigation:workspaceNavigation,store:workspaceSettings,onNavigationPreferences:snapshot=>state.taskNavigation?.setPresentation(snapshot)});
+const refreshDisplayPreference=createRefreshDisplayPreference({store:workspaceSettings,request,onState:({active,pending,message})=>{
+  const control=document.querySelector('input[data-refresh-status]');
+  if(control)control.disabled=pending||!workspaceSettings.status().ready;
+  if(active&&message){const status=document.querySelector('.workspace-customization-status');if(status)status.textContent=message;}
+}});
+window.addEventListener('pagehide',()=>refreshDisplayPreference.dispose(),{once:true});
+
+function taskNavigationContext(){return {view:state.currentView,analyticsView:state.analyticsView,riskTab:$('[data-risk-tab][aria-selected="true"]')?.dataset.riskTab||'journal'};}
+function navigateTask(id,route,{focus=true}={}){
+  if(route.mode&&!state.deepAnalytics?.showTaskView(route.mode))return false;
+  if(route.riskTab&&!state.selectRiskTab)return false;
+  activateView(route.view,null,{focusMain:focus,activateResearch:route.mode==='instrument',taskRoute:id});
+  if(route.riskTab)state.selectRiskTab(route.riskTab);
+  if(focus){window.scrollTo({top:0,left:0,behavior:'instant'});$('#mainContent').scrollTop=0;}
+  return true;
+}
 
 async function requestNexusShellAction(action) {
   if (!['products', 'profile', 'settings'].includes(action)) return false;
@@ -499,6 +657,10 @@ function renderRuntimeTruth(data) {
   const nodeStatus = $('#nodeStatus');
   const runtime = data.runtime || {};
   const identity = data.identity || data.session?.identity || {};
+  if(state.personalPreferenceScope!==identity.preferenceScope){state.personalPreferenceScope=identity.preferenceScope;state.personalPreferencesDenied=false;state.personalPreferencesEpoch=(state.personalPreferencesEpoch||0)+1;}
+  state.personalUi?.updateAccess();state.personalTransferUi?.update();state.marketCalendarUi?.updateReminderAccess();
+  state.customization?.bind(identity,{preview:fixture||data.preview?.localReview===true});
+  void refreshDisplayPreference.bind({key:identity.preferenceScope,allowed:data.capabilities?.persistentRefreshStatus===true&&identity.role==='owner'&&!fixture&&data.preview?.localReview!==true});
   if (staticPreview) {
     nodeStatus.dataset.state = 'preview';
     $('#nodeState').textContent = 'Демо-среда';
@@ -560,7 +722,8 @@ function renderConnection(data, { phase = null, errorMessage = '' } = {}) {
   const staticPreview = data.environment === 'fixture' && data.preview?.static;
   const fixture = data.environment === 'fixture';
   const connection = maskedConnectionStatus(data.connection);
-  const hasSuccessfulSync = (data.syncRuns || []).some((run) => run.status === 'completed');
+  const hasSuccessfulSync = typeof data.quality?.hasSuccessfulSync === 'boolean'
+    ? data.quality.hasSuccessfulSync : (data.syncRuns || []).some((run) => run.status === 'completed');
   const currentPhase = phase || (staticPreview ? 'preview' : fixture ? 'fixture' : connection.connected ? (hasSuccessfulSync ? 'ready' : 'verified') : 'disconnected');
   state.connection = connection;
   state.connectionPhase = currentPhase;
@@ -578,7 +741,7 @@ function renderConnection(data, { phase = null, errorMessage = '' } = {}) {
     rechecking: ['Повторно проверяем сохранённое подключение только для чтения у T‑Invest. Токен остаётся в защищённом хранилище Windows.', 'Проверяем соединение'],
     verified: ['Доступ только для чтения подтверждён. Следующий шаг — первая синхронизация.', 'Доступ подтверждён'],
     syncing: ['Соединение подтверждено. Сохраняем портфель, позиции и операции на этом устройстве.', 'Первая синхронизация'],
-    ready: ['Подключение и первая синхронизация подтверждены. Повторные запуски доступны в верхней панели.', 'Готово'],
+    ready: ['Подключение подтверждено. Если в истории не хватает данных, нажмите «Повторно загрузить историю» выше.', 'Готово'],
     'sync-error': ['Подключение только для чтения сохранено, но первая синхронизация не завершилась. Повторите запуск.', 'Ошибка синхронизации'],
     error: [errorMessage || 'Подключение не подтверждено. Исправьте причину и повторите попытку.', 'Нужна проверка'],
     'runtime-error': [errorMessage || 'Local Node не ответил. Откройте Workspace из Nexus заново.', 'Local Node недоступен'],
@@ -622,8 +785,8 @@ function renderConnection(data, { phase = null, errorMessage = '' } = {}) {
 function renderQuality(data) {
   const quality = data.quality || {};
   const issue=quality.error||quality.stale;
-  $('#dataStateStatus').hidden=!issue||data.environment==='fixture';
-  $('#dataStateStatus').textContent=quality.error?'Не удалось обновить данные · Синхронизация':quality.stale?'Данные устарели · Синхронизация':'';
+  $('#dataStateStatus').hidden=true;
+  $('#dataStateStatus').textContent=quality.error?'Не удалось обновить данные':quality.stale?'Портфель требует обновления':'';
   $('#qualitySource').textContent = quality.source || (data.environment === 'fixture' ? 'Учебный источник' : 'Источник ещё не подключён');
   $('#qualityConnector').textContent = quality.connector || '';
   $('#qualityConnector').hidden = !quality.connector || /только чтение|read.only/iu.test(quality.connector);
@@ -635,7 +798,8 @@ function renderQuality(data) {
   $('#qualityEvent').textContent = formatDate(quality.lastEventAt, true);
   $('#qualityAge').textContent = formatAge(quality.dataAgeMs);
   $('#qualityAge').className = quality.stale ? 'stale' : quality.lastEventAt ? 'ready' : '';
-  $('#qualityReconcile').textContent = quality.reconciliation === 'matched' ? 'Сопоставлено' : quality.reconciliation === 'warning' ? 'Есть расхождения' : 'Не выполнена';
+  $('#qualityReconcile').textContent = quality.reconciliation === 'matched' ? 'Записи сопоставлены' : quality.reconciliation === 'warning' ? 'Есть расхождения записей' : 'Не выполнена';
+  $('#qualityReconcile').title = 'Проверка количества импортированных записей и состава инструментов. Сравнение количества по сохранённым снимкам доступно в Аналитике; оно не подтверждает денежную сверку.';
   $('#qualityCoverage').textContent = quality.coverage || 'Отчёт брокера не загружен';
   $('#qualityState').textContent = quality.stateLabel || 'Готово';
   $('#qualityState').className = quality.stale ? 'stale' : quality.error ? 'error' : 'ready';
@@ -645,7 +809,8 @@ function renderQuality(data) {
 function coverageSummary(coverage, fallback = 'Недостаточно данных за период.') {
   return ({ empty: 'Нет оценки стоимости за период.', partial_history: 'Нет оценки на начало периода.',
     insufficient_history: 'Нужны оценки в разные даты.', invalid_starting_value: 'Начальная стоимость не положительна.',
-    unsupported_transfers: 'Нет оценки перенесённых бумаг.', missing_fx: 'Не сохранён курс денежных потоков.',
+    unsupported_transfers: 'Переносы ещё не сверены.', missing_fx: 'Не сохранён курс денежных потоков.',
+    incomplete_cash_flows: 'Данные денежных потоков неполные.',
     incomplete_operations: 'История операций неполная.', unaligned_accounts: 'Выберите отдельный счёт.' })[coverage?.state] || fallback;
 }
 
@@ -654,22 +819,73 @@ function renderEvidenceNote(element, summary, detail = '') {
   if (detail && detail !== summary) element.innerHTML = `${escapeText(summary)} <button class="term-help" type="button" data-evidence-note="${escapeText(detail)}" aria-label="Подробнее: ${escapeText(summary)}" aria-expanded="false">i</button>`;
 }
 
+function portfolioReturnExplanation(data) {
+  return [data?.analytics?.returnReason,
+    data?.analytics?.returnMethod || 'Изменение стоимости за период минус внешние пополнения и плюс выводы, делённое на начальную стоимость.',
+    'Комиссии уже отражены в стоимости счёта и повторно не вычитаются. Процент рассчитывается только при положительной начальной стоимости и достаточной истории.',
+    'Это результат к начальной стоимости, не TWR и не MWR/XIRR: даты пополнений не взвешиваются.'].filter(Boolean).join(' ');
+}
+
+function portfolioResultExplanation(data) {
+  const details = data?.portfolio?.resultDetails;
+  if (details?.contractVersion !== 'portfolio-result-v1') return [data?.portfolio?.pnlReason,
+    'Денежный результат за выбранный период после комиссий.', portfolioReturnExplanation(data)].filter(Boolean).join(' ');
+  const period = details.period;
+  const date = value => value ? new Intl.DateTimeFormat(state.language === 'en' ? 'en-GB' : 'ru-RU', {
+    timeZone: period.timeZone, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit',
+  }).format(new Date(value)) + ' мск' : 'дата неизвестна';
+  const amount = value => formatMoney(value, details.currency, { native: true });
+  const accounts = data.clientProduct?.portfolios || [];
+  const selectedName = details.scope.portfolioIds.length === 1
+    ? accounts.find(row => row.id === details.scope.portfolioIds[0])?.label : null;
+  const partialStart = period.observedFrom !== period.requestedFrom;
+  const partialEnd = period.observedTo !== period.requestedTo;
+  return [
+    `Расчёт в ${details.currency}.`, selectedName ? `Счёт: ${selectedName}.` : `Выбранных счетов: ${details.scope.portfolioIds.length}.`,
+    partialStart || partialEnd ? `Выбрано: ${date(period.requestedFrom)} — ${date(period.requestedTo)}. Ниже — только доступные оценки.` : '',
+    `${partialStart ? 'Первая доступная оценка' : 'Начало'} (${date(details.opening.at)}): ${amount(details.opening.valueNanos)}.`,
+    `Пополнения минус выводы между этими оценками: ${amount(details.externalFlows.valueNanos)}.`,
+    `Инвестиционный результат: ${amount(details.investmentResult.valueNanos)}.`,
+    `${partialEnd ? 'Последняя доступная оценка' : 'Конец'} (${date(details.closing.at)}): ${amount(details.closing.valueNanos)}.`,
+    'Результат = конец − начало − пополнения + выводы. Комиссии повторно не вычитаются.',
+    data.portfolio.realizedNanos!=null&&data.portfolio.feesNanos!=null&&details.investmentResult.valueNanos!=null
+      ? 'Сопоставление: реализовано до комиссий '+amount(data.portfolio.realizedNanos)+' − комиссии '+amount(data.portfolio.feesNanos)+' + разница с результатом по стоимости '+amount((BigInt(details.investmentResult.valueNanos)-BigInt(data.portfolio.realizedNanos)+BigInt(data.portfolio.feesNanos)).toString())+' = '+amount(details.investmentResult.valueNanos)+'.' : '',
+    'Эта разница не является дополнительной комиссией. Она ещё не разложена по изменениям оценки открытых позиций, валютным изменениям и прочим операциям.',
+    'Процент — результат к начальной стоимости; не TWR/XIRR.',
+    details.evidence.dataMode === 'synthetic' ? 'Учебные данные.' : 'Сохранённые локальные данные.',
+    'Даты относятся к сохранённым наблюдениям.',
+    details.evidence.valuationMethod === 'reconstructed' ? 'Оценки восстановлены по операциям и дневным ценам.' : '',
+    details.investmentResult.reason || details.return.reason || '',
+    period.pendingOperationTail ? period.currentValuationAt
+      ? `Более свежая текущая оценка на ${date(period.currentValuationAt)} в этот результат не входит.`
+      : 'Более свежие текущие оценки не входят в этот результат: операции до них ещё не покрыты.' : '',
+    'Независимая денежная сверка не выполнена.',
+  ].filter(Boolean).join(' ');
+}
+
 function renderAccountCards(data) {
   const scope = String(state.bootstrap?.identity?.preferenceScope || 'local');
   const pins = readAccountPins(localStorage, scope);
   const rows = orderAccounts((data.clientProduct?.portfolios || []).map(row => ({...row, id:row.preferenceKey || row.id})), pins);
   const host = $('#portfolioCards');
-  const expanded = host.querySelector('details')?.open || false;
-  const signature = JSON.stringify([rows, pins, state.language, state.displayCurrency, data.displayFx, data.portfolio?.totalNanos]);
+  const expanded = host.querySelector('details')?.open ?? host.accountsExpanded ?? false;
+  host.accountsExpanded = expanded;
+  host.closest('.portfolio-breakdown').hidden = rows.length === 1;
+  const signature = JSON.stringify([rows, pins, state.language, state.displayCurrency, data.displayFx, data.portfolio?.currentTotalNanos, data.portfolio?.totalNanos]);
   if (host.accountSignature === signature) return;
   host.accountSignature = signature;
   const focusedPin = host.contains(document.activeElement) ? document.activeElement.dataset.pinAccount : null;
+  if (rows.length === 1) {
+    host.replaceChildren();
+    if (focusedPin) $('#statisticsAccount')?.focus({ preventScroll: true });
+    return;
+  }
   const card = row => `<div class="portfolio-row">
     <span class="account-card-name" title="${escapeText(formatDate(row.asOf))}"><i class="account-dot" aria-hidden="true"></i><strong>${escapeText(row.label)}</strong><button type="button" class="account-pin" data-pin-account="${escapeText(row.id)}" aria-pressed="${pins.includes(row.id)}" aria-label="${pins.includes(row.id) ? 'Открепить' : 'Закрепить'} счёт: ${escapeText(row.label)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3 6 0-1 6 4 4v2h-5v6l-1-2-1 2v-6H6v-2l4-4-1-6Z"/></svg></button></span>
     <span class="numeric"><strong>${escapeText(formatMoney(row.valueNanos, row.currency || 'RUB'))}</strong><small>${escapeText(formatPercentage(row.shareOfTotalRate))}</small></span>
     <div class="allocation-track" aria-label="${escapeText(formatPercentage(row.shareOfTotalRate))} от общей суммы"><i style="--allocation:${Math.max(0, Math.min(100, Number(row.shareOfTotalRate || 0) * 100))}%"></i></div>
   </div>`;
-  host.innerHTML = rows.length ? rows.slice(0, 2).map(card).join('') + (rows.length > 2 ? `<details class="accounts-more"${expanded ? ' open' : ''}><summary>Все счета · ${rows.length}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="accounts-overflow">${rows.map(card).join('')}</div></details>` : '') + `<div class="accounts-total"><span>Общая стоимость</span><strong>${escapeText(formatMoney(data.portfolio?.totalNanos, data.portfolio?.currency))}</strong></div>` : '<p class="empty-copy">Нет сохранённых портфелей. Запустите синхронизацию.</p>';
+  host.innerHTML = rows.length ? rows.slice(0, 2).map(card).join('') + (rows.length > 2 ? `<details class="accounts-more"${expanded ? ' open' : ''}><summary>Все счета · ${rows.length}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg></summary><div class="accounts-overflow">${rows.map(card).join('')}</div></details>` : '') + `<div class="accounts-total"><span>Общая стоимость</span><strong>${escapeText(formatMoney(data.portfolio?.currentTotalNanos ?? data.portfolio?.totalNanos, data.portfolio?.currency))}</strong></div>` : '<p class="empty-copy">Нет сохранённых портфелей. Запустите синхронизацию.</p>';
   host.querySelectorAll('[data-pin-account]').forEach(button => button.addEventListener('click', () => {
     const id = button.dataset.pinAccount;
     writeAccountPins(localStorage, scope, pins.includes(id) ? pins.filter(pin => pin !== id) : [...pins, id]);
@@ -680,40 +896,76 @@ function renderAccountCards(data) {
 }
 
 function renderPortfolio(data) {
+  if (!data || ['pending','error'].includes(data.analyticsState)) return;
   const portfolio = data.portfolio || {};
   const selected = data.selectedPeriod;
   const coverage = data.dataCoverage || {};
-  $('#portfolioValue').textContent = formatMoney(portfolio.totalNanos, portfolio.currency);
+  for(const [selector,value]of [['.headline-copy',portfolio.currentTotalNanos ?? portfolio.totalNanos],['.headline-pnl',portfolio.netPnlNanos],['#realizedPnl',portfolio.realizedNanos],['#feesValue',portfolio.feesNanos]]){const node=$(selector);if(node)(node.closest('[data-workspace-panel]')||node).dataset.panelResult=value==null?'unknown':signedClass(value)||'neutral';}
+  $('#portfolioValue').textContent = formatMoney(portfolio.currentTotalNanos ?? portfolio.totalNanos, portfolio.currency);
   $('#portfolioValueLabel').textContent = 'Стоимость портфеля';
   const selectedAccount = $('#statisticsAccount');
-  const accountLabel = selectedAccount?.value ? selectedAccount.selectedOptions[0]?.textContent : 'Все выбранные счета';
-  $('#portfolioContext').textContent = [accountLabel, portfolio.asOf ? 'Оценка на ' + formatDate(portfolio.asOf) : 'Оценка пока недоступна'].filter(Boolean).join(' · ');
+  const soleAccount = data.clientProduct?.portfolios?.length === 1 ? data.clientProduct.portfolios[0] : null;
+  const accountLabel = selectedAccount?.value ? selectedAccount.selectedOptions[0]?.textContent : soleAccount?.label || 'Все выбранные счета';
+  $('#portfolioContext').textContent = [accountLabel, (portfolio.currentAsOf || portfolio.asOf) ? 'Оценка на ' + formatDate(portfolio.currentAsOf || portfolio.asOf) : 'Оценка пока недоступна'].filter(Boolean).join(' · ');
   $('#netPnlContext').textContent = [$('#workspacePeriod')?.selectedOptions[0]?.textContent || 'Выбранный период', portfolio.pnlReason ? 'Есть ограничения данных' : 'Результат после комиссий'].join(' · ');
   const today = dailyPositionSummary(data.clientProduct?.openPositions || []);
   const daily = $('#portfolioDayChange');
   daily.className = `portfolio-day-change ${signedClass(today?.pnlNanos)}`;
   daily.innerHTML = today ? `${escapeText(today.rate == null ? signedMoney(today.pnlNanos, today.currency) : formatPercentage(today.rate, {signed:true}))}<small>сегодня по позициям</small>` : '<span>—</span><small>сегодня по позициям</small>';
-  daily.title = today ? 'Сумма дневных результатов текущих открытых позиций по данным брокера. Не включает уже закрытые позиции; не является полной доходностью портфеля за день.' : 'Дневные данные не получены для всех текущих позиций либо относятся к прошлой дате.';
+  daily.title = today ? 'Сумма дневных результатов текущих открытых позиций по данным брокера. Не включает уже закрытые позиции; не является полной доходностью портфеля за день.' : 'Дневные данные неполные, относятся к прошлой дате или не подтверждены в одной валюте.';
   const valuationDetails = [`Оценка стоимости: ${formatDate(portfolio.asOf)}.`,
     portfolio.startTotalNanos != null ? `Первая оценка в периоде: ${formatMoney(portfolio.startTotalNanos, portfolio.currency)} · ${formatDate(portfolio.startAsOf)}.` : 'Начальная оценка не сохранена.',
     portfolio.currentTotalNanos != null ? `Последняя стоимость: ${formatMoney(portfolio.currentTotalNanos, portfolio.currency)} · ${formatDate(portfolio.currentAsOf)}.` : '', coverage.reason || ''].filter(Boolean).join(' ');
   $('#portfolioValueHelp').setAttribute('data-evidence-note', valuationDetails);
   $('#netPnl').textContent = signedMoney(portfolio.netPnlNanos, portfolio.currency);
+  renderPortfolioResultBreakdown($('#portfolioResultBreakdown'),portfolio,(value,currency)=>formatMoney(value,currency,{native:true}));
   renderEvidenceNote($('#netPnlMeta'), portfolio.pnlReason ? coverageSummary(coverage) : 'После комиссий', portfolio.pnlReason);
   $('#netPnl').className = signedClass(portfolio.netPnlNanos);
   $('.headline-pnl').dataset.tone = signedClass(portfolio.netPnlNanos) || 'neutral';
-  $('#netPnlRate').textContent = formatPercentage(data.analytics?.netReturn, { signed: true });
-  $('#netPnlRate').className = `metric-rate ${signedClass(portfolio.netPnlNanos)}`;
-  $('#netPnlHelp').dataset.evidenceNote = [portfolio.pnlReason, 'Результат за выбранный период после комиссий.'].filter(Boolean).join(' ');
+  $('#netPnlRate').textContent = data.analytics?.netReturn == null ? '— · процент не рассчитан'
+    : formatPercentage(data.analytics.netReturn, { signed: true }) + ' к начальной стоимости';
+  $('#netPnlRate').title = portfolioReturnExplanation(data);
+  $('#netPnlRate').className = `metric-rate ${data.analytics?.netReturn == null ? '' : signedClass(portfolio.netPnlNanos)}`;
+  const resultHelp = $('#netPnlHelp'), resultExplanation = portfolioResultExplanation(data);
+  const resultHelpChanged = resultHelp.dataset.evidenceNote !== resultExplanation;
+  resultHelp.dataset.evidenceNote = resultExplanation;
+  if (resultHelpChanged && resultHelp.getAttribute('aria-expanded') === 'true') resultHelp.dispatchEvent(new Event('focusin', { bubbles: true }));
   for (const [id, value] of [['realizedPnl', portfolio.realizedNanos], ['unrealizedPnl', portfolio.unrealizedNanos]]) $('#'+id).className = signedClass(value);
   $('#realizedPnl').textContent = signedMoney(portfolio.realizedNanos, portfolio.currency);
+  const realizedNote = [portfolio.realizedReason, portfolio.realizedMethod].filter(Boolean).join(' ');
+  const realizedHelp = $('#realizedPnlHelp'), realizedChanged = realizedHelp.dataset.evidenceNote !== realizedNote;
+  if (!realizedNote) delete realizedHelp.dataset.evidenceNote;
+  metricNote($('#realizedPnl'), realizedNote);
+  $('#realizedPnlMeta').textContent = portfolio.realizedNanos == null ? portfolio.realizedReason || '' : '';
+  $('#realizedPnlMeta').hidden = !$('#realizedPnlMeta').textContent;
+  if (realizedChanged && realizedHelp.getAttribute('aria-expanded') === 'true') realizedHelp.dispatchEvent(new Event('focusin', { bubbles: true }));
   $('#realizedPnl').closest('.metric-ledger > div').dataset.tone = signedClass(portfolio.realizedNanos) || 'neutral';
-  $('#unrealizedPnl').textContent = signedMoney(portfolio.unrealizedNanos, portfolio.currency);
-  renderEvidenceNote($('#markFreshness'), portfolio.unrealizedNanos != null
-    ? `По текущим позициям · ${formatDate(portfolio.currentAsOf || portfolio.asOf)}`
-    : 'Нет оценки открытых позиций.', portfolio.unrealizedReason || '');
+  const currentResult = currentPositionResultPresentation(portfolio.currentPositionResult,{locale:state.language});
+  const currentHost = $('#currentPositionResult'), priorDetails = currentHost.querySelector('[data-current-result-details]');
+  const currentScope = JSON.stringify([state.analyticsAccount, selected?.from, selected?.to]);
+  const sameResultScope = currentHost.dataset.scope === currentScope;
+  const resultFocus = sameResultScope && priorDetails?.querySelector('summary') === document.activeElement;
+  const resultOpen = sameResultScope && priorDetails?.open;
+  currentHost.dataset.scope = currentScope; currentHost.dataset.state = currentResult.state;
+  currentHost.innerHTML = currentResult.html;
+  currentHost.querySelector('[data-current-result-details]').open = Boolean(resultOpen);
+  if (resultFocus) currentHost.querySelector('summary').focus({ preventScroll: true });
+  $('#unrealizedPnl').textContent = currentResult.headline;
+  $('#unrealizedPnl').className = currentResult.tone;
+  renderEvidenceNote($('#markFreshness'), currentResult.note);
   $('#feesValue').textContent = formatMoney(portfolio.feesNanos, portfolio.currency);
+  const feesNote = [portfolio.feesReason, portfolio.feesMethod].filter(Boolean).join(' ');
+  const feesHelp = $('#feesValueHelp'), feesChanged = feesHelp.dataset.evidenceNote !== feesNote;
+  if (!feesNote) delete feesHelp.dataset.evidenceNote;
+  metricNote($('#feesValue'), feesNote);
+  $('#feesValueMeta').textContent = portfolio.feesNanos == null ? portfolio.feesReason || '' : '';
+  $('#feesValueMeta').hidden = !$('#feesValueMeta').textContent;
+  if (feesChanged && feesHelp.getAttribute('aria-expanded') === 'true') feesHelp.dispatchEvent(new Event('focusin', { bubbles: true }));
   $('#feesValue').closest('.metric-ledger > div').dataset.tone = portfolio.feesNanos == null || BigInt(portfolio.feesNanos) === 0n ? 'neutral' : 'warning';
+  const feeTotal = portfolio.currentTotalNanos ?? portfolio.totalNanos;
+  const feeShare = portfolio.feesNanos != null && feeTotal != null && BigInt(feeTotal) > 0n ? Number(BigInt(portfolio.feesNanos) * 1000000n / BigInt(feeTotal)) / 1000000 : null;
+  kpiDetail($('#feesValue'), { line: feeShare == null ? null : formatPercentage(feeShare) + ' от стоимости портфеля' });
+  kpiDetail($('#realizedPnl'), { line: portfolio.realizedNanos == null ? null : 'по закрытым сделкам периода' });
   $('#drawdownValue').textContent = formatPercentage(portfolio.maxDrawdownRate == null ? null : -Math.abs(portfolio.maxDrawdownRate));
   $('#drawdownValue').closest('.metric-ledger > div').dataset.tone = portfolio.maxDrawdownRate == null ? 'neutral' : 'negative';
   renderEvidenceNote($('#drawdownPeriod'), portfolio.maxDrawdownRate === null || portfolio.maxDrawdownRate === undefined
@@ -721,29 +973,42 @@ function renderPortfolio(data) {
     : portfolio.riskCoverage?.state === 'partial' ? 'По активным интервалам.' : 'По оценкам стоимости за период.', portfolio.maxDrawdownRate == null ? coverage.reason : portfolio.riskCoverage?.reason || portfolio.drawdownPeriod);
   metricNote($('#unrealizedPnl'), $('#markFreshness').textContent);
   metricNote($('#drawdownValue'), $('#drawdownPeriod').textContent);
+  kpiDetail($('#drawdownValue'), { line: portfolio.maxDrawdownRate == null ? null : 'от пика до минимума за период' });
   $('#equityVersion').textContent = data.calculationVersion || 'Версия расчёта не указана';
 
   renderAccountCards(data);
 
-  const rows = sortRows(data.clientProduct?.openPositions || [],state.sorts.positions,positionReaders);
+  renderOpenPositions(data);
+}
+
+function renderOpenPositions(data) {
+  const rows = sortRows(data.clientProduct?.openPositions || [],state.sorts.positions,{
+    ...positionReaders,
+    totalPnlNanos:row=>row.assetType==='future'?row.contractPnlNanos??null:row.totalPnlNanos,
+  });
   $('#openPositionsCount').textContent = String(rows.length);
   $('#positionsBody').innerHTML = rows.length ? rows.map((row) => {
     const display=instrumentDisplay(row),currency=row.pnlCurrency||row.currency||'RUB';
+    const chart=instrumentContext.resolve(row.instrumentUid);
     const resultClass = signedClass;
     const share=positionShare(row,data);
     return `<tr>
-      <td><span class="instrument-with-mark">${instrumentMark(row,display)}<span class="instrument-cell"><strong>${escapeText(display.ticker||display.name)}</strong><small title="${escapeText(display.name)}">${escapeText(display.name!==display.ticker?display.name:'')}</small></span></span></td>
-      <td><span class="asset-type">${ui(row.assetType==='future'?'Фьючерс':'Акция')}</span><small class="position-direction">${row.direction==='short'?'Short':'Long'}</small></td>
+      <td><span class="instrument-with-mark">${instrumentMark(row,display)}<span class="instrument-cell"><strong>${escapeText(display.ticker||display.name)}</strong><small title="${escapeText(display.name)}">${escapeText(display.name!==display.ticker?display.name:'')}</small><button type="button" class="position-chart-link" data-position-chart="${escapeText(row.instrumentUid)}" aria-label="Открыть график: ${escapeText(display.ticker||display.name)}" ${chart.meta?'':'disabled'} title="${escapeText(chart.meta?'График этой позиции в терминале':instrumentContextReason(chart))}">Открыть график <span aria-hidden="true">↗</span></button></span></span></td>
+      <td><span class="asset-type">${ui(assetLabel(row.assetType))}</span><small class="position-direction">${row.direction==='short'?'Short':'Long'}</small></td>
       <td title="${escapeText(row.openedAtNote||'')}">${escapeText(row.openedAt?formatShortDate(row.openedAt):'—')}</td>
       <td class="numeric">${escapeText(positionQuantity(row,{locale:state.language}))}</td>
-      <td class="numeric" title="${escapeText(row.entryPriceNote||'')}">${escapeText(quoteMoney(row.entryPriceNanos ?? row.averagePriceNanos,row.priceCurrency))}</td>
-      <td class="numeric" title="${escapeText(row.positionValue?.note||'')}">${escapeText(formatMoney(row.positionValueNanos,row.positionValueCurrency||row.currency||row.priceCurrency))}</td>
+      <td class="numeric" title="${escapeText(row.entryPriceNote||'')}">${row.assetType==='future'?renderFuturePositionAverage(row,{locale:state.language}):row.assetType==='bond'?renderBondPositionAverage(row,{locale:state.language}):['share','etf'].includes(row.assetType)?renderSecurityPositionAverage(row,{locale:state.language}):escapeText(quoteMoney(row.entryPriceNanos ?? row.averagePriceNanos,row.entryPriceCurrency||row.priceCurrency))}</td>
+      <td class="numeric" title="${escapeText(row.positionValue?.note||'')}">${row.assetType==='future'?renderFuturePositionValue(row,{amountText:formatMoney(row.positionValueNanos,row.positionValueCurrency)}):row.assetType==='bond'?renderBondPositionValue(row,{locale:state.language,amountText:formatMoney(row.positionValueNanos,row.positionValueCurrency)}):['share','etf'].includes(row.assetType)?renderSecurityPositionValue(row,{amountText:formatMoney(row.positionValueNanos,row.positionValueCurrency)}):escapeText(formatMoney(row.positionValueNanos,row.positionValueCurrency||row.currency||row.priceCurrency))}</td>
       <td class="numeric" title="${row.assetType === 'future' ? 'Экспозиция: номинальная стоимость контрактов / капитал. Это не доля вложенных денег и не гарантийное обеспечение.' : 'Стоимость позиции / текущая стоимость выбранных счетов'}">${share==null?'—':escapeText(formatPercentage(share))}${row.assetType === 'future' && share != null ? '<small class="position-exposure">эксп.</small>' : ''}</td>
-      <td class="numeric ${resultClass(row.totalPnlNanos)}" title="${escapeText(row.method || '')}"><strong>${escapeText(signedMoney(row.totalPnlNanos,currency))}</strong>${row.totalReturnRate==null?'':`<small class="return-rate">${escapeText(formatPercentage(row.totalReturnRate,{signed:true}))}${row.assetType==='future'?' '+ui('цены'):''}</small>`}</td>
+      ${['share','etf'].includes(row.assetType)?'<td class="numeric">'+renderSecurityPositionResult(row,{locale:state.language,amountText:validSecurityPositionMetrics(row.securityPositionMetrics,row)?signedMoney(row.totalPnlNanos,row.pnlCurrency):'—'})+'</td>':row.assetType==='future'?renderFuturePositionResult(row):row.assetType==='bond'?'<td class="numeric">'+renderBondPositionResult(row,{locale:state.language,amountText:validBondPositionMetrics(row.bondPositionMetrics,row)?signedMoney(row.totalPnlNanos,row.pnlCurrency):'—'})+'</td>':`<td class="numeric ${resultClass(row.totalPnlNanos)}" title="${escapeText(row.method || '')}"><strong>${escapeText(signedMoney(row.totalPnlNanos,currency))}</strong>${row.totalReturnRate==null?'':`<small class="return-rate">${escapeText(formatPercentage(row.totalReturnRate,{signed:true}))}</small>`}</td>`}
     </tr>`;
   }).join('') : '<tr><td colspan="8" class="empty-cell">Нет сохранённых открытых позиций. Запустите синхронизацию.</td></tr>';
   watchInstrumentImages($('#positionsBody'));
 
+}
+
+function renderFuturePositionResult(row) {
+  return '<td class="numeric" data-position-result="future">' + renderFuturePositionMetrics(row,{locale:state.language}) + '</td>';
 }
 
 const OPERATIONS_PAGE_SIZE = 20;
@@ -784,15 +1049,20 @@ function portfolioDisplay(row) {
 }
 
 function renderOperations(data, { page = 0 } = {}) {
+  if (!data || ['pending','error'].includes(data.analyticsState)) return;
   const rows = sortRows(Array.isArray(data.operations)?data.operations:[],state.sorts.operations,{name:r=>instrumentDisplay(r).ticker||instrumentDisplay(r).name,occurredAt:r=>r.occurredAt?Date.parse(r.occurredAt):null,type:r=>r.label||r.type,state:r=>r.stateLabel||r.state});
   state.operationRows = rows;
   state.operationPage = Math.max(0, Math.min(Math.trunc(page) || 0, Math.ceil(rows.length / OPERATIONS_PAGE_SIZE) - 1));
   const start = state.operationPage * OPERATIONS_PAGE_SIZE;
   const pageRows = rows.slice(start, start + OPERATIONS_PAGE_SIZE);
-  $('#operationsBody').innerHTML = pageRows.length ? pageRows.map((row) => {
+  $('#operationsBody').innerHTML = pageRows.length ? pageRows.map((row,index) => {
     const display = instrumentDisplay(row);
     const detail = [display.ticker && display.name !== display.ticker ? display.name : '', portfolioDisplay(row)].filter(Boolean).join(' · ');
-    return `<tr><td><span class="instrument-with-mark">${row.instrumentUid?instrumentMark(display):'<span class="instrument-mark settlement-mark" aria-hidden="true"><svg><use href="#i-operations"/></svg></span>'}<span class="instrument-cell"><strong>${escapeText(display.ticker || display.name)}</strong><small>${escapeText(detail)}</small></span></span></td><td>${escapeText(formatDate(row.occurredAt, true))}</td><td>${escapeText(row.label || row.type)}</td><td class="numeric">${escapeText(formatQuantity(row.quantityNanos))}</td><td class="numeric">${escapeText(formatMoney(row.paymentNanos, row.currency))}</td><td class="numeric">${escapeText(formatMoney(row.commissionNanos, row.currency))}</td><td><span class="status-chip fresh">${escapeText(row.stateLabel || 'Исполнено')}</span></td></tr>`;
+    const execution = operationExecutionPresentation(row, { formatQuantity, formatDate: value => formatDate(value, true) });
+    const childPayments = operationChildPaymentsMarkup(row.childPayments, { formatQuantity, formatDate: value => formatDate(value, true) });
+    const nativeCommission = Object.hasOwn(row, 'commissionCurrency'), commissionCurrency = nativeCommission ? row.commissionCurrency : row.currency;
+    const commission = commissionCurrency ? formatMoney(row.commissionNanos, commissionCurrency, { native: nativeCommission }) : '—';
+    return `<tr><td><span class="instrument-with-mark">${row.instrumentUid?instrumentMark(display):'<span class="instrument-mark settlement-mark" aria-hidden="true"><svg><use href="#i-operations"/></svg></span>'}<span class="instrument-cell"><strong>${escapeText(display.ticker || display.name)}</strong><small>${escapeText(detail)}</small>${row.instrumentUid?`<button type="button" class="position-chart-link" data-operation-chart="${escapeText(row.instrumentUid)}" aria-label="Открыть график: ${escapeText(display.ticker||display.name)}" ${instrumentContext.resolve(row.instrumentUid).meta?'':'disabled'}><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 3v18h17M7 15l4-5 4 3 5-7"/></svg></button>`:''}</span></span></td><td>${escapeText(formatDate(row.occurredAt, true))}</td><td>${escapeText(row.label || row.type)}</td><td class="numeric">${execution.quantityMarkup}</td><td class="numeric">${escapeText(formatMoney(row.paymentNanos, row.currency))}</td><td class="numeric">${escapeText(commission)}</td><td><span class="status-chip ${execution.warning ? 'stale' : 'fresh'}">${escapeText(execution.statusLabel)}</span>${execution.note ? `<small class="cell-note">${escapeText(execution.note)}</small>` : ''}<button type="button" class="operation-details-button" data-operation-details="${start+index}" aria-label="Детали операции ${escapeText(display.ticker||display.name)}">Детали операции</button></td></tr>`;
   }).join('') : '<tr><td colspan="7" class="empty-cell">Нет нормализованных операций для выбранного периода.</td></tr>';
   watchInstrumentImages($('#operationsBody'));
   $('#operationsCount').textContent = rows.length
@@ -802,37 +1072,61 @@ function renderOperations(data, { page = 0 } = {}) {
   $('#operationsNext').disabled = start + OPERATIONS_PAGE_SIZE >= rows.length;
 }
 
+const operationDetails=createOperationDetailsDialog({formatQuantity,formatDate:value=>formatDate(value,true),formatMoney});
+$('#operationsBody').addEventListener('click',event=>{const button=event.target.closest('button');if(!button||button.disabled)return;if(button.dataset.operationDetails!==undefined){const row=state.operationRows[Number(button.dataset.operationDetails)];if(row)operationDetails.open(row,instrumentDisplay(row));}if(button.dataset.operationChart){openContextChart(button.dataset.operationChart,{route:'operations',label:'К операциям',fallbackLabel:'К операциям',restoreFocus:()=>{if(button.isConnected){button.focus({preventScroll:true});return true;}return false;}});}});
 function changeOperationPage(direction) {
   renderOperations({ operations: state.operationRows }, { page: state.operationPage + direction });
 }
 
 function renderClosedPositions(data) {
+  if (!data || ['pending','error'].includes(data.analyticsState)) return;
+  const coverage = analyticsDisplayData(data)?.clientProduct?.closedPositionsCoverage;
+  const ambiguous = coverage?.state === 'ambiguous';
   const filtered = filterLedgerRows(data.clientProduct?.closedPositions || [], state.operationFilterValues || {}, { dateKey: 'closedAt', display: instrumentDisplay, accountLabel: portfolioDisplay });
   const rows = sortRows(filtered,state.sorts.closed,{...positionReaders,closedAt:r=>r.closedAt?Date.parse(r.closedAt):null});
   const result = sumMoneyByCurrency(rows, 'pnlNanos', 'pnlCurrency');
-  $('#closedSummaryCount').textContent = rows.length.toLocaleString(state.language === 'en' ? 'en-US' : 'ru-RU');
-  $('#closedSummaryResult').textContent = result.amounts.length ? result.amounts.map(row => formatMoney(row.nanos, row.currency, { native: true })).join(' · ') : '—';
-  $('#closedSummaryNote').textContent = result.missing ? `${result.known} из ${rows.length} с денежным результатом. Вариационная маржа — в аналитике.` : rows.length ? 'После комиссий · по выбранным фильтрам' : 'Нет закрытых позиций за период';
+  const historical = rows.find(row => row.resultMethodVersion === 'closed-share-currency-v1');
+  $('#closedSummaryCount').textContent = ambiguous ? '—' : rows.length.toLocaleString(state.language === 'en' ? 'en-US' : 'ru-RU');
+  $('#closedSummaryResult').textContent = !ambiguous && result.amounts.length ? result.amounts.map(row => formatMoney(row.nanos, row.currency, { native: true })).join(' · ') : '—';
+  const missingFutures = rows.some(row => row.assetType === 'future' && row.pnlNanos == null);
+  let marginLink=$('#closedSummaryAnalytics');if(!marginLink){marginLink=document.createElement('button');marginLink.type='button';marginLink.id='closedSummaryAnalytics';marginLink.className='closed-summary-link';marginLink.textContent='Результат в деньгах за период';$('#closedSummaryNote').after(marginLink);marginLink.addEventListener('click',()=>{activateView('analytics');state.deepAnalytics?.showTaskView('capital');state.deepAnalytics?.revealPortfolioTarget($('#bookedComponents'));});}marginLink.hidden=ambiguous||!missingFutures;
+  if(!ambiguous&&!result.amounts.length&&rows.length)$('#closedSummaryResult').textContent='Не рассчитан';
+  $('#closedSummaryNote').textContent = ambiguous ? coverage.reason : result.missing ? `${result.known} из ${rows.length} с денежным результатом.${missingFutures ? ' Фьючерсы: изменение цены показано в пунктах. Вариационная маржа учитывается отдельно в аналитике за период и не распределена по закрытиям.' : ''}` : rows.length
+    ? historical ? 'После распределённых комиссий операций · RUB по историческим курсам' : 'После комиссий · по выбранным фильтрам' : 'Нет закрытых позиций за период';
   $('#closedSummaryResult').className = result.amounts.length === 1 ? signedClass(result.amounts[0].nanos) : '';
-  $('#closedSummaryHelp').dataset.evidenceNote = $('#closedSummaryNote').textContent;
+  const wins = rows.filter(row => /^\d+$/u.test(String(row.pnlNanos ?? '')) && BigInt(row.pnlNanos) > 0n).length;
+  const losses = rows.filter(row => /^-\d+$/u.test(String(row.pnlNanos ?? ''))).length;
+  const withResult = wins + losses;
+  kpiDetail($('#closedSummaryCount'), ambiguous || !withResult ? {} : { line: `${wins} в плюсе · ${losses} в минусе` + (withResult < rows.length ? ` · из ${withResult} с денежным результатом` : ''), split: wins / withResult });
+  const average = !ambiguous && result.amounts.length === 1 && result.known ? (BigInt(result.amounts[0].nanos) / BigInt(result.known)).toString() : null;
+  kpiDetail($('#closedSummaryResult'), { line: average == null ? null : 'в среднем ' + formatMoney(average, result.amounts[0].currency, { native: true }) + ' на позицию' });
+  const closedHelp = $('#closedSummaryHelp'), closedNote = [$('#closedSummaryNote').textContent, historical?.method].filter(Boolean).join(' ');
+  const closedNoteChanged = closedHelp.dataset.evidenceNote !== closedNote;
+  closedHelp.dataset.evidenceNote = closedNote;
+  if (closedNoteChanged && closedHelp.getAttribute('aria-expanded') === 'true') closedHelp.dispatchEvent(new Event('focusin', { bubbles: true }));
+  $('#closedSummaryNote').hidden = !ambiguous && !result.missing;
   const pageRows = pagedRows('closedPositions', rows, 20, () => renderClosedPositions(data));
-  $('#closedPositionsBody').innerHTML = pageRows.length ? pageRows.map((row) => {
+  $('#closedPositionsBody').innerHTML = pageRows.length ? pageRows.map((row,index) => {
     const pnl = row.pnlNanos == null ? null : BigInt(row.pnlNanos);
-    const priceCurrency = row.assetType === 'future' ? 'PTS' : row.currency || 'RUB';
+    const priceCurrency = row.assetType === 'future' ? 'PTS' : Object.hasOwn(row, 'entryPriceCurrency') ? row.entryPriceCurrency : row.priceCurrency || row.currency || 'RUB';
+    const exitCurrency = row.assetType === 'future' ? 'PTS' : Object.hasOwn(row, 'exitPriceCurrency') ? row.exitPriceCurrency : priceCurrency;
+    const entryPrice = priceCurrency ? quoteMoney(row.entryPriceNanos, priceCurrency) : '—';
+    const exitPrice = exitCurrency ? quoteMoney(row.exitPriceNanos, exitCurrency) : '—';
     const display = instrumentDisplay(row);
     return `<tr>
       <td><span class="instrument-with-mark">${instrumentMark(display)}<span class="instrument-cell"><strong>${escapeText(display.ticker||display.name)}</strong><small>${escapeText(display.name!==display.ticker?display.name:'')}</small></span></span></td>
-      <td><span class="asset-chip">${row.assetType === 'future' ? 'Фьючерс' : 'Акция'}</span><small class="cell-note">${row.direction === 'short' ? 'Шорт' : 'Лонг'}</small></td>
+      <td><span class="asset-chip">${assetLabel(row.assetType)}</span><small class="cell-note">${row.direction === 'short' ? 'Шорт' : 'Лонг'}</small></td>
       <td title="${escapeText(formatDate(row.openedAt, true))}">${escapeText(formatShortDate(row.openedAt))}</td>
       <td title="${escapeText(formatDate(row.closedAt, true))}">${escapeText(formatShortDate(row.closedAt))}</td>
       <td class="numeric">${escapeText(positionQuantity(row,{locale:state.language}))}</td>
-      <td class="numeric" title="${escapeText('Цена закрытия: '+quoteMoney(row.exitPriceNanos, priceCurrency))}">${escapeText(quoteMoney(row.entryPriceNanos, priceCurrency))}</td>
+      <td class="numeric" title="${escapeText('Цена закрытия: ' + exitPrice)}">${escapeText(entryPrice)}</td>
 
       <td class="numeric ${pnl == null ? '' : pnl < 0n ? 'negative' : 'positive'}">${row.assetType === 'future' && pnl == null
         ? `<strong class="${row.returnRate == null ? '' : Number(row.returnRate) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.returnRate, { signed: true }))} цены</strong><small class="cell-note inline-help"><button class="term-help" type="button" data-evidence-note="${escapeText(row.pnlReason || 'Вариационная маржа показана отдельно за период.')}" aria-label="Сведения о результате фьючерса" aria-expanded="false">i</button></small>`
-        : formatMoneyAndRate(row.pnlNanos, row.returnRate, row.currency || 'RUB')}</td>
+        : formatMoneyAndRate(row.pnlNanos, row.returnRate, row.pnlCurrency || row.currency || 'RUB', { native: row.nativeCurrency === true })
+          + (pnl == null && row.pnlReason ? `<small class="cell-note closed-result-note">${escapeText(row.pnlReason)}</small>` : '')}</td>
     </tr>`;
-  }).join('') : `<tr><td colspan="7" class="empty-cell">За выбранный период нет восстановленных закрытых позиций. Выберите другой период; для расчёта нужны обе стороны сделки.</td></tr>`;
+  }).join('') : `<tr><td colspan="7" class="empty-cell">${escapeText(ambiguous ? coverage.reason : 'За выбранный период нет восстановленных закрытых позиций. Выберите другой период; для расчёта нужны обе стороны сделки.')}</td></tr>`;
   watchInstrumentImages($('#closedPositionsBody'));
 }
 
@@ -845,9 +1139,13 @@ function applyOperationFilters({ announce = true } = {}) {
   const rows = filterLedgerRows(state.bootstrap.operations || [], values, { display: instrumentDisplay, accountLabel: portfolioDisplay });
   renderOperations({ operations: rows });
   const fees = summarizeOperationFees(rows);
-  $('#operationSummaryFees').textContent = fees.amounts.length ? fees.amounts.map(row => formatMoney(row.nanos, row.currency, { native: true })).join(' · ') : '—';
-  $('#operationSummaryFeesNote').textContent = fees.missing ? `${fees.known} из ${fees.known + fees.missing} операций с известной комиссией` : 'По исполненным операциям периода';
+  const feeCoverage = analyticsDisplayData(state.bootstrap)?.clientProduct?.operationIntegrity?.period;
+  const ambiguousFees = feeCoverage?.state === 'ambiguous';
+  $('#operationSummaryFees').textContent = !ambiguousFees && fees.amounts.length ? fees.amounts.map(row => formatMoney(row.nanos, row.currency, { native: true })).join(' · ')
+    : !ambiguousFees && fees.known && !fees.missing ? '0' : '—';
+  $('#operationSummaryFeesNote').textContent = ambiguousFees ? feeCoverage.reason : fees.missing ? `${fees.known} из ${fees.known + fees.missing} операций с известной комиссией` : 'По исполненным операциям периода';
   $('#operationFeesHelp').dataset.evidenceNote = $('#operationSummaryFeesNote').textContent;
+  $('#operationSummaryFeesNote').hidden = !ambiguousFees && !fees.missing;
   state.listPages?.delete('closedPositions');
   renderClosedPositions(state.bootstrap);
   if (announce) showToast(`Фильтры применены: ${rows.length} операций.`);
@@ -856,7 +1154,12 @@ function applyOperationFilters({ announce = true } = {}) {
 function initAutomaticLedgerFilters() {
   const form = $('#operationFilters');
   const status = $('#operationFilterStatus');
-  const invalidatePeriod = () => { state.periodRequest++; state.periodLoading = false; $('#statisticsPeriodForm').setAttribute('aria-busy', 'false'); };
+  const invalidatePeriod = () => {
+    state.periodRequest++; state.periodController?.abort(); state.periodController = null;
+    state.pendingPeriod = null; state.periodLoading = false;
+    $('.analytics-chart-surface')?.setAttribute('aria-busy', 'false');
+    $('#statisticsPeriodForm').setAttribute('aria-busy', 'false'); invalidateLocalExplanations();
+  };
   const scheduler = createFilterScheduler({ apply: async values => {
     if (values.periodChanged) {
       if (values.period === 'custom' && !validDateRange(values.from, values.to)) return;
@@ -874,6 +1177,7 @@ function initAutomaticLedgerFilters() {
     if (periodChanged) {
       periodScheduler.cancel(); state.statisticsPeriodDraft = false;
       invalidatePeriod(); state.operationPeriodDraft = true;
+      invalidateLocalExplanations();
       if (values.period === 'custom' && !validDateRange(values.from, values.to)) {
         scheduler.cancel(); status.textContent = 'Укажите обе даты: начало не позже окончания.'; return;
       }
@@ -888,21 +1192,80 @@ function initAutomaticLedgerFilters() {
     void selectPeriod({ period: 'month' }, { announce: false });
   });
   const periodScheduler = createFilterScheduler({ apply: values => selectPeriod(values, { announce: false }) });
+  const openDateDraft = () => {
+    scheduler.cancel(); periodScheduler.cancel();
+    state.operationPeriodDraft = false; state.statisticsPeriodDraft = true;
+    invalidatePeriod(); renderSelectedPeriod(analyticsDisplayData());
+    $('#statisticsPeriodStatus').hidden = true;
+    $('#workspacePeriod').value = 'custom';
+    for (const control of $$('.context-date')) control.hidden = false;
+    $('#statisticsFrom').focus();
+  };
+  $('#workspacePeriod')?.addEventListener('change', event => {
+    const period = event.target.value;
+    if (period === 'custom') { openDateDraft(); return; }
+    scheduler.cancel(); periodScheduler.cancel();
+    state.operationPeriodDraft = false; state.statisticsPeriodDraft = false;
+    void selectPeriod({ period }, { announce: false });
+  });
+  $('#workspaceDateRange')?.addEventListener('click', openDateDraft);
   for (const id of ['statisticsFrom', 'statisticsTo']) $('#' + id).addEventListener('input', () => {
     scheduler.cancel(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = true; invalidatePeriod();
     const from = $('#statisticsFrom').value, to = $('#statisticsTo').value;
     if (!validDateRange(from, to)) { periodScheduler.cancel(); $('#statisticsPeriodStatus').hidden = false; $('#statisticsPeriodStatus').textContent = 'Укажите обе даты: начало не позже окончания.'; return; }
     periodScheduler.schedule({ period: 'custom', from, to });
   });
-  $('#resetStatisticsPeriod').addEventListener('click', () => {
+  $('#resetStatisticsPeriod').addEventListener('click', async () => {
+    if(state.terminalUi?.switchAccount&&!await state.terminalUi.switchAccount(''))return;
     periodScheduler.cancel(); scheduler.cancel(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = false;
     state.analyticsAccount = ''; state.listPages = new Map();
+    state.todaySelectionRevision=(state.todaySelectionRevision||0)+1; updateToday();
     void selectPeriod({ period: 'month' }, { announce: false });
   });
   for (const button of $$('[data-stat-range], [data-range]')) button.addEventListener('click', () => { scheduler.cancel(); periodScheduler.cancel(); state.operationPeriodDraft = false; state.statisticsPeriodDraft = false; });
 }
 
+function profitFactorContext(data) {
+  const analytics=data.analytics||{},period=data.selectedPeriod;
+  const range=period?.fromDate&&period?.toDate?`${period.fromDate} — ${period.toDate} (мск)`:period?.label||'Вся доступная история';
+  const stateNote=analytics.profitFactorReason || (analytics.profitFactorState==='mixed-currencies'
+    ? 'Расчёт недоступен: результаты сделок в разных валютах не складываются.'
+    : analytics.profitFactorState==='no-losses'
+      ? 'В выборке нет убыточных закрытых сделок: знаменатель равен нулю, числовое отношение не определено.'
+      : analytics.profitFactor==null?'Недостаточно закрытых сделок с подтверждённым денежным результатом.':'Отношение рассчитано по подтверждённым денежным результатам закрытых сделок.');
+  return `Профит-фактор (PF) сравнивает суммарную прибыль и суммарный убыток закрытых сделок. Формула: сумма положительных netPnl / |сумма отрицательных netPnl|. netPnl — денежный результат сделки после учтённых комиссий. Источник: сохранённые закрытые позиции с рассчитанным денежным результатом. Неизвестный результат закрытой акции делает сводный показатель недоступным; вариационная маржа фьючерсов учитывается отдельно. Период закрытия: ${range}. ${stateNote} Это отношение сумм, не средних результатов; оно само по себе не подтверждает устойчивость стратегии.`;
+}
+
+function cashFlowRowPresentation(row) {
+  const currency = typeof row.currency === 'string' && /^[A-Z]{3}$/.test(row.currency.trim().toUpperCase()) ? row.currency.trim().toUpperCase() : null;
+  const amountKnown = typeof row.amountNanos === 'string' && /^-?\d+$/.test(row.amountNanos);
+  const dated = typeof row.occurredAt === 'string' && Number.isFinite(Date.parse(row.occurredAt));
+  const unknown = row.status === 'unknown' || !currency || !amountKnown || !dated;
+  return { unknown, amount: amountKnown && currency ? formatMoney(row.amountNanos, currency, { native: true }) : '—',
+    date: dated ? formatDate(row.occurredAt, true) : 'Дата не определена',
+    reason: unknown ? row.reason || 'Неполные данные операции; сумма не включена в график.' : null };
+}
+
 function renderAnalytics(data) {
+  state.bondCashflowUi?.update(data);
+  state.positionReconciliationUi?.update(data);
+  state.performanceMethodsUi?.update(data);
+  state.localMethodWorkspace?.update(data);
+  state.observedNavRiskUi?.update(data);
+  state.localObservedRiskWorkspace?.update(data);
+  state.savedAssetClassesUi?.update(data);
+  state.allocationPlanUi?.update(data);
+  state.cashComparisonUi?.update(data);
+  state.internalTransfersUi?.update(data);
+  state.shareValuationsUi?.update(data);
+  state.brokerReportsUi?.update(data);
+  state.directShareShockUi?.update(data);
+  state.directShareConcentrationUi?.update(data);
+  state.futureExposureUi?.update(data);
+  state.portfolioReviewUi?.update(data);
+  state.bookedComponentsUi?.update(data);
+  state.localResultWorkspace?.update(data);
+  state.referencePriceUi?.update(data);
   state.deepAnalytics?.update(data);
   const analytics = data.analytics || {};
   $('#analyticsVersion').textContent = data.calculationVersion || 'Версия расчёта не указана';
@@ -914,8 +1277,9 @@ function renderAnalytics(data) {
     $('#' + id).classList.toggle('negative', value != null && value < 0);
   }
   renderEvidenceNote($('#grossReturn').nextElementSibling, analytics.returnReason ? coverageSummary(data.dataCoverage) : 'для выбранного периода', analytics.returnReason);
-  renderEvidenceNote($('#netReturn').nextElementSibling, analytics.returnReason ? coverageSummary(data.dataCoverage) : 'с учётом комиссий', analytics.returnReason);
+  renderEvidenceNote($('#netReturn').nextElementSibling, analytics.returnReason ? coverageSummary(data.dataCoverage) : 'После комиссий · не TWR/XIRR', analytics.returnReason);
   $('#volatilityValue').textContent = percentage(analytics.volatility);
+  kpiDetail($('#volatilityValue'), { line: analytics.volatility == null ? null : 'колебания стоимости' + (Number.isSafeInteger(analytics.volatilityObservations) ? ' · ' + analytics.volatilityObservations + ' наблюдений' : '') });
   renderEvidenceNote($('#volatilityMeta'), analytics.volatilityState === 'ready'
     ? `${analytics.volatilityObservations} наблюдений`
     : analytics.volatilityState === 'partial-active-intervals'
@@ -926,26 +1290,69 @@ function renderAnalytics(data) {
   $('#winRateValue').textContent = percentage(analytics.winRate);
   $('#profitFactorValue').textContent = analytics.profitFactor === null || analytics.profitFactor === undefined ? (analytics.profitFactorState === 'no-losses' ? 'Без убытков' : '—') : analytics.profitFactor.toFixed(2).replace('.', ',');
   $('#profitFactorValue').nextElementSibling.textContent = analytics.profitFactor === null || analytics.profitFactor === undefined
-    ? analytics.profitFactorState === 'no-losses' ? 'В выбранном периоде нет убыточных закрытых сделок.' : 'Для отношения прибыли к убытку нужны закрытые сделки за период.'
+    ? analytics.profitFactorReason || (analytics.profitFactorState === 'no-losses' ? 'В выбранном периоде нет убыточных закрытых сделок.' : 'Для отношения прибыли к убытку нужны закрытые сделки за период.')
     : 'отношение прибыли к убытку по закрытым сделкам';
+  $('#profitFactorValue').nextElementSibling.hidden = analytics.profitFactor !== null && analytics.profitFactor !== undefined;
+  kpiDetail($('#winRateValue'), { split: Number.isFinite(analytics.winRate) ? analytics.winRate : null });
+  const factor = Number.isFinite(analytics.profitFactor) ? analytics.profitFactor : null;
+  kpiDetail($('#profitFactorValue'), { meter: factor == null ? null : factor / 2, marker: factor == null ? null : 0.5, line: factor == null ? null : factor >= 1 ? 'прибыль больше убытков' : 'убытки больше прибыли' });
   for (const id of ['netReturn','grossReturn','volatilityValue','profitFactorValue']) metricNote($('#'+id), $('#'+id).nextElementSibling.textContent);
+  metricNote($('#profitFactorValue'), profitFactorContext(data));
+  metricNote($('#netReturn'), portfolioReturnExplanation(data));
   resultTrend($('#netReturn'), analytics.netReturn);
   $('#analyticsChartValue').textContent = formatPercentage(analytics.netReturn, { signed:true });
   $('#analyticsChartValue').className = analytics.netReturn == null ? '' : analytics.netReturn < 0 ? 'negative' : 'positive';
-  $('#variationMargin').textContent = formatMoney(analytics.variationMarginNanos, 'RUB');
+  const marginPresentation = variationMarginPresentation(analytics.variationMargin, { formatQuantity });
+  $('#variationMargin').textContent = marginPresentation.value;
+  $('#variationMarginMeta').textContent = marginPresentation.note;
   const ranking = sortRows(instrumentContributions(analytics.instrumentRanking || []), state.sorts.contributions, { name:r=>instrumentDisplay(r).ticker||instrumentDisplay(r).name });
+  if (state.sorts.contributions?.key === 'pnlNanos') ranking.sort((a,b)=>(a.currency||'RUB').localeCompare(b.currency||'RUB'));
   const rankingPage = pagedRows('instrumentRanking', ranking, 8, () => renderAnalytics(data));
-  $('#instrumentRanking').innerHTML = rankingPage.length ? rankingPage.map((item) => {
+  $('#instrumentRanking').innerHTML = rankingPage.length ? rankingPage.map((item, index) => {
     const display = instrumentDisplay(item);
     const currency = item.currency || 'RUB';
     const width = relativeBarWidth(item.pnlNanos, ranking.filter(row => (row.currency || 'RUB') === currency).map(row => row.pnlNanos));
-    return '<tr class="contribution-row '+(item.pnlNanos != null && BigInt(item.pnlNanos)<0n?'worst':'best')+'"><td><span class="instrument-with-mark">'+instrumentMark(display)+'<span class="instrument-cell"><strong>'+escapeText(display.ticker||display.name)+'</strong><small>'+escapeText(display.name!==display.ticker?display.name:'')+'</small></span></span></td><td><div class="relative-bar" aria-hidden="true"><i style="--bar:'+width+'%"></i></div></td><td class="numeric '+signedClass(item.pnlNanos)+'" title="'+escapeText(data.analytics?.instrumentRankingMethod||'Результат инструментов за выбранный период')+'"><strong>'+escapeText(signedMoney(item.pnlNanos,currency))+'</strong></td><td class="numeric">'+escapeText(formatPercentage(item.contributionRate,{signed:true}))+'</td></tr>';
-  }).join('') : '<tr><td colspan="4" class="empty-cell">Нет результата по инструментам за выбранный период.</td></tr>';
+    return '<tr class="contribution-row '+(item.pnlNanos != null && BigInt(item.pnlNanos)<0n?'worst':'best')+'"><td><button type="button" class="result-instrument" data-result-index="'+index+'" aria-pressed="false" aria-controls="instrumentResultInspector"><span class="instrument-with-mark">'+instrumentMark(display)+'<span class="instrument-cell"><strong>'+escapeText(display.ticker||display.name)+'</strong><small>'+escapeText(display.name!==display.ticker?display.name:'')+'</small></span></span></button></td><td><div class="relative-bar" aria-hidden="true"><i style="--bar:'+width+'%"></i></div></td><td class="numeric '+signedClass(item.pnlNanos)+'" title="'+escapeText(data.analytics?.instrumentRankingMethod||'Результат инструментов за выбранный период')+'"><strong>'+escapeText(signedMoney(item.pnlNanos,currency,{native:item.nativeCurrency===true}))+'</strong>'+(item.nativeCurrency?'<small>'+(item.nativeAmountKind==='share'?'Результат':'Маржа')+' · '+escapeText(currency)+'</small>':'')+'</td><td class="numeric">'+escapeText(formatPercentage(item.contributionRate,{signed:true}))+'</td></tr>';
+  }).join('') : `<tr><td colspan="4" class="empty-cell">${escapeText(analytics.instrumentRankingReason || 'Нет результата по инструментам за выбранный период.')}</td></tr>`;
   watchInstrumentImages($('#instrumentRanking'));
+  // A short scoreboard over the table: total, gains, losses, best and worst in
+  // the main currency. It reads the same rows; nothing is recalculated.
+  {
+    const host = $('#instrumentRanking').closest('.ranking-surface');
+    let board = host.querySelector('#instrumentRankingSummary');
+    if (!board) { board = document.createElement('dl'); board.id = 'instrumentRankingSummary'; board.className = 'ranking-summary'; host.querySelector('.contribution-scroll')?.before(board); }
+    const known = ranking.filter(row => /^-?\d+$/u.test(String(row.pnlNanos ?? '')));
+    const counts = new Map(); for (const row of known) counts.set(row.currency || 'RUB', (counts.get(row.currency || 'RUB') || 0) + 1);
+    const currency = counts.has('RUB') ? 'RUB' : [...counts].sort((x, y) => y[1] - x[1])[0]?.[0];
+    const rows = known.filter(row => (row.currency || 'RUB') === currency), sum = list => list.reduce((total, row) => total + BigInt(row.pnlNanos), 0n);
+    const gains = rows.filter(row => BigInt(row.pnlNanos) > 0n), losses = rows.filter(row => BigInt(row.pnlNanos) < 0n);
+    const sorted = [...rows].sort((x, y) => (BigInt(y.pnlNanos) > BigInt(x.pnlNanos) ? 1 : BigInt(y.pnlNanos) < BigInt(x.pnlNanos) ? -1 : 0));
+    const name = row => row ? instrumentDisplay(row).ticker || instrumentDisplay(row).name : '—';
+    const cell = (label, value, note = '', tone = '') => '<div><dt>' + escapeText(label) + '</dt><dd class="' + tone + '">' + escapeText(value) + '</dd>' + (note ? '<small>' + escapeText(note) + '</small>' : '') + '</div>';
+    board.hidden = !rows.length;
+    board.innerHTML = rows.length ? cell('Итог по инструментам', signedMoney(sum(rows).toString(), currency), rows.length + ' инстр. · ' + currency, signedClass(sum(rows).toString()))
+      + cell('В плюсе', gains.length ? signedMoney(sum(gains).toString(), currency) : '—', gains.length + ' инстр.', gains.length ? 'positive' : '')
+      + cell('В минусе', losses.length ? signedMoney(sum(losses).toString(), currency) : '—', losses.length + ' инстр.', losses.length ? 'negative' : '')
+      + cell('Лучший · худший', name(sorted[0]) + ' · ' + name(sorted.at(-1)), sorted.length > 1 ? signedMoney(sorted[0].pnlNanos, currency) + ' / ' + signedMoney(sorted.at(-1).pnlNanos, currency) : '') : '';
+  }
+  const rankingHost = $('#instrumentRanking').closest('.ranking-surface');
+  let inspector = rankingHost.querySelector('#instrumentResultInspector');
+  if (!inspector) { inspector = document.createElement('aside'); inspector.id = 'instrumentResultInspector'; inspector.className = 'result-inspector'; inspector.setAttribute('aria-label','Выбранный инструмент'); inspector.setAttribute('aria-live','polite'); rankingHost.append(inspector); }
+  const resultKey = row => JSON.stringify([row.instrumentUid,row.ticker,row.currency||'RUB']);
+  const inspectResult = index => {
+    const item = rankingPage[index]; if (!item) return;
+    const display = instrumentDisplay(item), currency = item.currency || 'RUB'; inspector.dataset.selected = resultKey(item);
+    rankingHost.querySelectorAll('[data-result-index]').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.resultIndex)===index)));
+    inspector.innerHTML = '<small>Денежный результат · '+escapeText(currency)+'</small><h4>'+escapeText(display.ticker||display.name)+'</h4><small>'+escapeText(display.name)+'</small><strong class="result-inspector-value '+signedClass(item.pnlNanos)+'">'+escapeText(signedMoney(item.pnlNanos,currency,{native:item.nativeCurrency===true}))+'</strong><dl><div><dt>Доля результата</dt><dd>'+escapeText(formatPercentage(item.contributionRate,{signed:true}))+'</dd></div>'+(Number.isInteger(item.tradeCount)?'<div><dt>Закрытых сделок</dt><dd>'+item.tradeCount+'</dd></div>':'')+'</dl><p>'+escapeText(analytics.instrumentRankingMethod||'Результат инструментов за выбранный период. Метод зависит от типа инструмента и выбранного периода.')+'</p><p>Длина столбца сравнивает денежные суммы в одной валюте. Ноль — в центре. Доля результата может превышать 100%; это не доходность позиции.</p>';
+  };
+  inspector.hidden = !rankingPage.length;
+  if (rankingPage.length) inspectResult(Math.max(0,rankingPage.findIndex(row=>resultKey(row)===inspector.dataset.selected)));
+  else { inspector.replaceChildren(); delete inspector.dataset.selected; }
+  rankingHost.querySelectorAll('[data-result-index]').forEach(button=>button.addEventListener('click',()=>inspectResult(Number(button.dataset.resultIndex))));
 
   const statistics = data.clientProduct?.statistics || {};
   const overall = statistics.overall || {};
-  $('#tradeOutcomeMeta').textContent = `${overall.winCount || 0} из ${overall.tradeCount || 0} закрытых`;
+  $('#tradeOutcomeMeta').textContent = overall.tradeReason || `${overall.winCount ?? 0} из ${overall.tradeCount ?? 0} закрытых`;
   const portfolioRows = statistics.perPortfolio || [];
   const accountTotals=new Map();
   for(const row of portfolioRows){
@@ -961,12 +1368,19 @@ function renderAnalytics(data) {
   }).join('')}</tbody>${totalsMarkup}</table></div>` : '<p class="empty-copy">Нет данных по счетам за выбранный период.</p>';
 
   const cashFlows = statistics.cashFlows || [];
-  $('#cashFlowChart').innerHTML = cashFlowChartMarkup(cashFlows, {formatMoney,language:state.language}) || '<p class="empty-copy">В выбранном периоде нет пополнений и выводов.</p>';
+  const incompleteFlows = cashFlows.filter(row => cashFlowRowPresentation(row).unknown).length;
+  const cashChart = cashFlowChartMarkup(cashFlows, { formatMoney, language: state.language });
+  const cashFlowEmpty = `<p class="empty-copy">${escapeText(statistics.cashFlowsCoverage?.state === 'ambiguous' ? statistics.cashFlowsCoverage.reason : 'В выбранном периоде нет пополнений и выводов.')}</p>`;
+  const incompleteNote = incompleteFlows ? `<p class="empty-copy" role="note">Операций с неполными данными: ${incompleteFlows.toLocaleString('ru-RU')}. Они не включены в график; причины указаны в списке ниже.</p>` : '';
+  $('#cashFlowChart').innerHTML = cashChart + incompleteNote || cashFlowEmpty;
   $('#cashFlowDetails').hidden = !cashFlows.length;
   const cashPage = pagedRows('cashFlowStatistics', cashFlows, 8, () => renderAnalytics(data));
-  $('#cashFlowSummary').textContent = cashFlows.length ? `${cashFlows.length.toLocaleString('ru-RU')} движений за выбранный период` : '';
-  $('#cashFlowStatistics').innerHTML = cashPage.length ? cashPage.map((row) => `
-    <div class="cash-flow-row ${row.kind === 'deposit' ? 'deposit' : 'withdrawal'}"><span><strong>${row.kind === 'deposit' ? 'Пополнение' : 'Вывод средств'}</strong><small>${escapeText([formatDate(row.occurredAt, true), row.portfolioLabel].filter(Boolean).join(' · '))}</small></span><span class="numeric"><strong>${escapeText(formatMoney(row.amountNanos, row.currency || 'RUB'))}</strong><small>${row.portfolioShareRate == null ? '' : `${escapeText(formatPercentage(row.portfolioShareRate))} от портфеля на начало`}</small></span></div>`).join('') : '<p class="empty-copy">В выбранном периоде нет пополнений и выводов.</p>';
+  $('#cashFlowSummary').textContent = cashFlows.length ? `${cashFlows.length.toLocaleString('ru-RU')} операций в выборке${incompleteFlows ? ` · с неполными данными: ${incompleteFlows.toLocaleString('ru-RU')}` : ''}` : '';
+  $('#cashFlowStatistics').innerHTML = cashPage.length ? cashPage.map(row => {
+    const display = cashFlowRowPresentation(row);
+    const detail = display.reason || (row.portfolioShareRate == null ? '' : `${formatPercentage(row.portfolioShareRate)} от портфеля на начало`);
+    return `<div class="cash-flow-row ${row.kind === 'deposit' ? 'deposit' : 'withdrawal'}" data-cash-flow-state="${display.unknown ? 'unknown' : 'known'}"><span><strong>${row.kind === 'deposit' ? 'Пополнение' : 'Вывод средств'}</strong><small>${escapeText([display.date, row.portfolioLabel].filter(Boolean).join(' · '))}</small></span><span class="numeric"><strong>${escapeText(display.amount)}</strong><small>${escapeText(detail)}</small></span></div>`;
+  }).join('') : cashFlowEmpty;
 
   const rankingState = $('#rankingPositionState')?.value || 'open';
   const currentHoldings = statistics.holdings || data.clientProduct?.openPositions || [];
@@ -974,14 +1388,14 @@ function renderAnalytics(data) {
     : currentHoldings.map((row) => ({ ...row, returnRate: row.returnRate ?? row.totalReturnRate })).filter((row) => row.returnRate != null)
       .sort((left, right) => right.returnRate - left.returnRate));
   $('#rankingSummary').textContent = rankingState === 'open'
-    ? 'Открытые сейчас позиции: изменение цены с момента входа. Сначала лучшие, затем худшие.'
-    : 'Сделки, закрытые за выбранный период: доходность за весь срок. Сначала лучшие, затем худшие.';
+    ? monthlyAssets.some(row=>row.assetType==='bond') ? 'Открытые сейчас позиции: оценка брокера относительно средней стоимости; для фьючерсов — изменение цены. Сначала лучшие, затем худшие.' : 'Открытые сейчас позиции: изменение цены с момента входа. Сначала лучшие, затем худшие.'
+    : overall.tradeReason || 'Сделки, закрытые за выбранный период: доходность за весь срок. Сначала лучшие, затем худшие.';
   const maxMonthly = monthlyAssets.reduce((maximum, row) => Math.max(maximum, Math.abs(Number(row.returnRate || 0))), 0.01);
   const assetPage = pagedRows('monthlyAssetChart', monthlyAssets, 8, () => renderAnalytics(data));
   $('#monthlyAssetChart').innerHTML = assetPage.length ? assetPage.map((row) => {
     const width = Math.abs(Number(row.returnRate || 0)) / maxMonthly * 100;
     const display = instrumentDisplay(row);
-    return `<div class="relative-bar-row ${Number(row.returnRate || 0) < 0 ? 'worst' : 'best'}"><span><strong>${escapeText(display.ticker || display.name)}</strong><small>${escapeText([display.name !== display.ticker ? display.name : '', row.portfolioLabel, row.assetType === 'future' ? 'Фьючерс · изменение цены контракта' : '', row.month].filter(Boolean).join(' · '))}</small></span><div class="relative-bar"><i style="--bar:${width}%"></i></div><strong class="${Number(row.returnRate || 0) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.returnRate, { signed: true }))}</strong></div>`;
+    return `<div class="relative-bar-row ${Number(row.returnRate || 0) < 0 ? 'worst' : 'best'}"><span><strong>${escapeText(display.ticker || display.name)}</strong><small>${escapeText([display.name !== display.ticker ? display.name : '', row.portfolioLabel, row.assetType === 'future' ? 'Фьючерс · изменение цены контракта' : row.assetType === 'bond' ? 'Облигация · оценка брокера' : '', row.month].filter(Boolean).join(' · '))}</small></span><div class="relative-bar"><i style="--bar:${width}%"></i></div><strong class="${Number(row.returnRate || 0) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.returnRate, { signed: true }))}</strong></div>`;
   }).join('') : `<p class="empty-copy">${rankingState === 'open' ? 'Для открытых позиций ещё нет сопоставимых цен входа и текущей цены. Обновите данные.' : 'В выбранном периоде нет закрытых сделок с подтверждённой доходностью. Выберите другой период.'}</p>`;
 
   const holdingState = $('#holdingPositionState')?.value || 'open';
@@ -996,7 +1410,7 @@ function renderAnalytics(data) {
   const maxHoldingHours=Math.max(0,...holdingRows.map(row=>Number(row.holdingHours)||0));
   $('#efficiencyChart').innerHTML = holdingPage.length ? holdingPage.map((row, index) => {
     const display = instrumentDisplay(row);
-    return `<div class="efficiency-row"><span>${offset + index + 1}</span><strong>${escapeText(display.ticker || display.name)}</strong><div class="relative-bar" aria-hidden="true"><i style="--bar:${maxHoldingHours?Math.max(0,Number(row.holdingHours)||0)/maxHoldingHours*100:0}%"></i></div><small>${escapeText(formatHoldingTime(row.holdingHours))}</small><b class="${row.returnRate == null ? '' : Number(row.returnRate) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.returnRate, { signed: true }))}</b><em>${escapeText([row.portfolioLabel, display.name !== display.ticker ? display.name : '', row.assetType === 'future' ? 'Фьючерс · изменение цены контракта' : '', row.holdingHours == null ? row.holdingReason : ''].filter(Boolean).join(' · '))}</em></div>`;
+    return `<div class="efficiency-row"><span>${offset + index + 1}</span><strong>${escapeText(display.ticker || display.name)}</strong><div class="relative-bar" aria-hidden="true"><i style="--bar:${maxHoldingHours?Math.max(0,Number(row.holdingHours)||0)/maxHoldingHours*100:0}%"></i></div><small>${escapeText(formatHoldingTime(row.holdingHours))}</small><b class="${row.returnRate == null ? '' : Number(row.returnRate) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.returnRate, { signed: true }))}</b><em>${escapeText([row.portfolioLabel, display.name !== display.ticker ? display.name : '', row.assetType === 'future' ? 'Фьючерс · изменение цены контракта' : row.assetType === 'bond' ? 'Облигация · оценка брокера' : '', row.holdingHours == null ? row.holdingReason : ''].filter(Boolean).join(' · '))}</em></div>`;
   }).join('') : `<p class="empty-copy">Нет ${holdingState === 'open' ? 'открытых' : 'закрытых за период'} позиций с таким сроком удержания. Выберите другой срок${holdingState === 'closed' ? ' или расширьте период статистики' : ''}.</p>`;
 
   const series = overall.equitySeries || [];
@@ -1020,28 +1434,33 @@ function renderAnalyticsReturnChart(points, coverage = state.bootstrap?.dataCove
   const batchPoints = !state.analyticsAccount && !points.length ? data?.snapshotBatchCurve || [] : [];
   const valuePoints = points.length ? points : batchPoints.map(point => ({ time: point.time, equityNanos: point.totalNanos }));
   if (!state.analyticsChartModeTouched && state.analyticsChartMode === 'percent' && netReturnSeries.length < 2 && valuePoints.length >= 2) {
-    state.analyticsChartMode = 'rubles';
-    $$('[data-analytics-unit]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.analyticsUnit === 'rubles')));
+    state.analyticsChartMode = data?.analytics?.netPnlSeries?.length>=2?'result':'rubles';
+    $$('[data-analytics-unit]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.analyticsUnit === state.analyticsChartMode)));
   }
   const reconstructed = coverage?.evidence === 'reconstructed';
-  const percentMode = state.analyticsChartMode === 'percent';
+  $$('[data-analytics-unit]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.analyticsUnit === state.analyticsChartMode)));
+  const percentMode = state.analyticsChartMode === 'percent',resultMode=state.analyticsChartMode==='result';
   const displaySymbol = state.displayCurrency === 'USD' ? '$' : '₽';
-  $('#analyticsChartUnit').textContent = percentMode ? ui('Доходность после комиссий, %') : ui(batchPoints.length ? 'Сумма оценок счетов, ₽' : 'Стоимость портфеля, ₽').replace('₽', displaySymbol);
+  $('#analyticsChartUnit').textContent = percentMode ? ui('Результат к начальной стоимости, %') : ui(batchPoints.length ? 'Сумма оценок счетов, ₽' : 'Стоимость портфеля, ₽').replace('₽', displaySymbol);
+  const resultButton = $('[data-analytics-unit="result"]');if(resultButton)resultButton.textContent='Результат, '+displaySymbol;
   const valueButton = $('[data-analytics-unit="rubles"]');
   if (valueButton) valueButton.textContent = ui(batchPoints.length ? 'Сумма счетов, ₽' : 'Стоимость, ₽').replace('₽', displaySymbol);
-  $('#analyticsChartTitle').textContent = percentMode ? 'Динамика доходности портфеля' : batchPoints.length ? 'Сумма оценок счетов' : 'Изменение стоимости за период';
+  $('#analyticsChartTitle').textContent = percentMode ? 'Результат к начальной стоимости' : batchPoints.length ? 'Сумма оценок счетов' : 'Изменение стоимости за период';
   renderEvidenceNote($('#analyticsChartSubtitle'), percentMode
-    ? 'Пополнения и выводы исключены. Доходность относительно стоимости на начало периода.'
+    ? 'Пополнения и выводы исключены. Результат делится на начальную стоимость · не TWR/XIRR.'
     : batchPoints.length ? 'Последовательный опрос счетов. Точки не используются для доходности.'
       : reconstructed ? 'Восстановленная история. Пополнения и выводы влияют на линию.' : 'По оценкам стоимости портфеля. Пополнения и выводы влияют на линию.', batchPoints.length
       ? data.snapshotBatchCurveNote : reconstructed
       ? reconstructedHistoryExplanation(coverage) : percentMode ? 'Накопленный результат после комиссий делится на начальную стоимость портфеля. Метод совпадает с показателем выше; это не TWR и не IRR.' : 'Каждая точка — сохранённая оценка стоимости портфеля.');
-  $('#analyticsChartHelp').dataset.evidenceNote = [$('#analyticsChartSubtitle').textContent,
+  $('#analyticsChartHelp').dataset.evidenceNote = [percentMode ? portfolioReturnExplanation(data) : $('#analyticsChartSubtitle').textContent,
     batchPoints.length ? data.snapshotBatchCurveNote : reconstructed ? reconstructedHistoryExplanation(coverage) : ''].filter(Boolean).join(' ');
-  $('#analyticsChartHelp').setAttribute('aria-label', percentMode ? 'Сведения о доходности'
+  $('#analyticsChartHelp').setAttribute('aria-label', percentMode ? 'Метод: результат к начальной стоимости'
     : batchPoints.length ? 'Сведения о сумме оценок счетов' : 'Сведения о стоимости портфеля');
   $('#analyticsChartValue').textContent = percentMode ? formatPercentage(data?.analytics?.netReturn, {signed:true}) : formatMoney(batchPoints.length ? batchPoints.at(-1)?.totalNanos : data?.portfolio?.totalNanos, 'RUB');
-  const sourcePoints = percentMode ? netReturnSeries : valuePoints;
+  const returnRate=data?.analytics?.netReturn;
+  $('#analyticsChartValue').className=percentMode?(returnRate>0?'positive':returnRate<0?'negative':''):resultMode?signedClass(data?.portfolio?.netPnlNanos):'';
+  if(resultMode){$('#analyticsChartTitle').textContent='Результат портфеля после комиссий';$('#analyticsChartHelp').setAttribute('aria-label','Сведения о денежном результате');$('#analyticsChartUnit').textContent='Результат, '+displaySymbol;$('#analyticsChartValue').textContent=signedMoney(data?.portfolio?.netPnlNanos,'RUB');$('#analyticsChartSubtitle').textContent='Пополнения и выводы исключены. Изменение оценки портфеля за вычетом пополнений и выводов; доступно и при нулевой начальной стоимости.';$('#analyticsChartHelp').dataset.evidenceNote=$('#analyticsChartSubtitle').textContent;}
+  const sourcePoints = percentMode ? netReturnSeries : resultMode?(data?.analytics?.netPnlSeries||netReturnSeries.filter(p=>p.netPnlNanos!=null)):valuePoints;
   if (!sourcePoints || sourcePoints.length < 2) {
     state.analyticsReturnChart?.setData([]);
     host.hidden = true;
@@ -1056,12 +1475,12 @@ function renderAnalyticsReturnChart(points, coverage = state.bootstrap?.dataCove
   if (empty) empty.hidden = true;
 
   const chartPoints = percentMode ? netReturnSeries.map(point => ({ time: point.time, netReturnRate: point.netReturnRate }))
-    : valuePoints.map(point => ({ time: point.time, equityValue: Number(BigInt(point.equityNanos)) / 1e9 }));
+    : resultMode?sourcePoints.map(point=>({time:point.time,equityValue:Number(BigInt(point.netPnlNanos))/1e9})):valuePoints.map(point => ({ time: point.time, equityValue: Number(BigInt(point.equityNanos)) / 1e9 }));
 
   if (state.analyticsReturnChart) {
-    state.analyticsReturnChart.setData(chartPoints, selectedPeriod, { mode: state.analyticsChartMode, scope: state.analyticsAccount });
+    state.analyticsReturnChart.setData(chartPoints, selectedPeriod, { mode: resultMode?'rubles':state.analyticsChartMode, metric: state.analyticsChartMode, scope: state.analyticsAccount });
   } else {
-    state.analyticsReturnChart = createAnalyticsReturnChart(host, chartPoints, selectedPeriod, { mode: state.analyticsChartMode, scope: state.analyticsAccount });
+    state.analyticsReturnChart = createAnalyticsReturnChart(host, chartPoints, selectedPeriod, { mode: resultMode?'rubles':state.analyticsChartMode, metric: state.analyticsChartMode, scope: state.analyticsAccount });
   }
 }
 
@@ -1072,13 +1491,16 @@ function renderAnalyticsChartOnView() {
 }
 
 function analyticsDisplayData(data = state.bootstrap) {
+  if (['pending','error'].includes(data?.analyticsState)) return null;
   if (!data || !state.analyticsAccount) return data;
   const account = (data.equityCurvesByPortfolio || []).find((row) => row.portfolioId === state.analyticsAccount);
   if (!account) return data;
   return { ...data, portfolio: account.portfolio, analytics: account.analytics, equityCurve: account.equityCurve,
     dataCoverage: account.dataCoverage, clientProduct: { ...data.clientProduct,
       statistics: account.statistics, closedPositions: account.closedPositions || [],
+      closedPositionsCoverage: account.closedPositionsCoverage, operationIntegrity: account.operationIntegrity,
       portfolios: (data.clientProduct?.portfolios || []).filter((row) => row.id === account.portfolioId),
+      futureExposureAccounts: (data.clientProduct?.futureExposureAccounts || []).filter((row) => row.portfolioId === account.portfolioId),
       openPositions: (data.clientProduct?.openPositions || []).filter((row) => row.portfolioId === account.portfolioId) } };
 }
 
@@ -1092,15 +1514,18 @@ function periodQuery(selection = state.selectedPeriod) {
 }
 
 function renderSelectedPeriod(data) {
+  if (!data) return;
   const selected = data.selectedPeriod;
+  const displayedPeriod = state.pendingPeriod || state.selectedPeriod;
   const globalPeriod = $('#workspacePeriod');
-  if (globalPeriod) globalPeriod.value = state.selectedPeriod.period;
+  if (globalPeriod && globalPeriod.value !== (state.statisticsPeriodDraft ? 'custom' : displayedPeriod.period)) globalPeriod.value = state.statisticsPeriodDraft ? 'custom' : displayedPeriod.period;
   if (!state.statisticsPeriodDraft) for (const input of $$('.context-date')) input.hidden = true;
   const label = selected?.label || 'Вся сохранённая история';
-  if (!state.statisticsPeriodDraft) $('#statisticsPeriodStatus').textContent = `Все показатели: ${label}.`;
+  if (!state.statisticsPeriodDraft) $('#statisticsPeriodStatus').textContent = `Портфель и сделки: ${label}.`;
   const fromDate = selected?.fromDate || String(selected?.from || '').slice(0, 10);
   const toDate = selected?.toDate || String(selected?.to || '').slice(0, 10);
   const dateLabel = fromDate && toDate ? `${formatShortDate(fromDate)} — ${formatShortDate(toDate)}` : label;
+  $('#analyticsChartPeriod').textContent = `Период портфеля: ${dateLabel} · мск`;
   $('#workspaceDateRangeLabel').textContent = dateLabel;
   $('#workspaceDateRange').setAttribute('aria-label', `Выбрать свои даты. Сейчас: ${dateLabel}`);
   $('#overviewPeriodStatus').textContent = label;
@@ -1133,19 +1558,45 @@ function renderSelectedPeriod(data) {
   const options = '<option value="">Все счета</option>' + accounts.map((row) => `<option value="${escapeText(row.portfolioId)}">${escapeText(row.portfolioLabel)}</option>`).join('');
   for (const id of ['overviewAccount', 'statisticsAccount']) {
     const control = $('#' + id);
-    control.innerHTML = options; control.value = state.analyticsAccount;
-    control.disabled = accounts.length < 2;
+    // Replacing unchanged options interrupts an open native select menu.
+    if (control.innerHTML !== options) control.innerHTML = options;
+    if (control.value !== state.analyticsAccount) control.value = state.analyticsAccount;
+    control.disabled = accounts.length === 0;
+  }
+  const pending = state.pendingPeriod;
+  $('.analytics-chart-surface')?.setAttribute('aria-busy', String(Boolean(pending)));
+  if (pending) {
+    const requested = pending.period === 'custom' ? `${formatShortDate(pending.from)} — ${formatShortDate(pending.to)}`
+      : globalPeriod?.selectedOptions?.[0]?.textContent || 'Выбранный период';
+    $('#workspaceDateRangeLabel').textContent = `${requested} · пересчёт…`;
+    $('#workspaceDateRange').setAttribute('aria-label', `Пересчитываем: ${requested}. Пока показаны данные: ${dateLabel}`);
+    $('#analyticsChartPeriod').textContent = `Пока показано: ${dateLabel} · Пересчитываем: ${requested}`;
+    $('#statisticsPeriodStatus').hidden = false;
+    $('#statisticsPeriodStatus').textContent = `Пересчитываем: ${requested}. Пока показаны прежние данные.`;
+    $('#overviewPeriodStatus').textContent = `Пересчитываем: ${requested}. Пока показаны прежние данные.`;
   }
 }
 
-function renderPeriodViews() {
+function paintPeriodViews({visibleOnly=false,pendingOnly=false}={}) {
   const data = analyticsDisplayData();
   if (!data) return;
-  renderSelectedPeriod(data);
-  renderPortfolio(data);
-  applyOperationFilters({ announce: false });
-  renderAnalytics(data);
-  renderEquityChart();
+  const paint=(key,views,render)=>{
+    if(pendingOnly&&!pendingPeriodViews.has(key))return;
+    if(visibleOnly&&!views.includes(state.currentView)){pendingPeriodViews.add(key);return;}
+    pendingPeriodViews.delete(key);render();
+  };
+  paint('portfolio',['overview'],()=>{renderPortfolio(data);renderEquityChart();updateToday();});
+  paint('operations',['operations'],()=>applyOperationFilters({announce:false}));
+  // The overview also contains analytics KPIs and the return chart.
+  paint('analytics',['overview','analytics'],()=>renderAnalytics(data));
+  paint('risk-plan',['risk-plan'],()=>{renderRiskPlan(state.bootstrap);state.tradingPlanUi?.refreshSelection?.();});
+}
+function renderPeriodViews({visibleOnly=false}={}) {
+  const data=analyticsDisplayData();if(!data)return;
+  renderSelectedPeriod(data);paintPeriodViews({visibleOnly});
+}
+function flushPeriodViews(view) {
+  if(view===state.currentView&&pendingPeriodViews.size)paintPeriodViews({visibleOnly:true,pendingOnly:true});
 }
 
 async function selectPeriod(selection, { announce = true } = {}) {
@@ -1154,9 +1605,9 @@ async function selectPeriod(selection, { announce = true } = {}) {
   const controller = new AbortController();
   state.periodController = controller;
   state.periodLoading = true;
-  $('#statisticsPeriodStatus').hidden = false;
-  $('#statisticsPeriodStatus').textContent = 'Пересчитываем все показатели за выбранный период…';
-  $('#overviewPeriodStatus').textContent = 'Пересчитываем все показатели за выбранный период…';
+  state.pendingPeriod = { ...selection };
+  invalidateLocalExplanations();
+  renderSelectedPeriod(analyticsDisplayData());
   $('#statisticsPeriodForm').setAttribute('aria-busy', 'true');
   let deadline;
   try {
@@ -1164,15 +1615,16 @@ async function selectPeriod(selection, { announce = true } = {}) {
       request(`/api/bootstrap?${periodQuery(selection)}`, { signal: controller.signal }),
       new Promise((_, reject) => {
         deadline = setTimeout(() => {
-          reject(new Error('Пересчёт не завершился за 30 секунд. Прежние данные сохранены; повторите выбор периода.'));
+          reject(new Error('Пересчёт не завершился. Прежние данные сохранены; повторите выбор периода.'));
           controller.abort();
-        }, 30_000);
+        }, 90_000);
       }),
     ]);
     if (requestNumber !== state.periodRequest) return;
     // Older static fixtures have no period contract. Keep their current range explicit.
     if (!data.selectedPeriod) throw new Error('Эта версия просмотра ещё не поддерживает пересчёт периода. Откройте обновлённую локальную проверку.');
     state.selectedPeriod = { ...selection };
+    state.pendingPeriod = null;
     state.operationPeriodDraft = false;
     state.statisticsPeriodDraft = false;
     state.statisticsRange = selection.period;
@@ -1182,10 +1634,12 @@ async function selectPeriod(selection, { announce = true } = {}) {
     if (announce) showToast('Период применён к графику, метрикам и спискам.');
   } catch (error) {
     if (requestNumber !== state.periodRequest) return;
+    state.pendingPeriod = null;
     state.operationPeriodDraft = false;
     state.statisticsPeriodDraft = false;
     renderSelectedPeriod(analyticsDisplayData());
     $('#statisticsPeriodStatus').textContent = error.message || 'Период не обновлён. Повторите попытку.';
+    $('#overviewPeriodStatus').textContent = error.message || 'Период не обновлён. Повторите попытку.';
     showToast(error.message || 'Период не обновлён. Повторите попытку.', true);
   } finally {
     clearTimeout(deadline);
@@ -1193,6 +1647,7 @@ async function selectPeriod(selection, { announce = true } = {}) {
       state.periodLoading = false;
       state.periodController = null;
       $('#statisticsPeriodForm').setAttribute('aria-busy', 'false');
+      invalidateLocalExplanations();
     }
   }
 }
@@ -1216,7 +1671,7 @@ function renderMarketVision(data) {
   $('#marketVisionCoverage').textContent = (vision.stale ? 'Сохранённые данные · ' : '') + (vision.coverage || 'Обновите обзор, чтобы получить цены завершённых торгов.');
   const rows = vision.rows || [];
   $('#marketVisionRows').innerHTML = rows.length ? rows.map((row) => `
-    <div class="market-vision-row ${row.side}"><span><strong>${escapeText(row.ticker || row.name)}</strong><small>${row.assetType === 'future' ? 'Фьючерс' : 'Акция'} · ${row.side === 'loser' ? 'снижение' : row.side === 'unchanged' ? 'без изменения' : 'рост'}${row.to ? ' · ' + escapeText(new Date(row.to).toLocaleDateString('ru-RU', { timeZone: 'Europe/Moscow', day: 'numeric', month: 'short' })) : ''}</small></span><dl><div><dt>За день</dt><dd class="${Number(row.dayReturnRate || 0) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.dayReturnRate, { signed: true }))}</dd></div><div><dt>Объём</dt><dd class="${Number(row.volumeChangeRate || 0) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.volumeChangeRate, { signed: true }))}</dd></div></dl></div>`).join('') : '<p class="empty-copy">Для выбранных инструментов пока нет двух завершённых торговых дней. Обновите обзор, чтобы получить данные брокера.</p>';
+    <div class="market-vision-row ${row.side}"><span><strong>${escapeText(row.ticker || row.name)}</strong><small>${assetLabel(row.assetType)} · ${row.side === 'loser' ? 'снижение' : row.side === 'unchanged' ? 'без изменения' : 'рост'}${row.to ? ' · ' + escapeText(new Date(row.to).toLocaleDateString('ru-RU', { timeZone: 'Europe/Moscow', day: 'numeric', month: 'short' })) : ''}</small></span><dl><div><dt>За день</dt><dd class="${Number(row.dayReturnRate || 0) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.dayReturnRate, { signed: true }))}</dd></div><div><dt>Объём</dt><dd class="${Number(row.volumeChangeRate || 0) < 0 ? 'negative' : 'positive'}">${escapeText(formatPercentage(row.volumeChangeRate, { signed: true }))}</dd></div></dl></div>`).join('') : '<p class="empty-copy">Для выбранных инструментов пока нет двух завершённых торговых дней. Обновите обзор, чтобы получить данные брокера.</p>';
 }
 
 async function refreshMarketVision(force = false) {
@@ -1237,17 +1692,14 @@ function evidenceNote(field, data) {
 function renderRiskPlan(data) {
   const slice = data.clientProduct || {};
   const risk = slice.futuresRisk || {};
-  const riskAccounts = (risk.accounts || []).length
-    ? risk.accounts
-    : [{ portfolioId: 'portfolio-1', label: slice.portfolios?.[0]?.label || 'Текущий портфель', ...risk }];
-  const supportedAccounts = riskAccounts.filter((account) => account.liquidPortfolio?.value !== null && account.liquidPortfolio?.value !== undefined).length;
-  const summaryAccount = riskAccounts.find(account => account.portfolioId === state.riskSummaryAccount) || riskAccounts[0];
-  $('#riskSummaryAccount').innerHTML = riskAccounts.map(account => `<option value="${escapeText(account.portfolioId)}">${escapeText(account.label || 'Текущий счёт')}</option>`).join('');
-  $('#riskSummaryAccount').value = summaryAccount.portfolioId;
-  $('#riskSummaryMetrics').innerHTML = [['Ликвидный портфель','liquidPortfolio'],['Начальная маржа','startingMargin'],['Запас маржи','maxAvailableBeforeMarginCallNanos']].map(([label,key]) => `<div><dt>${label}</dt><dd>${escapeText(formatMoney(summaryAccount[key]?.value,summaryAccount.currency || 'RUB'))}</dd></div>`).join('') + `<div><dt>Оценка получена</dt><dd class="risk-evaluation-time">${escapeText(summaryAccount.capturedAt ? formatDate(summaryAccount.capturedAt) : 'Нет данных')}</dd>${summaryAccount.stale ? '<small>Требуется обновление</small>' : ''}</div>`;
-  $('#marginCoverage').textContent = supportedAccounts
-    ? `${supportedAccounts} ${supportedAccounts === 1 ? 'счёт' : 'счёта'} · отдельно`
-    : 'Источник не подключён';
+  const isLesson = data.environment === 'fixture' || data.preview?.static === true;
+  const sourceLabel = account => isLesson ? 'Учебный пример' : account.source === 'T-Invest GetMarginAttributes' ? 'Т‑Инвест · обеспечение счёта' : 'Источник не указан';
+  const evaluationTime = account => {
+    const time = Date.parse(account.capturedAt);
+    if (!Number.isFinite(time)) return 'Время получения неизвестно';
+    const age = Date.now() - time;
+    return `${formatDate(account.capturedAt)} · ${age < 0 ? 'время позже текущего' : formatAge(age)}${account.stale ? ' · требуется обновление' : ''}`;
+  };
   const moneyFields = [
     ['Гарантийное обеспечение', 'guaranteeNanos', '', 'guaranteeMargin', 'Средства для обеспечения фьючерсных позиций.'],
     ['Ликвидный портфель', 'liquidPortfolio', '', 'liquidPortfolio', 'Стоимость активов, которые брокер учитывает для обеспечения.'],
@@ -1256,28 +1708,52 @@ function renderRiskPlan(data) {
     ['Вариационная маржа за день', 'variationMarginDayNanos', '', 'vm', 'Начисление или списание по фьючерсам за день.'],
     ['Запас относительно начальной маржи', 'maxAvailableBeforeMarginCallNanos', 'margin-buffer', 'marginBuffer', 'Ликвидный портфель минус начальная маржа, минимум 0 ₽. Только по свежей оценке в рублях.'],
   ];
+  const selectedPortfolio = $('#statisticsAccount').value;
+  // Margin belongs to one account. A legacy flat record can be assigned only when that account is unambiguous.
+  const allRiskAccounts = (risk.accounts || []).length ? risk.accounts
+    : slice.portfolios?.length === 1 ? [{ ...risk, portfolioId: slice.portfolios[0].id, label: slice.portfolios[0].label || 'Текущий счёт' }] : [];
+  const riskAccounts = selectedPortfolio ? allRiskAccounts.filter(account => account.portfolioId === selectedPortfolio) : allRiskAccounts;
+  const supportedAccounts = riskAccounts.filter(account => moneyFields.some(([, key]) => account[key]?.value !== null && account[key]?.value !== undefined)).length;
+  const summaryAccount = riskAccounts[0]
+    || { portfolioId: selectedPortfolio || '', label: slice.portfolios?.find(row => row.id === selectedPortfolio)?.label || (selectedPortfolio ? 'Выбранный счёт' : 'Счета недоступны') };
+  // The header owns account selection. The all-account view keeps the separate
+  // broker ledgers in the health tab instead of implying one aggregate margin.
+  $('.risk-account-overview').hidden = !selectedPortfolio;
+  $('#riskSummaryAccountLabel').textContent = summaryAccount.label || 'Выбранный счёт';
+  $('#riskSummaryMetrics').innerHTML = [['Ликвидный портфель','liquidPortfolio'],['Начальная маржа','startingMargin'],['Запас маржи','maxAvailableBeforeMarginCallNanos']].map(([label,key]) => `<div><dt>${label}</dt><dd>${escapeText(formatMoney(summaryAccount[key]?.value,summaryAccount.currency || 'RUB'))}</dd>${key === 'maxAvailableBeforeMarginCallNanos' && isLesson && BigInt(summaryAccount.stressReserveNanos || '0') > 0n ? `<small>С учебным резервом ${escapeText(formatMoney(summaryAccount.stressReserveNanos, summaryAccount.currency || 'RUB'))}</small>` : ''}</div>`).join('') + `<div><dt>${escapeText(sourceLabel(summaryAccount))}</dt><dd class="risk-evaluation-time">${escapeText(evaluationTime(summaryAccount))}</dd></div>`;
+  $('#marginCoverage').textContent = supportedAccounts
+    ? `${supportedAccounts} ${supportedAccounts === 1 ? 'счёт' : 'счёта'} · отдельно`
+    : selectedPortfolio ? 'Нет оценки выбранного счёта' : 'Нет доступной оценки';
   $('#marginSourceNote').textContent = supportedAccounts
-    ? 'Оценка Т‑Инвест отдельно по каждому счёту. Обеспечение не равно свободным деньгам; сверяйте дату оценки.'
-    : 'Оценка обеспечения появится после синхронизации счёта. Калькулятор позиции доступен ниже.';
+    ? `${isLesson ? 'Учебная оценка' : 'Сохранённая оценка'} ${selectedPortfolio ? 'выбранного счёта' : 'отдельно по каждому счёту'}. Обеспечение не равно свободным деньгам; сверяйте источник и время получения.`
+    : 'Доступной оценки обеспечения пока нет. Проверьте причину ниже; калькулятор позиции остаётся доступен.';
   $('#marginAccountLedgers').innerHTML = riskAccounts.map((account) => {
     const availableFields = moneyFields.filter(([, key]) => account[key]?.value !== null && account[key]?.value !== undefined);
     if (!availableFields.length) return `<section class="margin-account margin-account-empty"><header><strong>${escapeText(account.label)}</strong><span class="status-chip">Нет оценки</span></header><p>${escapeText(account.reason || account.liquidPortfolio?.note || 'Брокер ещё не вернул маржинальные показатели. Обновите данные в основной версии; для немаржинального счёта часть показателей не применяется.')}</p></section>`;
+    // A broker report with several known fields, all zero, means no margin use; one line says it.
+    if (availableFields.length >= 3 && availableFields.every(([, key]) => /^-?0+$/u.test(String(account[key]?.value)))) return `<section class="margin-account margin-account-empty margin-account-idle"><header><strong>${escapeText(account.label)}</strong><small>${escapeText(sourceLabel(account) + ' · ' + evaluationTime(account))}</small><span class="status-chip">Без обеспечения</span></header><p>Известные показатели обеспечения (${availableFields.length} из ${moneyFields.length}) равны 0 ₽ — маржинальных позиций нет.</p></section>`;
     return `
     <section class="margin-account" aria-label="Маржинальные показатели: ${escapeText(account.label)}">
-      <header><strong>${escapeText(account.label)}</strong><small>${escapeText(account.capturedAt ? `${formatDate(account.capturedAt)}${account.stale ? ' · требуется обновление' : ''}` : 'Отдельный счёт · значения не суммируются')}</small></header>
+      <header><strong>${escapeText(account.label)}</strong><small>${escapeText(sourceLabel(account) + ' · ' + evaluationTime(account))}</small></header>
       <dl class="margin-ledger">${availableFields.map(([label, key, className, termKey, explanation]) => {
         const field = account[key] || {};
         const fixtureReserve = key === 'maxAvailableBeforeMarginCallNanos' && (data.environment === 'fixture' || data.preview?.static)
           && BigInt(account.stressReserveNanos || '0') > 0n;
         const displayLabel = fixtureReserve ? 'Учебный запас маржи · с резервом' : label;
-        const displayExplanation = fixtureReserve ? `Учебный расчёт с дополнительным резервом ${formatMoney(account.stressReserveNanos, account.currency || 'RUB')}.` : explanation;
+        const displayExplanation = fixtureReserve ? `Ликвидный портфель ${formatMoney(account.liquidPortfolio?.value, account.currency || 'RUB')} минус начальная маржа ${formatMoney(account.startingMargin?.value, account.currency || 'RUB')} и учебный резерв ${formatMoney(account.stressReserveNanos, account.currency || 'RUB')}; минимум 0. Это оценка запаса, не лимит покупки.` : explanation;
         const helpBtn = fixtureReserve
-          ? `<button class="term-help" type="button" data-evidence-note="${escapeText(field.note || displayExplanation)}" aria-label="Справка: ${escapeText(displayLabel)}">i</button>`
+          ? `<button class="term-help" type="button" data-evidence-note="${escapeText(displayExplanation)}" aria-label="Справка: ${escapeText(displayLabel)}">i</button>`
           : termKey ? `<button class="term-help" type="button" data-term="${termKey}" aria-label="Справка: ${escapeText(label)}">i</button>` : '';
-        return `<div class="${className}" title="${escapeText(displayExplanation + ' ' + evidenceNote(field, data))}"><dt>${displayLabel} ${helpBtn}</dt><dd>${escapeText(formatMoney(field.value, account.currency || 'RUB'))}</dd></div>`;
+        // The buffer is coloured only when it is actually thin against the liquid portfolio.
+        let bufferLevel = '';
+        if (key === 'maxAvailableBeforeMarginCallNanos') {
+          try { const buffer = BigInt(field.value ?? 0), liquid = BigInt(account.liquidPortfolio?.value ?? 0);
+            bufferLevel = liquid > 0n ? (buffer * 4n < liquid ? 'low' : buffer * 2n < liquid ? 'tight' : 'ok') : ''; } catch { bufferLevel = ''; }
+        }
+        return `<div class="${className}"${bufferLevel ? ` data-buffer-level="${bufferLevel}"` : ''} title="${escapeText(displayExplanation + ' ' + evidenceNote(field, data))}"><dt>${displayLabel} ${helpBtn}${fixtureReserve ? `<small>Резерв: ${escapeText(formatMoney(account.stressReserveNanos, account.currency || 'RUB'))}</small>` : ''}</dt><dd>${escapeText(formatMoney(field.value, account.currency || 'RUB'))}</dd></div>`;
       }).join('')}</dl>
     </section>`;
-  }).join('') || '<p class="empty-copy">Сначала синхронизируйте счета. Свой сценарий можно проверить во вкладке «Калькулятор позиции».</p>';
+  }).join('') || (selectedPortfolio ? '<p class="empty-copy">Для выбранного счёта нет сохранённой оценки обеспечения. Свой сценарий можно проверить во вкладке «Калькулятор позиции».</p>' : '<p class="empty-copy">Сначала синхронизируйте счета. Свой сценарий можно проверить во вкладке «Калькулятор позиции».</p>');
   const futuresRows = riskAccounts.flatMap((account) => (account.instruments || []).map((row) => ({ ...row, portfolioLabel: account.label })));
   const futuresPage = pagedRows('futuresRiskRows', futuresRows, 8, () => renderRiskPlan(data));
   $('#futuresRiskRows').innerHTML = futuresPage.length ? futuresPage.map((row) => `
@@ -1294,7 +1770,7 @@ function renderRiskPlan(data) {
   const advisor = slice.riskAdvisor || {};
   const advisorPage = pagedRows('riskAdvisorRows', advisor.recommendations || [], 8, () => renderRiskPlan(data));
   $('#riskAdvisorRows').innerHTML = advisorPage.length ? advisorPage.map((row) => `
-    <div class="advisor-row"><span><strong>${escapeText(instrumentDisplay(row).ticker || instrumentDisplay(row).name)}</strong><small>${escapeText([row.assetType === 'future' ? 'Фьючерс' : 'Акция', row.portfolioLabel, evidenceLabel(row.evidence, data)].filter(Boolean).join(' · '))}</small></span><div><strong>${escapeText(formatPercentage(row.recommendedMaxRate))}</strong><small>${escapeText(formatMoney(row.recommendedMaxNanos, 'RUB'))} максимум по политике</small></div><ul>${(row.reasons || []).slice(0, 5).map((reason) => `<li>${escapeText(reason)}</li>`).join('')}</ul></div>`).join('') : '<p class="empty-copy">Автоматическая оценка появится после получения позиций и маржинальных показателей. Пока рассчитайте размер вручную по сумме риска и стоп-цене.</p>';
+    <div class="advisor-row"><span><strong>${escapeText(instrumentDisplay(row).ticker || instrumentDisplay(row).name)}</strong><small>${escapeText([assetLabel(row.assetType), row.portfolioLabel, evidenceLabel(row.evidence, data)].filter(Boolean).join(' · '))}</small></span><div><strong>${escapeText(formatPercentage(row.recommendedMaxRate))}</strong><small>${escapeText(formatMoney(row.recommendedMaxNanos, 'RUB'))} максимум по политике</small></div><ul>${(row.reasons || []).slice(0, 5).map((reason) => `<li>${escapeText(reason)}</li>`).join('')}</ul></div>`).join('') : '<p class="empty-copy">Автоматическая оценка появится после получения позиций и маржинальных показателей. Пока рассчитайте размер вручную по сумме риска и стоп-цене.</p>';
   $('#riskAdvisorWarning').textContent = advisor.warning || 'Оценка не гарантирует, что брокер не потребует дополнительное обеспечение.';
 }
 
@@ -1305,11 +1781,11 @@ function inputMoneyNanos(value) {
   return (BigInt(whole) * 1_000_000_000n + BigInt(fraction.padEnd(9, '0'))).toString();
 }
 
-function updateRiskCalculator() {
+function riskCalculatorInput() {
   const values = Object.fromEntries(new FormData($('#riskCalculatorForm')));
   const future = values.assetType === 'future';
   $('#riskFutureFields').hidden = !future;
-  const result = calculateRiskDraft({
+  return Object.fromEntries(Object.entries({
     capitalNanos: inputMoneyNanos(values.capital), riskBudgetNanos: inputMoneyNanos(values.riskAmount),
     entryPriceNanos: inputMoneyNanos(values.entryPrice), stopPriceNanos: inputMoneyNanos(values.stopPrice),
     lotSize: values.lotSize, direction: values.direction, assetType: values.assetType,
@@ -1317,7 +1793,15 @@ function updateRiskCalculator() {
     minPriceIncrementAmountNanos: future ? inputMoneyNanos(values.stepValue) : undefined,
     guaranteePerLotNanos: future ? inputMoneyNanos(values.guaranteePerLot) : undefined,
     targetPriceNanos: values.targetPrice?.trim() ? inputMoneyNanos(values.targetPrice) : undefined,
-  });
+  }).filter(([, value]) => value !== undefined && value !== ''));
+}
+
+function updateRiskCalculator() {
+  const values = Object.fromEntries(new FormData($('#riskCalculatorForm'))), future = values.assetType === 'future';
+  const result = calculateRiskDraft(riskCalculatorInput());
+  const prepare = $('#riskPreparePlan');
+  prepare.hidden = state.bootstrap?.capabilities?.tradingPlan !== true; prepare.disabled = result.state !== 'calculated';
+  $('#riskPreparePlanStatus').textContent = '';
   const output = $('#riskCalculatorResult');
   if (result.state !== 'calculated') {
     output.innerHTML = `<p class="empty-copy">${escapeText(result.reason || 'Введите капитал, допустимый риск, цену входа и стоп-цену.')}</p>`;
@@ -1330,16 +1814,18 @@ function updateRiskCalculator() {
   const entry=levels.find(level=>level.kind==='entry'),stop=levels.find(level=>level.kind==='stop'),target=levels.find(level=>level.kind==='target');
   const area=(level,kind)=>level?`<rect class="scenario-area ${kind}" x="56" y="${Math.min(levelY(entry),levelY(level))}" width="248" height="${Math.abs(levelY(level)-levelY(entry))}"/>`:'';
   const arrow=(level,kind,x)=>level?`<path class="scenario-arrow risk-level-${kind}" d="M${x} ${levelY(entry)}V${levelY(level)}m-4 ${levelY(level)<levelY(entry)?5:-5} 4 ${levelY(level)<levelY(entry)?-5:5} 4 ${levelY(level)<levelY(entry)?5:-5}"/>`:'';
-  const diagram=`<figure class="risk-level-diagram"><figcaption>Цена входа, стоп и цель</figcaption><svg viewBox="0 0 460 224" role="img" aria-label="Пропорциональная схема цен: вход ${escapeText(entry.text)}, стоп ${escapeText(stop.text)}${target?', цель '+escapeText(target.text):''}">${area(stop,'stop')}${area(target,'target')}<path class="scenario-axis" d="M56 20V200H304"/>${levels.map(level=>`<g class="risk-level-${level.kind}"><path d="M56 ${levelY(level)}H304"/><circle cx="${level.kind==='entry'?170:304}" cy="${levelY(level)}" r="4"/><text x="318" y="${levelY(level)+5}">${level.label} ${escapeText(level.text)}</text></g>`).join('')}${arrow(stop,'stop',290)}${arrow(target,'target',278)}<text class="scenario-axis-label" x="56" y="220">Уровни из вашего сценария</text></svg></figure>`;
+  const diagram=`<figure class="risk-level-diagram"><figcaption>Цена входа, стоп и цель</figcaption><svg viewBox="0 0 460 244" role="img" aria-label="Пропорциональная схема цен: вход ${escapeText(entry.text)}, стоп ${escapeText(stop.text)}${target?', цель '+escapeText(target.text):''}">${area(stop,'stop')}${area(target,'target')}<path class="scenario-axis" d="M56 20V200H304"/>${levels.map(level=>`<g class="risk-level-${level.kind}"><path d="M56 ${levelY(level)}H304"/><circle cx="${level.kind==='entry'?170:304}" cy="${levelY(level)}" r="4"/><text x="318" y="${levelY(level)+5}">${level.label} ${escapeText(level.text)}</text></g>`).join('')}${arrow(stop,'stop',290)}${arrow(target,'target',278)}<text class="scenario-axis-label" x="56" y="236">Уровни из вашего сценария</text></svg></figure>`;
   output.innerHTML=`<dl class="calculator-metrics"><div><dt>${future?'Количество контрактов':'Количество акций'}</dt><dd>${escapeText(result.units)}<small> ${future?'контр.':'шт.'}</small></dd></div><div><dt>Количество лотов</dt><dd>${escapeText(result.lots)}<small> лот.</small></dd><small>В одном лоте: ${escapeText(result.lotSize)} ${future?'контр.':'шт.'}</small></div><div><dt>Планируемый риск</dt><dd class="negative">${escapeText(rubles(result.actualRiskNanos))}</dd><small>Лимит: ${escapeText(rubles(result.riskBudgetNanos))}</small></div></dl><div class="calculator-scenario"><dl class="calculator-unit-metrics">${result.rewardRiskRatio?`<div><dt>Риск / прибыль</dt><dd class="positive">1 : ${escapeText(result.rewardRiskRatio.replace('.',','))}</dd></div>`:''}<div><dt>Риск на ${future?'контракт':'акцию'}</dt><dd>${escapeText(rubles(result.riskPerUnitNanos))}</dd></div>${result.rewardPerUnitNanos?`<div><dt>Потенциал на ${future?'контракт':'акцию'}</dt><dd>${escapeText(rubles(result.rewardPerUnitNanos))}</dd></div>`:''}<div><dt>Размер позиции</dt><dd>${escapeText(rubles(result.positionAmountNanos))}</dd></div></dl>${diagram}</div><p class="surface-note">${escapeText(result.reason||'')} ${escapeText(result.warning||'')}</p>`;
 }
 
 function renderSync(data) {
   const runs = data.syncRuns || [];
-  const success = runs.find(run => run.status === 'completed');
-  $('#syncLatestTime').textContent = success ? formatDate(success.finishedAt || success.startedAt, true) : 'Ещё не обновляли';
-  $('#syncLatestState').textContent = runs[0]?.status === 'failed' ? 'Последний запуск завершился с ошибкой' : success ? 'Данные сохранены на устройстве' : 'Запустите первую синхронизацию';
-  $('#syncAutoState').textContent = data.environment === 'fixture' ? 'Учебный режим' : data.connection?.connected && data.capabilities?.portfolioRefresh ? 'Каждые 10 секунд' : 'Нужно подключение';
+  const snapshotAt = data.quality?.lastEventAt;
+  $('#syncLatestTime').textContent = snapshotAt ? formatDate(snapshotAt, true) : 'Ещё не обновляли';
+  $('#syncLatestState').textContent = snapshotAt ? 'Сохранённая оценка портфеля' : 'Запустите первую синхронизацию';
+  const refreshMs=data.planAccess?.refreshIntervalMs||10_000;
+  $('#syncAutoState').textContent = data.environment === 'fixture' ? 'Учебный режим' : data.connection?.connected && data.capabilities?.portfolioRefresh ? `Целевой интервал: ${refreshMs/1000} секунд` : 'Нужно подключение';
+  $('#syncAutoState').title = 'После запуска обновления Local Node продолжает получать данные при свёрнутом или закрытом окне Workspace, пока Nexus работает и вход действителен. Медленный ответ брокера может увеличить интервал; причина задержки указана в состоянии обновления.';
   $('#syncNowButton').disabled = $('#syncButton').disabled;
   const accounts=data.clientProduct?.portfolios||[];
   $('#brokerConnectionList').innerHTML=accounts.map(account=>'<div class="broker-connection-row">'+tbankIcon+'<span><strong>Т-Банк · '+escapeText(account.label)+'</strong><small>'+(data.environment==='fixture'?'Учебный счёт':'Брокерский счёт')+'</small></span><span class="'+(data.connection?.connected?'positive':'')+'">'+(data.environment==='fixture'?'Учебные данные':data.connection?.connected?'Подключено':'Не подключено')+'</span></div>').join('');
@@ -1362,6 +1848,218 @@ function renderSync(data) {
   if (latencySurface) latencySurface.hidden = data.environment !== 'fixture' && !latency.clientVerified;
 }
 
+function renderRefreshStatus(value = state.syncUi?.getState()) {
+  const node = $('#refreshStatus'), data = state.bootstrap;
+  if (!node) return;
+  const selectedAccount = $('#statisticsAccount').value;
+  const presentation = syncRefreshPresentation(value, data, selectedAccount, Date.now(), displayedRefreshClock.at(data, selectedAccount));
+  node.hidden = !data?.capabilities?.portfolioRefresh || data.environment === 'fixture';
+  node.dataset.state = presentation.state;
+  node.querySelector('span').textContent = presentation.text;
+  node.title = [presentation.detail || presentation.text, 'Открыть сведения об обновлении'].join(' ');
+}
+const freshnessTimer = setInterval(() => { if (!document.hidden) renderRefreshStatus(); }, 1000);
+window.addEventListener('pagehide', () => clearInterval(freshnessTimer), { once: true });
+
+function renderSyncProgress(value) {
+  const job = value?.active || value?.queued;
+  const latest = value?.latest;
+  const busy = Boolean(job || value?.applying);
+  const node = $('#dataStateStatus');
+  const text = job ? syncProgressCopy(job) : value?.applying ? 'Данные сохранены · обновляем показатели'
+    : value?.viewError ? 'Данные сохранены · повторяем загрузку показателей'
+    : value?.transportError ? 'Связь с обновлением потеряна · проверяем повторно' : latest?.status === 'failed' ? syncProgressCopy(latest) : '';
+  const warning = syncWarningCopy(value);
+  node.hidden = true;
+  renderRefreshStatus(value);
+  const manualBusy = state.manualSyncStarting || [value?.active, value?.queued].some(job =>
+    job?.kind === 'sync' && ['queued', 'running'].includes(job.status));
+  // Full history requests already join the runtime queue. Automatic snapshots
+  // and saved-data calculations must not make the manual action unreachable.
+  $('#syncButton').disabled = Boolean(manualBusy) || (localEnvironment() && !state.connection?.connected);
+  $('#syncNowButton').disabled = $('#syncButton').disabled;
+  $('#syncButton span').textContent = busy ? 'Синхронизация…' : 'Синхронизировать';
+  const host = $('#syncProgressPanel');
+  host.hidden = !value || (!job && !latest && !value.transportError);
+  host.setAttribute('aria-busy', String(busy));
+  host.querySelector('strong').textContent = text || syncProgressCopy(latest);
+  const progress = job?.progress;
+  const countsValid = Number.isInteger(progress?.totalAccounts) && progress.totalAccounts > 0
+    && Number.isInteger(progress?.completedAccounts) && progress.completedAccounts >= 0 && progress.completedAccounts <= progress.totalAccounts;
+  host.querySelector('small').textContent = job ? `${countsValid ? `Сохранено счетов: ${progress.completedAccounts} из ${progress.totalAccounts}. ` : ''}Можно переходить между разделами.`
+    : value?.applying || value?.viewError ? 'Расчёт продолжается. Можно переходить между разделами.'
+    : latest?.status === 'failed' ? 'Сохранённые данные доступны. Следующая попытка начнётся автоматически; обновить вручную можно сейчас.' : 'Данные сохранены на этом устройстве.';
+  if (value?.portfolio?.oldestAt) {
+    $('#syncLatestTime').textContent = formatDate(value.portfolio.oldestAt, true);
+    $('#syncLatestState').textContent = value.portfolio.updatedAccounts === value.portfolio.totalAccounts ? 'Сохранены оценки всех подключённых счетов' : `Оценки есть для ${value.portfolio.updatedAccounts} из ${value.portfolio.totalAccounts} счетов`;
+  }
+  $('#autoRefreshStatus').hidden = true;
+  $('#autoRefreshStatus').textContent = text || 'Текущие позиции обновляются автоматически';
+}
+
+function instrumentScope(data = state.bootstrap) {
+  const connection=data?.connection||{},identity=data?.identity||data?.session?.identity||{};
+  return JSON.stringify([data?.environment,data?.preview?.static===true,data?.preview?.localReview===true,identity.preferenceScope||identity.userId||identity.subject||null,connection.connected,connection.environment,connection.validatedAt,(data?.clientProduct?.portfolios||[]).map(row=>row.preferenceKey||row.id).sort(),data?.capabilities?.companyFacts===true,data?.capabilities?.companySavedFacts===true,(data?.companyAnalysisInstruments||[]).map(row=>row.instrumentUid).sort()]);
+}
+function todayAccess() {
+  const bootstrap=state.bootstrap, workspace=state.savedResearchWorkspace;
+  const descriptor=bootstrap?.savedResearch;
+  const snapshot=workspace?.getConfirmedSnapshot?.();
+  const nativeAllowed=bootstrap?.preview?.static!==true&&bootstrap?.capabilities?.savedResearch===true&&descriptor?.persistence==='local-node'&&/^[a-f0-9]{32}$/u.test(descriptor.ownerScope||'');
+  const ownerScope=workspace?snapshot?.ownerScope:nativeAllowed?descriptor.ownerScope:null;
+  const allowed=workspace?workspace.canResearch()===true:nativeAllowed;
+  const sourceKey=state.deepAnalytics?.currentResearch.capture().scopeKey||instrumentScope();
+  const signature=JSON.stringify([ownerScope,allowed,workspace?.getAccessToken()??0,sourceKey,bootstrap?.capabilities?.marketCalendar===true]);
+  if(signature!==state.todayAccessSignature){state.todayAccessSignature=signature;state.todayAccessRevision=(state.todayAccessRevision||0)+1;}
+  return {ownerScope,allowed,sourceKey,accessRevision:state.todayAccessRevision||0};
+}
+function todayContext() {
+  const access=todayAccess(),bootstrap=state.bootstrap||{},quality=bootstrap.quality||{};
+  const synthetic=bootstrap.environment==='fixture',temporary=synthetic&&bootstrap.preview?.static===true;
+  const disconnected=!synthetic&&bootstrap.connection?.connected===false;
+  const healthState=!access.allowed?'forbidden':disconnected?'not-connected':quality.error?'error':quality.stale?'stale':quality.lastEventAt?'ready':'unavailable';
+  return {...access,sourceRevision:(state.searchAccessRevision||0)+(state.deepAnalytics?.currentResearch.capture().sourceRevision||0),
+    selectionRevision:state.todaySelectionRevision||0,analyticsAccount:state.analyticsAccount||'',bootstrap,
+    bootstrapObservedAt:state.todayBootstrapObservedAt||null,dataMode:synthetic?'synthetic':'local-saved',
+    persistence:temporary?'memory-session':'local-node',persistenceDetail:temporary?'transient':bootstrap.savedResearch?.persistenceDetail||'unknown',
+    sourceHealth:{state:healthState,confirmed:Boolean(quality.lastEventAt),code:healthState==='ready'?'ready':healthState==='forbidden'?'permission-required':healthState==='not-connected'?'not-connected':healthState==='stale'?'source-stale':'source-partial',observedAt:state.todayBootstrapObservedAt||null,sourceAt:null}};
+}
+function updateToday() { state.marketCalendarUi?.updateTodayAccess?.(); state.todayBinder?.update(); scheduleTodayCalendar(); }
+// The overview «Сегодня» reads its dates again after they were cleared, without
+// waiting for the calendar page to be opened.
+function scheduleTodayCalendar() {
+  clearTimeout(state.todayCalendarTimer);
+  state.todayCalendarTimer = setTimeout(() => { if (state.currentView === 'overview' && !document.hidden) state.marketCalendarUi?.ensureTodayCalendar?.(); }, 1500);
+}
+function todayNavigateSection(intent,{isCurrent}={}) {
+  if(typeof isCurrent!=='function'||isCurrent()!==true)return {ok:false};
+  let target;
+  if(intent.target==='calendar'){
+    activateView('events',null,{focusMain:false,ensureEventNews:false});target=$('.events-heading h2');
+  }else if(intent.target==='saved-research.list'){
+    if(state.deepAnalytics?.showInstrumentWorkspace({isCurrent})!==true||isCurrent()!==true)return {ok:false};
+    activateView('analytics',null,{focusMain:false,activateResearch:false});
+    const host=$('#savedResearch'),list=host?.querySelector('[data-sr-list]');
+    if(isCurrent()!==true||!list)return {ok:false};
+    document.dispatchEvent(new CustomEvent('invest:reveal-workspace-target',{detail:{target:host}}));
+    if(isCurrent()!==true)return {ok:false};
+    if(list.tagName==='DETAILS')list.open=true;
+    target=host.querySelector('[data-sr-focus="list"]')||list.querySelector('summary')||list;
+  }else if(intent.target==='sync'){
+    activateView('sync',null,{focusMain:false});target=$('[data-view-panel="sync"] .section-head h2');
+  }else return {ok:false};
+  if(isCurrent()!==true||!target||!target.getClientRects().length)return {ok:false};
+  if(target.tagName!=='SUMMARY')target.tabIndex=-1;target.focus({preventScroll:true});
+  if(isCurrent()!==true)return {ok:false};
+  target.scrollIntoView({block:'center',behavior:'instant'});return {ok:isCurrent()===true};
+}
+function syncInstrumentSources(catalog) {
+  const scopeKey=instrumentScope();
+  if(state.instrumentScope!==scopeKey){state.instrumentScope=scopeKey;state.instrumentScopeRevision=(state.instrumentScopeRevision||0)+1;state.instrumentCatalog=[];const priorStream=state.stream;state.stream=null;priorStream?.close?.();state.terminalUi?.resetMarket();}
+  if(Array.isArray(catalog))state.instrumentCatalog=catalog;
+  const holdings=state.bootstrap?.instruments||[],companies=state.bootstrap?.companyAnalysisInstruments||[];
+  // Portfolio prices do not change catalog identity. Catalog publication replaces
+  // its snapshot; only the unrelated inPortfolio flag is mutated in place.
+  const sourcesKey=JSON.stringify([scopeKey,holdings,companies]);
+  if(state.instrumentSourceCatalog!==state.instrumentCatalog||state.instrumentSourcesKey!==sourcesKey){
+    instrumentContext.replaceSources({catalog:state.instrumentCatalog||[],holdings,companies,scopeKey});
+    state.instrumentSourceCatalog=state.instrumentCatalog;state.instrumentSourcesKey=sourcesKey;
+    state.tradingPlanUi?.refreshCatalog?.();terminalContextHeader?.update();
+  }
+  updateToday();
+}
+function companyInstrumentEligible(meta) {
+  if(!meta||meta.assetType!=='share'||state.bootstrap?.capabilities?.companyFacts!==true)return false;
+  const resolved=instrumentContext.resolve(meta);
+  return Boolean(resolved.meta&&(state.bootstrap?.companyAnalysisInstruments||[]).some(row=>row.instrumentUid===meta.instrumentUid&&row.assetType==='share'));
+}
+function companyContextReason() {
+  const snap=instrumentContext.get('company');
+  if(!snap.meta)return instrumentContextReason(snap);
+  return snap.meta.assetType!=='share'?'Факты компании не применимы к этому инструменту. Откройте его исследование.':'Факты этой акции недоступны в текущем контексте. Откройте исследование или выберите другую акцию.';
+}
+function syncCompanyContext() {
+  const snap=instrumentContext.get('company'),uid=companyInstrumentEligible(snap.meta)?snap.meta.instrumentUid:'';
+  if(state.companyScope!==snap.scopeKey){state.companyScope=snap.scopeKey;for(const key of ['companyViews','companyFacts','companyFactsChecked','companyFactsAttempted','companyQuotes','companyQuoteAttempts','companyQuoteErrors'])state[key]=new Map();state.companyQuotePending=new Set();}
+  if(state.companyPending&&!instrumentContext.isCurrent(state.companyPending.contextToken,'company')){
+    const previous=state.companyPending,view=state.companyViews.get(previous.key);
+    if(view){if(previous.kind==='analysis'){view.phase='error';view.message='Контекст инструмента изменился. Предыдущий ответ не применяется; запросите разбор заново.';}else{view.factsPhase='idle';view.factsMessage='Контекст инструмента изменился. Обновляем доступные факты.';state.companyFactsAttempted?.delete(previous.instrumentUid);}}
+    state.companyRequest++;state.companyPending=null;
+  }
+  if(state.companyContextRevision!==snap.revision){state.companyContextRevision=snap.revision;state.companyQuotePending=new Set();}
+  $('#aiInstrument').value=uid;
+  companyPicker?.refresh();
+  renderSelectedCompany();
+  if(state.currentView==='ai')void ensureCompanyFacts();
+}
+async function instrumentContextRequest(path,...args) {
+  const scope=instrumentScope(),uid=path.startsWith('/api/market/candles?')?new URL(path,location.origin).searchParams.get('instrumentUid'):null,ref=uid?instrumentContext.resolve(uid):null;
+  const scopeRevision=state.instrumentScopeRevision||0,accessToken=state.savedResearchWorkspace?.getAccessToken()??null;
+  if(ref&&!ref.meta)throw new Error(instrumentContextReason(ref));
+  const result=await request(path,...args);
+  if(ref){const current=instrumentContext.resolve(uid);if(scope!==instrumentScope()||!current.meta||JSON.stringify(current.ref)!==JSON.stringify(ref.ref))throw new Error('Контекст инструмента изменился.');}
+  if(path==='/api/market/catalog'){if(scope!==instrumentScope()||scopeRevision!==(state.instrumentScopeRevision||0)||accessToken!==(state.savedResearchWorkspace?.getAccessToken()??null))throw new Error('Подключение изменилось. Обновите каталог.');if(Array.isArray(result.items))syncInstrumentSources(result.items);}
+  return result;
+}
+const chartFilterKey=()=>JSON.stringify(['statisticsAccount','workspacePeriod','statisticsFrom','statisticsTo'].map(id=>$('#'+id).value));
+function chartAvailability(meta){
+ const resolved=instrumentContext.resolve(meta),busy=$('#statisticsPeriodForm').getAttribute('aria-busy')==='true';
+ return {available:Boolean(resolved.meta)&&Boolean(state.terminalUi)&&!busy,reason:!resolved.meta?instrumentContextReason(resolved):busy?'Дождитесь загрузки выбранного периода.':'Терминал ещё загружается.'};
+}
+function currentChartOrigin(){if(chartOrigin?.scope!==instrumentScope())chartOrigin=null;return chartOrigin;}
+function chartOriginCanFocus(origin){return Boolean(origin)&&origin.filters===chartFilterKey()&&origin.isCurrent?.()!==false;}
+function chartReturnState(){
+ const origin=currentChartOrigin();return {route:origin?.route||'portfolio',label:origin?(chartOriginCanFocus(origin)?origin.label:origin.fallbackLabel):'К портфелю'};
+}
+function openContextChart(meta,origin=null) {
+  const resolved=instrumentContext.resolve(meta);if(!resolved.meta){showToast(instrumentContextReason(resolved),true);return false;}
+  const availability=chartAvailability(meta);if(!availability.available){showToast(availability.reason,true);return false;}
+  const sourceScope=instrumentScope(),sourceRef=JSON.stringify(resolved.ref),filters=chartFilterKey();
+  if(!origin&&['ai','analytics'].includes(state.currentView)){
+   const route=state.currentView==='ai'?'company':state.analyticsView==='instrument'?'research':null;
+   if(route){const button=document.activeElement;origin={route,label:route==='company'?'К компании':'К исследованию',fallbackLabel:route==='company'?'К компании':'К исследованию',
+    isCurrent:()=>button?.isConnected===true,restoreFocus:()=>{if(button?.getClientRects().length){button.scrollIntoView({block:'center',behavior:'instant'});button.focus({preventScroll:true});return true;}return false;}};}
+  }
+  const isCurrent=()=>sourceScope===instrumentScope()&&filters===chartFilterKey()&&origin?.isCurrent?.()!==false&&JSON.stringify(instrumentContext.resolve(meta).ref)===sourceRef;
+  if(state.terminalUi.openCurrentInstrument(resolved.meta,{isCurrent})!==true)return false;
+  chartOrigin=origin?{...origin,scope:sourceScope,filters}:null;
+  activateView('terminal');terminalContextHeader?.update();
+  return true;
+}
+$('#positionsBody').addEventListener('click',event=>{
+ const button=event.target.closest('[data-position-chart]');if(!button||button.disabled)return;
+ const uid=button.dataset.positionChart;
+ openContextChart(uid,{route:'portfolio',label:'К портфелю',fallbackLabel:'К портфелю',restoreFocus:()=>{
+  const target=button.isConnected?button:[...$('#positionsBody').querySelectorAll('[data-position-chart]')].find(item=>item.dataset.positionChart===uid);
+  if(!target||target.disabled||!target.getClientRects().length)return false;
+  target.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});target.focus({preventScroll:true});return true;
+ }});
+});
+function returnFromChart(){
+ const origin=currentChartOrigin(),canFocus=chartOriginCanFocus(origin),route=origin?.route||'portfolio';chartOrigin=null;
+ navigateTask(route,resolveTaskRoute(route));
+ if(canFocus)origin.restoreFocus?.();terminalContextHeader?.update();
+}
+function openContextResearch(meta) {activateView('analytics');void state.deepAnalytics?.select(meta);}
+function openContextCoupons(meta) {
+  const snap=instrumentContext.get('research'),contextTicket=instrumentContext.capture('research');
+  const isCurrent=()=>instrumentContext.isCurrent(contextTicket,'research')&&state.bootstrap?.capabilities?.marketCalendar===true;
+  if(snap.resolution!=='exact'||snap.meta?.assetType!=='bond'||snap.meta.instrumentUid!==meta?.instrumentUid||!isCurrent())return false;
+  const opened=state.marketCalendarUi?.openBondCoupons(meta.instrumentUid,{isCurrent})===true;
+  if(!opened)showToast('Не удалось открыть купонный график. Обновите каталог и выберите облигацию заново.',true);
+  return opened;
+}
+function openContextCompany(meta) {state.companyTab='facts';instrumentContext.select(meta,{surface:'company'});activateView('ai');}
+
+function prepareTerminalJournalPlan(input,{isCurrent:terminalCurrent}={}) {
+ const contextTicket=instrumentContext.capture('terminal'),snap=instrumentContext.get('terminal');
+ const isCurrent=()=>terminalCurrent?.()===true&&instrumentContext.isCurrent(contextTicket,'terminal')&&$('#statisticsPeriodForm').getAttribute('aria-busy')!=='true';
+ if(!isCurrent()||snap.resolution!=='exact'||snap.ref?.namespace!=='tinvest:broker'||snap.meta?.instrumentUid!==input.instrumentUid)
+  return {prepared:false,message:'Не удалось подтвердить инструмент для журнала. Выберите его заново из доступного каталога.'};
+ return state.tradingPlanUi?.prepareTerminalPlan(input,{instrumentUid:snap.meta.instrumentUid,portfolioId:$('#statisticsAccount').value,isCurrent})
+  ||{prepared:false,message:'Журнал ещё загружается. Повторите перенос после загрузки.'};
+}
+
 function renderInstruments(data) {
   const selectedMarket = $('#instrumentSelect').value;
   const instruments = [...(data.instruments || [])];
@@ -1376,7 +2074,9 @@ function renderInstruments(data) {
   const companyInstruments = (data.companyAnalysisInstruments || []).filter((item) => item.assetType === 'share');
   const aiOptions = companyInstruments.map((item) => `<option value="${escapeText(item.instrumentUid)}">${escapeText(`${optionLabel(item)}${item.source === 'history' ? ' · из истории операций' : ''}`)}</option>`).join('');
   $('#aiInstrument').innerHTML = `<option value="">Выберите инструмент</option>${aiOptions}`;
-  $('#aiInstrument').value = companyInstruments.some((item) => item.instrumentUid === selectedCompany) ? selectedCompany : !state.companySelectionInitialized && !selectedCompany ? companyInstruments[0]?.instrumentUid || '' : '';
+  const companyContext=instrumentContext.get('company');
+  $('#aiInstrument').value = companyInstrumentEligible(companyContext.meta) ? companyContext.meta.instrumentUid : '';
+  companyPicker?.refresh();
   if (companyInstruments.length) state.companySelectionInitialized = true;
   if ($('#aiInstrument').value !== selectedCompany) renderSelectedCompany();
   const preferredInstrument = instruments.some(row => (row.viewKey || row.instrumentUid) === selectedMarket) ? selectedMarket : data.candles?.[0]?.viewKey || data.candles?.[0]?.instrumentUid;
@@ -1423,7 +2123,7 @@ function renderMarketInstrumentSummary(selected, candles = []) {
   const tags = [assetLabel, selected?.exchange || selected?.realExchange].filter(Boolean);
   if (tags.length) host.querySelector('.market-summary-identity > span:last-child').insertAdjacentHTML('beforeend', `<small class="market-asset-tags">${tags.map(tag => `<span>${escapeText(tag)}</span>`).join('')}</small>`);
   const capital = state.companyFacts?.get(selected?.instrumentUid)?.metrics?.find(metric => metric.key === 'marketCapitalization');
-  const capitalText = capital?.value != null && Number.isFinite(Number(capital.value)) ? new Intl.NumberFormat('ru-RU',{notation:'compact',maximumFractionDigits:2}).format(Number(capital.value))+' '+(capital.unit === 'currency' ? 'ден. ед.' : capital.unit || '') : '—';
+  const capitalText = capital?.value != null ? financialMetric(capital) : '—';
   const items=[['Открытие',last?price(last.open):'—'],['Объём свечи',last&&Number.isFinite(last.volume)?last.volume.toLocaleString('ru-RU'):'—'],['Максимум',last?price(last.high):'—'],...(capitalText!=='—'?[['Капитализация',capitalText]]:[]),['Минимум',last?price(last.low):'—'],['Закрытие',last?price(last.close):'—']];
   host.insertAdjacentHTML('beforeend','<dl class="market-ohlc">'+items.map(([title,value])=>'<div'+(title==='Капитализация'?' title="Из сохранённых фактов компании; прочерк означает отсутствие данных"':'')+'><dt>'+title+'</dt><dd>'+escapeText(value)+'</dd></div>').join('')+'</dl>');
   watchInstrumentImages(host);
@@ -1503,7 +2203,10 @@ async function renderMarketChart() {
       state.marketFactsAttempted ||= new Set();
       if (!state.marketFactsAttempted.has(instrumentUid)) {
         state.marketFactsAttempted.add(instrumentUid);
-        void request('/api/ai/company-facts?instrumentUid='+encodeURIComponent(instrumentUid)).then(report=>{
+        const factsContext=instrumentContext.capture('research');
+        void request(companyFactsReadPath(instrumentUid)).then(report=>{
+          if(!instrumentContext.isCurrent(factsContext,'research'))return;
+          assertCompanyFactsPacket(report,instrumentUid);
           state.companyFacts ||= new Map();state.companyFacts.set(instrumentUid,report);
           if ($('#instrumentSelect').value===instrumentKey && state.marketChartKey===chartKey) renderMarketInstrumentSummary(selected,candles);
         }).catch(()=>{});
@@ -1553,11 +2256,53 @@ function renderHistoryProgress(value) {
   }
 }
 
-function renderBootstrap(data) {
+// Settings › About names the running version and where the data lives.
+function renderAppAbout(data) {
+  const host = $('#appAboutFacts'); if (!host) return;
+  const runtime = data.runtime || {}, live = data.environment === 'live';
+  const rows = [['Версия Invest', runtime.version || data.version || (live ? 'не указана' : 'учебный стенд')],
+    ['Где работает', runtime.mode === 'local_node' ? 'На этом компьютере, запуск через Vertux Nexus' : live ? 'На этом компьютере' : 'Учебный стенд с демонстрационными данными'],
+    ['Брокер', live ? 'Т‑Инвест API · только чтение, без сделок' : 'Не подключён'],
+    ['Данные портфеля', live ? 'Хранятся на этом устройстве' : 'Демонстрационные'],
+    ['Счетов', String(data.clientProduct?.portfolios?.length || 0)]];
+  host.innerHTML = rows.map(([label, value]) => `<div><dt>${escapeText(label)}</dt><dd>${escapeText(value)}</dd></div>`).join('');
+}
+
+function renderBootstrap(data, {background=false} = {}) {
+  // A rolling period advances on every snapshot. Only a different requested
+  // period/custom range is a context change; new data still updates visible UI.
+  const periodScope=value=>value?.period==='custom'?[value.period,value.from,value.to]:[value?.period];
+  const deferHiddenViews=background&&state.bootstrap
+    &&instrumentScope(data)===instrumentScope()
+    &&JSON.stringify([data.planAccess,data.capabilities,data.identity,data.savedResearch,periodScope(data.selectedPeriod)])
+      ===JSON.stringify([state.bootstrap.planAccess,state.bootstrap.capabilities,state.bootstrap.identity,state.bootstrap.savedResearch,periodScope(state.bootstrap.selectedPeriod)]);
+  const deferStatistics=deferHiddenViews&&state.currentView==='terminal';
   renderHistoryProgress(data.historyBackfill);
+  renderAppAbout(data);
   data = { ...data, connection: maskedConnectionStatus(data.connection) };
   if (!data.displayFx?.rates?.USD && state.bootstrap?.displayFx?.rates?.USD) data.displayFx=state.bootstrap.displayFx;
   state.bootstrap = data;
+  document.body.dataset.analyticsState = 'ready';
+  renderAnalyticsStartup();
+  state.nexusAiUi?.updateContext();
+  state.terminalUi?.updateAccess();
+  state.syncUi?.updateAccess();
+  state.todayBootstrapObservedAt=new Date().toISOString();
+  state.searchAccessRevision=(state.searchAccessRevision||0)+1;
+  if(deferStatistics){
+    state.deferredBootstrap=true;
+    displayedRefreshClock.observe(data,JSON.stringify([data.identity?.preferenceScope,data.environment,data.connection?.connected,data.connection?.validatedAt]));
+    renderRefreshStatus();
+    return;
+  }
+  state.deferredBootstrap=false;
+  state.priceAlertUi?.updateBootstrap();
+  state.workspaceNotifications?.updateBootstrap();
+  state.savedResearchWorkspace?.updateBootstrap({deferRead:true});
+  state.querySearch?.updateAccess();
+  syncInstrumentSources();
+  state.savedResearchWorkspace?.updateBootstrap();
+  state.searchUi?.update();
   setChartPresentation({language:state.language,displayCurrency:state.displayCurrency,rates:data.displayFx?.rates||{}});
   prepareDisplayLabels(data);
   $('#syncButton').disabled = false;
@@ -1589,24 +2334,80 @@ function renderBootstrap(data) {
   const portfolioOptions = (data.clientProduct?.portfolios || []).map((portfolio) => `<option value="${escapeText(portfolio.id)}">${escapeText(portfolio.label)}</option>`).join('');
   accountSelect.innerHTML = `<option value="">Все портфели</option>${portfolioOptions}`;
   if ((data.clientProduct?.portfolios || []).some((item) => item.id === selectedAccount)) accountSelect.value = selectedAccount;
-  applyOperationFilters({ announce: false });
   renderInstruments(data);
   renderCompanyAvailability(data.aiAvailability || state.companyAvailability);
   void ensureCompanyFacts();
   renderMarketVision(data);
-  renderRiskPlan(data);
   renderSync(data);
-  renderPeriodViews();
+  if(state.syncUi)renderSyncProgress(state.syncUi.getState());
+  renderPeriodViews({visibleOnly:deferHiddenViews});
   $('#statisticsPeriodStatus').hidden = true;
   renderLocalReview(data);
   if (state.tradingPlanUi) void state.tradingPlanUi.refresh();
   void state.marketCalendarUi?.refreshHoldings();
   if(state.terminalUi&&!state.streamAuthorizationFailed)queueMicrotask(openStream);
+  displayedRefreshClock.observe(data, JSON.stringify([data.identity?.preferenceScope, data.environment,
+    data.connection?.connected, data.connection?.validatedAt]));
+  renderRefreshStatus();
+  requestAnimationFrame(()=>{document.documentElement.dataset.demoBootstrapReady='true';document.dispatchEvent(new Event('nexus:demo-bootstrap-ready'));});
+}
+
+function renderAnalyticsStartup() {
+  const phase = state.bootstrap?.analyticsState;
+  let status = $('#workspaceStartupStatus');
+  if (!status && !['pending','error'].includes(phase)) return;
+  if (!status) {
+    status = document.createElement('section'); status.id = 'workspaceStartupStatus'; status.className = 'workspace-startup-status';
+    status.setAttribute('role','status'); status.setAttribute('aria-live','polite');
+    const message = document.createElement('p'); message.dataset.startupMessage = '';
+    const detail = document.createElement('p'); detail.className = 'workspace-startup-detail';
+    detail.textContent = 'Чат, профиль и другие разделы уже доступны.';
+    const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'button secondary';
+    retry.textContent = 'Повторить загрузку аналитики'; retry.addEventListener('click', () => { void loadBootstrap(); });
+    status.append(message, detail, retry); $('#mainContent').prepend(status);
+  }
+  const visible = ['pending','error'].includes(phase) && (['overview','operations'].includes(state.currentView)
+    || state.currentView === 'analytics' && ['portfolio','capital','trading','reviews'].includes(state.analyticsView));
+  status.hidden = !visible;
+  status.querySelector('[data-startup-message]').textContent = phase === 'error'
+    ? 'Не удалось подготовить аналитику портфеля. Сохранённые данные не изменены.' : 'Готовим аналитику портфеля…';
+  const retry = status.querySelector('button'); retry.hidden = phase !== 'error'; retry.disabled = Boolean(state.startupAnalyticsRequest);
+  $('#statisticsPeriodForm').querySelectorAll('input,select,button').forEach(control => {
+    if (['pending','error'].includes(phase)) { if(!control.disabled)control.dataset.startupDisabled='true'; control.disabled=true; }
+    else if(control.dataset.startupDisabled==='true'){control.disabled=false;delete control.dataset.startupDisabled;}
+  });
+}
+
+async function loadWorkspaceAccess() {
+  try {
+    const data = await request('/api/workspace', { signal: AbortSignal.timeout(15_000) });
+    if (data.analyticsState !== 'pending' || !data.identity?.preferenceScope) throw new Error('Workspace access is unavailable');
+    state.bootstrap = { ...data, connection: maskedConnectionStatus(data.connection) };
+    state.session = { csrfToken: data.csrfToken };
+    document.body.dataset.analyticsState = 'pending';
+    renderRuntimeTruth(state.bootstrap); renderConnection(state.bootstrap); renderAnalyticsStartup();
+    return true;
+  } catch (error) {
+    // Older isolated preview hosts do not expose the short access endpoint.
+    // Their existing full bootstrap remains the only source of permissions.
+    if (error.status !== 404) state.startupAccessError = error.code || error.name;
+    return false;
+  }
 }
 
 async function loadBootstrap() {
+  if (state.startupAnalyticsRequest) return state.startupAnalyticsRequest;
+  const starting = ['pending','error'].includes(state.bootstrap?.analyticsState);
+  const periodRevision = state.periodRequest;
+  if (starting) { state.bootstrap.analyticsState = 'pending'; document.body.dataset.analyticsState = 'pending'; renderAnalyticsStartup(); }
+  const read = loadBootstrapData();
+  if (starting) state.startupAnalyticsRequest = read;
+  try { return await read; }
+  finally { if (state.startupAnalyticsRequest === read) { state.startupAnalyticsRequest = null; renderAnalyticsStartup(); } }
+  async function loadBootstrapData() {
   try {
     let data = await request(`/api/bootstrap?${periodQuery()}`);
+    if (periodRevision !== state.periodRequest) return;
     state.session = { csrfToken: data.csrfToken };
     if (localEnvironment(data) && data.preview?.localReview !== true) {
       try {
@@ -1621,7 +2422,17 @@ async function loadBootstrap() {
     }
     renderBootstrap(data);
   } catch (error) {
+    if (starting && state.bootstrap && ['BOOTSTRAP_TIMEOUT','BOOTSTRAP_BUSY','BOOTSTRAP_CALCULATION_UNAVAILABLE'].includes(error.code)) {
+      state.bootstrap.analyticsState = 'error'; document.body.dataset.analyticsState = 'error'; renderAnalyticsStartup(); return;
+    }
     state.bootstrap = null;
+    delete document.body.dataset.analyticsState;
+    renderAnalyticsStartup();
+    state.nexusAiUi?.updateContext(); state.terminalUi?.updateAccess();
+    state.internalTransfersUi?.update(null);
+    state.shareValuationsUi?.update(null);
+    state.brokerReportsUi?.update(null);
+    state.savedResearchWorkspace?.updateBootstrap();
     state.equityChart?.destroy();
     state.equityChart = null;
     $('#qualityState').textContent = 'Рабочая среда недоступна';
@@ -1647,6 +2458,7 @@ async function loadBootstrap() {
     $('#syncButton').disabled = true;
     showToast(error.message, true);
   }
+  }
 }
 
 async function startSync() {
@@ -1655,6 +2467,14 @@ async function startSync() {
     activateView('sync');
     $('#connectionPrimaryButton').focus();
     return false;
+  }
+  if (state.syncUi && state.bootstrap?.capabilities?.syncProgress === true) {
+    if (state.manualSyncStarting) return false;
+    state.manualSyncStarting = true;
+    renderSyncProgress(state.syncUi.getState());
+    try { await state.syncUi.sync(); return true; }
+    catch (error) { showToast(error.message, true); return false; }
+    finally { state.manualSyncStarting = false; renderSyncProgress(state.syncUi.getState()); }
   }
   const button = $('#syncButton');
   button.disabled = true;
@@ -1677,18 +2497,20 @@ async function startSync() {
   }
 }
 
-const MAX_STREAM_RETRIES = 5;
 let subscriptionTimer=null;
 function streamUnavailable(message) {
   $('#marketStatus').textContent=message;
   $('#marketAge').textContent='поток котировок не подключён';
   state.terminalUi?.marketState({state:'unavailable'});
 }
+function knownMarketSelection(selection) {
+  return {charts:(selection?.charts||[]).filter(row=>instrumentContext.resolve(row.instrumentUid).meta),focus:instrumentContext.resolve(selection?.focus).meta?selection.focus:''};
+}
 function sendMarketSubscription() {
   clearTimeout(subscriptionTimer);
   subscriptionTimer=setTimeout(()=>{
     const socket=state.stream;if(!socket||socket.readyState!==1||!socket.send)return;
-    const selection=document.hidden?{charts:[],focus:''}:state.terminalUi?.marketSubscription()||{charts:[],focus:''};
+    const selection=knownMarketSelection(document.hidden?{charts:[],focus:''}:state.terminalUi?.marketSubscription()||{charts:[],focus:''});
     const body=JSON.stringify({type:'subscribe',csrfToken:state.session?.csrfToken,...selection});
     if(socket.lastSelection===body)return;
     socket.lastSelection=body;socket.send(body);
@@ -1697,11 +2519,10 @@ function sendMarketSubscription() {
 function scheduleStreamRetry() {
   state.terminalUi?.marketState({state:document.hidden?'paused':'reconnecting'});
   if(document.hidden){$('#marketStatus').textContent='Поток приостановлен до возвращения в окно';return;}
-  if(state.streamRetryAttempts>=MAX_STREAM_RETRIES){streamUnavailable('Поток котировок не подключён · обновите страницу для повторного подключения');return;}
-  const delay=Math.min(16000,1000*(2**state.streamRetryAttempts));
-  state.streamRetryAttempts+=1;
+  const delay=Math.min(30000,1000*(2**Math.min(state.streamRetryAttempts,5)));
+  state.streamRetryAttempts=Math.min(state.streamRetryAttempts+1,6);
   clearTimeout(state.streamRetryTimer);state.streamRetryTimer=setTimeout(openStream,delay);
-  $('#marketStatus').textContent='Поток котировок переподключается · попытка '+state.streamRetryAttempts+'/'+MAX_STREAM_RETRIES;
+  $('#marketStatus').textContent='Восстанавливаем поток котировок · повтор через '+Math.round(delay/1000)+' сек.';
 }
 function openStream() {
   clearTimeout(state.streamRetryTimer);state.streamRetryTimer=null;
@@ -1712,6 +2533,7 @@ function openStream() {
   if(state.stream&&(runtimeAdapter||state.stream.readyState===0||state.stream.readyState===1)){sendMarketSubscription();return;}
   const handleMessage=(message,{reportPaint=true}={})=>{
     if(!message||typeof message!=='object')return;
+    if(message.instrumentUid&&!instrumentContext.resolve(message.instrumentUid).meta)return;
     if(message.type==='market.state'||message.type==='stream.state'){
       state.terminalUi?.marketState(message);return;
     }
@@ -1722,6 +2544,7 @@ function openStream() {
     }
     if(message.type!=='market.candle'||!message.candle)return;
     const candle=message.candle;
+    if(!instrumentContext.resolve(candle.instrumentUid).meta)return;
     if(!candle.interval&&message.simulated)candle.interval='CANDLE_INTERVAL_DAY';
     candle.capturedAt??=message.connectorReceivedAt;
     if(state.terminalUi){state.terminalUi.updateCandle(candle);state.terminalUi.marketEvent({type:'market.candle',instrumentUid:candle.instrumentUid,connectorReceivedAt:message.connectorReceivedAt,simulated:message.simulated});}
@@ -1733,7 +2556,7 @@ function openStream() {
     $('#marketAge').textContent=(Number.isFinite(at)?'Получено '+formatAge(Math.max(0,Date.now()-at)):'Время получения не передано')+(message.simulated?' · тестовый поток':'');
     if(reportPaint&&message.eventId)requestAnimationFrame(()=>void request('/api/latency/paint',{method:'POST',body:JSON.stringify({eventId:message.eventId,uiPaintedAt:new Date().toISOString()})}).catch(()=>{}));
   };
-  if(runtimeAdapter){state.stream=runtimeAdapter.startMarketStream(message=>handleMessage(message,{reportPaint:false}));return;}
+  if(runtimeAdapter){const scopeRevision=state.instrumentScopeRevision;state.stream=runtimeAdapter.startMarketStream(message=>{if(scopeRevision===state.instrumentScopeRevision)handleMessage(message,{reportPaint:false});});return;}
   streamUnavailable('Учебный поток недоступен.');
 }
 document.addEventListener('invest:market-subscription',sendMarketSubscription);
@@ -1758,7 +2581,7 @@ async function generateAiReport() {
   renderSelectedCompany();
   try {
     const result = await request('/api/ai/company-analysis', { method: 'POST', body: JSON.stringify({ instrumentUid, focus }) });
-    if (state.companyPending?.requestNumber !== requestNumber) return;
+    if (state.companyPending?.requestNumber !== requestNumber || !instrumentContext.isCurrent(selection.contextToken,'company')) return;
     if (result.llmUsed !== true) throw new Error('AI-разбор не получен. Сохранённые факты доступны отдельно.');
     view.report = result;
     view.analysisReport = result;
@@ -1766,13 +2589,17 @@ async function generateAiReport() {
     view.message = 'AI-разбор получен. Сверяйте выводы с датами и источниками отчётности.';
     view.factsMessage = 'Показан AI-разбор. Сохранённые факты можно открыть отдельно.';
   } catch (error) {
-    if (state.companyPending?.requestNumber === requestNumber) {
+    if (state.companyPending?.requestNumber === requestNumber && instrumentContext.isCurrent(selection.contextToken,'company')) {
+      if (['COMPANY_CONTEXT_CHANGED','SAVED_INSTRUMENT_CHANGED','SAVED_FACTS_INVALID'].includes(error.code)) {
+        invalidateCompanySnapshot(selection);
+        state.companyFactsAttempted?.delete(instrumentUid);
+      }
       view.phase = 'error';
       view.message = `AI-разбор не получен. ${error.message || 'Не удалось завершить запрос.'}`;
       if (companySelection().key === selection.key) showToast(view.message, true);
     }
   } finally {
-    if (state.companyPending?.requestNumber === requestNumber) {
+    if (state.companyPending?.requestNumber === requestNumber && instrumentContext.isCurrent(selection.contextToken,'company')) {
       state.companyPending = null;
       renderSelectedCompany();
       if (['success', 'error'].includes(view.phase) && companySelection().key === selection.key && state.currentView === 'ai') {
@@ -1788,15 +2615,50 @@ async function generateAiReport() {
 }
 
 function companySelection() {
-  const instrumentUid = $('#aiInstrument').value;
+  const context=instrumentContext.get('company');
+  const instrumentUid=companyInstrumentEligible(context.meta)?context.meta.instrumentUid:'';
   const focus = $('#aiFocus').value;
-  return { instrumentUid, focus, key: JSON.stringify([instrumentUid, focus]) };
+  return { instrumentUid, focus, key: JSON.stringify([context.scopeKey,instrumentUid,focus]), contextToken:instrumentContext.capture('company') };
+}
+
+function companyFactsReadPath(instrumentUid) {
+  return '/api/ai/'+(state.bootstrap?.capabilities?.companySavedFacts===true?'company-saved-facts':'company-facts')+'?instrumentUid='+encodeURIComponent(instrumentUid);
+}
+
+function assertCompanyFactsPacket(report,instrumentUid,refresh=false) {
+  if(state.bootstrap?.capabilities?.companySavedFacts!==true)return;
+  if(report?.contractVersion!=='saved-instrument-facts-v1'||report.intent!=='instrument.saved-facts'
+    ||report.instrument?.instrumentUid!==instrumentUid||report.llmUsed!==false
+    ||report.readMode!==(refresh?'explicit-refresh':'saved-only')||!['fresh','stale','missing','synthetic'].includes(report.cacheState)){
+    throw Object.assign(new Error('Сохранённые показатели не соответствуют выбранному контексту.'),{status:409});
+  }
 }
 
 function companyView(selection = companySelection()) {
   state.companyViews ||= new Map();
   if (!state.companyViews.has(selection.key)) state.companyViews.set(selection.key, { phase: 'idle', message: '', factsMessage: '', report: null });
   return state.companyViews.get(selection.key);
+}
+
+function companySnapshotViews(selection) {
+  const [scopeKey, instrumentUid] = JSON.parse(selection.key);
+  return [...(state.companyViews || [])].filter(([key]) => {
+    const [viewScope, viewInstrument] = JSON.parse(key);
+    return viewScope === scopeKey && viewInstrument === instrumentUid;
+  }).map(([, view]) => view);
+}
+
+function invalidateCompanySnapshot(selection) {
+  state.companyFacts?.delete(selection.instrumentUid);
+  state.companyFactsChecked?.delete(selection.instrumentUid);
+  for (const view of companySnapshotViews(selection)) {
+    view.report = null;
+    view.analysisReport = null;
+    view.phase = 'idle';
+    view.message = '';
+    view.factsPhase = 'error';
+    view.factsMessage = 'Сохранённые показатели изменились или не подтверждены. Повторите чтение фактов компании.';
+  }
 }
 
 function renderCompanyStatus() {
@@ -1815,50 +2677,74 @@ function renderCompanyStatus() {
   $('#aiReport').setAttribute('aria-labelledby', activeTab === 'facts' ? 'companyFactsTab' : 'companyAnalysisTab');
   const availability = $('#aiAvailability');
   availability.textContent = view.message || state.companyAvailability?.message || 'Проверяем подключение модели…';
+  const analysisUnavailable = state.companyAvailability?.available !== true;
+  availability.hidden = analysisUnavailable;
+  const analysisControls = $('[data-company-controls="analysis"] .company-controls-row');
+  if (analysisControls) analysisControls.hidden = analysisUnavailable;
   availability.setAttribute('role', 'status');
   availability.setAttribute('aria-live', 'polite');
   availability.setAttribute('aria-atomic', 'true');
   $('#aiAnalyzeButton').disabled = pending || !factsAvailable || state.companyAvailability?.available !== true;
   $('#companyFactsButton').disabled = pending || !factsAvailable;
+  $('#companyFactsButton').hidden = view.factsPhase !== 'error';
+  const sourceRefresh=$('#companyFactsRefresh');
+  if(sourceRefresh){sourceRefresh.hidden=state.bootstrap?.capabilities?.companySavedFacts!==true||state.bootstrap?.capabilities?.companyFactsRefresh!==true;sourceRefresh.disabled=pending||!factsAvailable;}
   $('#aiInstrument').disabled = pending;
   $('#aiFocus').disabled = pending;
   $('#companyFactsStatus').textContent = state.companyPending?.key === selection.key && state.companyPending.kind === 'facts'
-    ? 'Загружаем сохранённые факты…' : view.factsMessage || 'Откройте факты выбранной компании.';
+    ? (state.companyPending.refresh?'Обновляем показатели из источника…':'Загружаем сохранённые факты…') : !selection.instrumentUid ? companyContextReason() : view.factsMessage || 'Откройте факты выбранной компании.';
   $('#aiReport').setAttribute('aria-busy', String(pending && state.companyPending.key === selection.key));
 }
 
 function renderSelectedCompany() {
   const selection = companySelection();
   const identity = $('#companyIdentityMark');
+  if(!selection.instrumentUid){
+    if(identity)identity.innerHTML='';$('#companyIdentityText').textContent='';$('#companyIdentityQuote').textContent='';
+    $('#aiReport').innerHTML='<div class="company-context-unavailable"><h3>Факты компании недоступны</h3><p>'+escapeText(companyContextReason())+'</p><button type="button" class="button secondary" id="companyContextResearch">Открыть исследование</button></div>';
+    const action=$('#companyContextResearch'),meta=instrumentContext.get('company').meta;action.disabled=!meta;action.onclick=()=>openContextResearch(meta);
+    renderCompanyStatus();return;
+  }
   if (identity) {
     const find = rows => (rows || []).find(row => row.instrumentUid === selection.instrumentUid) || {};
-    const company = { ...find(state.bootstrap?.companyAnalysisInstruments), ...find(state.bootstrap?.instruments), ...find(state.marketCalendarUi?.getCatalog()) };
+    const company = instrumentContext.get('company').meta || {};
     identity.innerHTML = instrumentMark(company);
     watchInstrumentImages(identity);
     const position = find(state.bootstrap?.positions);
     const quote = state.companyQuotes?.get(selection.instrumentUid);
     const price = quote?.priceNanos ?? position.currentPriceNanos;
-    $('#companyIdentityText').innerHTML = `<h3>${escapeText(company.name || 'Выберите компанию')}</h3><p>${escapeText(company.ticker || '')}</p><div class="company-identity-tags">${[({share:'Акции',etf:'Фонды',bond:'Облигации',future:'Фьючерсы'})[company.assetType],company.exchange,({financial:'Финансовый сектор',it:'Технологии',energy:'Энергетика',materials:'Материалы',industrials:'Промышленность',telecom:'Телекоммуникации'})[company.sector] || company.sector].filter(Boolean).map(label=>`<span>${escapeText(label)}</span>`).join('')}</div>`;
-    $('#companyIdentityQuote').innerHTML = price != null ? `<strong>${escapeText(quoteMoney(price, quote?.currency || position.priceCurrency || company.currency))}</strong><small>${escapeText(quote?.delayed?'Обновление котировки задерживается · ':quote?'Последняя сделка · ':'Цена позиции · ')}${escapeText(formatDate(quote?.asOf || position.asOf,true))}</small>` : `<small>${escapeText(state.companyQuoteErrors?.get(selection.instrumentUid)||'Загружаем котировку…')}</small>`;
+    const quoteStatus=state.companyQuotePending?.has(selection.instrumentUid)?'Загружаем котировку…':state.companyTab==='facts'&&state.bootstrap?.capabilities?.companySavedFacts===true?'Котировка не запрашивается при чтении среза.':state.companyQuoteErrors?.get(selection.instrumentUid)||'Загружаем котировку…';
+    $('#companyIdentityText').innerHTML = `<h3>${escapeText(company.name || 'Выберите компанию')}</h3><p>${escapeText(company.ticker || '')}</p><div class="company-identity-tags">${[({share:'Акции',etf:'Фонды',bond:'Облигации',future:'Фьючерсы'})[company.assetType],company.exchange,({financial:'Финансовый сектор',it:'Технологии',energy:'Энергетика',materials:'Материалы',industrials:'Промышленность',telecom:'Телекоммуникации',consumer:'Потребительский сектор',health_care:'Здравоохранение',utilities:'Электроэнергетика',real_estate:'Недвижимость',ecomaterials:'Экоматериалы',green_buildings:'Зелёное строительство',green_energy:'Зелёная энергетика',electrocars:'Электромобили',other:'Другое'})[company.sector] || company.sector].filter(Boolean).map(label=>`<span>${escapeText(label)}</span>`).join('')}</div>`;
+    $('#companyIdentityQuote').innerHTML = price != null ? `<strong>${escapeText(quoteMoney(price, quote?.currency || position.priceCurrency || company.currency))}</strong><small>${escapeText(quote?.delayed?'Обновление котировки задерживается · ':quote?'Последняя сделка · ':'Цена позиции · ')}${escapeText(formatDate(quote?.asOf || position.asOf,true))}</small>` : '';
   }
   const view = companyView(selection);
   let notice = '';
   const factsTab = state.companyTab === 'facts';
   const factsPending = state.companyPending?.key === selection.key && state.companyPending?.kind === 'facts';
   const report = factsTab ? state.companyFacts?.get(selection.instrumentUid) || (view.report?.llmUsed !== true ? view.report : null) : view.analysisReport || (view.report?.llmUsed === true ? view.report : null);
-  if (!factsTab && (view.phase === 'loading' || view.phase === 'error')) {
+  if (!factsTab && state.companyAvailability?.available !== true && view.phase !== 'loading') {
+    const reason = state.companyAvailability?.message || 'Не удалось определить доступность AI-разбора.';
+    const canOpenFacts = Boolean(selection.instrumentUid) && (state.companyFacts?.has(selection.instrumentUid) || state.bootstrap?.capabilities?.companyFacts === true);
+    notice = `<section class="company-analysis-notice" role="status" aria-live="polite"><h4>AI-разбор недоступен</h4><p>${escapeText(reason)}</p>${report ? '<p>Ниже показан сохранённый AI-разбор.</p>' : ''}${canOpenFacts ? '<button class="button secondary" id="companyOpenFacts" type="button">Открыть факты компании</button>' : !selection.instrumentUid ? '<p>Выберите компанию, чтобы проверить доступные факты.</p>' : ''}</section>`;
+  } else if (!factsTab && (view.phase === 'loading' || view.phase === 'error')) {
     const title = view.phase === 'loading' ? 'Готовим AI-разбор' : 'AI-разбор не получен';
     const retained = report ? 'Ниже показан предыдущий AI-разбор.' : state.companyFacts?.has(selection.instrumentUid) ? 'Сохранённые показатели доступны на вкладке «Факты компании».' : '';
     notice = `<section class="company-analysis-notice" role="status" aria-live="polite"><h4>${title}</h4><p>${escapeText(view.message)} ${retained}</p></section>`;
   }
   if (report) renderCompanyReport(report, notice);
-  else $('#aiReport').innerHTML = `<div class="ai-report-content">${notice || `<div class="empty-state"><h3>${selection.instrumentUid ? factsTab ? factsPending ? 'Загружаем показатели' : 'Показатели пока недоступны' : 'Новый AI-разбор' : 'Выберите компанию для разбора'}</h3><p>${escapeText(factsTab ? factsPending ? 'Получаем сохранённые показатели и источники.' : view.factsMessage || 'Обновление выполняется автоматически. Доступные показатели появятся здесь после получения источника.' : 'Выберите тему и нажмите «Подготовить AI-разбор». Модель использует публичные сведения о компании.')}</p></div>`}</div>`;
+  else $('#aiReport').innerHTML = `<div class="ai-report-content">${notice || `<div class="empty-state"><h3>${selection.instrumentUid ? factsTab ? factsPending ? 'Загружаем показатели' : view.factsPhase === 'error' ? 'Факты не загружены' : 'Показатели пока недоступны' : 'Новый AI-разбор' : 'Выберите компанию для разбора'}</h3><p>${escapeText(factsTab ? factsPending ? 'Получаем сохранённые показатели и источники.' : view.factsMessage || 'Обновление выполняется автоматически. Доступные показатели появятся здесь после получения источника.' : 'Выберите тему и нажмите «Подготовить AI-разбор». Модель использует публичные сведения о компании.')}</p></div>`}</div>`;
+  $('#companyOpenFacts')?.addEventListener('click', () => {
+    state.companyTab = 'facts';
+    renderSelectedCompany();
+    $('#companyFactsTab').focus();
+    if (!state.companyFacts?.has(selection.instrumentUid)) void loadCompanyFacts();
+  });
   renderCompanyStatus();
 }
 
 function renderCompanyAvailability(status) {
-  state.companyAvailability = status || { state: 'not_configured', available: false, message: 'Модель для анализа компаний ещё не подключена. Сохранённые факты доступны без AI.' };
-  renderCompanyStatus();
+  state.companyAvailability = status || { state: 'unknown', available: false, message: 'Не удалось определить доступность AI-разбора.' };
+  renderSelectedCompany();
 }
 
 function safeCompanySourceUrl(value) {
@@ -1866,6 +2752,11 @@ function safeCompanySourceUrl(value) {
 }
 
 function renderCompanyReport(report, notice = '') {
+  const savedPacket=report.contractVersion==='saved-instrument-facts-v1';
+  const savedDate=(value,withTime=false)=>{
+    const date=new Date(value);if(!value||!Number.isFinite(date.getTime()))return 'не подтверждено';
+    return new Intl.DateTimeFormat('ru-RU',{timeZone:'Europe/Moscow',day:'2-digit',month:'2-digit',year:'numeric',...(withTime?{hour:'2-digit',minute:'2-digit',second:'2-digit'}:{})}).format(date)+(withTime?' мск':'');
+  };
   const sources = (Array.isArray(report.sources) ? report.sources : []).slice(0, 24);
   const metrics = (Array.isArray(report.metrics) ? report.metrics : Array.isArray(report.facts) ? report.facts : []).slice(0, 40);
   const known = metrics.filter(metric => metric.value !== null && metric.value !== undefined);
@@ -1873,72 +2764,108 @@ function renderCompanyReport(report, notice = '') {
   const priority = metric => { const index=order.indexOf(metric.key); return index<0?order.length:index; };
   const featured = [...known].sort((a,b)=>priority(a)-priority(b)).slice(0,6);
   const extra = metrics.filter(metric=>!featured.includes(metric));
-  const value = (raw,compact=false) => {
-    if(raw==null)return 'Нет данных';
-    const text=String(raw);if(!/^-?\d+(?:\.\d+)?$/u.test(text))return text;
-    const number=Number(text);
-    if(compact && Number.isFinite(number) && Math.abs(number)<=Number.MAX_SAFE_INTEGER)
-      return new Intl.NumberFormat('ru-RU',{notation:Math.abs(number)>=1e6?'compact':'standard',maximumFractionDigits:2}).format(number);
-    const [whole,fraction]=text.split('.');return whole.replace(/\B(?=(\d{3})+(?!\d))/gu,' ')+(fraction?','+fraction:'');
-  };
-  const unit = key => ({RUB:'₽',USD:'$',EUR:'€',CNY:'¥',PTS:'п.',currency:'ден. ед.',ratio:'×',shares:'акций',units:'ед.',years:'лет',days:'дн.',percent:'%',provider_value:'',unknown_currency:'','RUB/share':'₽/акция','USD/share':'$/акция','EUR/share':'€/акция','CNY/share':'¥/акция'})[key] ?? key ?? '';
-  const amount = (metric,compact=false) => value(metric.value,compact)+(metric.value!=null&&unit(metric.unit)?' '+unit(metric.unit):'');
+  const amount = (metric,compact=false) => financialMetric(metric,{mode:compact?'compact':'exact'});
   const period = metric => ({TTM:'За 12 месяцев',MRQ:'Последний квартал',provider_current:'Текущая сводка',provider_unspecified:'Период не указан'})[metric.period] || metric.period || 'Период не указан';
   const sourceLink = source => { const url=safeCompanySourceUrl(source.url);const title=escapeText(source.title||'Источник');return url?`<a href="${escapeText(url)}" target="_blank" rel="noopener noreferrer">${title} <span aria-hidden="true">↗</span></a>`:title; };
-  const metricSource = metric => sources.find(source=>(metric.sourceIds||[]).includes(source.id));
-  const cards = featured.length ? `<dl class="company-key-metrics">${featured.map(metric=>{
-    const source=metricSource(metric);
-    return `<div><dt>${escapeText(metric.label||metric.key)}</dt><dd title="${escapeText(amount(metric))}" aria-label="${escapeText(amount(metric))}">${escapeText(amount(metric,true))}</dd><small>${escapeText(period(metric))}</small>${metric.unit==='provider_value'?'<small class="company-unit-note">Масштаб единицы не указан</small>':''}</div>`;
-  }).join('')}</dl>` : '<div class="company-metrics-empty"><svg aria-hidden="true"><use href="#i-analytics"/></svg><h4>В источнике пока нет финансовых показателей</h4><p>После загрузки здесь появятся выручка, прибыль и оценка компании. Неизвестные значения не подставляются вместо данных.</p></div>';
-  const table = rows => `<div class="table-scroll"><table class="company-metrics"><thead><tr><th>Показатель</th><th>Значение</th><th>Отчётный период</th></tr></thead><tbody>${rows.map(metric=>`<tr><th scope="row">${escapeText(metric.label||metric.key)}</th><td>${escapeText(amount(metric))}${metric.unit==='provider_value'?'<small>Масштаб не указан</small>':''}</td><td>${escapeText(period(metric))}</td></tr>`).join('')}</tbody></table></div>`;
+  const emptyTitle=report.cacheState==='synthetic'?'В учебном срезе нет подтверждённой отчётности':'Источник пока не предоставил показатели';
+  const emptyDescription='Для этой компании источник ещё не передал финансовые показатели. Можно повторить запрос кнопкой «Обновить из источника». Отсутствующие значения не заменяются нулями.';
+  const compactMetricMarkup=metric=>{
+    const formatted=amount(metric,true),unitStart=formatted.lastIndexOf('\u00a0');
+    if(unitStart<0)return escapeText(formatted);
+    return escapeText(formatted.slice(0,unitStart).replace(/\u00a0/gu,' '))+' <span class="company-metric-unit">'+escapeText(formatted.slice(unitStart+1))+'</span>';
+  };
+  const metricCard=metric=>`<div data-company-metric="${escapeText(metric.key)}"><dt>${escapeText(metric.label||metric.key)}</dt><dd title="${escapeText(amount(metric))}" aria-label="${escapeText(amount(metric))}">${compactMetricMarkup(metric)}</dd><small>${escapeText(period(metric))}</small>${metric.unit==='provider_value'?'<small class="company-unit-note">Масштаб единицы не указан</small>':''}</div>`;
+  const cards = featured.length ? `<dl class="company-key-metrics">${featured.map(metricCard).join('')}</dl>` : `<div class="company-metrics-empty"><svg aria-hidden="true"><use href="#i-analytics"/></svg><h4>${escapeText(emptyTitle)}</h4><p>${escapeText(emptyDescription)}</p></div>`;
+  const table = rows => `<dl class="company-key-metrics company-complete-metrics">${rows.map(metricCard).join('')}</dl>`;
+  const metricSources=metrics.length?`<details class="company-metric-sources"><summary>Значения и источники</summary><label>Показатель<select data-company-source-metric>${metrics.map((metric,index)=>`<option value="${index}">${escapeText(metric.label||metric.key)}</option>`).join('')}</select></label><div data-company-source-body>${fundamentalMetricBody(metrics[0],report)}</div></details>`:'';
   const metricMarkup=cards+(extra.length?`<details class="company-extra-metrics"><summary>Остальные показатели: ${extra.length}</summary>${table(extra)}</details>`:'');
   const sections=(report.sections||[]).slice(0,16);
   const limitations=[...new Set([...(report.limitations||[]),...sections.filter(section=>/ограничени/iu.test(section.title)).flatMap(section=>section.items||[section.text]).filter(Boolean)])].slice(0,20);
-  const provenance=`<footer class="company-provenance"><div class="company-source-links"><span>Источники</span>${sources.slice(0,3).map(sourceLink).join('')}</div>${sources.length||limitations.length?`<details><summary>Даты и полнота данных</summary>${sources.length?`<ul class="company-sources">${sources.map(source=>`<li>${sourceLink(source)}<small>${escapeText([source.asOf?'Данные на '+formatDate(source.asOf):'Отчётная дата не указана',source.retrievedAt?'Получено: '+formatDate(source.retrievedAt):''].filter(Boolean).join(' · '))}</small></li>`).join('')}</ul>`:''}${limitations.length?`<ul>${limitations.map(text=>`<li>${escapeText(text)}</li>`).join('')}</ul>`:''}</details>`:''}</footer>`;
-  const dateLabel=report.dataAsOf?'Данные на '+formatDate(report.dataAsOf):'Периоды указаны у показателей';
+  const provenance=`<footer class="company-provenance"><div class="company-source-links"><span>Источники</span>${sources.slice(0,3).map(sourceLink).join('')}</div>${sources.length||limitations.length?`<details><summary>Даты и полнота данных</summary>${sources.length?`<ul class="company-sources">${sources.map(source=>`<li>${sourceLink(source)}<small>${escapeText([source.asOf?'Данные на '+formatDate(source.asOf):'Отчётная дата не указана',source.retrievedAt?'Получено: '+formatDate(source.retrievedAt):''].filter(Boolean).join(' · '))}</small></li>`).join('')}</ul>`:''}${limitations.length?`<ul>${limitations.map(text=>{const statement=sections.flatMap(section=>section.statements||[]).find(item=>item.text===text);return `<li>${escapeText(text)}${statement?renderClaimEvidence(companyClaimEvidence(report,statement)):""}</li>`;}).join('')}</ul>`:''}</details>`:''}</footer>`;
+  const dateLabel=savedPacket?(report.dataAsOf?(report.cacheState==='synthetic'?'Учебная отчётная дата: ':'Отчётная дата источника: ')+savedDate(report.dataAsOf):'Отчётная дата не указана'):(report.dataAsOf?'Данные на '+formatDate(report.dataAsOf):'Периоды указаны у показателей');
+  const savedDates=savedPacket?`<details class="company-saved-provenance"><summary>О сохранённом срезе</summary><p>${escapeText(report.cacheState==='synthetic'?'Учебный срез; брокер и модель не вызываются.':report.readMode==='explicit-refresh'?'Источник обновлён по вашему запросу.':'Для чтения этого среза источник и модель не вызывались.')}</p><p>Получены показатели: ${escapeText(savedDate(report.receivedAt,true))}.</p><p>Получены сведения об инструменте: ${escapeText(savedDate(report.metadataReceivedAt,true))}.</p><p>Срез прочитан: ${escapeText(savedDate(report.generatedAt,true))}.</p><p>Время получения не является датой отчётности. Периоды и единицы указаны у каждого показателя; сопоставимость разных периодов не подтверждена.</p></details>`:'';
   let content;
   if(report.llmUsed===true){
     const narrative=sections.filter(section=>!/ограничени/iu.test(section.title)).map((section,index)=>{
       const icon=/риск|вниман|сценари/iu.test(section.title)?'i-shield':index===0?'i-ai':'i-analytics';
-      return `<section class="company-analysis-section"><svg aria-hidden="true"><use href="#${icon}"/></svg><div><h4>${escapeText(section.title)}</h4>${section.items?.length?`<ul>${section.items.slice(0,30).map(text=>`<li>${escapeText(text)}</li>`).join('')}</ul>`:`<p>${escapeText(section.text||'Данных недостаточно.')}</p>`}</div></section>`;
+      return `<section class="company-analysis-section"><svg aria-hidden="true"><use href="#${icon}"/></svg><div><h4>${escapeText(section.title)}</h4>${section.items?.length?`<ul>${section.items.slice(0,30).map((text,index)=>`<li>${escapeText(text)}${renderClaimEvidence(companyClaimEvidence(report,section.statements?.[index]?.text===text?section.statements[index]:null))}</li>`).join('')}</ul>`:`<p>${escapeText(section.text||'Данных недостаточно.')}</p>`}</div></section>`;
     }).join('');
     content=`<header class="company-report-heading"><div><span class="analysis-label">AI-разбор публичных сведений</span><h3>${escapeText(report.title||'Разбор компании')}</h3></div><small>${escapeText(dateLabel)}</small></header><div class="company-analysis-sections">${narrative}</div><details class="company-report-metrics"><summary>Показатели, использованные в разборе</summary>${metricMarkup}</details>${provenance}`;
   }else{
-    const compactExtras=extra.length?`<aside class="company-other-panel"><h3>Другие показатели</h3>${extra.slice(0,5).map(metric=>`<details class="company-metric-disclosure"><summary><span>${escapeText((metric.label||metric.key).replace(/ поставщика/g,''))}</span><strong>${escapeText(amount(metric,true))}</strong></summary><p>${escapeText(period(metric))}${metric.unit==='provider_value'?' · Масштаб показателя в источнике не указан.':''}</p></details>`).join('')}${extra.length>5?`<details class="company-extra-metrics"><summary>Все показатели · ${extra.length}</summary>${table(extra)}</details>`:''}</aside>`:'';
-    content=`<div class="company-facts-grid${compactExtras?'':' company-facts-wide'}"><section class="company-metrics-panel" aria-label="${escapeText(report.title||'Факты компании')}"><header class="company-report-heading"><h3>Ключевые показатели</h3><small>${escapeText(dateLabel)}</small></header>${cards}${provenance}</section>${compactExtras}</div>`;
+    const compactExtras=extra.length?`<aside class="company-other-panel"><header class="company-report-heading"><h3>Другие показатели</h3></header><dl class="company-key-metrics company-secondary-metrics">${extra.slice(0,6).map(metricCard).join('')}</dl></aside>`:'';
+    content=`<div class="company-facts-grid${compactExtras?'':' company-facts-wide'}"><section class="company-metrics-panel" aria-label="${escapeText(report.title||'Факты компании')}"><header class="company-report-heading"><h3>Ключевые показатели</h3><small>${escapeText(dateLabel)}</small></header>${cards}</section>${compactExtras}</div>${extra.length>6?`<section class="company-all-metrics"><h3>Все показатели</h3>${table(metrics)}</section>`:''}${provenance}`;
   }
-  $('#aiReport').innerHTML=`<div class="ai-report-content">${notice}${content}</div>`;
+  $('#aiReport').innerHTML=`<div class="ai-report-content">${notice}${savedDates}${content}${metricSources}${renderContextEvidence(buildCompanyContextEvidence(report,instrumentContext.get('company').meta))}</div>`;
+  $('#aiReport [data-company-source-metric]')?.addEventListener('change',event=>{
+    const metric=metrics[Number(event.target.value)];
+    if(metric)$('#aiReport [data-company-source-body]').innerHTML=fundamentalMetricBody(metric,report);
+  });
 }
 
-async function loadCompanyFacts() {
+async function loadCompanyFacts({refresh=false}={}) {
   if (state.companyPending) return;
   const selection = companySelection();
   const { instrumentUid } = selection;
   if (!instrumentUid) { showToast('Выберите компанию, чтобы открыть факты.', true); return; }
   if (state.bootstrap?.capabilities?.companyFacts !== true) return;
+  refresh=refresh===true;
+  if(refresh&&(state.bootstrap?.capabilities?.companySavedFacts!==true||state.bootstrap?.capabilities?.companyFactsRefresh!==true))return;
   state.companyTab = 'facts';
   state.companyFactsAttempted ||= new Map();
   state.companyFactsAttempted.set(instrumentUid, Date.now());
   const view = companyView(selection);
   const requestNumber = ++state.companyRequest;
-  state.companyPending = { ...selection, requestNumber, kind: 'facts' };
-  renderCompanyStatus();
+  state.companyPending = { ...selection, requestNumber, kind: 'facts',refresh };
+  view.factsPhase = 'loading';
+  renderSelectedCompany();
   try {
-    const result = await request(`/api/ai/company-facts?instrumentUid=${encodeURIComponent(instrumentUid)}`);
-    if (state.companyPending?.requestNumber !== requestNumber) return;
+    let result = await request(refresh?'/api/ai/company-facts-refresh':companyFactsReadPath(instrumentUid),refresh?{method:'POST',body:JSON.stringify({instrumentUid})}:undefined);
+    if (state.companyPending?.requestNumber !== requestNumber || !instrumentContext.isCurrent(selection.contextToken,'company')) return;
+    assertCompanyFactsPacket(result,instrumentUid,refresh);
+    // Keep the validated saved slice available if the subsequent source refresh
+    // fails. It is still stale; receiving it does not confirm a new observation.
+    if(!refresh && result.cacheState==='stale') {
+      view.report={...result,llmUsed:false};
+      state.companyFacts ||= new Map();
+      state.companyFacts.set(instrumentUid,view.report);
+    }
+    // Selecting a company may refresh missing/expired public facts. GET remains
+    // strictly saved-only; the separate POST keeps authorization and audit intact.
+    if(!refresh && state.currentView==='ai' && state.bootstrap?.capabilities?.companyFactsAutoRefresh===true && state.bootstrap?.capabilities?.companyFactsRefresh===true
+      && result.contractVersion==='saved-instrument-facts-v1' && ['missing','stale'].includes(result.cacheState)) {
+      refresh=true;state.companyPending.refresh=true;renderCompanyStatus();
+      result=await request('/api/ai/company-facts-refresh',{method:'POST',body:JSON.stringify({instrumentUid})});
+      if(state.companyPending?.requestNumber!==requestNumber||!instrumentContext.isCurrent(selection.contextToken,'company'))return;
+      assertCompanyFactsPacket(result,instrumentUid,true);
+    }
     view.report = { ...result, llmUsed: false };
     state.companyFacts ||= new Map();
     state.companyFacts.set(instrumentUid, view.report);
     state.companyFactsChecked ||= new Map();
     state.companyFactsChecked.set(instrumentUid, Date.now());
-    view.factsMessage = 'Пример готового отчёта. Показатели вымышлены.';
+    view.factsPhase = 'success';
+    view.factsMessage = result.contractVersion==='saved-instrument-facts-v1'
+      ? result.cacheState==='synthetic'?'Показан учебный срез. Обновление реального источника доступно в приложении.'
+        :result.cacheState==='missing'?'Показатели пока недоступны. Повторите запрос к источнику.'
+          :result.cacheState==='stale'?'Показаны прежние показатели; источник пока не обновился.'
+            :refresh?'Показатели получены из источника. Дата отчётности указана у показателей.':'Показаны актуальные сохранённые показатели.'
+      : 'Пример готового отчёта. Показатели вымышлены.';
+    for (const cachedView of companySnapshotViews(selection)) {
+      cachedView.factsPhase = view.factsPhase;
+      cachedView.factsMessage = view.factsMessage;
+    }
     if (view.phase === 'success') { view.phase = 'idle'; view.message = ''; }
   } catch (error) {
-    if (state.companyPending?.requestNumber === requestNumber) {
-      view.factsMessage = 'Обновление показателей задерживается. Повторим автоматически; сохранённые данные остаются доступны.';
+    if (state.companyPending?.requestNumber === requestNumber && instrumentContext.isCurrent(selection.contextToken,'company')) {
+      if (['COMPANY_CONTEXT_CHANGED','SAVED_INSTRUMENT_CHANGED','SAVED_FACTS_INVALID'].includes(error.code)) invalidateCompanySnapshot(selection);
+      view.factsPhase = 'error';
+      if([401,403,404,409].includes(error.status)){state.companyFacts?.delete(instrumentUid);view.report=null;}
+      view.factsMessage = state.companyFacts?.has(instrumentUid)
+        ? (state.bootstrap?.capabilities?.companySavedFacts===true?(refresh?'Не удалось обновить показатели. Ниже прежний сохранённый срез. Повторите действие, когда источник доступен.':'Не удалось перечитать сохранённые показатели. Ниже прежний срез. Повторите чтение.'):'Не удалось обновить факты. Ниже сохранённые данные. Повторим автоматически; можно обновить сейчас.')
+        : state.bootstrap?.capabilities?.companySavedFacts===true?(refresh?'Не удалось обновить показатели из источника. Повторите действие.':'Не удалось прочитать сохранённые показатели. Повторите чтение.'):'Не удалось загрузить факты компании. Повторите обновление.';
     }
   } finally {
-    if (state.companyPending?.requestNumber === requestNumber) {
+    if (state.companyPending?.requestNumber === requestNumber && instrumentContext.isCurrent(selection.contextToken,'company')) {
       state.companyPending = null;
       renderSelectedCompany();
       if (state.currentView === 'ai' && companySelection().instrumentUid !== instrumentUid) void ensureCompanyFacts();
@@ -1948,17 +2875,17 @@ async function loadCompanyFacts() {
 
 async function ensureCompanyQuote() {
   if(state.currentView!=='ai'||document.hidden||runtimeAdapter||state.bootstrap?.capabilities?.companyFacts!==true)return;
-  const {instrumentUid}=companySelection();if(!instrumentUid)return;
+  const selection=companySelection(),{instrumentUid}=selection;if(!instrumentUid)return;
   state.companyQuotes ||= new Map();state.companyQuotePending ||= new Set();state.companyQuoteAttempts ||= new Map();state.companyQuoteErrors ||= new Map();
   if(state.companyQuotePending.has(instrumentUid)||Date.now()-(state.companyQuoteAttempts.get(instrumentUid)||0)<30_000)return;
   state.companyQuotePending.add(instrumentUid);state.companyQuoteAttempts.set(instrumentUid,Date.now());
-  try{const quote=await request(`/api/ai/company-quote?instrumentUid=${encodeURIComponent(instrumentUid)}`);if(quote.instrumentUid!==instrumentUid)throw new Error('Котировка не соответствует выбранной компании.');state.companyQuotes.set(instrumentUid,quote);state.companyQuoteErrors.delete(instrumentUid);}
-  catch(error){const saved=state.companyQuotes.get(instrumentUid);if(saved)saved.delayed=true;state.companyQuoteErrors.set(instrumentUid,'Котировка временно недоступна. Повторим автоматически.');}
-  finally{state.companyQuotePending.delete(instrumentUid);if(companySelection().instrumentUid===instrumentUid)renderSelectedCompany();}
+  try{const quote=await request(`/api/ai/company-quote?instrumentUid=${encodeURIComponent(instrumentUid)}`);if(!instrumentContext.isCurrent(selection.contextToken,'company'))return;if(quote.instrumentUid!==instrumentUid)throw new Error('Котировка не соответствует выбранной компании.');state.companyQuotes.set(instrumentUid,quote);state.companyQuoteErrors.delete(instrumentUid);}
+  catch(error){if(!instrumentContext.isCurrent(selection.contextToken,'company'))return;const saved=state.companyQuotes.get(instrumentUid);if(saved)saved.delayed=true;state.companyQuoteErrors.set(instrumentUid,'Котировка временно недоступна. Повторим автоматически.');}
+  finally{if(instrumentContext.isCurrent(selection.contextToken,'company')){state.companyQuotePending.delete(instrumentUid);if(companySelection().instrumentUid===instrumentUid)renderSelectedCompany();}}
 }
 
 function ensureCompanyFacts() {
-  void ensureCompanyQuote();
+  if(state.bootstrap?.capabilities?.companySavedFacts!==true||state.companyTab!=='facts')void ensureCompanyQuote();
   const { instrumentUid } = companySelection();
   if (document.hidden || state.currentView !== 'ai' || !instrumentUid || state.companyTab !== 'facts' || state.companyPending) return;
   const now=Date.now();
@@ -1967,7 +2894,6 @@ function ensureCompanyFacts() {
 }
 
 function bindUi() {
-  $('#riskSummaryAccount').addEventListener('change', event => { state.riskSummaryAccount = event.target.value; renderRiskPlan(state.bootstrap); });
   $$('[data-view]').forEach((button) => button.addEventListener('click', () => activateView(button.dataset.view, button)));
   $$('[data-go-view]').forEach((button) => button.addEventListener('click', () => activateView(button.dataset.goView)));
   $$('[data-system-section]').forEach((button) => button.addEventListener('click', () => {
@@ -2000,10 +2926,14 @@ function bindUi() {
   $('#marketChartType').addEventListener('change', event => state.marketChart?.setType(event.target.value));
   $('#operationsPrevious').addEventListener('click', () => changeOperationPage(-1));
   $('#operationsNext').addEventListener('click', () => changeOperationPage(1));
+  $('#riskPreparePlan').addEventListener('click', () => {
+    const result = state.tradingPlanUi?.prepareRiskScenario(riskCalculatorInput());
+    $('#riskPreparePlanStatus').textContent = result?.message ?? 'Откройте журнал после загрузки приложения.';
+  });
   $('#riskCalculatorForm').addEventListener('submit', (event) => { event.preventDefault(); updateRiskCalculator(); });
   $('#riskCalculatorForm').elements.assetType.addEventListener('change', updateRiskCalculator);
   $('#riskCalculatorForm').addEventListener('input', updateRiskCalculator);
-  state.selectRiskTab = initRiskTabs();
+  state.selectRiskTab = initRiskTabs(document,()=>{if(state.currentView==='risk-plan')state.taskNavigation?.sync(taskNavigationContext());});
   initLedgerTabs();
   $$('[data-list-page]').forEach((button) => button.addEventListener('click', () => changeListPage(button.dataset.listPage, Number(button.dataset.pageDirection))));
   $('#holdingRange').addEventListener('change', () => {
@@ -2014,8 +2944,11 @@ function bindUi() {
     state.listPages.delete(list);
     renderAnalytics(analyticsDisplayData());
   });
-  for (const id of ['overviewAccount', 'statisticsAccount']) $('#' + id).addEventListener('change', (event) => {
-    state.analyticsAccount = event.target.value;
+  for (const id of ['overviewAccount', 'statisticsAccount']) $('#' + id).addEventListener('change', async (event) => {
+    const nextAccount=event.target.value,previousAccount=state.analyticsAccount;
+    if(state.terminalUi?.switchAccount&&!await state.terminalUi.switchAccount(nextAccount)){event.target.value=previousAccount;return;}
+    state.analyticsAccount = nextAccount;
+    state.todaySelectionRevision=(state.todaySelectionRevision||0)+1;
     $('#operationFilters').elements.account.value = state.analyticsAccount;
     state.listPages = new Map();
     renderPeriodViews();
@@ -2032,7 +2965,8 @@ function bindUi() {
   $$('.chart-toolbar [data-drawing]').forEach((button) => button.addEventListener('click', () => { state.marketChart?.beginDrawing(button.dataset.drawing); showToast(button.dataset.drawing === 'trend' ? 'Укажите две точки на графике.' : 'Укажите уровень на графике.'); }));
   $('#aiAnalyzeButton').addEventListener('click', generateAiReport);
   $('#companyFactsButton').addEventListener('click', loadCompanyFacts);
-  $('#aiInstrument').addEventListener('change', () => { renderSelectedCompany(); void ensureCompanyFacts(); });
+  $('#companyFactsRefresh')?.addEventListener('click',()=>loadCompanyFacts({refresh:true}));
+  $('#aiInstrument').addEventListener('change', () => { instrumentContext.select($('#aiInstrument').value,{surface:'company'}); syncCompanyContext(); });
   $('#aiFocus').addEventListener('change', renderSelectedCompany);
   $$('[data-company-tab]').forEach((button, index, buttons) => {
     const select = target => { state.companyTab = target.dataset.companyTab; renderSelectedCompany(); void ensureCompanyFacts(); };
@@ -2126,7 +3060,6 @@ function bindUi() {
 
   initTermTooltips();
   initGlossary();
-  initGlobalSearch();
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
@@ -2140,11 +3073,11 @@ export const FINANCIAL_TERMS = FEATURE_TERMS;
 Object.assign(FINANCIAL_TERMS, {
   periodInstruments: {
     abbr: 'P&L', name: 'Инструменты периода', nameEn: 'Instrument contribution', category: 'Доходность и риск',
-    summary: 'Список инструментов, которым можно отнести прибыль или убыток за выбранные даты. У каждого показаны денежный результат и доходность, если известна цена входа.',
-    details: 'Для акций учитываются закрытые за период сделки с известной ценой входа и комиссии. Для фьючерсов учитывается полученная за период вариационная маржа. Это результат ваших операций по инструменту, а не изменение рыночной цены компании за период.',
-    formula: 'Результат инструмента = атрибутируемая прибыль − атрибутируемые убытки − комиссии',
+    summary: 'Денежный результат известных закрытых сделок и вариационной маржи, а также его доля в суммарном известном результате той же валюты.',
+    details: 'Для акций учитывается полный результат закрытых в периоде сделок, включая более ранние покупки и комиссии. Для фьючерсов — вариационная маржа за период. Знаменатель доли — модуль суммы этих результатов, с учётом знаков прибыли и убытка, в одной валюте. Доля может превышать 100%; при нулевой сумме она не определена. Это не доходность позиции и не вклад в доходность в процентных пунктах. Таблица не включает всю переоценку открытых активов и не сверяет полный результат портфеля.',
+    formula: 'Доля денежного результата = P&L инструмента / |сумма известных P&L той же валюты| × 100%',
     variables: [{ name: 'Период', desc: 'Общий диапазон дат над статистикой' }, { name: 'Атрибуция', desc: 'Результат включается только когда его можно связать с конкретным инструментом' }],
-    example: 'В выбранном месяце закрытая позиция принесла 3 000 ₽, комиссии составили 100 ₽. В списке будет результат +2 900 ₽. Он не означает, что рыночная цена акции выросла на 2 900 ₽.',
+    example: 'Результаты двух инструментов: +300 ₽ и −100 ₽. Итог +200 ₽; доли +150% и −50%. При результате +100 ₽ и −100 ₽ итог нулевой, поэтому доли не рассчитываются.',
   },
   vm: {
     abbr: 'VM',
@@ -2170,12 +3103,12 @@ Object.assign(FINANCIAL_TERMS, {
     category: 'Доходность и риск',
     summary: 'Отношение суммарной прибыли от прибыльных сделок к суммарному убытку от убыточных сделок.',
     details: 'Показатель помогает сравнить валовую прибыль и валовый убыток, но сам по себе не доказывает устойчивость стратегии. Его нужно оценивать вместе с числом сделок, просадкой, комиссиями и периодом наблюдения.',
-    formula: 'Profit Factor = Валовая прибыль / |Валовый убыток|',
+    formula: 'Profit Factor = Сумма положительных netPnl / |Сумма отрицательных netPnl|',
     variables: [
-      { name: 'Валовая прибыль', desc: 'Сумма всей зафиксированной прибыли по закрытым сделкам (> 0 ₽)' },
-      { name: 'Валовый убыток', desc: 'Модуль суммы всех зафиксированных убытков по закрытым сделкам (< 0 ₽)' }
+      { name: 'Положительные netPnl', desc: 'Денежные результаты прибыльных закрытых сделок после учтённых комиссий, в одной валюте' },
+      { name: 'Отрицательные netPnl', desc: 'Денежные результаты убыточных закрытых сделок после учтённых комиссий, в той же валюте' }
     ],
-    example: 'Если за месяц сумма прибыльных сделок составила 180 000 ₽, а сумма убыточных — 60 000 ₽, то Profit Factor = 180 000 / 60 000 = 3.0 (высокая эффективность).',
+    example: 'Если за месяц сумма прибыльных результатов составила 180 000 ₽, а модуль суммы убыточных — 60 000 ₽, то Profit Factor = 180 000 / 60 000 = 3,0. Само отношение не доказывает устойчивость стратегии.',
   },
   winRate: {
     abbr: 'WR',
@@ -2207,11 +3140,11 @@ Object.assign(FINANCIAL_TERMS, {
   },
   netReturn: {
     abbr: 'Net %',
-    name: 'Доходность после комиссий',
+    name: 'Результат к начальной стоимости',
     nameEn: 'Net Return',
     category: 'Доходность и риск',
     summary: 'Изменение сохранённой стоимости портфеля за выбранный период после исключения внешних денежных потоков.',
-    details: 'Удержанные комиссии уже отражены в стоимости счёта и повторно не вычитаются. Показатель доступен при полной истории денежных потоков и оценках на границах периода. Это простая доходность к начальному капиталу, не TWR и не IRR.',
+    details: 'Удержанные комиссии уже отражены в стоимости счёта и повторно не вычитаются. Показатель доступен при полной истории денежных потоков, оценках на границах периода и положительной начальной стоимости. Даты пополнений не взвешиваются. Это результат к начальному капиталу, не TWR и не MWR/XIRR.',
     formula: 'Net Return = ((Капитал_конец - Капитал_начало - Пополнения + Выводы) / Начальный_капитал) × 100%',
     variables: [
       { name: 'Капитал_конец / начало', desc: 'Оценка стоимости портфеля на конец и начало выбранного периода' },
@@ -2225,9 +3158,9 @@ Object.assign(FINANCIAL_TERMS, {
     name: 'Комиссии',
     nameEn: 'Broker and Exchange Fees',
     category: 'Базовые метрики портфеля',
-    summary: 'Явно переданные брокером и биржей удержания, сохранённые в локальной истории операций.',
-    details: 'Workspace не подставляет приблизительные комиссии и не включает налоги или иные списания без подтверждённого поля источника.',
-    formula: 'Комиссии = сумма подтверждённых комиссионных операций за выбранный период',
+    summary: 'Суммы комиссий из сохранённых операций с учётом исходной валюты каждого поля.',
+    details: 'Отдельная брокерская комиссия заменяет комиссию связанной сделки в той же валюте. Остальные комиссии сделок учитываются по их исходному полю. Рублёвый итог использует сохранённые курсы ЦБ на даты операций. Полнота денежных списаний и даты расчётов не подтверждены; налоги не включаются.',
+    formula: 'Комиссии в RUB = сумма модулей комиссий × исторический курс каждой операции',
     variables: [
       { name: 'Комиссионная операция', desc: 'Отдельное списание, которое источник явно пометил как комиссию брокера или биржи' },
       { name: 'Период', desc: 'Интервал сохранённых операций, использованный для расчёта' }
@@ -2268,9 +3201,9 @@ Object.assign(FINANCIAL_TERMS, {
     name: 'Реализованный P&L (FIFO)',
     nameEn: 'Realized FIFO P&L',
     category: 'Сделки и исполнение',
-    summary: 'Фактическая прибыль от закрытых позиций по акциям, рассчитанная методом First In, First Out.',
+    summary: 'Результат закрытых позиций по акциям до комиссий плюс зачисленная вариационная маржа фьючерсов. Комиссии периода показаны отдельно.',
     details: 'При частичной продаже пакета акций первыми списываются те лоты, которые были куплены раньше всего по соответствующей цене приобретения.',
-    formula: 'P&L_FIFO = ∑ (Цена_продажи - Цена_ранней_покупки) × Лоты - Комиссии',
+    formula: 'Реализованный результат = FIFO акций до комиссий + зачисленная вариационная маржа',
     variables: [
       { name: 'Цена_ранней_покупки', desc: 'Цена лотов из самых первых по времени открытых покупок' },
       { name: 'Цена_продажи', desc: 'Фактическая цена исполнения закрывающей сделки' }
@@ -2278,18 +3211,15 @@ Object.assign(FINANCIAL_TERMS, {
     example: 'Купили 10 акций по 100 ₽, затем 10 акций по 120 ₽. При продаже 10 акций по 140 ₽ списывается первая партия (по 100 ₽): прибыль (140 - 100) × 10 = +400 ₽.',
   },
   unrealizedPnl: {
-    abbr: 'Paper P&L',
-    name: 'Нереализованный P&L',
-    nameEn: 'Unrealized (Mark-to-Market) P&L',
+    abbr: 'Оценка позиций',
+    name: 'Оценка открытых позиций',
+    nameEn: 'Current broker position estimates',
     category: 'Базовые метрики портфеля',
-    summary: 'Текущая плавающая прибыль или убыток по незакрытым позициям, оцениваемая по последней рыночной цене.',
-    details: 'Пока позиция не закрыта, этот результат остаётся бумажным и может измениться вместе с рынком в любой момент.',
-    formula: 'Unrealized P&L = (Текущая цена Mark - Средняя цена покупки) × Количество лотов',
-    variables: [
-      { name: 'Текущая цена Mark', desc: 'Последняя цена сделки или средняя между лучшим спросом и предложением' },
-      { name: 'Средняя цена покупки', desc: 'Средневзвешенная цена приобретения удерживаемой позиции' }
-    ],
-    example: 'Удержание 100 акций Сбербанка со средней ценой 280 ₽ при текущей котировке 295 ₽ даёт нереализованную прибыль (295 - 280) × 100 = +1 500 ₽.',
+    summary: 'Текущие оценки брокера по сохранённым открытым позициям, отдельно в каждой подтверждённой валюте.',
+    details: 'Состав и источники оценки показывают покрытие, счета и даты снимков. Неизвестные результаты не заменяются нулём. Исторический период не меняет текущий состав.',
+    formula: 'Сумма по валюте = сумма подтверждённых оценок позиций в этой валюте',
+    variables: [{ name: 'Оценка позиции', desc: 'Сохранённая оценка брокера с проверенной валютой и связью с текущим снимком' }],
+    example: 'Оценки +7 USD и +11 EUR остаются двумя суммами. Это не прибыль выбранного периода или подтверждение денежных выплат.',
   },
   guaranteeMargin: {
     abbr: 'ГО',
@@ -2375,8 +3305,8 @@ function initTermTooltips() {
         ${term.abbr && term.abbr.length <= 12 && ![term.name,term.nameEn].some(value=>String(value).toLocaleLowerCase()===term.abbr.toLocaleLowerCase()) ? `<span class="term-popover-badge">${escapeText(term.abbr)}</span>` : ''}
       </div>
       <p class="term-popover-desc">${escapeText(term.summary)}</p>
-${term.formula?.trim() ? `<div class="term-popover-formula">${escapeText(term.formula)}</div>` : ''}
-${term.variables?.length ? `<div class="term-popover-vars">${term.variables.map((v) => `<div><b>${escapeText(v.name)}:</b> ${escapeText(v.desc)}</div>`).join('')}</div>` : ''}
+${term.formula?.trim() ? financialFormula(termKey, term.formula) : ''}
+${financialFormulaVariables(termKey, term.variables)}
       <div class="term-popover-example">
         <strong>Пример расчёта:</strong>
         ${escapeText(term.example)}
@@ -2400,6 +3330,8 @@ ${term.variables?.length ? `<div class="term-popover-vars">${term.variables.map(
     if (left + popoverRect.width > window.innerWidth - 10) {
       left = window.innerWidth - popoverRect.width - 10;
     }
+    top = Math.max(10, Math.min(top, window.innerHeight - popoverRect.height - 10));
+    left = Math.max(10, Math.min(left, window.innerWidth - popoverRect.width - 10));
 
     popover.style.top = `${top}px`;
     popover.style.left = `${left}px`;
@@ -2437,9 +3369,14 @@ ${term.variables?.length ? `<div class="term-popover-vars">${term.variables.map(
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && activeHelpBtn) closeTooltip({ immediate: true });
+    else if (activeHelpBtn && document.activeElement === activeHelpBtn && !popover.hidden && popover.scrollHeight > popover.clientHeight) {
+      const step = ({ ArrowDown: 40, ArrowUp: -40, PageDown: popover.clientHeight * .8, PageUp: -popover.clientHeight * .8, Home: -popover.scrollHeight, End: popover.scrollHeight })[e.key];
+      if (step !== undefined) { e.preventDefault(); popover.scrollTop += step; }
+    }
   });
   window.addEventListener('resize', () => closeTooltip({ immediate: true }));
-  window.addEventListener('scroll', () => {
+  window.addEventListener('scroll', (event) => {
+    if (event.target === popover || (event.target?.nodeType && popover.contains(event.target))) return;
     if (activeHelpBtn && document.activeElement === activeHelpBtn) showTooltip(activeHelpBtn);
     else closeTooltip({ immediate: true });
   }, true);
@@ -2500,59 +3437,62 @@ function initGlossary() {
 }
 
 function initGlobalSearch() {
-  const input=$('#globalSearch'),list=$('#globalSearchResults');if(!input||!list)return;
-  const box=input.closest('.topbar-search'), toggle=$('#globalSearchToggle');
-  const expand=()=>{box.classList.add('search-open');toggle?.setAttribute('aria-expanded','true');input.focus();};
-  toggle?.addEventListener('click',expand);
-  input.addEventListener('focus',()=>{box.classList.add('search-open');toggle?.setAttribute('aria-expanded','true');});
-  box.addEventListener('focusout',event=>{if(!box.contains(event.relatedTarget)&&!input.value){box.classList.remove('search-open');toggle?.setAttribute('aria-expanded','false');}});
-  let rows=[],active=-1;
-  const close=()=>{list.hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');active=-1;};
-  const choose=index=>{
-    const row=rows[index];if(!row)return;
-    close();activateView(row.view);
+  const input=$('#globalSearch'),list=$('#globalSearchResults');if(!input||!list||!state.deepAnalytics)return;
+  const sameRef=(a,b)=>a?.namespace===b?.namespace&&a?.instrumentUid===b?.instrumentUid;
+  const accessToken=()=>JSON.stringify([state.searchAccessRevision||0,state.savedResearchWorkspace?.getAccessToken()??null]);
+  const canResearch=()=>state.savedResearchWorkspace?.canResearch()===true;
+  const canTerminal=()=>Boolean(state.terminalUi&&((runtimeAdapter&&state.bootstrap?.environment==='fixture'&&state.bootstrap?.preview?.static===true)||state.bootstrap?.capabilities?.marketCalendar===true));
+  const focusTarget=target=>{if(!target)return;if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.scrollIntoView({block:'nearest',behavior:'instant'});target.focus({preventScroll:true});};
+  const navigate=row=>{
+    const target=row.target&&document.getElementById(row.target),riskPanel=target?.closest('[data-risk-panel]');
+    const mode=row.view==='analytics'?(target?.closest('.deep-instrument')?'instrument':target?.closest('.deep-portfolio')?(target.closest('.deep-trade-statistics,.ranking-surface')?'trading':'capital'):null):null;
+    if(mode)state.deepAnalytics.showTaskView(document.body.dataset.navigationMode!=='classic'||mode==='instrument'?mode:'portfolio');
+    activateView(row.view,null,{activateResearch:!mode||mode==='instrument',taskRoute:row.view==='overview'&&target?.closest('#todayOverview')?'today':null});
+    if(mode==='capital'&&target)state.deepAnalytics.revealPortfolioTarget(target);
+    if(target)document.dispatchEvent(new CustomEvent('invest:reveal-workspace-target',{detail:{target}}));
     if(row.term){state.glossaryFilter=FINANCIAL_TERMS[row.term]?.name||row.title;state.glossaryCategory='all';$('#glossaryInlineSearch').value=state.glossaryFilter;
-      $$('[data-glossary-cat]').forEach(b=>{const selected=b.dataset.glossaryCat==='all';b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});renderGlossary();
-    } else if(row.instrumentUid)state.marketCalendarUi?.openCatalogInstrument(row.instrumentUid);
+      $$('[data-glossary-cat]').forEach(button=>{const selected=button.dataset.glossaryCat==='all';button.classList.toggle('active',selected);button.setAttribute('aria-pressed',String(selected));});renderGlossary();}
     if(row.target==='catalogSurface')$('#instrumentCatalogBrowser').open=true;
-    const riskPanel = row.target && document.getElementById(row.target)?.closest('[data-risk-panel]');
-    if (riskPanel) state.selectRiskTab?.(riskPanel.dataset.riskPanel);
-    requestAnimationFrame(()=>{const target=row.target&&document.getElementById(row.target);if(target){target.scrollIntoView({block:'start'});if(!target.hasAttribute('tabindex'))target.tabIndex=-1;target.focus({preventScroll:true});}});
+    if(riskPanel)state.selectRiskTab?.(riskPanel.dataset.riskPanel);
+    for(let ancestor=target?.parentElement;ancestor;ancestor=ancestor.parentElement)if(ancestor.matches('details'))ancestor.open=true;
+    focusTarget(target||$('#mainContent'));return true;
   };
-  const mark=index=>{active=(index+rows.length)%rows.length;[...list.querySelectorAll('[data-search-index]')].forEach((button,i)=>button.setAttribute('aria-selected',String(i===active)));
-    const selected=list.querySelector('[data-search-index="'+active+'"]');if(selected){input.setAttribute('aria-activedescendant',selected.id);selected.scrollIntoView({block:'nearest'});}};
-  input.addEventListener('input',()=>{
+  const research={...state.deepAnalytics.currentResearch,commit:(intent,guard)=>{const accepted=state.deepAnalytics.currentResearch.commit(intent,guard);if(accepted)focusTarget($('.deep-instrument-identity'));return accepted;}};
+  const queryAccess=()=>({key:JSON.stringify([accessToken(),state.bootstrap?.identity?.preferenceScope,state.bootstrap?.savedResearch?.ownerScope,instrumentContext.resolve(null).scopeKey]),
+    allowed:state.bootstrap?.capabilities?.researchQueries===true&&state.bootstrap?.preview?.static!==true&&canResearch()});
+  state.querySearch=createResearchQuerySearch({request,getAccess:queryAccess,onChange:()=>state.searchUi?.update(),onOpen:(record,guard)=>{
+    if(!guard.isCurrent()||!state.querySearch.canOpen(record))return false;
+    const owner=queryAccess().key,selected=JSON.stringify(['research','company','terminal'].map(surface=>{const value=instrumentContext.get(surface);return [value.scopeKey,value.ref,value.pinned];})),tab=state.deepAnalytics.getAnalysisTab();
+    const current=()=>queryAccess().allowed&&queryAccess().key===owner&&state.deepAnalytics.getAnalysisTab()===tab&&selected===JSON.stringify(['research','company','terminal'].map(surface=>{const value=instrumentContext.get(surface);return [value.scopeKey,value.ref,value.pinned];}));
+    if(state.deepAnalytics.showTaskView('instrument')!==true||!current())return false;
+    activateView('analytics',null,{focusMain:false,activateResearch:false});
+    return current()&&state.deepAnalytics.openQueryRecord(record,{isCurrent:current})===true;
+  }});
+  window.addEventListener('pagehide',()=>state.querySearch?.dispose(),{once:true});
+  const actions=createSearchActions({context:instrumentContext,currentResearch:research,getAccessToken:accessToken,canResearch,canTerminal,queryArchive:state.querySearch,
+    openTerminal:(intent,guard)=>{
+      if(!guard.isCurrent()||!canTerminal())return false;
+      const resolved=instrumentContext.resolve(intent.instrumentRef);if(resolved.resolution!=='exact'||!sameRef(resolved.ref,intent.instrumentRef))return false;
+      const before=instrumentContext.resolve(null).revision,prior=instrumentContext.get('terminal'),access=accessToken();
+      if(state.terminalUi.openInstrumentChecked(resolved.meta,guard)!==true)return false;
+      const current=instrumentContext.get('terminal'),revision=instrumentContext.resolve(null).revision;
+      if(access!==accessToken()||!canTerminal()||current.scopeKey!==intent.scopeKey||current.resolution!=='exact'||!sameRef(current.ref,intent.instrumentRef)||revision!==before+(sameRef(prior.ref,intent.instrumentRef)?0:1))return false;
+      activateView('terminal');focusTarget($('#terminalInstrumentContext'));return true;
+    },
+    openCatalog:(row,guard)=>{if(!guard.isCurrent())return false;activateView('terminal');state.marketCalendarUi?.openCatalogInstrument(row.instrumentRef?.instrumentUid);$('#instrumentCatalogBrowser').open=true;focusTarget($('#catalogSearch'));return true;},
+    navigate:(row,guard)=>guard.isCurrent()&&navigate(row),
+    restoreSaved:(id,guard)=>state.savedResearchWorkspace.restore(id,guard)});
+  state.searchUi=createSearchContinuation({input,list,toggle:$('#globalSearchToggle'),actions,onOpen:()=>{void state.querySearch.refresh();},getData:()=>{
     const pages=[...document.querySelectorAll('.view h2,.view h3,.view label')].filter(el=>!el.closest('[data-view-panel="glossary"]')).map((el,i)=>{
-      const view=el.closest('[data-view-panel]')?.dataset.viewPanel;const title=(el.querySelector('span')?.textContent||el.childNodes[0]?.textContent||el.textContent).trim();
-      if(!el.id)el.id='search-surface-'+i;return{id:el.id,title,view,target:el.id,kind:'На экране',search:''};
-    }).filter(row=>row.title&&row.title.length<100);
-    rows=searchProduct(input.value,{terms:FINANCIAL_TERMS,catalog:state.marketCalendarUi?.getCatalog()||[],pages});
-    if(!input.value.trim()){close();return;}
-    active=-1;input.removeAttribute('aria-activedescendant');
-    list.innerHTML=rows.map((row,i)=>'<button type="button" role="option" tabindex="-1" aria-selected="false" id="search-result-'+i+'" data-search-index="'+i+'"><strong>'+escapeText(row.title)+'</strong><small>'+escapeText(row.kind)+'</small></button>').join('')||'<p>Ничего не найдено. Попробуйте название раздела, термин или тикер.</p>';
-    list.hidden=false;input.setAttribute('aria-expanded','true');
-  });
-  list.addEventListener('click',event=>{const button=event.target.closest('[data-search-index]');if(button)choose(Number(button.dataset.searchIndex));});
-  input.addEventListener('keydown',event=>{
-    if(event.key==='Escape'){close();input.value='';box.classList.remove('search-open');toggle?.setAttribute('aria-expanded','false');toggle?.focus();return;}
-    if(!list.hidden&&rows.length&&['ArrowDown','ArrowUp','Enter'].includes(event.key)){event.preventDefault();if(event.key==='Enter')choose(active<0?0:active);else mark(active+(event.key==='ArrowDown'?1:-1));}
-  });
-  document.addEventListener('click',event=>{if(!event.target.closest('.topbar-search'))close();});
-  window.addEventListener('keydown',event=>{if(event.defaultPrevented || event.composedPath().some(node=>node?.matches?.('input,textarea,select,[contenteditable="true"]')))return;if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();input.focus();input.select();}});
+      const view=el.closest('[data-view-panel]')?.dataset.viewPanel,title=(el.querySelector('span')?.textContent||el.childNodes[0]?.textContent||el.textContent).trim();
+      if(!el.id)el.id='search-surface-'+i;return{id:el.id,title,view,target:el.id,search:''};
+    }).filter(row=>row.view&&row.title&&row.title.length<100);
+    return {terms:FINANCIAL_TERMS,catalog:state.marketCalendarUi?.getCatalog()||[],pages,
+      catalogState:!canTerminal()?'unavailable':state.marketCalendarUi?.getCatalog()?.length?'partial':'loading',savedResearch:state.savedResearchWorkspace?.getConfirmedEntries(),researchQueries:state.querySearch.snapshot()};
+  }});
 }
 
 bindUi();
-$('#workspacePeriod')?.addEventListener('change',event=>{
-  const period=event.target.value;
-  for(const control of $$('.context-date')) control.hidden=period!=='custom';
-  if(period==='custom'){$('#statisticsFrom').focus();return;}
-  void selectPeriod({period},{announce:false});
-});
-$('#workspaceDateRange')?.addEventListener('click',()=>{
-  $('#workspacePeriod').value='custom';
-  for(const control of $$('.context-date')) control.hidden=false;
-  $('#statisticsFrom').focus();
-});
 $('#instrumentsExpand')?.addEventListener('click',event=>{
   const expanded=document.body.classList.toggle('instruments-expanded');
   event.currentTarget.setAttribute('aria-pressed',String(expanded));
@@ -2570,13 +3510,28 @@ $('#instrumentPriceAlert')?.addEventListener('click',()=>{
   if(input&&selected.ticker){input.value=selected.ticker;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();}
 });
 globalThis.nexusProduct?.onNavigate?.(view => { if (['settings','profile'].includes(view)) activateView(view); });
-$('#workspaceTheme').addEventListener('change', event => applyInvestTheme(event.currentTarget.value));
-await loadBootstrap();
+// Native navigation and section controllers must mount while saved analytics
+// are being prepared. A failed or slow read must not leave half the UI unbound.
+const initialNavigationRevision = state.navigationRevision;
+const initialBootstrap = globalThis.nexusProduct
+  ? loadWorkspaceAccess().then(() => { void loadBootstrap(); })
+  : loadBootstrap();
+await initialBootstrap;
 $('#marketVisionRefresh').addEventListener('click', () => void refreshMarketVision(true));
-state.tradingPlanUi = initTradingPlan({ request, showToast, getBootstrap: () => state.bootstrap });
-await state.tradingPlanUi.refresh();
+state.nexusAiUi=createNexusAiUi({host:$('#nexusAiWorkspace'),request,getBootstrap:()=>state.bootstrap,getSelectedPortfolio:()=>$('#statisticsAccount').value,getCatalog:()=>state.instrumentCatalog,navigate:activateView,onPlanApplied:()=>state.tradingPlanUi?.refresh()});
+$('#discussCompanyAi').addEventListener('click',()=>{const select=$('#aiInstrument');if(select.value)state.nexusAiUi.attachInstrument({id:select.value,label:select.selectedOptions[0]?.textContent||select.value});});
+$('#aiInstrument').addEventListener('change',()=>state.nexusAiUi.updateContext());
+window.addEventListener('pagehide',()=>state.nexusAiUi.dispose(),{once:true});
+state.tradingPlanUi = initTradingPlan({ request, showToast,onDiscussPlan:plan=>state.nexusAiUi.attachPlan(plan), getBootstrap: () => state.bootstrap, getSelectedPortfolio: () => $('#statisticsAccount').value, getCatalogInstrument: uid => planCatalogInstrument(state.instrumentCatalog, uid), getCatalog: () => state.instrumentCatalog, openJournal: () => navigateTask('journal',resolveTaskRoute('journal'),{focus:false}), onOpenChart:openContextChart, chartAvailability });
+void state.tradingPlanUi.refresh();
+const stopPlanChartAvailability=instrumentContext.subscribe(()=>state.tradingPlanUi?.refreshChartActions?.());
+window.addEventListener('pagehide',stopPlanChartAvailability,{once:true});
 state.marketCalendarUi=initMarketCalendar({
-  request,getBootstrap:()=>state.bootstrap,showToast,
+  request,getBootstrap:()=>state.bootstrap,showToast,getReminderAccess:personalPreferencesAccess,
+  getTodayAccess:()=>{const access=todayAccess();return {...access,allowed:access.allowed===true&&state.bootstrap?.capabilities?.marketCalendar===true};},
+  resolveTodayInstrument:ref=>state.deepAnalytics?.currentResearch.resolve(ref),
+  onTodayChange:()=>state.todayBinder?.update(),
+  onTodayNavigate:({isCurrent})=>{if(isCurrent()!==true)return false;activateView('events',null,{focusMain:false,ensureEventNews:false});return isCurrent()===true;},
   onChartSelect:instrument=>{
     if(!instrument)return;
     if(state.currentView!=='terminal')activateView('terminal');
@@ -2599,26 +3554,144 @@ state.marketCalendarUi=initMarketCalendar({
 });
 document.addEventListener('invest:catalog-updated', () => {
   if (!state.bootstrap) return;
+  syncInstrumentSources(state.marketCalendarUi?.getCatalog()||[]);
+  state.searchUi?.update();
   prepareDisplayLabels(state.bootstrap);
   renderPortfolio(analyticsDisplayData());
 });
 for (const button of $$('[data-analytics-unit]')) button.addEventListener('click', () => { state.analyticsChartMode = button.dataset.analyticsUnit; state.analyticsChartModeTouched = true; renderAnalyticsChartOnView(); });
 const personalAvailable=(!runtimeAdapter || state.bootstrap?.preview?.interactiveTutorial===true) && state.bootstrap?.preview?.localReview!==true;
-if(personalAvailable) { $('#personalSettings').hidden=false; state.personalUi = initWorkspacePreferences({ request, showToast, onPresentation:applyPresentation }); }
+if(personalAvailable) { $('#personalSettings').hidden=false; state.personalUi = initWorkspacePreferences({ request, showToast, onPresentation:applyPresentation,onStateChange:()=>state.personalTransferUi?.update(),getAccess:()=>{const access=personalPreferencesAccess();return{key:access.key,allowed:access.canNative||state.bootstrap?.preview?.interactiveTutorial===true};} }); }
 else $('#personalSettings').hidden = true;
-if (!runtimeAdapter) initPriceAlerts({ request, getBootstrap: () => state.bootstrap, readOnly: state.bootstrap?.preview?.localReview === true && state.bootstrap?.environment !== 'fixture', showToast: (message, error) => showToast(message, error), activateView });
-initWorkspaceNotifications({ activateView });
-state.terminalUi=initTerminal({request,getSelection:()=>state.activeMarketInstrument,getBootstrap:()=>state.bootstrap,
-  onSelection:instrument=>{state.activeMarketInstrument=instrument;state.marketInstrument=instrument;},onChart:chart=>{state.marketChart=chart;},showToast});
-state.deepAnalytics=createDeepAnalytics({panel:$('[data-view-panel=analytics]'),request,getBootstrap:()=>state.bootstrap,getSelected:()=>state.activeMarketInstrument,onOpenChart:meta=>{void state.terminalUi.openInstrument(meta);activateView('terminal');}});
+state.personalTransferUi=createPersonalPreferencesTransferUi({host:$('#personalPreferencesTransfer'),request,getAccess:personalPreferencesAccess,getEditor:()=>state.personalUi?.status()||{},onApplied:(settings,options)=>state.personalUi?.accept(settings,options)});
+state.priceAlertUi = initPriceAlerts({ getBootstrap: () => state.bootstrap,
+  getCsrf: () => state.session?.csrfToken, getBootstrapRevision: () => state.searchAccessRevision || 0,
+  refreshAccess: async () => { const data = await request('/api/bootstrap'); state.session = { csrfToken: data.csrfToken }; renderBootstrap(data); },
+  readOnly: Boolean(runtimeAdapter) || state.bootstrap?.preview?.localReview === true && state.bootstrap?.environment !== 'fixture', showToast, activateView });
+state.workspaceNotifications = initWorkspaceNotifications({ activateView, getAlertAuthority: () => state.priceAlertUi?.notificationAuthority() || null,
+  getServiceKey: () => JSON.stringify([state.bootstrap?.identity?.preferenceScope,state.bootstrap?.identity?.userId,state.bootstrap?.environment]) });
+state.positionReconciliationUi=createPositionReconciliation({host:$('#positionReconciliation'),getInstrumentLabel:instrumentUid=>instrumentDisplay({instrumentUid})});
+state.positionReconciliationUi.update(analyticsDisplayData());
+const localMethodHost=document.createElement('section');localMethodHost.id='localMethodExplanation';
+state.performanceMethodsUi=createPerformanceMethodsUi({host:$('#performanceMethods'),explanationHost:localMethodHost,onSurfaceChange:()=>state.localMethodWorkspace?.contextChanged()});
+state.performanceMethodsUi.update(analyticsDisplayData());
+const localObservedRiskHost=document.createElement('section');localObservedRiskHost.id='localObservedRiskExplanation';
+state.observedNavRiskUi=createObservedNavRiskUi({host:$('#observedNavRisk'),explanationHost:localObservedRiskHost,onSurfaceChange:()=>state.localObservedRiskWorkspace?.contextChanged()});
+state.observedNavRiskUi.update(analyticsDisplayData());
+state.savedAssetClassesUi=createSavedAssetClassesUi({host:$('#savedAssetClasses')});
+state.savedAssetClassesUi.update(analyticsDisplayData());
+state.allocationPlanUi=createAllocationPlanUi({host:$('#allocationPlan'),request,canUseContext:()=>!runtimeAdapter&&!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft});
+state.allocationPlanUi.update(analyticsDisplayData());
+window.addEventListener('pagehide',()=>state.allocationPlanUi.dispose(),{once:true});
+state.cashComparisonUi=createCashComparisonUi({host:$('#cashComparison')});
+state.cashComparisonUi.update(analyticsDisplayData());
+state.internalTransfersUi=createInternalCashTransfersUi({host:$('#internalTransfers'),request,onChanged:loadBootstrap});
+state.shareValuationsUi=createShareTransferValuationsUi({host:$('#shareTransferValuations'),request,onChanged:loadBootstrap,canUseContext:()=>!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft});
+state.brokerReportsUi=createBrokerReportsUi({host:$('#brokerReports'),request});
+state.brokerReportsUi.update(analyticsDisplayData());
+window.addEventListener('pagehide',()=>state.brokerReportsUi.dispose(),{once:true});
+state.internalTransfersUi.update(analyticsDisplayData());
+state.shareValuationsUi.update(analyticsDisplayData());
+window.addEventListener('pagehide',()=>state.internalTransfersUi.dispose(),{once:true});
+window.addEventListener('pagehide',()=>state.shareValuationsUi.dispose(),{once:true});
+state.directShareShockUi=createDirectShareShockUi({host:$('#directShareShock')});
+state.directShareShockUi.update(analyticsDisplayData());
+state.directShareConcentrationUi=createDirectShareConcentrationUi({host:$('#directShareConcentration'),request,canUseContext:()=>!runtimeAdapter&&!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft});
+state.directShareConcentrationUi.update(analyticsDisplayData());
+state.futureExposureUi=createFutureExposureUi({host:$('#futureExposure')});
+state.futureExposureUi.update(analyticsDisplayData());
+window.addEventListener('pagehide',()=>state.directShareConcentrationUi.dispose(),{once:true});
+state.portfolioReviewUi=createPortfolioReviewUi({host:$('#portfolioReviews'),request,canUseContext:()=>!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft});
+state.portfolioReviewUi.update(analyticsDisplayData());
+const localResultHost=document.createElement('section');localResultHost.id='localResultExplanation';
+state.bookedComponentsUi=createBookedComponentsUi({host:$('#bookedComponents'),explanationHost:localResultHost,onSurfaceChange:()=>state.localResultWorkspace?.contextChanged()});
+installAccountQuickPick();
+state.bookedComponentsUi.update(analyticsDisplayData());
+state.referencePriceUi=createReferencePriceUi({host:$('#referencePrice'),request,getScopeKey:()=>instrumentScope(state.bootstrap),getPortfolioId:()=>state.analyticsAccount});
+state.referencePriceUi.update(analyticsDisplayData());
+state.bondCashflowUi=createBondCashflowUi({host:$('#bondCashflows'),request,getBootstrap:()=>state.bootstrap,getPortfolioId:()=>state.analyticsAccount,
+  canUseContext:()=>!runtimeAdapter&&!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft,
+  onOpenEvents:(instrumentUid,date)=>{
+    const key=state.bootstrap?.bondCashflowContext?.key;
+    const isCurrent=()=>Boolean(key)&&key===state.bootstrap?.bondCashflowContext?.key&&state.bootstrap?.capabilities?.marketCalendar===true;
+    return isCurrent()&&state.marketCalendarUi?.openBondCoupons(instrumentUid,{date,type:'all',refresh:false,isCurrent})===true;
+  }});
+state.bondCashflowUi.update(analyticsDisplayData());
+window.addEventListener('pagehide',()=>state.bondCashflowUi.dispose(),{once:true});
+state.deepAnalytics=createDeepAnalytics({panel:$('[data-view-panel=analytics]'),request:instrumentContextRequest,getBootstrap:()=>state.bootstrap,getSelected:()=>state.activeMarketInstrument,context:instrumentContext,onCatalog:syncInstrumentSources,onOpenCompany:openContextCompany,companyEligible:companyInstrumentEligible,onViewChange:view=>{state.analyticsView=view;renderSurfacePeriod();invalidateLocalExplanations();if(state.currentView==='analytics')state.taskNavigation?.sync(taskNavigationContext());},onPortfolioAreaChange:invalidateLocalExplanations,onOpenChart:openContextChart,onOpenCoupons:openContextCoupons,
+  readResearchCatalog:()=>request('/api/market/catalog'),canResearch:()=>state.savedResearchWorkspace?.canResearch()===true,
+  onResearchNavigate:()=>activateView('analytics',null,{focusMain:false,activateResearch:false}),
+  onResearchContextChange:()=>state.savedResearchWorkspace?.contextChanged(),onQueryArchiveChanged:()=>state.querySearch?.invalidate()});
+const savedResearchHost=document.createElement('section');savedResearchHost.id='savedResearch';
+$('.deep-instrument-toolbar').after(savedResearchHost);
+state.savedResearchWorkspace=createSavedResearchWorkspace({host:savedResearchHost,currentResearch:state.deepAnalytics.currentResearch,getBootstrap:()=>state.bootstrap,getCsrf:()=>state.session?.csrfToken,staticPreview:Boolean(runtimeAdapter&&state.bootstrap?.environment==='fixture'&&state.bootstrap?.preview?.static===true),refreshAccess:loadBootstrap,onChange:()=>{state.searchUi?.update();updateToday();invalidateLocalExplanations();}});
+state.savedResearchWorkspace.contextChanged();
+// Start catalogue reads after the owner/access controller is established.
+state.terminalUi=initTerminal({request:instrumentContextRequest,getSelection:()=>state.activeMarketInstrument,getBootstrap:()=>state.bootstrap,readyPromise:initialBootstrap,
+  onSelection:(instrument,{focusContext=true}={})=>{state.activeMarketInstrument=instrument;state.marketInstrument=instrument;instrumentContext.select(instrument,{surface:'terminal',focusContext});},onChart:chart=>{state.marketChart=chart;},onPreparePlan:prepareTerminalJournalPlan,showToast});
+state.terminalUi.updateAccess();
+// Navigation can finish while bootstrap is still constructing the terminal.
+state.terminalUi.activate(state.currentView);
+$('.terminal-workspace-bar').after($('#terminalInstrumentContext'));
+terminalContextHeader=mountInstrumentContextHeader({host:$('#terminalInstrumentContext'),context:instrumentContext,surface:'terminal',onResearch:openContextResearch,onCompany:openContextCompany,onReturn:returnFromChart,returnState:chartReturnState,companyEligible:companyInstrumentEligible});
+mountInstrumentContextHeader({host:$('#companyInstrumentContext'),context:instrumentContext,surface:'company',onResearch:openContextResearch,onChart:openContextChart,companyEligible:companyInstrumentEligible});
+instrumentContext.subscribe(syncCompanyContext);
+state.localResultWorkspace=createLocalResultWorkspace({host:localResultHost,bookedUi:state.bookedComponentsUi,getBootstrap:()=>state.bootstrap,
+  getBootstrapRevision:()=>state.searchAccessRevision||0,getAccessToken:()=>state.savedResearchWorkspace.getAccessToken(),canResearch:()=>state.savedResearchWorkspace.canResearch(),
+  getIsActive:()=>state.currentView==='analytics'&&['portfolio','capital'].includes(state.analyticsView)&&state.deepAnalytics.getPortfolioArea()==='performance'&&!$('#bookedComponents').hidden&&!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft,getCsrf:()=>state.session?.csrfToken,
+  onAccessRejected:detail=>state.savedResearchWorkspace.rejectAccess(detail),staticPreview:Boolean(runtimeAdapter&&state.bootstrap?.preview?.static===true)});
+state.localResultWorkspace.update(analyticsDisplayData());
+state.localMethodWorkspace=createLocalMethodWorkspace({host:localMethodHost,methodUi:state.performanceMethodsUi,getBootstrap:()=>state.bootstrap,
+  getBootstrapRevision:()=>state.searchAccessRevision||0,getAccessToken:()=>state.savedResearchWorkspace.getAccessToken(),canResearch:()=>state.savedResearchWorkspace.canResearch(),
+  getIsActive:()=>state.currentView==='analytics'&&['portfolio','capital'].includes(state.analyticsView)&&state.deepAnalytics.getPortfolioArea()==='performance'&&!$('#performanceMethods').hidden&&!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft,getCsrf:()=>state.session?.csrfToken,
+  onAccessRejected:detail=>state.savedResearchWorkspace.rejectAccess(detail),staticPreview:Boolean(runtimeAdapter&&state.bootstrap?.preview?.static===true)});
+state.localMethodWorkspace.update(analyticsDisplayData());
+state.localObservedRiskWorkspace=createLocalObservedRiskWorkspace({host:localObservedRiskHost,riskUi:state.observedNavRiskUi,getBootstrap:()=>state.bootstrap,
+  getBootstrapRevision:()=>state.searchAccessRevision||0,getAccessToken:()=>state.savedResearchWorkspace.getAccessToken(),canResearch:()=>state.savedResearchWorkspace.canResearch(),
+  getIsActive:()=>state.currentView==='analytics'&&['portfolio','capital'].includes(state.analyticsView)&&state.deepAnalytics.getPortfolioArea()==='risk'&&!$('#observedNavRisk').hidden&&!state.periodLoading&&!state.statisticsPeriodDraft&&!state.operationPeriodDraft,getCsrf:()=>state.session?.csrfToken,
+  onAccessRejected:detail=>state.savedResearchWorkspace.rejectAccess(detail),staticPreview:Boolean(runtimeAdapter&&state.bootstrap?.preview?.static===true)});
+state.localObservedRiskWorkspace.update(analyticsDisplayData());
+state.todayUi=createTodayOverviewUi({host:$('#todayOverview'),isCurrent:ticket=>state.todayBinder?.isCurrent(ticket)===true,onNavigate:(intent,ticket)=>state.todayBinder.onNavigate(intent,ticket)});
+state.todayBinder=createTodayOverviewBinder({getContext:todayContext,
+  getEnvironment:()=>({currentScope:state.deepAnalytics.currentResearch.capture().scopeKey,resolve:state.deepAnalytics.currentResearch.resolve,canResearch:state.deepAnalytics.currentResearch.canResearch}),
+  calendar:{getSnapshot:state.marketCalendarUi.getTodaySnapshot,openEvent:state.marketCalendarUi.openEvent,openReminder:state.marketCalendarUi.openReminder},
+  savedResearch:state.savedResearchWorkspace,now:()=>'2026-08-12T12:00:00.000Z',onUpdate:dto=>state.todayUi.update(dto),onNavigateSection:todayNavigateSection});
+updateToday();state.todayUi.update(state.todayBinder.getSnapshot());
+void state.marketCalendarUi.refreshHoldings();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateToday();});
+window.addEventListener('pagehide',()=>{state.todayBinder.dispose();state.todayUi.dispose();state.localResultWorkspace.dispose();state.bookedComponentsUi.dispose();state.localMethodWorkspace.dispose();state.performanceMethodsUi.dispose();state.localObservedRiskWorkspace.dispose();state.observedNavRiskUi.dispose();},{once:true});
+initGlobalSearch();
 state.deepAnalytics.update(analyticsDisplayData());
+state.taskNavigation=createDirectNavigation({presentation:state.customization,navigate:navigateTask,current:taskNavigationContext,title:route=>{
+  if(route){const names={today:'Сегодня',portfolio:'Портфель',research:'Исследование',trading:'Моя торговля',terminal:'Терминал'};$('#viewTitle').textContent=names[route.section];$('#viewContext').textContent=route.label+' · '+route.context;}
+  else {const [title,context]=viewMeta[state.currentView]||viewMeta.overview;$('#viewTitle').textContent=title;$('#viewContext').textContent=context;}
+}});
+const workbenchPresentation=initNexusWorkbench(document,{request,store:workspaceSettings,getMarketAccess:()=>{const b=state.bootstrap||{},identity=b.identity||b.session?.identity||{};const fixtureOwner=!identity.role&&b.environment==='fixture'&&b.capabilities?.savedResearch===true;return {allowed:(identity.role==='owner'||fixtureOwner)&&b.preview?.static!==true,key:JSON.stringify([identity.preferenceScope||identity.userId||b.savedResearch?.ownerScope||null,identity.role,b.capabilities?.savedResearch,b.environment,b.preview?.static])};}});
+window.addEventListener('pagehide',()=>workbenchPresentation.dispose(),{once:true});
+const settingsLayout=mountSettingsLayout(document);
+window.addEventListener('pagehide',()=>settingsLayout.dispose(),{once:true});
+await initialBootstrap;
+if (state.navigationRevision === initialNavigationRevision) {
+  const section=location.hash.match(/^#workspace\/(view|task|system)\/([a-z][a-z0-9-]{0,63})$/);
+  const selector=section&&({view:'.nav-item[data-view="'+section[2]+'"]',task:'.task-nav-item[data-task-section="'+section[2]+'"]',system:'.nav-item[data-system-section="'+section[2]+'"]'})[section[1]],target=selector&&document.querySelector(selector);
+  if(target&&!target.disabled)target.click();else state.taskNavigation.restore();
+}
+document.addEventListener('invest:task-route-request',event=>{if(state.taskNavigation.go(event.detail,{save:false}))event.preventDefault();});
+window.addEventListener('pagehide',()=>state.taskNavigation.dispose(),{once:true});
+document.addEventListener('invest:open-analysis',e=>openContextResearch(e.detail));
 if(state.currentView==='analytics')void state.deepAnalytics.activate();
 openStream();
 setInterval(() => { void ensureCompanyFacts(); }, 60_000);
 document.addEventListener('visibilitychange', () => {sendMarketSubscription();if(!document.hidden){void ensureCompanyFacts();if(!state.stream&&!state.streamAuthorizationFailed){state.streamRetryAttempts=0;openStream();}}});
 // GitHub Pages fixture intentionally has no service worker.
 
-function applyPresentation(preferences) {
+function personalPreferencesAccess(){
+  const b=state.bootstrap||{},scope=b.identity?.preferenceScope||b.session?.identity?.preferenceScope;
+  const canNative=!runtimeAdapter&&b.preview?.localReview!==true&&/^[a-f0-9]{32}$/.test(scope||'')&&b.capabilities?.marketCalendar===true&&!state.personalPreferencesDenied;
+  const staticFile=b.preview?.static===true&&b.preview?.brokerNetwork===false&&b.preview?.persistence==='none';
+  return{key:JSON.stringify([scope,state.personalPreferencesEpoch||0,canNative,staticFile]),canNative,canOpen:canNative||staticFile};
+}
+function applyPresentation(preferences,{refreshFx=true}={}) {
   state.language=preferences.language||'ru';state.displayCurrency=preferences.displayCurrency||'RUB';
   setLanguage(state.language);
   setChartPresentation({language:state.language,displayCurrency:state.displayCurrency,rates:state.bootstrap?.displayFx?.rates||{}});
@@ -2627,7 +3700,7 @@ function applyPresentation(preferences) {
   $('#displayCurrencyNote').textContent=state.displayCurrency==='USD'
     ? fx?`${fx.source==='fixture'?ui('Учебный курс на'):ui('Показ сумм по курсу ЦБ на')} ${fx.date}. ${ui('Котировки — в валюте инструмента. Проценты — в рублях.')}`:ui('Нет сохранённого курса USD. Обновите данные: непересчитанные суммы отмечены прочерком.')
     :ui('Суммы портфеля и результатов — в рублях. Котировки — в валюте инструмента.');
-  if(state.displayCurrency==='USD' && !state.fxRequested && !state.bootstrap?.preview?.static) {
+  if(refreshFx&&state.displayCurrency==='USD' && !state.fxRequested && !state.bootstrap?.preview?.static) {
     state.fxRequested=true;
     void request('/api/display-fx/refresh',{method:'POST',body:'{}'}).then(value=>{
       state.bootstrap.displayFx=value;
@@ -2642,18 +3715,55 @@ connectTableSort($('#closedPositionsBody').closest('table'),['name','type','open
 connectTableSort($('#tradingPlanBody').closest('table'),['name','direction','allocationRate','entryPriceNanos','exitPriceNanos','expectedHold'],sort=>{state.sorts.plan=sort;state.listPages.delete('tradingPlan');renderRiskPlan(analyticsDisplayData());});
 startTranslation();
 
-const historyLoader = createHistoryLoader({ request,
+let backgroundBootstrap = null;
+let backgroundBootstrapAt=0,backgroundBootstrapTimer=null;
+async function refreshBackgroundBootstrap() {
+  if (state.periodLoading) return false;
+  // Quote streaming is independent. A trader does not need the complete
+  // account calculation and hidden statistical surfaces every five seconds.
+  clearTimeout(backgroundBootstrapTimer);backgroundBootstrapTimer=null;
+  const wait=30_000-(Date.now()-backgroundBootstrapAt);
+  if(state.currentView==='terminal'&&wait>0){
+    backgroundBootstrapTimer=setTimeout(()=>void refreshBackgroundBootstrap().catch(()=>{}),wait);
+    return false;
+  }
+  const version = state.periodRequest, scope = instrumentScope(), key = JSON.stringify([version, scope]);
+  if (backgroundBootstrap?.key === key) return backgroundBootstrap.promise;
+  const task = { key };
+  backgroundBootstrapAt=Date.now();
+  task.promise = (async () => {
+    const data = await request('/api/bootstrap?' + periodQuery(), { signal: AbortSignal.timeout(90_000) });
+    if (version !== state.periodRequest || state.periodLoading || scope !== instrumentScope()) return false;
+    state.session = { csrfToken: data.csrfToken }; renderBootstrap(data,{background:true}); return true;
+  })().finally(() => { if (backgroundBootstrap === task) backgroundBootstrap = null; });
+  backgroundBootstrap = task; return task.promise;
+}
+const historyLoader = createHistoryLoader({ request, getScope: instrumentScope,
   eligible: () => !document.hidden && !runtimeAdapter && state.bootstrap?.environment === 'live'
-    && state.bootstrap?.connection?.connected === true && state.bootstrap?.capabilities?.portfolioRefresh === true,
+    && state.bootstrap?.connection?.connected === true && state.bootstrap?.capabilities?.portfolioRefresh === true
+    // A reserved next snapshot leaves no idle UI tick. The runtime serializes
+    // each bounded history step with snapshots; catch-up must not starve.
+    && ['completed','warning'].includes(state.syncUi?.getState()?.latest?.status),
   onProgress: value => { if (state.bootstrap) state.bootstrap.historyBackfill = value; renderHistoryProgress(value); },
-  onChanged: async () => {
-    if (state.periodLoading) return;
-    const version = state.periodRequest;
-    const data = await request('/api/bootstrap?' + periodQuery());
-    if (version !== state.periodRequest || state.periodLoading) return;
-    state.session = {csrfToken:data.csrfToken}; renderBootstrap(data);
-  },
+  onChanged: refreshBackgroundBootstrap,
 });
 historyLoader.start();
 window.addEventListener('pagehide', () => historyLoader.stop());
 window.addEventListener('pageshow', () => historyLoader.start());
+
+state.syncUi = createSyncController({ request,
+  getAccess: () => ({ key: JSON.stringify([state.bootstrap?.identity?.preferenceScope, state.connection?.environment,
+    state.connection?.validatedAt, state.connection?.connected, state.bootstrap?.capabilities?.syncProgress]),
+    allowed: !runtimeAdapter && state.bootstrap?.preview?.localReview !== true && state.bootstrap?.capabilities?.syncProgress === true
+      && state.connection?.connected === true, visible: !document.hidden }),
+  onState: renderSyncProgress,
+  onChanged: refreshBackgroundBootstrap,
+  onComplete: job => showToast(job.status === 'failed' ? syncProgressCopy(job) : job.status === 'warning'
+    ? 'Синхронизация завершена с ограничениями. Подробности — в журнале.' : 'Синхронизация завершена. Показатели обновлены.', job.status === 'failed'),
+});
+state.syncUi.start();
+window.addEventListener('pagehide', () => state.syncUi.stop());
+window.addEventListener('pageshow', () => state.syncUi.start());
+document.addEventListener('visibilitychange', () => { if(!document.hidden)void state.syncUi.tick(); });
+companyPicker=createInstrumentPicker({select:$('#aiInstrument'),getRows:()=>state.bootstrap?.companyAnalysisInstruments?.filter(item=>item.assetType==='share')||[],label:'Выбрать компанию',showClose:false});
+initRailSelection();

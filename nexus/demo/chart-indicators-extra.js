@@ -9,6 +9,11 @@ export const extraIndicatorCatalog=[
  ['hv','Волатильность лог-доходности свечи, %',20,'pane'],['ulcer','Индекс просадки Ulcer',14,'pane'],['efficiency','Коэффициент эффективности Кауфмана',10,'pane'],['zscore','Z-score цены',20,'pane']
 ];
 const blank=n=>Array(n).fill(NaN),finite=Number.isFinite;
+export const volumeDependentStudies=Object.freeze(['vwma','vwap','obv','ad','cmf','mfi','force','eom','chaikin','volumeosc','vpt','nvi','pvi','relativeVolume']);
+export const isMeasuredVolume=row=>row.volumeKnown!==false&&typeof row.volume==='number'&&finite(row.volume)&&row.volume>=0&&row.volume<=Number.MAX_SAFE_INTEGER;
+// Recursive smoothing has no finite dependency window. A missing input cannot
+// be repaired by silently seeding another EMA later in the same history.
+function uninterrupted(values,start=0){let known=true;return values.map((v,i)=>{if(i<start)return v;if(!finite(v))known=false;return known?v:NaN;});}
 function rolling(values,p,fn){const out=blank(values.length);for(let i=p-1;i<values.length;i++){const w=values.slice(i-p+1,i+1);if(w.every(finite))out[i]=fn(w,i);}return out;}
 const sum=w=>w.reduce((a,b)=>a+b,0),mean=w=>sum(w)/w.length;
 const sma=(values,p)=>rolling(values,p,mean);
@@ -17,7 +22,7 @@ const wilder=(a,p)=>ema(a,p,1/p);
 const sd=w=>{const m=mean(w);return Math.sqrt(mean(w.map(v=>(v-m)**2)));};
 export function calculateExtraStudy(rows,s){
  if(!extraIndicatorCatalog.some(d=>d[0]===s.type))return null;
- const n=rows.length,p=s.period,t=s.type,c=rows.map(r=>r.close),high=rows.map(r=>r.high),low=rows.map(r=>r.low),volume=rows.map(r=>r.volume),median=rows.map(r=>(r.high+r.low)/2),delta=c.map((v,i)=>i?v-c[i-1]:NaN);
+ const n=rows.length,p=s.period,t=s.type,c=rows.map(r=>r.close),high=rows.map(r=>r.high),low=rows.map(r=>r.low),volume=rows.map(r=>isMeasuredVolume(r)?r.volume:NaN),median=rows.map(r=>(r.high+r.low)/2),delta=c.map((v,i)=>i?v-c[i-1]:NaN);
  const tr=rows.map((r,i)=>Math.max(r.high-r.low,i?Math.abs(r.high-c[i-1]):0,i?Math.abs(r.low-c[i-1]):0));
  const output=(values,color,histogram=false)=>({data:values.flatMap((value,i)=>finite(value)?[{time:rows[i].time,value,...(histogram?{color:value>=0?'#399b78':'#d75a62'}:{})}]:[]),...(color?{color}:{}),...(histogram?{histogram:true}:{})});
  const one=values=>[output(values)],combine=(a,b,fn)=>a.map((v,i)=>finite(v)&&finite(b[i])?fn(v,b[i],i):NaN);
@@ -51,13 +56,21 @@ export function calculateExtraStudy(rows,s){
  if(t==='cmo')return one(rolling(delta,p,w=>{const gains=sum(w.map(v=>Math.max(v,0))),losses=sum(w.map(v=>Math.max(-v,0)));return gains+losses?100*(gains-losses)/(gains+losses):0;}));
  if(t==='tsi')return one(combine(ema(ema(delta,p),s.signal),ema(ema(delta.map(Math.abs),p),s.signal),(a,b)=>b?100*a/b:0));
  if(t==='fisher'){const hi=rolling(median,p,w=>Math.max(...w)),lo=rolling(median,p,w=>Math.min(...w)),out=blank(n);let smooth=0,f=0;for(let i=p-1;i<n;i++){smooth=.66*(hi[i]===lo[i]?0:(median[i]-lo[i])/(hi[i]-lo[i])-.5)+.67*smooth;smooth=Math.max(-.999,Math.min(.999,smooth));f=.5*Math.log((1+smooth)/(1-smooth))+.5*f;out[i]=f;}return one(out);}
- if(t==='force')return one(ema(delta.map((v,i)=>v*volume[i]),p));
+ if(t==='force')return one(ema(uninterrupted(delta.map((v,i)=>v*volume[i]),1),p));
  if(t==='elder'){const m=ema(c,p);return [output(combine(high,m,(a,b)=>a-b),'#5ed0a0'),output(combine(low,m,(a,b)=>a-b),'#ef7b76')];}
  if(t==='eom')return one(sma(median.map((v,i)=>i&&volume[i]>0?(v-median[i-1])*(high[i]-low[i])*100000000/volume[i]:NaN),p));
- if(t==='chaikin'){let total=0;const ad=rows.map(r=>total+=(r.high===r.low?0:(2*r.close-r.high-r.low)/(r.high-r.low))*r.volume);return one(combine(ema(ad,Math.min(3,p)),ema(ad,p),(a,b)=>a-b));}
- if(t==='volumeosc')return one(combine(ema(volume,Math.max(1,Math.floor(p/2))),ema(volume,p),(a,b)=>b?(a/b-1)*100:NaN));
- if(['vpt','nvi','pvi'].includes(t)){let value=t==='vpt'?0:1000;return one(c.map((v,i)=>{if(i&&c[i-1]){const change=v/c[i-1]-1;if(t==='vpt')value+=change*volume[i];if(t==='nvi'&&volume[i]<volume[i-1]||t==='pvi'&&volume[i]>volume[i-1])value*=1+change;}return value;}));}
- if(t==='relativeVolume'){const m=sma(volume,p);return one(volume.map((v,i)=>i&&m[i-1]>0?v/m[i-1]:NaN));}
+ if(t==='chaikin'){let total=0;const ad=rows.map((r,i)=>{total+=(r.high===r.low?0:(2*r.close-r.high-r.low)/(r.high-r.low))*volume[i];if(!finite(total)||Math.abs(total)>Number.MAX_SAFE_INTEGER)total=NaN;return total;});return one(combine(ema(ad,Math.min(3,p)),ema(ad,p),(a,b)=>a-b));}
+ if(t==='volumeosc'){const observed=uninterrupted(volume);return one(combine(ema(observed,Math.max(1,Math.floor(p/2))),ema(observed,p),(a,b)=>b?(a/b-1)*100:NaN));}
+ if(['vpt','nvi','pvi'].includes(t)){let value=t==='vpt'?0:1000;return one(c.map((v,i)=>{
+  if(i&&(!finite(volume[i])||t!=='vpt'&&!finite(volume[i-1])))value=NaN;
+  if(i&&c[i-1]){const change=v/c[i-1]-1;if(t==='vpt')value+=change*volume[i];if(t==='nvi'&&volume[i]<volume[i-1]||t==='pvi'&&volume[i]>volume[i-1])value*=1+change;}
+  if(!finite(value)||Math.abs(value)>Number.MAX_SAFE_INTEGER)value=NaN;return value;
+ }));}
+ if(t==='relativeVolume'){
+  const measured=volume;
+  const baseline=rolling(measured,p,w=>{const total=sum(w);return total<=Number.MAX_SAFE_INTEGER?total/p:NaN;});
+  return one(measured.map((v,i)=>i&&baseline[i-1]>0?v/baseline[i-1]:NaN));
+ }
  if(t==='hv')return one(rolling(c.map((v,i)=>i&&v>0&&c[i-1]>0?Math.log(v/c[i-1]):NaN),p,w=>sd(w)*100));
  if(t==='ulcer'){const peak=rolling(c,p,w=>Math.max(...w)),dd=combine(c,peak,(v,h)=>h?((v/h-1)*100)**2:NaN);return one(rolling(dd,p,w=>Math.sqrt(mean(w))));}
  return [];

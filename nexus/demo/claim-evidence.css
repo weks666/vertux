@@ -1,0 +1,16 @@
+/* One evidence disclosure for existing contextual explanations. */
+.claim-evidence { --claim-link:color-mix(in srgb,var(--vertux-soft) 85%,var(--text)); margin-block:8px 12px; font-size:var(--type-caption); color:var(--text); min-width:0; }
+.claim-evidence>summary { box-sizing:border-box; min-height:44px; padding-block:11px; cursor:pointer; color:var(--claim-link); }
+.claim-evidence>summary:focus-visible,.claim-evidence-source a:focus-visible { outline:2px solid var(--focus); outline-offset:3px; }
+.claim-evidence-body { padding-block:4px 12px; max-width:70ch; overflow-wrap:anywhere; }
+.claim-evidence-body p { margin-block:8px; font-size:inherit; line-height:1.65; }
+.claim-evidence-item { margin-block:18px 0; padding-block:12px 0; border-top:1px solid var(--line); }
+.claim-evidence-item h5 { margin:0 0 8px; font-size:inherit; font-weight:650; }
+.claim-evidence-item .claim-evidence-text { white-space:pre-wrap; }
+.claim-evidence-body dl { margin-block:10px; display:grid; gap:8px; }
+.claim-evidence-body dl>div { display:grid; grid-template-columns:minmax(120px,.7fr) minmax(0,1fr); gap:12px; }
+.claim-evidence-body dt,.claim-evidence-note { color:var(--muted); }
+.claim-evidence-body dd { margin:0; font-variant-numeric:tabular-nums; }
+.claim-evidence-source { margin-block:12px; }
+.claim-evidence-source a { color:var(--claim-link); text-underline-offset:3px; }
+@media(max-width:600px) { .claim-evidence-body dl>div { grid-template-columns:minmax(0,1fr); gap:3px; } }

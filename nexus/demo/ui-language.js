@@ -1,6 +1,8 @@
 // Explicit translations of product-owned UI text. User notes, company names and
 // incoming articles are not sent to a translator or an external service.
 const english={
+ 'Целевой интервал: 10 секунд':'Target interval: 10 seconds',
+ 'Обновления выполняются по очереди, пока окно видно. Медленный ответ брокера или расчёт показателей увеличивает интервал; после ошибки повторяем через 30 секунд.':'Updates run sequentially while the window is visible. A slow broker response or calculation extends the interval; failures are retried after 30 seconds.',
  'Реализованная П/У':'Realized P&L','По открытым позициям':'Open positions P&L','Результат за период':'Period result',
  'Динамика стоимости портфеля':'Portfolio value','Мои счета':'My accounts','История портфеля':'Portfolio history',
  'История операций и результаты закрытых позиций.':'Transactions and closed position results.',

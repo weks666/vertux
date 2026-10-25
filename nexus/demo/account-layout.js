@@ -25,8 +25,8 @@ export function writeAccountPins(storage, scope, pins) {
 export function dailyPositionSummary(rows, now = new Date()) {
   const date = value => Number.isFinite(Date.parse(value)) ? new Intl.DateTimeFormat('en-CA', { timeZone:'Europe/Moscow', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date(value)) : null;
   const today = date(now.toISOString());
-  if (!rows.length || rows.some(row => row.dayPnlNanos == null || date(row.asOf) !== today)) return null;
-  const currencies = new Set(rows.map(row => row.pnlCurrency || row.currency || 'RUB'));
+  if (!rows.length || rows.some(row => typeof row.dayPnlNanos !== 'string' || !/^-?\d{1,80}$/u.test(row.dayPnlNanos) || !/^[A-Z]{3}$/u.test(row.dayPnlCurrency || '') || row.dayPnlCurrency === 'PTS' || date(row.asOf) !== today)) return null;
+  const currencies = new Set(rows.map(row => row.dayPnlCurrency));
   if (currencies.size !== 1) return null;
   const pnl = rows.reduce((total, row) => total + BigInt(row.dayPnlNanos), 0n);
   // A percentage is available only for comparable long cash positions, never from a futures notional.

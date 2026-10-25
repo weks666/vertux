@@ -1,0 +1,94 @@
+/* Compact controls in the existing terminal, with the same tokens and focus. */
+.terminal-world-market[hidden] { display:none!important; }
+.terminal-world-market { display:flex; flex-direction:column; min-width:0; min-height:0; flex:1 1 auto; gap:0; padding:0; overflow:hidden; }
+.terminal-world-status,.terminal-world-market > footer { flex:0 0 auto; padding:6px 10px; }
+.terminal-world-market p { margin:0; font-size:12px; line-height:1.5; color:var(--muted); }
+.terminal-world-market button { min-height:34px; flex-shrink:0; }
+.terminal-world-frame { position:relative; flex:1 1 320px; min-width:0; min-height:320px; }
+.terminal-world-frame iframe { position:absolute; inset:0; display:block; width:100%; height:100%; border:0; }
+.terminal-world-market footer { display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; font-size:11px; line-height:1.4; border-top:1px solid var(--line); }
+.terminal-world-market footer span { flex:1 1 220px; color:var(--muted); }
+.terminal-world-market a { color:var(--text); text-decoration:underline; text-underline-offset:3px; }
+.terminal-external-chart .terminal-drawing-tools,.terminal-external-chart>.terminal-chart-source,.terminal-external-chart .terminal-chart-statusbar,.terminal-external-chart .terminal-chart-freshness { display:none; }
+.terminal-workbench .terminal-external-chart .terminal-chart-area { min-height:400px; flex-basis:400px; }
+.terminal-tradingview-active .terminal-chart-controls,.terminal-tradingview-active .terminal-favorites-bar,.terminal-external-active>.instrument-context { display:none!important; }
+.terminal-cell-controls { display:none; }
+.terminal-multiple-charts .terminal-chart-card:not(.terminal-external-chart)>.terminal-cell-controls { display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px 8px; border-bottom:1px solid var(--line); }
+.terminal-workbench .terminal-cell-controls :is(button,select) { width:auto; min-height:32px; font-size:12px; padding:4px 8px; }
+.terminal-workbench .terminal-cell-controls .terminal-icon { width:32px; padding:6px; }
+.terminal-cell-controls svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; }
+.terminal-workbench .terminal-source-switch { flex:0 0 auto; padding:4px 8px; min-height:28px; font-size:11px; color:var(--muted); }
+.terminal-workbench .terminal-save-state [data-retry-terminal-save] { pointer-events:auto; min-height:32px; padding:4px 8px; margin-left:8px; font-size:12px; }
+.terminal-external-context { display:none; padding:12px; color:var(--muted); font-size:12px; line-height:1.5; }
+.terminal-external-active .terminal-external-context { display:block; }
+.terminal-external-active .terminal-side>:not(header):not(.terminal-external-context),.terminal-external-active .terminal-dock-body>:not(.terminal-external-context),.terminal-external-active .terminal-widget-panel>:not(header) { display:none!important; }
+.terminal-external-active .terminal-widget-panel::after { content:'Для этого источника используйте инструменты на графике TradingView.'; padding:12px; color:var(--muted); font-size:12px; }
+.terminal-popover[data-editing=catalog] { width:min(560px,calc(100vw - 16px)); }
+.terminal-catalog-filters { display:flex; flex-wrap:wrap; gap:4px; padding:8px 0 12px; }
+.terminal-catalog-filters button { min-height:32px; padding:4px 8px; font-size:12px; }
+.terminal-catalog-filters button[aria-pressed=true] { color:var(--text); background:var(--surface-hover); border-color:var(--vertux-soft); }
+.terminal-catalog-scope { margin:8px 0; color:var(--muted); font-size:12px; }
+.terminal-popover[data-editing=catalog] .terminal-symbol-results { max-height:min(420px,45dvh); overflow:auto; overscroll-behavior:contain; }
+.terminal-popover[data-editing=catalog] .terminal-symbol-results>button { min-height:56px; }
+.terminal-workbench .instrument-mark { aspect-ratio:1; flex-shrink:0; border-radius:50%; overflow:hidden; }
+.terminal-workbench .instrument-mark img { width:100%; height:100%; object-fit:contain; border-radius:50%; }
+.terminal-workbench .terminal-chart-identity .instrument-mark { flex:0 0 24px; min-width:24px; max-width:24px; }
+.terminal-workbench .ticker-symbol .instrument-mark { flex:0 0 31px; min-width:31px; max-width:31px; }
+.terminal-watch-controls :is([data-watch-expand],summary),.ticker-settings { display:grid; place-items:center; width:32px; height:32px; min-width:32px; min-height:32px; padding:6px; }
+.terminal-watch-controls summary { list-style:none; }
+.terminal-watch-controls summary::after,.terminal-watch-controls summary::marker { display:none; content:none; }
+.terminal-watch-controls svg,.ticker-settings svg { width:18px; height:18px; stroke:currentColor; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.terminal-popover[data-editing=settings] { width:680px; max-width:calc(100vw - 16px); max-height:min(600px,calc(100dvh - 24px)); }
+.chart-preferences-compact .chart-preferences-form { display:grid; grid-template-columns:154px minmax(0,1fr); gap:12px 18px; }
+.chart-preference-tabs { grid-column:1; grid-row:1 / 3; display:flex; flex-direction:column; gap:4px; border-right:1px solid var(--line); padding-right:12px; }
+.chart-preference-tabs>button { text-align:left; min-height:38px; padding:8px; font-size:12px; border:0; border-radius:5px; }
+.chart-preference-tabs>button[aria-selected=true] { color:var(--text); background:var(--accent-surface); }
+.chart-preferences-compact .chart-preferences-form>details { grid-column:2; margin:0; padding:0; border:0; min-width:0; }
+.chart-preferences-compact .chart-preferences-form>details[hidden],.chart-preferences-compact summary[hidden] { display:none!important; }
+.chart-preferences-compact .chart-preference-status { grid-column:2; margin:8px 0 0; }
+.chart-preferences-compact .chart-color-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 14px; }
+.chart-preferences-compact .chart-color-fields>label:has(>input[type=color]) { display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap:10px; font-size:12px; margin:0; }
+body[data-visual-workspace="3"] #mainContent .terminal-popover input[type=color] { flex:0 0 32px; width:32px; min-width:32px; max-width:32px; min-height:32px; height:32px; padding:3px; cursor:pointer; border-radius:5px; }
+.terminal-popover input[type=color]::-webkit-color-swatch-wrapper { padding:0; }
+.terminal-popover input[type=color]::-webkit-color-swatch { border:0; border-radius:3px; }
+.chart-preferences-compact .chart-tool-defaults { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.chart-preferences-compact p { font-size:12px; line-height:1.5; margin:0 0 14px; }
+.terminal-popover[data-editing=indicators] { width:560px; max-width:calc(100vw - 16px); }
+.terminal-popover[data-editing=indicators] .terminal-study-catalog { display:grid; grid-template-columns:1fr 1fr; max-height:280px; overflow:auto; }
+.terminal-popover[data-editing=indicators] .terminal-catalog-row { min-width:0; }
+.terminal-popover[data-editing=indicators] .terminal-catalog-row>button:first-child { font-size:12px; white-space:normal; text-align:left; }
+.terminal-popover[data-editing=indicators] .terminal-study-current { max-height:150px; overflow:auto; }
+.terminal-study-current .terminal-study-row>label:first-child { grid-column:auto; padding-right:0; }
+.terminal-study-current .terminal-study-row>[data-remove-study] { position:static; inset:auto; width:28px; height:28px; min-height:28px; }
+.chart-preferences-compact [data-style-fields] .chart-color-fields>label { min-width:0; }
+.chart-preferences-compact [data-style-fields] input:not([type=color]) { width:100%; min-width:0; box-sizing:border-box; margin-inline:0; }
+.terminal-stage .instrument-quick-item .watch-symbol small.watch-listing { display:block; grid-row:2; }
+.terminal-stage .watch-with-names .instrument-quick-item .watch-symbol small.watch-listing { grid-row:3; }
+.terminal-stage .watch-with-names .instrument-quick-item .instrument-mark { grid-row:1 / 4; }
+.chart-study-legend { background:color-mix(in srgb,var(--surface) 85%,transparent); }
+.chart-study-legend button { opacity:0; }
+.chart-study-legend:hover button,.chart-study-legend:focus-within button { opacity:1; }
+.terminal-chart-freshness { color:var(--muted); font-size:11px; white-space:normal; font-variant-numeric:tabular-nums; }
+.terminal-chart-freshness[data-state=live] { color:var(--positive); }
+.terminal-chart-freshness[data-state=stale] { color:var(--negative); }
+.terminal-workbench #instrumentQuickList { display:block; }
+body[data-visual-workspace="3"] #mainContent .terminal-watch-settings>summary::before,
+body[data-visual-workspace="3"] #mainContent .terminal-watch-settings>summary::after { display:none!important; }
+@media(max-width:1100px){
+ body[data-current-view=terminal] .workspace>.topbar { flex-wrap:wrap!important; }
+ body[data-current-view=terminal] .topbar .topbar-search { min-width:80px; flex-shrink:1; }
+}
+@media(min-width:721px) and (max-width:1100px){
+ body[data-current-view=terminal] #statisticsPeriodForm { flex:0 0 100%!important; width:100%!important; min-width:0; order:3!important; }
+}
+@media(max-width:900px){
+ .terminal-workbench.terminal-custom-layout #terminalWatchlist { flex:0 0 auto!important; height:420px!important; min-height:280px; max-height:70dvh; overflow:hidden; }
+}
+@media(hover:none){.chart-study-legend button{opacity:1}}
+@media(max-width:680px){
+ .chart-preferences-compact .chart-preferences-form { display:block; }
+ .chart-preference-tabs { flex-direction:row; overflow-x:auto; border:0; padding:0 0 10px; margin-bottom:10px; }
+ .chart-preference-tabs>button { flex:0 0 auto; max-width:130px; }
+ .chart-preferences-compact .chart-color-fields { grid-template-columns:1fr 1fr; }
+ .terminal-popover[data-editing=indicators] .terminal-study-catalog { grid-template-columns:1fr; }
+}

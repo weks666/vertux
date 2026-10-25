@@ -1,4 +1,5 @@
 import { TERM_EXAMPLES } from './term-examples.js';
+import { financialFormula, financialFormulaVariables } from './financial-formulas.js';
 const escape = value => String(value ?? '').replace(/[&<>"']/gu, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
 
 export function glossaryEntries(terms, { category = 'all', query = '', direction = 'asc' } = {}) {
@@ -34,7 +35,7 @@ export function glossaryMarkup(entries, selected, allTerms = Object.fromEntries(
   const relatedKeys = key === 'drawdown' ? ['volatility', 'netReturn', 'grossReturn', 'unrealizedPnl'] : [];
   const related = relatedKeys.length ? relatedKeys.filter(id => allTerms[id]).map(id => [id, allTerms[id]]) : Object.entries(allTerms).filter(([id, item]) => id !== key && item.category === term.category).slice(0, 4);
   // The diagram uses the same two amounts as the existing educational example, never portfolio data.
-  const formula = key === 'drawdown' ? '<div class="term-math" aria-label="Просадка равна дну минус пик, делённому на пик, умноженному на 100 процентов"><var>DD</var><span>=</span><span class="math-fraction"><span><var>V</var><sub>дно</sub> − <var>V</var><sub>пик</sub></span><span><var>V</var><sub>пик</sub></span></span><span>× 100%</span></div><p class="math-legend"><var>V</var><sub>пик</sub> — значение на локальном максимуме.<br><var>V</var><sub>дно</sub> — последующий минимум.</p>' : `<p class="term-formula-text">${escape(term.formula)}</p>${term.variables?.length ? `<dl class="term-variables">${term.variables.map(value => `<div><dt>${escape(value.name)}</dt><dd>${escape(value.desc)}</dd></div>`).join('')}</dl>` : ''}`;
+  const formula = financialFormula(key, term.formula) + financialFormulaVariables(key, term.variables);
   const worked = TERM_EXAMPLES[key];
   const example = worked ? `<dl class="term-example-values">${worked.rows.map(([label,value])=>`<div><dt>${escape(label)}</dt><dd>${escape(value)}</dd></div>`).join('')}${worked.calculation ? `<div class="term-calculation"><dt>Расчёт</dt><dd>${escape(worked.calculation)}</dd></div>` : ''}<div class="term-example-result ${worked.tone || ''}"><dt>${escape(worked.result[0])}</dt><dd>${escape(worked.result[1])}</dd></div></dl>${worked.note ? `<p class="term-example-note">${escape(worked.note)}</p>` : ''}` : `<p>${escape(term.example)}</p>`;
   const definition = key === 'drawdown' ? 'Максимальная просадка — наибольшее снижение стоимости актива или портфеля от локального максимума до последующего минимума, выраженное в процентах.' : term.summary;
@@ -46,7 +47,7 @@ export function glossaryMarkup(entries, selected, allTerms = Object.fromEntries(
   };
 }
 
-export function initRiskTabs(root = document) {
+export function initRiskTabs(root = document, onSelect = () => {}) {
   const journal = root.querySelector?.('#myTradingPlan');
   if (journal) { journal.dataset.riskPanel = 'journal'; journal.setAttribute('role', 'tabpanel'); journal.setAttribute('aria-labelledby', 'riskJournalTab'); }
   const generated = root.querySelector?.('.risk-plan-layout');
@@ -62,6 +63,7 @@ export function initRiskTabs(root = document) {
       tab.classList.toggle('active', active);
     }
     for (const panel of root.querySelectorAll('[data-risk-panel]')) panel.hidden = panel.dataset.riskPanel !== value;
+    onSelect(value);
   };
   for (const [index, tab] of tabs.entries()) {
     tab.addEventListener('click', () => select(tab.dataset.riskTab));

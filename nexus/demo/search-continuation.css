@@ -1,0 +1,15 @@
+.search-continuation-results{width:min(540px,calc(100vw - 32px));min-width:0!important;max-height:min(65vh,580px);overscroll-behavior:contain}
+.search-continuation-results .search-result-group{padding:12px 12px 5px;font-size:12px;color:var(--muted);font-weight:550}
+.search-continuation-results .search-result-row{padding:10px 12px;border-bottom:1px solid var(--line);min-width:0}
+.search-continuation-results .search-result-row:last-child{border-bottom:0}
+.search-continuation-results .search-result-row>strong,.search-continuation-results .search-result-row>small{display:block;overflow-wrap:anywhere}
+.search-continuation-results .search-result-row>small{margin-top:4px}
+.search-continuation-results .search-result-reason{padding:6px 0 0}
+.search-continuation-results .search-result-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.search-continuation-results .search-result-actions button{display:flex;align-items:center;gap:8px;min-height:44px;width:auto;max-width:100%;padding:8px 12px;border:1px solid var(--line);font:inherit;font-size:12px;color:var(--text)}
+.search-continuation-results .search-result-actions button[aria-selected=true]{outline:2px solid var(--vertux-soft);outline-offset:-2px;background:var(--surface-strong)}
+.search-continuation-results .search-result-actions button[aria-disabled=true]{color:var(--muted);cursor:default}
+.search-continuation-status:empty{display:none}
+.search-continuation-status{position:absolute;right:0;top:calc(100% + 8px);z-index:71;max-width:min(480px,calc(100vw - 32px));padding:10px 12px;margin:0;background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--radius);font-size:12px;color:var(--text)}
+.topbar-search:has(.search-continuation-status:not(:empty)) .search-continuation-results{top:calc(100% + 76px);max-height:min(50vh,480px)}
+@media(max-width:650px){.search-continuation-results{width:calc(100vw - 28px);max-width:calc(100vw - 28px)}.search-continuation-results .search-result-row{padding:10px}.search-continuation-results .search-result-actions{gap:6px}.search-continuation-results .search-result-actions button{flex:1;justify-content:center}}

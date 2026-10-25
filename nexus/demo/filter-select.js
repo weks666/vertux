@@ -10,8 +10,9 @@ export function enhanceFilterSelect(select, icon) {
  trigger.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24">'+glyph+'</svg><span></span><svg class="filter-select-arrow" aria-hidden="true"><use href="#i-chevron"/></svg>';
  const menu=document.createElement('span');menu.id=select.id+'-options';menu.className='filter-select-options';menu.setAttribute('role','listbox');menu.setAttribute('aria-label',label);menu.hidden=true;
  trigger.setAttribute('aria-controls',menu.id);wrap.append(trigger,menu);
+ menu.setAttribute('popover','manual');
  select.hidden=true;select.tabIndex=-1;
- function close(focus=false){menu.hidden=true;trigger.setAttribute('aria-expanded','false');if(focus)trigger.focus({preventScroll:true});}
+ function close(focus=false){if(menu.matches(':popover-open'))menu.hidePopover();menu.hidden=true;trigger.setAttribute('aria-expanded','false');if(focus)trigger.focus({preventScroll:true});}
  function update(){
   const focusedValue=menu.contains(document.activeElement)?document.activeElement?.dataset.value:null;
   trigger.querySelector('span').textContent=select.selectedOptions[0]?.textContent||label;
@@ -22,7 +23,7 @@ export function enhanceFilterSelect(select, icon) {
   }));
   if(focusedValue!==null&&!menu.hidden){const choices=[...menu.querySelectorAll('button')];(choices.find(b=>b.dataset.value===focusedValue)||choices.find(b=>b.getAttribute('aria-selected')==='true'))?.focus({preventScroll:true});}
  }
- function open(){menu.hidden=false;trigger.setAttribute('aria-expanded','true');const option=menu.querySelector('[aria-selected=true]')||menu.querySelector('button');option?.focus({preventScroll:true});}
+ function open(){if(select.disabled)return;menu.hidden=false;menu.showPopover?.();const r=trigger.getBoundingClientRect(),room=innerHeight-r.bottom-12,above=room<150&&r.top>room,width=Math.min(320,innerWidth-16,Math.max(r.width,230));Object.assign(menu.style,{position:'fixed',inset:'auto',margin:'0',left:Math.max(8,Math.min(innerWidth-width-8,r.left))+'px',top:above?'auto':r.bottom+6+'px',bottom:above?innerHeight-r.top+6+'px':'auto',minWidth:'0',width:width+'px',maxWidth:innerWidth-16+'px',maxHeight:Math.max(80,Math.min(320,above?r.top-12:room))+'px'});trigger.setAttribute('aria-expanded','true');const option=menu.querySelector('[aria-selected=true]')||menu.querySelector('button');option?.focus({preventScroll:true});}
  trigger.addEventListener('click',()=>menu.hidden?open():close());
  trigger.addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();open();}});
  wrap.addEventListener('keydown',e=>{
@@ -33,6 +34,7 @@ export function enhanceFilterSelect(select, icon) {
   const next=e.key==='Home'?0:e.key==='End'?choices.length-1:(i+(e.key==='ArrowDown'?1:-1)+choices.length)%choices.length;choices[next]?.focus();
  });
  document.addEventListener('pointerdown',e=>{if(!wrap.contains(e.target))close();});
+ window.addEventListener('resize',()=>close());document.addEventListener('scroll',e=>{if(!menu.hidden&&!menu.contains(e.target))close();},true);
  wrap.addEventListener('focusout',e=>{if(!wrap.contains(e.relatedTarget))close();});
  select.addEventListener('change',update);
  new MutationObserver(update).observe(select,{childList:true,subtree:true,attributes:true,attributeFilter:['disabled']});update();

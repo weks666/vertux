@@ -1,5 +1,7 @@
 
 /* Calendar and catalog extend the existing Invest Operate surface. */
+.calendar-instrument-context { margin:0; padding:16px 22px; border-bottom:1px solid var(--line); color:var(--text); overflow-wrap:anywhere; }
+.insight-content [data-insight-coupons] { min-height:44px; max-width:100%; white-space:normal; }
 .news-filters { display:flex; align-items:end; flex-wrap:wrap; gap:16px; padding:20px 22px; }
 .news-filters label { display:grid; gap:7px; font-size:var(--type-label); color:var(--muted); }
 .news-filters select { min-height:44px; padding:9px 12px; border:1px solid var(--line-strong); border-radius:9px; background:var(--ink); color:var(--text); }
@@ -34,6 +36,13 @@
 .news-watch,.news-data-gap { color:var(--muted); }
 .news-limitations { padding:22px 0; color:var(--muted); }
 .news-limitations summary { cursor:pointer; color:var(--vertux-soft); }
+.news-source-context summary { min-height:44px; padding-block:12px; box-sizing:border-box; }
+.news-source-context summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+.news-source-context dl { display:grid; gap:12px; }
+.news-source-context dl>div { display:grid; grid-template-columns:minmax(120px,1fr) minmax(120px,1fr); gap:12px; }
+.news-source-context dd { margin:0; overflow-wrap:anywhere; }
+.news-source-context li { margin-block:10px; overflow-wrap:anywhere; }
+@media(max-width:600px){.news-source-context dl>div{grid-template-columns:1fr;gap:3px;}}
 #newsMore { margin:20px 0 0; }
 @media(max-width:1100px) { .news-workspace { grid-template-columns:1fr; } .news-analysis-panel { border-left:0; border-top:1px solid var(--line); padding:24px 0 0; } }
 @media(max-width:600px) { .news-filters { align-items:stretch; } .news-filters label { width:100%; } .news-workspace { padding:0 16px 20px; gap:20px; } .news-filters { padding:16px; } }
@@ -70,6 +79,11 @@ input[type=checkbox] { accent-color:var(--vertux); width:16px; height:16px; }
 .calendar-month-nav [data-month-step="1"] svg { transform:rotate(-90deg); }
 .calendar-filters { display:grid; grid-template-columns:1fr 1fr 1.4fr; gap:15px; }
 .calendar-status { margin:15px 22px; color:var(--muted); font-size:13px; min-height:20px; }
+#calendarRefresh { min-height:44px; }
+#calendarBondEvents { margin-top:16px; padding-top:12px; border-top:1px solid var(--line); min-width:0; }
+#calendarBondEventsRefresh { min-height:44px; white-space:normal; max-width:100%; }
+#calendarBondEventsStatus { color:var(--muted); font-size:var(--type-caption); line-height:1.6; overflow-wrap:anywhere; }
+#calendarBondEventsRefresh:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
 .calendar-layout { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr); gap:24px; padding:0 22px; align-items:start; }
 .calendar-week,.calendar-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:1px; }
 .calendar-week { padding-bottom:10px; color:var(--muted); font-size:var(--type-caption); text-align:center; }
@@ -82,7 +96,7 @@ input[type=checkbox] { accent-color:var(--vertux); width:16px; height:16px; }
 .calendar-day.outside { background:var(--ink); }
 .calendar-number { font-variant-numeric:tabular-nums; }
 .calendar-event { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:var(--type-caption); color:var(--text); padding:2px 4px; background:var(--surface-strong); border-radius:3px; }
-.calendar-event.dividend { color:var(--positive); }
+.calendar-event.dividend,.calendar-event.coupon { color:var(--positive); }
 .calendar-event.expiration { color:var(--warning); }
 .calendar-event.report,.calendar-event.reminder { color:var(--vertux-soft); }
 .calendar-day small { font-size:var(--type-caption); color:var(--muted); }
@@ -229,3 +243,40 @@ input[type=checkbox] { accent-color:var(--vertux); width:16px; height:16px; }
 @media(max-width:1350px) { .instruments-view.active { grid-template-columns:190px minmax(0,1fr); } #calendarUpcoming { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:1100px) { .instruments-view.active,.alert-workspace,.news-workspace { grid-template-columns:minmax(0,1fr); } .instruments-view>.instrument-shortlist { grid-column:1; grid-row:2; } .instrument-quick-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); } .instruments-view>.instrument-surface { grid-column:1; grid-row:3; } .instruments-view>.catalog-surface { grid-row:4; } .instruments-view>.market-vision-surface { grid-row:5; } .alert-workspace .price-alert-form { grid-column:1; grid-row:1; grid-template-columns:repeat(2,minmax(0,1fr)); } .price-alert-form h3,.price-alert-form>small { grid-column:1/-1; } .alert-workspace .alert-rules-surface { grid-row:2; } }
 @media(max-width:720px) { #calendarUpcoming { grid-template-columns:minmax(0,1fr); } .alert-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .alert-summary>div:last-child { grid-column:1/-1; } .instrument-quick-list { grid-template-columns:repeat(2,minmax(0,1fr)); } .market-instrument-summary { padding:18px 14px; } .market-summary-quote { text-align:left; } .alert-workspace .price-alert-form { grid-template-columns:minmax(0,1fr); } }
+/* Bounded local news copies: use the existing news surface and semantic tokens. */
+#newsAnalysisContent .news-history-toggle{min-height:44px;margin-top:14px;white-space:normal;max-width:100%}
+#newsAnalysisContent .news-content-history{min-width:0;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);overflow-wrap:anywhere}
+#newsAnalysisContent .news-content-history p{line-height:1.6}
+#newsAnalysisContent .news-content-history :is(h4,h5){font-size:14px;margin:12px 0}
+#newsAnalysisContent .news-history-caption{color:var(--muted);font-size:13px}
+#newsAnalysisContent .news-content-version{margin:10px 4px;border:1px solid var(--line);border-radius:8px;padding:0 12px;min-width:0}
+#newsAnalysisContent .news-content-version summary{min-height:44px;padding:12px 0;box-sizing:border-box;cursor:pointer;line-height:1.5;white-space:normal}
+#newsAnalysisContent .news-history-text{white-space:pre-wrap;overflow-wrap:anywhere}
+#newsAnalysisContent .news-content-history button{min-height:44px;height:auto;white-space:normal}
+#newsAnalysisContent :is(.news-history-toggle,.news-content-history summary,.news-content-history button):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* Saved publication comparison inherits calendar controls and semantic colors. */
+.bond-history { margin-top:12px; min-width:0; }
+.bond-history > summary { display:flex; align-items:center; min-height:44px; cursor:pointer; color:var(--text); font-size:var(--type-caption); text-decoration:underline; text-underline-offset:4px; }
+.bond-history-body { min-width:0; color:var(--text); font-size:var(--type-caption); line-height:1.6; overflow-wrap:anywhere; }
+.bond-history-note { color:var(--muted); max-width:72ch; }
+.bond-history-selection { display:flex; align-items:end; gap:12px; flex-wrap:wrap; margin:16px 0; }
+.bond-history-selection label { display:grid; gap:6px; min-width:0; flex:1 1 250px; color:var(--muted); }
+.bond-history-selection select { min-height:44px; max-width:100%; width:100%; color:var(--text); background:var(--surface-raised); border:1px solid var(--line-strong); border-radius:6px; padding:8px; font:inherit; }
+.bond-history button { min-height:44px; white-space:normal; max-width:100%; }
+.bond-history :is(button,select,summary):focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+.bond-history-event { border-top:1px solid var(--line); padding:4px 0; }
+.bond-history-event summary { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 16px; min-height:44px; cursor:pointer; }
+.bond-history-event summary small { color:var(--muted); font-size:inherit; }
+.bond-history-event dl { margin:4px 0 16px; }
+.bond-history-event dl > div { display:grid; grid-template-columns:minmax(120px,1fr) minmax(0,2fr); gap:8px 16px; padding:6px 0; }
+.bond-history-event dt { color:var(--muted); }
+.bond-history-event dd { margin:0; display:grid; gap:4px; min-width:0; font-variant-numeric:tabular-nums; }
+.bond-history-event dd b { font-weight:500; }
+.bond-history-pages { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-top:12px; }
+@media(max-width:600px) { .bond-history-event dl > div { grid-template-columns:minmax(0,1fr); gap:2px; } .bond-history-selection { align-items:stretch; } }
+
+.bond-history-chevron { width:16px; height:16px; flex:0 0 16px; fill:none; stroke:currentColor; stroke-width:1.5; }
+.bond-history > summary { gap:8px; }
+.bond-history-event-title { display:flex; align-items:center; gap:8px; }
+.bond-history[open] > summary > .bond-history-chevron, .bond-history-event[open] > summary .bond-history-chevron { transform:rotate(90deg); }

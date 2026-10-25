@@ -16,6 +16,8 @@
 .ledger-summary dt { font-size: var(--type-caption); color: var(--muted); }
 .ledger-summary dd { margin: 9px 0 5px; font: 550 clamp(22px,2.1vw,30px)/1.25 var(--body); font-variant-numeric: tabular-nums; letter-spacing: -.025em; }
 .ledger-summary small { display: block; color: var(--muted); font-size: 11px; line-height: 1.45; }
+.operations-surface .cell-note { max-width: 30ch; white-space: normal; }
+.ledger-summary small[hidden] { display: none; }
 [data-view-panel="analytics"] .analytics-primary { margin: 18px 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius-large); background: var(--surface); overflow: hidden; }
 [data-view-panel="analytics"] .analytics-grid { grid-template-columns: repeat(12,minmax(0,1fr)); }
 [data-view-panel="analytics"] .analytics-grid > div { grid-column: span 3; padding: 18px; min-height: 124px; border: 0; border-right: 1px solid var(--line); }
@@ -69,3 +71,72 @@
   .account-result-main { grid-template-columns: minmax(110px,1fr) minmax(35px,.5fr) auto; gap: 8px; }
   .result-bar-row { grid-template-columns: minmax(90px,1fr) minmax(30px,.45fr) auto; gap: 8px; }
 }
+
+/* Same-snapshot bond value stays inside the existing positions table. */
+#positionsBody .bond-position-value{display:block;min-width:150px;max-width:290px;white-space:normal;overflow-wrap:anywhere}
+#positionsBody .bond-position-value>small{display:block;color:var(--muted);font-size:12px}
+#positionsBody .bond-position-value details{margin-top:2px;text-align:left}
+#positionsBody .bond-position-value summary{min-height:44px;padding:10px 0;color:var(--vertux-soft);cursor:pointer;font-size:14px;list-style:revert}
+#positionsBody .bond-position-value summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+#positionsBody .bond-position-value dl{margin:8px 0;font-size:14px}
+#positionsBody .bond-position-value dl>div{margin:0 0 10px}
+#positionsBody .bond-position-value dt{color:var(--muted)}
+#positionsBody .bond-position-value dd{margin:2px 0 0;color:var(--text);font-variant-numeric:tabular-nums}
+#positionsBody .bond-position-value p{margin:10px 0;color:var(--muted);font-size:13px;line-height:1.5}
+
+#positionsBody .bond-position-value:has(>details[open]){min-width:260px}
+#positionsBody tr:has(.bond-position-value>details[open])>td{vertical-align:top}
+#positionsBody .bond-position-value dl>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:baseline;margin-bottom:9px}
+#positionsBody .bond-position-value dd{text-align:right;margin-top:0}
+#positionsBody .bond-position-method{border-top:1px solid var(--line);margin-top:10px}
+
+
+/* Source currencies and broker estimates share the incumbent inline disclosures. */
+#positionsBody .bond-position-average{display:block;min-width:130px;max-width:230px;white-space:normal;overflow-wrap:anywhere}
+#positionsBody .bond-position-average>small,#positionsBody .bond-position-metrics>small{display:block;color:var(--muted);font-size:12px}
+#positionsBody .bond-position-metrics{display:block;min-width:155px;max-width:290px;white-space:normal;overflow-wrap:anywhere}
+#positionsBody .bond-position-metrics details{margin-top:2px;text-align:left}
+#positionsBody .bond-position-metrics summary{min-height:44px;padding:10px 0;color:var(--vertux-soft);cursor:pointer;font-size:14px;list-style:revert}
+#positionsBody .bond-position-metrics summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+#positionsBody .bond-position-metrics:has(>details[open]){min-width:260px}
+#positionsBody tr:has(.bond-position-metrics>details[open])>td{vertical-align:top}
+#positionsBody .bond-position-metrics dl{margin:8px 0;font-size:14px}
+#positionsBody .bond-position-metrics dl>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:baseline;margin-bottom:9px}
+#positionsBody .bond-position-metrics dt{color:var(--muted)}
+#positionsBody .bond-position-metrics dd{margin:0;color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+#positionsBody .bond-position-metrics dd>small{display:block;margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}
+#positionsBody .bond-position-metrics p{margin:10px 0;color:var(--muted);font-size:13px;line-height:1.5}
+
+/* Futures keep own price units inside the existing portfolio table. */
+#positionsBody .future-position-average,#positionsBody .future-position-value{display:block;min-width:130px;max-width:230px;white-space:normal;overflow-wrap:anywhere}
+#positionsBody .future-position-average>small,#positionsBody .future-position-value>small,#positionsBody .future-position-metrics>small{display:block;color:var(--muted);font-size:12px}
+#positionsBody .future-position-metrics{display:block;min-width:155px;max-width:290px;white-space:normal;overflow-wrap:anywhere}
+#positionsBody .future-position-metrics details{margin-top:2px;text-align:left}
+#positionsBody .future-position-metrics summary{min-height:44px;padding:10px 0;color:var(--text);cursor:pointer;font-size:14px;list-style:revert}
+#positionsBody .future-position-metrics summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+#positionsBody .future-position-metrics:has(>details[open]){min-width:260px}
+#positionsBody tr:has(.future-position-metrics>details[open])>td{vertical-align:top}
+#positionsBody .future-position-metrics dl{margin:8px 0;font-size:14px}
+#positionsBody .future-position-metrics dl>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:baseline;margin-bottom:9px}
+#positionsBody .future-position-metrics dt{color:var(--muted)}
+#positionsBody .future-position-metrics dd{margin:0;color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+#positionsBody .future-position-metrics dd>small{display:block;margin-top:4px;color:var(--muted);font-size:12px;line-height:1.45}
+#positionsBody .future-position-metrics p{margin:10px 0;color:var(--muted);font-size:13px;line-height:1.5}
+
+/* Current broker estimates retain their own currencies and dated account scope. */
+.positions-heading,.positions-result{min-width:0;max-width:100%}
+.positions-result{flex-wrap:wrap}
+#unrealizedPnl{overflow-wrap:anywhere;min-width:0;max-width:100%}
+.current-position-result{margin:0 0 12px;padding:0 18px;max-width:100%;color:var(--muted);overflow-wrap:anywhere}
+.current-position-result summary{min-height:44px;padding:10px 0;font-size:14px;color:var(--vertux-soft);cursor:pointer;list-style:revert}
+.current-position-result summary:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:2px}
+.current-result-body{max-width:72ch;font-size:14px;line-height:1.55}
+.current-result-body p{margin:10px 0}
+.current-result-body section{padding:12px 0;border-top:1px solid var(--line)}
+.current-result-body h3{margin:0 0 6px;color:var(--text);font-size:16px;line-height:1.45}
+.current-result-body ul{margin:8px 0;padding-inline-start:20px}
+.current-result-body li{margin:4px 0}
+.current-result-amounts{margin:8px 0;color:var(--text);font-variant-numeric:tabular-nums}
+.current-result-amounts>div{display:grid;grid-template-columns:minmax(40px,1fr) minmax(0,2fr);gap:12px;margin:6px 0;align-items:baseline}
+.current-result-amounts dt{color:var(--muted)}
+.current-result-amounts dd{margin:0;text-align:right;overflow-wrap:anywhere}

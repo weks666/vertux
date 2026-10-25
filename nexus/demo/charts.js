@@ -9,7 +9,7 @@ const chartTheme = {
     background: { type: 'solid', color: '#0d141e' },
     textColor: '#9daeca',
     fontFamily: 'Rubik, system-ui, sans-serif',
-    fontSize: 12,
+    fontSize: 13,
     attributionLogo: false,
   },
   grid: {
@@ -77,9 +77,11 @@ function formatChartPercentage(value) {
 }
 
 function historyTimeScale() {
-  return { ...chartTheme.timeScale, timeVisible: false, minBarSpacing: 0.01, fixLeftEdge: true, fixRightEdge: true, rightOffset: 0,
-    tickMarkFormatter: (time, tickMarkType) => new Intl.DateTimeFormat(presentation.language, { timeZone: 'Europe/Moscow',
-      ...(tickMarkType === 0 ? { year: 'numeric' } : tickMarkType === 1 ? { month: 'short', year: '2-digit' } : { day: 'numeric', month: 'short' }) }).format(chartDate(time)) };
+  return { ...chartTheme.timeScale, timeVisible: false, minBarSpacing: 0.01, fixLeftEdge: true, fixRightEdge: true, rightOffset: 0, lockVisibleTimeRangeOnResize: true,
+    // A month boundary reads as the month name, like TradingView, not as «окт. 26 г.».
+    tickMarkFormatter: (time, tickMarkType) => { const text = new Intl.DateTimeFormat(presentation.language, { timeZone: 'Europe/Moscow',
+      ...(tickMarkType === 0 ? { year: 'numeric' } : tickMarkType === 1 ? { month: 'long' } : { day: 'numeric', month: 'short' }) }).format(chartDate(time));
+      return tickMarkType === 1 ? text.charAt(0).toUpperCase() + text.slice(1) : text; } };
 }
 
 export function normalizeEquityPoints(points) {
@@ -124,14 +126,27 @@ export function nearestObservation(values, at) {
   return at - before.time <= after.time - at ? before : after;
 }
 
+// A rolling period ends at the current valuation, which moves on every refresh.
+// The chart's right edge is its last observation (trailing calendar whitespace is not
+// scrollable), so a range still showing that observation follows the new period end;
+// a range the user moved away from it is kept.
+function followPeriod(visible, previous, next, previousValues) {
+  const oldFirst = previousValues[0]?.time, oldLast = previousValues.at(-1)?.time;
+  const oldFrom = normalizeTime(previous?.from), oldTo = normalizeTime(previous?.to);
+  const newFrom = normalizeTime(next?.from), newTo = normalizeTime(next?.to);
+  if (![oldFirst, oldLast, oldTo, newTo].every(Number.isFinite) || newTo <= oldTo || visible.to < oldLast) return visible;
+  const atStart = visible.from <= oldFirst || Number.isFinite(oldFrom) && visible.from <= oldFrom;
+  return { from: atStart && Number.isFinite(newFrom) ? newFrom : visible.from, to: newTo };
+}
+
 function selectionKey(period, scope) {
   return `${scope || ''}|${period?.period || 'custom'}|${!period?.period || period.period === 'custom' ? `${period?.from}|${period?.to}` : ''}`;
 }
 
-function createRecordedChart(host, initialValues, period, { mode = 'rubles', scope = '', green = false } = {}) {
+function createRecordedChart(host, initialValues, period, { mode = 'rubles', metric = mode, scope = '', green = false } = {}) {
   const api = chartApi();
   if (!api || !host || !initialValues.length) return null;
-  let values = initialValues, timeline = [], selected = selectionKey(period, scope), movingCrosshair = false;
+  let values = initialValues, timeline = [], selected = selectionKey(period, scope), selectedScale = null, movingCrosshair = false;
   const formatter = () => mode === 'percent' ? formatChartPercentage : formatChartRubles;
   const chart = api.createChart(host, { ...chartTheme, height: host.clientHeight || 280,
     handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: false },
@@ -186,8 +201,8 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
   chart.subscribeCrosshairMove(onCrosshair);
   const setData = (nextValues, nextPeriod = period, options = {}) => {
     const key = selectionKey(nextPeriod, options.scope ?? scope);
-    const visible = chart.timeScale().getVisibleRange();
-    mode = options.mode || mode; scope = options.scope ?? scope; period = nextPeriod;
+    const visible = chart.timeScale().getVisibleRange(), previous = period, previousValues = values;
+    mode = options.mode || mode; metric = options.metric ?? metric; scope = options.scope ?? scope; period = nextPeriod;
     timeline = chartDataForPeriod(nextValues.map(({ time, value }) => ({ time, value })), period);
     values = timeline.filter(point => typeof point.value === 'number');
     clearHover();
@@ -196,8 +211,13 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
     zeroLine?.applyOptions({ lineVisible: mode === 'percent', axisLabelVisible: false });
     chart.applyOptions({ localization: { ...chartTheme.localization, priceFormatter: formatter() } });
     series.setData(values.length ? timeline : []);
+    // A manually dragged ruble axis cannot be reused as a percentage axis (or
+    // for another account/metric). Refreshes of the same selection keep it.
+    const scaleKey = `${key}|${mode}|${metric}`;
+    if (selectedScale !== scaleKey) chart.applyOptions({ rightPriceScale: { autoScale: true } });
+    selectedScale = scaleKey;
     if (values.length) {
-      if (visible && selected === key) chart.timeScale().setVisibleRange(visible);
+      if (visible && selected === key) chart.timeScale().setVisibleRange(followPeriod(visible, previous, period, previousValues));
       else showSelectedPeriod(chart, period);
     }
     selected = key;
@@ -209,10 +229,11 @@ function createRecordedChart(host, initialValues, period, { mode = 'rubles', sco
     const color = (name, fallback) => css?.getPropertyValue(name).trim() || fallback;
     const background = color('--surface', '#0d141e'), text = color('--muted', '#9daeca'), line = color('--line', '#233044');
     const accent = color('--vertux-soft', '#8c73ff'), negative = color('--negative', '#ef7b76');
+    const alpha=(hex,opacity)=>/^#[0-9a-f]{6}$/i.test(hex)?`rgba(${hex.slice(1).match(/../g).map(value=>parseInt(value,16)).join(',')},${opacity})`:hex;
     chart.applyOptions({ layout: { background: { type:'solid', color:background }, textColor:text },
       grid: { vertLines:{color:line}, horzLines:{color:line} }, rightPriceScale:{borderColor:line}, timeScale:{borderColor:line},
       crosshair:{vertLine:{color:accent,labelBackgroundColor:color('--action-fill','#5d48cf')}} });
-    series.applyOptions(baseline ? {topLineColor:accent,bottomLineColor:negative} : {lineColor:accent});
+    series.applyOptions(baseline ? {topLineColor:accent,bottomLineColor:negative,topFillColor1:alpha(accent,.20),topFillColor2:alpha(accent,.025),bottomFillColor1:alpha(negative,.025),bottomFillColor2:alpha(negative,.22)} : {lineColor:accent,topColor:alpha(accent,.20),bottomColor:alpha(accent,0)});
   };
   const themeObserver = typeof MutationObserver === 'function' ? new MutationObserver(theme) : null;
   themeObserver?.observe(document.documentElement,{attributes:true,attributeFilter:['style','data-workspace-theme']});theme();
@@ -258,7 +279,8 @@ export function normalizeMarketCandles(candles, interval) {
       || row.high < Math.max(row.open, row.close, row.low) || row.low > Math.min(row.open, row.close, row.high)) continue;
     const prior = byTime.get(time);
     if (prior && Date.parse(prior.capturedAt || '') > Date.parse(row.capturedAt || '')) continue;
-    byTime.set(time, { ...row, time, volume: typeof row.volume === 'number' && Number.isFinite(row.volume) && row.volume >= 0 ? row.volume : 0 });
+    const volumeKnown = row.volumeKnown !== false && typeof row.volume === 'number' && Number.isFinite(row.volume) && row.volume >= 0;
+    byTime.set(time, { ...row, time, volume: volumeKnown ? row.volume : 0, ...(volumeKnown ? {} : {volumeKnown:false}) });
   }
   return [...byTime.values()].sort((a, b) => a.time - b.time);
 }

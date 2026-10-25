@@ -4,10 +4,12 @@ const number=value=>Number.isFinite(value)?value.toLocaleString('ru-RU'):'—';
 const signed=value=>(value>0?'+':'')+number(value);
 const stamp=value=>new Date(value).toLocaleString('ru-RU',{timeZone:'Europe/Moscow',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})+' мск';
 const tones={FIZ:'#9a7cff',YUR:'#45c9cf'};
-export function initParticipantsPanel({host,request}){
+export function initParticipantsPanel({host,request,getAccess=()=>true}){
+ let previousAccess=true;
  let selected=null,days=5,sequence=0,snapshot=null,chart=null,observer=null,loadedKey='',pendingKey='',active=false,loadedAt=0,refreshTimer=null;
  function destroy(){observer?.disconnect();observer=null;chart?.remove();chart=null;}
  function placeholder(message){destroy();host.innerHTML='<p class="empty-copy">'+escape(message)+'</p>';}
+ function accessChanged(){const allowed=getAccess()!==false,changed=allowed!==previousAccess;previousAccess=allowed;if(allowed){if(changed&&active){clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(Date.now()-loadedAt>=600000)void load();},60000);queueMicrotask(load);}return true;}sequence++;snapshot=null;loadedKey='';pendingKey='';clearInterval(refreshTimer);refreshTimer=null;placeholder('Позиции участников доступны в Pro. Изменить тариф можно в разделе «Подписка».');return false;}
  function chartView(){
   destroy();const api=globalThis.LightweightCharts,canvas=host.querySelector('.participants-chart');
   if(!api||!canvas||!snapshot?.items?.length)return;
@@ -23,6 +25,7 @@ export function initParticipantsPanel({host,request}){
   chart.subscribeCrosshairMove(param=>{const row=snapshot?.items?.find(item=>Date.parse(item.time)/1000===param.time)||snapshot?.latest;const legend=host.querySelector('.participants-legend');if(row&&legend)legend.textContent=stamp(row.time)+' · Физлица '+signed(row.FIZ.net)+' · Юрлица '+signed(row.YUR.net);});
  }
  function render(){
+  if(!accessChanged())return;
   if(!snapshot)return;
   const messages={'not-applicable':'Выберите фьючерс: Мосбиржа публикует эту разбивку для срочного рынка.','unsupported':'Для этого фьючерса источник не публикует позиции участников.','fixture':'В демонстрационном портфеле внешние данные Мосбиржи не загружаются.','empty':'У источника пока нет сопоставимого среза для обеих групп участников.'};
   if(snapshot.state!=='ready'||!snapshot.latest){placeholder(messages[snapshot.state]||'Позиции участников пока недоступны.');return;}
@@ -36,15 +39,16 @@ export function initParticipantsPanel({host,request}){
  }
  async function load(){
   if(host.hidden||!active)return;
+  if(!accessChanged())return;
   if(!selected||!['future','futures'].includes(selected.assetType)){placeholder('Выберите фьючерс: здесь будут позиции физических и юридических лиц.');return;}
   const key=selected.instrumentUid+':'+days;
   if(key===loadedKey&&snapshot&&Date.now()-loadedAt<600000){render();return;}
   if(key===pendingKey)return;
   const own=++sequence;pendingKey=key;placeholder('Загружаем позиции участников с Мосбиржи…');
   try{const result=await request('/api/market/participants?'+new URLSearchParams({instrumentUid:selected.instrumentUid,days}));if(own!==sequence)return;snapshot=result;loadedKey=key;loadedAt=Date.now();render();}
-  catch{if(own===sequence){if(snapshot&&loadedKey===key){snapshot={...snapshot,stale:true};render();}else placeholder('Мосбиржа сейчас недоступна. При следующем открытии вкладки попробуем снова.');}}
+  catch(error){if(own===sequence){if(error.code==='PLAN_FEATURE_UNAVAILABLE'){snapshot=null;loadedKey='';placeholder('Позиции участников доступны в Pro. Изменить тариф можно в разделе «Подписка».');}else if(snapshot&&loadedKey===key){snapshot={...snapshot,stale:true};render();}else placeholder('Мосбиржа сейчас недоступна. При следующем открытии вкладки попробуем снова.');}}
   finally{if(own===sequence)pendingKey='';}
  }
  host.addEventListener('click',event=>{const value=event.target.closest('[data-participants-days]')?.dataset.participantsDays;if(value){days=Number(value);void load();}});
- return {show(){active=true;clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(Date.now()-loadedAt>=600000)void load();},60000);void load();},update(value){if(selected?.instrumentUid===value?.instrumentUid)return;selected=value;sequence++;snapshot=null;loadedKey='';pendingKey='';destroy();if(!host.hidden&&active)void load();},hide(){active=false;clearInterval(refreshTimer);refreshTimer=null;destroy();}};
+ return {accessChanged,show(){active=true;clearInterval(refreshTimer);refreshTimer=setInterval(()=>{if(Date.now()-loadedAt>=600000)void load();},60000);void load();},update(value){const unchanged=selected?.instrumentUid===value?.instrumentUid;selected=value;if(!accessChanged()||unchanged)return;sequence++;snapshot=null;loadedKey='';pendingKey='';destroy();if(!host.hidden&&active)void load();},hide(){active=false;clearInterval(refreshTimer);refreshTimer=null;destroy();}};
 }

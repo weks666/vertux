@@ -1,0 +1,13 @@
+.plan-risk-scenario { margin-block: 12px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--text); background: var(--surface); overflow-wrap: anywhere; min-width: 0; }
+.plan-risk-scenario > summary { min-height: 44px; cursor: pointer; align-content: center; font-weight: 600; }
+.plan-risk-scenario p { margin-block: 10px; }
+.plan-risk-scenario dl { display: grid; gap: 8px; margin: 12px 0; }
+.plan-risk-scenario dl > div { display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: space-between; border-bottom: 1px solid var(--line); padding-block: 6px; }
+.plan-risk-scenario dt { color: var(--muted); }
+.plan-risk-scenario dd { margin: 0; font-variant-numeric: tabular-nums; }
+.plan-risk-scenario summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+#planRiskScenario { grid-column: 1 / -1; min-width: 0; }
+#planRiskScenario > button, #riskPreparePlan { min-height: 44px; white-space: normal; }
+#tradeRiskCalculator :is(input, select, summary) { min-height: 44px; box-sizing: border-box; }
+#tradeRiskCalculator .calculator-help > summary { min-height: 51px; align-content: center; }
+#tradeRiskCalculator .calculator-help > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }

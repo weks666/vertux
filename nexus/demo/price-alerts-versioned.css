@@ -1,0 +1,32 @@
+.alert-versioned .alert-status-line { display:flex; align-items:center; gap:16px; justify-content:space-between; margin-block:12px; min-height:64px; }
+.alert-versioned .alert-status-line p { margin:0; }
+.alert-versioned .alert-workspace .price-alert-form { display:flex; flex-direction:column; align-items:stretch; }
+.alert-versioned .price-alert-form input[type="checkbox"] { width:auto; }
+.alert-versioned .price-alert-form details { min-width:0; }
+.alert-versioned .price-alert-form details>label { margin-block:12px; }
+.alert-versioned .price-alert-form small { color:var(--muted); line-height:1.5; }
+.alert-versioned .alert-condition-picker>div { display:flex; flex-wrap:wrap; gap:6px; }
+.alert-versioned .alert-rule-head,.alert-versioned .alert-rule-row { grid-template-columns:minmax(105px,1.3fr) minmax(88px,1fr) minmax(96px,1fr) 48px minmax(75px,.8fr) minmax(68px,.8fr) 78px; min-width:0; }
+.alert-versioned .alert-rule-row>span,.alert-versioned .alert-rule-row small { overflow-wrap:anywhere; }
+.alert-versioned .alert-rule-price small,.alert-versioned #priceAlertEvents small { display:block; margin-top:4px; color:var(--muted); }
+.alert-versioned .alert-source-mark { display:grid; place-items:center; width:32px; height:32px; flex:none; border:1px solid var(--line); border-radius:8px; color:var(--muted); font-size:11px; }
+.alert-versioned .alert-rule-limits { grid-column:1/-1; color:var(--muted); }
+.alert-versioned .price-alert-actions { display:block; width:auto; }
+.alert-versioned .price-alert-actions>div { display:flex; flex-direction:column; gap:6px; }
+.alert-versioned .price-alert-actions>summary { cursor:pointer; min-height:32px; display:flex; align-items:center; font-size:12px; line-height:1.4; padding:6px 0; }
+.alert-versioned .price-alert-actions button { min-height:36px; }
+.alert-versioned .price-alert-setup p { overflow-wrap:anywhere; line-height:1.5; }
+.alert-versioned .price-alert-setup textarea { font-size:12px; }
+.alert-versioned .surface-head { flex-wrap:wrap; }
+.alert-versioned .surface-head .empty-copy { flex-basis:100%; font-size:12px; }
+@media(max-width:1450px) { .alert-versioned .alert-workspace { grid-template-columns:1fr; }.alert-versioned .alert-workspace .price-alert-form { grid-column:1;grid-row:2;max-width:none; }.alert-versioned .alert-rules-surface { grid-column:1;grid-row:1; } }
+@media(max-width:700px) {
+  .alert-versioned .alert-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .alert-versioned .alert-summary>div { grid-column:auto; }
+  .alert-versioned .alert-status-line { align-items:flex-start; }.alert-versioned .alert-rule-head { display:none; }
+  .alert-versioned .alert-rule-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding:14px; }
+  .alert-versioned .alert-rule-identity,.alert-versioned .price-alert-actions { grid-column:1/-1; }
+  .alert-versioned .price-alert-actions>div { flex-direction:row; flex-wrap:wrap; }
+  .alert-versioned .price-alert-actions button,.alert-versioned .price-alert-actions>summary { min-height:44px; }
+  .alert-versioned .price-alert-form button { min-height:44px; }
+}

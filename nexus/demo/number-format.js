@@ -35,3 +35,29 @@ export function positionQuantity(row,{locale='ru'}={}) {
   const unit=row.assetType==='future'?(locale==='en'?'contracts':'контр.'):(locale==='en'?'shares':'шт.');
   return `${value} ${unit}`;
 }
+
+// Company facts are decimal text, not nanounits. Keep the stored digits out of Number.
+export function financialMetric(metric,{mode='compact',locale='ru'}={}) {
+  if(metric?.value==null||metric.status==='missing')return locale==='en'?'No data':'Нет данных';
+  const raw=String(metric.value),match=/^(-?)(\d+)(?:\.(\d+))?$/u.exec(raw);
+  if(!match)return raw;
+  const whole=match[2].replace(/^0+(?=\d)/u,''),fraction=match[3]||'',amount=BigInt(whole+fraction),scale=10n**BigInt(fraction.length);
+  const negative=match[1]&&amount!==0n?'−':'',unitKey=metric.unit||'';
+  const currencyUnit=unitKey.replace(/\/share$/u,''),currency=({RUB:'₽',RUR:'₽',USD:'$',EUR:'€',CNY:'¥',PTS:locale==='en'?'pts':'п.'})[currencyUnit]||currencyUnit;
+  const unit=unitKey.endsWith('/share')?currency+(locale==='en'?'/share':'/акция'):({RUB:'₽',RUR:'₽',USD:'$',EUR:'€',CNY:'¥',PTS:locale==='en'?'pts':'п.',currency:locale==='en'?'currency units':'ден. ед.',percent:'%',ratio:'×',shares:locale==='en'?'shares':'акций',units:locale==='en'?'units':'ед.',years:locale==='en'?'years':'лет',days:locale==='en'?'days':'дн.',provider_value:'',unknown_currency:''})[unitKey]??unitKey;
+  const group=value=>value.replace(/\B(?=(\d{3})+(?!\d))/gu,locale==='en'?',':'\u202f');
+  const decimal=locale==='en'?'.':',';
+  let display;
+  if(mode==='exact')display=negative+group(whole)+(fraction?decimal+fraction:'');
+  else {
+    const compactable=/^[A-Z]{3}(?:\/share)?$/u.test(unitKey)||unitKey==='currency'||unitKey==='shares';
+    const magnitudes=compactable?[[1000000000000n,locale==='en'?'T':'трлн'],[1000000000n,locale==='en'?'B':'млрд'],[1000000n,locale==='en'?'M':'млн']]:[];
+    // Select by rounded magnitude so 999.999 million does not become 1 000 million.
+    const [magnitude,suffix]=magnitudes.find(([m])=>amount*200n>=scale*(m*200n-(m===1000000n?1n:m/1000n)))||[1n,''];
+    const divisor=scale*magnitude,rounded=(amount*100n+divisor/2n)/divisor;
+    const digits=rounded.toString().padStart(3,'0'),decimals=digits.slice(-2).replace(/0+$/u,'');
+    display=amount!==0n&&rounded===0n?(negative?'>−':'<')+'0'+decimal+'01':negative+group(digits.slice(0,-2))+(decimals?decimal+decimals:'');
+    if(suffix)display+='\u00a0'+suffix;
+  }
+  return display+(unit?'\u00a0'+unit:'');
+}

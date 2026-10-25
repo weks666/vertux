@@ -4,7 +4,23 @@ const names={'fixture-share-sber':['SBER','Сбербанк'],'fixture-share-ynd
 const preferences={textSize:'standard',density:'comfortable',language:'ru',displayCurrency:'RUB',digestEnabled:false,digestTime:'09:00',autoEvents:true,nativeNotifications:false};
 const displayFx={baseCurrency:'RUB',availableCurrencies:['RUB','USD'],rates:{USD:{rateNanos:'90000000000',date:'2026-08-12',source:'fixture'}}};
 const catalog=Object.entries(names).map(([instrumentUid,[ticker,name]])=>({instrumentUid,ticker,name,assetType:ticker.startsWith('Si')?'future':'share',currency:'RUB',lot:['SBER','GAZP'].includes(ticker)?10:1,inPortfolio:true,exchange:'Учебная площадка',sessionLabel:'Учебная сессия закрыта'}));
-const plans=[{id:'demo-plan-sber',instrumentUid:'fixture-share-sber',ticker:'SBER',name:'Сбербанк',direction:'long',allocationPpm:120000,positionAmountNanos:'150900000000000',entryPriceNanos:'301000000000',exitPriceNanos:'318000000000',priceCurrency:'RUB',expectedHold:'3–7 торговых дней',note:'Проверить отчётность и объём торгов.'},{id:'demo-plan-si',instrumentUid:'fixture-future-si-9-26',ticker:'Si-9.26',name:'Фьючерс USD/RUB',direction:'short',allocationPpm:50000,positionAmountNanos:'62875000000000',entryPriceNanos:'99600000000000',exitPriceNanos:'98200000000000',priceCurrency:'PTS',expectedHold:'1–2 торговых дня',note:'Сценарий возврата к среднему диапазону.'}];
+const plans=[
+ {id:'demo-plan-sber',instrumentUid:'fixture-share-sber',plannedFor:'2026-08-19',action:'watch',status:'watching',entryPrice:'301',stopPrice:'294',targetPrice:'318',priceBasis:{unit:'money-per-unit',currency:'RUB',origin:'owner-declared'},note:'Учебный план: проверить отчётность и объём торгов.',planDetails:{schema:'plan-details-v1',direction:'long',horizonDays:7,thesis:'Вымышленный пример условий инвестиционной идеи.',lifecycle:'watching'}},
+ {id:'demo-plan-si',instrumentUid:'fixture-future-si-9-26',plannedFor:'2026-08-14',action:'watch',status:'watching',entryPrice:'99600',stopPrice:'100300',targetPrice:'98200',priceBasis:{unit:'points',currency:null,origin:'owner-declared'},note:'Учебный план: сценарий возврата к среднему диапазону.',planDetails:{schema:'plan-details-v1',direction:'short',horizonDays:2,thesis:'Вымышленный пример фьючерсного плана; уровни заданы в пунктах.',lifecycle:'watching'}}
+];
+const aiSettings={revision:0,value:{localModel:null,personalModel:null,preferences:{style:'unspecified',experience:'unspecified',notes:''}}};
+async function demoPlans(){
+ const bootstrap=await fixture.request('/api/bootstrap'),items=[];
+ for(const template of plans){
+  const instrument=bootstrap.instruments?.find(item=>item.instrumentUid===template.instrumentUid&&item.portfolioId);
+  if(!instrument)continue;
+  const item={...clone(template),portfolioId:instrument.portfolioId};
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(item)));
+  item.writeVersion=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');items.push(item);
+ }
+ // Keep the journal's DTO contract; this example never persists a draft.
+ return {persistence:'local-drafts',execution:'none',fixture:true,readOnly:true,storage:'memory-example',items};
+}
 function enrich(value){if(!value||typeof value!=='object')return value;for(const item of Object.values(value))enrich(item);if(names[value.instrumentUid]){const [ticker,name]=names[value.instrumentUid];if('name'in value)value.name=name;if('ticker'in value)value.ticker=ticker;}return value;}
 async function request(path,options={}){
  const url=new URL(path,'https://demo.invalid'),p=url.pathname,method=(options.method||'GET').toUpperCase();
@@ -13,10 +29,16 @@ async function request(path,options={}){
  if(p==='/api/bootstrap'){
   const data=enrich(await fixture.request(path,options));
   data.capabilities={...data.capabilities,tradingPlan:true,marketCalendar:true,marketStream:false};
-  data.preview={...data.preview,interactiveTutorial:true,readOnly:true,stream:'none'};data.displayFx=clone(displayFx);
+  data.preview={...data.preview,interactiveTutorial:true,websiteDemo:true,readOnly:true,stream:'none'};data.displayFx=clone(displayFx);
   data.quality.source='Демо';data.quality.connector='Локальный пример';data.quality.note='Вымышленный портфель, без подключения к брокеру.';
   return data;
  }
+ if(p==='/api/nexus-ai/capabilities')return {configured:false,mode:'local',model:null,tools:[],fixture:true,readOnly:true};
+ if(p==='/api/nexus-ai/conversations')return {items:[],nextCursor:null,fixture:true};
+ if(p==='/api/nexus-ai/settings')return clone(aiSettings);
+ if(p==='/api/nexus-ai/storage')return {contentBytes:0,currentConversations:0,previousConversations:0,previousDigest:null,fixture:true};
+ if(p==='/api/nexus-ai/chatgpt-runtime')return {connected:false,models:[],defaultModel:null,fixture:true};
+ if(p==='/api/nexus-ai/local-runtime')return {state:'unavailable',models:[],canStart:false,fixture:true};
  if(p==='/api/ai/company-facts')return {
   title:'Вымышленные финансовые показатели для просмотра интерфейса',dataAsOf:'2026-06-30T12:00:00Z',llmUsed:false,
   metrics:[
@@ -27,7 +49,7 @@ async function request(path,options={}){
   limitations:['Эти значения не относятся к отчётности выбранного эмитента.'],sections:[]};
  if(p==='/api/market/preferences'||p==='/api/calendar/settings')return clone(preferences);
  if(p==='/api/market/catalog')return {items:clone(catalog),fixture:true,stale:false};
- if(p==='/api/trading-plan')return {persistence:'none',execution:'none',items:clone(plans)};
+ if(p==='/api/trading-plan')return demoPlans();
  if(p==='/api/calendar/due')return {nativeAvailable:false,reminders:[]};
  if(p==='/api/alerts')return {rules:[{id:'demo-price-level',symbol:'SBER',instrumentUid:'fixture-share-sber',targetPrice:318,condition:'above',note:'Пересмотреть сценарий',enabled:true}],events:[],enabled:false};
  if(p==='/api/calendar'){
@@ -41,7 +63,20 @@ async function request(path,options={}){
   return {state:'ready',ticker:'Si',fixture:true,items:rows,latest:rows.at(-1),partial:false,stale:false};
  }
  if(p==='/api/market/news')return {items:[],fixture:true,unavailable:false,hasMore:false,coverage:'В примере показаны события по активам.'};
- if(p==='/api/market/candles'){const data=await fixture.request('/api/bootstrap');return {data:clone(data.candles||[]),fixture:true};}
+ if(p==='/api/market/candles'){
+  const bootstrap=await fixture.request('/api/bootstrap'),uid=url.searchParams.get('instrumentUid'),interval=url.searchParams.get('interval')||'CANDLE_INTERVAL_DAY';
+  const source=(bootstrap.candles||[]).filter(row=>row.instrumentUid===uid&&(row.interval||'CANDLE_INTERVAL_DAY')===interval);
+  const from=url.searchParams.get('from'),to=url.searchParams.get('to'),before=url.searchParams.get('before');
+  const bounds=[from,to,before].filter(Boolean).map(value=>Date.parse(value));
+  if(bounds.some(value=>!Number.isFinite(value)))throw new Error('Некорректные даты учебной истории.');
+  const rows=source.filter(row=>{const at=Date.parse(row.time);return (!from||at>=Date.parse(from))&&(!to||at<Date.parse(to))&&(!before||at<Date.parse(before));});
+  return {data:clone(rows),fixture:true,stale:true,source:'Вымышленная история для демонстрации',history:{requestedFrom:rows[0]?.time||null,firstAvailable:source[0]?.time||null,nextBefore:null,hasMore:false,boundaryKnown:true}};
+ }
+ if(p==='/api/market/quotes'){
+  const bootstrap=await fixture.request('/api/bootstrap'),ids=new Set((url.searchParams.get('instrumentUids')||'').split(',').filter(Boolean));
+  const items=(bootstrap.positions||[]).filter(row=>ids.has(row.instrumentUid)&&row.currentPriceNanos!=null&&row.asOf).map(row=>({instrumentUid:row.instrumentUid,price:Number(row.currentPriceNanos)/1e9,sourceEventTime:row.asOf,connectorReceivedAt:row.asOf,stale:true,simulated:true,source:'Вымышленная котировка для демонстрации'}));
+  return {items,fixture:true,stale:true};
+ }
  return fixture.request(path,options);
 }
 export const runtimeAdapter=Object.freeze({...fixture,request,startMarketStream:()=>Object.freeze({close(){},simulated:true}),downloadOperationsCsv(){},downloadStatisticsPercentCsv(){}});

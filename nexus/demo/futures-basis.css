@@ -1,0 +1,35 @@
+.futures-basis{margin-block:1.25rem;padding-block:1rem;border-top:1px solid var(--line);min-width:0;color:var(--text)}
+.futures-basis[hidden]{display:none}
+.futures-basis h4{margin:0 0 .6rem;font-size:1rem}
+.futures-basis p{line-height:1.55;overflow-wrap:anywhere}
+.futures-basis-note,.futures-basis-clock,.futures-basis-row-head span,.futures-basis-axis{color:var(--muted)}
+.futures-basis-choice{display:grid;gap:.5rem;margin-block:.8rem;line-height:1.5;max-width:100%}
+.futures-basis select{width:100%;max-width:100%;min-width:0;min-height:48px;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:var(--radius-sm,8px);padding:.6rem;font:inherit}
+.futures-basis-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-block:.85rem}
+.futures-basis .button,.futures-basis summary{min-height:48px;white-space:normal;overflow-wrap:anywhere}
+.futures-basis .button{height:auto;max-width:100%;padding:.65rem .9rem}
+.futures-basis [aria-disabled=true]{color:var(--muted);cursor:default}
+.futures-basis :is(button,select,summary,a):focus-visible{outline:2px solid var(--focus);outline-offset:3px;scroll-margin-top:6rem}
+.futures-basis-spot{padding:.8rem;border:1px solid var(--line);border-radius:var(--radius-sm,8px);overflow-wrap:anywhere}
+.futures-basis-spot p{margin:.35rem 0}
+.futures-basis-rows{list-style:none;padding:0;margin:.8rem 0;display:grid;gap:.7rem}
+.futures-basis-rows>li{border:1px solid var(--line);border-radius:var(--radius-sm,8px);padding:.9rem;min-width:0;overflow-wrap:anywhere}
+.futures-basis-row-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem;line-height:1.5}
+.futures-basis dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:.8rem;margin:.8rem 0}
+.futures-basis dl>div{min-width:0}
+.futures-basis dt{color:var(--muted);font-size:.875rem;line-height:1.5}
+.futures-basis dd{margin:.25rem 0 0;line-height:1.5;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.futures-basis-values dd{font-size:1.05rem;font-weight:600}
+.futures-basis summary{display:list-item;align-content:center;cursor:pointer;padding:.5rem 0;line-height:1.5}
+.futures-basis-method ul{padding-left:1.25rem;line-height:1.6;overflow-wrap:anywhere}
+.futures-basis-method a{display:inline-block;align-content:center;min-height:44px;max-width:100%;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:3px}
+.futures-basis-curve{margin:1rem 0;padding:.8rem;border:1px solid var(--line);border-radius:var(--radius-sm,8px)}
+.futures-basis-curve figcaption{line-height:1.5;font-weight:600}
+.futures-basis-curve svg{display:block;width:100%;height:auto;max-height:220px;min-height:96px;overflow:visible}
+.futures-basis-curve path{stroke:var(--vertux);stroke-width:3;fill:none}
+.futures-basis-curve circle{fill:var(--vertux);stroke:var(--text);stroke-width:1}
+.futures-basis-zero{stroke:var(--muted);stroke-width:1;stroke-dasharray:5 5}
+.futures-basis-axis{display:flex;justify-content:space-between;gap:.8rem;font-size:.875rem;line-height:1.5}
+.futures-basis-curve p{font-size:.875rem;margin-bottom:0}
+@media(max-width:500px){.futures-basis-actions{display:grid}.futures-basis-actions .button{width:100%}.futures-basis-row-head{display:grid}.futures-basis-rows>li{padding:.75rem}}
+@media(prefers-reduced-motion:reduce){.futures-basis *{scroll-behavior:auto;transition:none;animation:none}}

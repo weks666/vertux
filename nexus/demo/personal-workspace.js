@@ -1,5 +1,6 @@
 // Product preferences stay scoped to the signed-in user and this Workspace.
 // Retired digest/watchlist records remain in storage; no background digest is started.
+import {personalPreferencesDefaults} from './personal-preferences-transfer-model.js';
 const preferenceIcons = {
   personalLanguage: '<path d="M4 5h12M10 3v2M6 5c.5 5 3.5 8 8 10M14 5c-.5 5-3.5 8-8 10M14 20l4-10 4 10M15.5 16h5"/>',
   personalCurrency: '<path d="M8 21V3h6a5 5 0 0 1 0 10H5M5 17h10"/>',
@@ -41,6 +42,7 @@ export function mountWorkspaceSettingsAppearance(form) {
       input.value = option.value;
       input.dataset.preferenceSelect = id;
       input.checked = option.value === select.value;
+      input.disabled = select.disabled;
       const text = document.createElement('span');
       text.textContent = option.textContent;
       choice.append(input, text);
@@ -75,75 +77,92 @@ export function mountWorkspaceSettingsAppearance(form) {
   form.querySelector('.personal-actions').append(retry);
 }
 
-export function initWorkspacePreferences({ request, showToast, onPresentation=()=>{} }) {
+export function initWorkspacePreferences({ request, showToast, onPresentation=()=>{}, onStateChange=()=>{}, getAccess=()=>({key:'current',allowed:true}) }) {
   const $ = selector => document.querySelector(selector);
   const form = $('#personalSettings');
   mountWorkspaceSettingsAppearance(form);
   let preferences = null;
   let pending = null;
+  let generation=0,revision=0,busyState=false,accessKey=getAccess().key;
+  const announce=()=>{revision++;onStateChange();};
+  const isCurrent=job=>job.generation===generation&&job.key===getAccess().key&&getAccess().allowed;
   const syncChoices = () => {
     for (const input of form.querySelectorAll('[data-preference-select]')) input.checked = input.value === $('#' + input.dataset.preferenceSelect).value;
   };
   const setBusy = busy => {
+    busyState=busy;
     form.setAttribute('aria-busy', String(busy));
-    for (const control of form.querySelectorAll('input,select,button')) control.disabled = busy || !preferences;
+    for (const control of form.querySelectorAll('input,select,button')) {
+      // Theme belongs to the confirmed browser profile, not this native form.
+      if (control.id === 'workspaceTheme' || control.dataset.preferenceSelect === 'workspaceTheme') continue;
+      control.disabled = busy || !preferences;
+    }
     $('#personalSettingsRetry').disabled = busy;
+    announce();
   };
-  const apply = settings => {
+  const apply = (settings,options) => {
     document.documentElement.dataset.textSize = settings.textSize;
     document.documentElement.dataset.density = settings.density;
     syncChoices();
-    onPresentation(settings);
+    onPresentation(settings,options);
   };
   const values = () => ({ textSize: $('#personalTextSize').value, density: $('#personalDensity').value,language:$('#personalLanguage').value,displayCurrency:$('#personalCurrency').value,
     digestEnabled: preferences?.digestEnabled ?? false, digestTime: preferences?.digestTime || '09:00' });
-  const render = settings => {
+  const render = (settings,options) => {
     preferences = settings;
     $('#personalTextSize').value = settings.textSize;
     $('#personalDensity').value = settings.density;
     $('#personalLanguage').value = settings.language||'ru';
     $('#personalCurrency').value = settings.displayCurrency||'RUB';
-    apply(settings);
+    apply(settings,options);
   };
   function refresh() {
     if (pending) return pending;
+    if(!getAccess().allowed)return Promise.resolve();
+    const job={generation:++generation,key:getAccess().key};
     setBusy(true);
     $('#personalSettingsRetry').hidden = true;
     pending = Promise.resolve().then(async () => {
-      try { render(await request('/api/market/preferences')); $('#personalSettingsStatus').textContent = ''; }
+      try { const settings=await request('/api/market/preferences');if(!isCurrent(job))return;render(settings); $('#personalSettingsStatus').textContent = ''; }
       catch (error) {
+        if(!isCurrent(job))return;
         $('#personalSettingsStatus').textContent = error.message;
         $('#personalSettingsRetry').hidden = false;
       }
-      finally { pending = null; setBusy(false); }
+      finally { if(isCurrent(job)){pending = null; setBusy(false);} }
     });
     return pending;
   }
   form.addEventListener('change', event => {
     if (!preferences || pending) return;
     apply(values());
+    announce();
     if (event.target.id !== 'workspaceTheme') $('#personalSettingsStatus').textContent = 'Изменения видны сразу. Сохраните их для следующего входа.';
   });
   form.addEventListener('submit', async event => {
     event.preventDefault();
     if (!preferences || pending || $('#personalSettingsSave').disabled) return;
     const draft = values();
+    const job={generation:++generation,key:getAccess().key};
     setBusy(true);
     pending = Promise.resolve().then(async () => {
       try {
-        render(await request('/api/market/preferences', { method: 'POST', body: JSON.stringify(draft) }));
+        const settings=await request('/api/market/preferences', { method: 'POST', body: JSON.stringify(draft) });if(!isCurrent(job))return;render(settings);
         $('#personalSettingsStatus').textContent = 'Вид Workspace сохранён.';
-      } catch (error) { $('#personalSettingsStatus').textContent = error.message; showToast(error.message, true); }
-      finally { pending = null; setBusy(false); }
+      } catch (error) { if(isCurrent(job)){$('#personalSettingsStatus').textContent = error.message; showToast(error.message, true);} }
+      finally { if(isCurrent(job)){pending = null; setBusy(false);} }
     });
     await pending;
   });
   $('#personalSettingsReset').addEventListener('click', () => {
     if (!preferences || pending) return;
     $('#personalTextSize').value = 'standard'; $('#personalDensity').value = 'comfortable'; apply(values());
+    announce();
     $('#personalSettingsStatus').textContent = 'Обычный вид выбран. Сохраните настройки, чтобы оставить его.';
   });
   $('#personalSettingsRetry').addEventListener('click', () => refresh());
   void refresh();
-  return { refresh };
+  const status=()=>({revision,busy:busyState,blocked:!preferences||!getAccess().allowed,dirty:!!preferences&&Object.entries(values()).some(([key,value])=>preferences[key]!==value)});
+  function invalidate(){generation++;pending=null;render(personalPreferencesDefaults,{refreshFx:false});preferences=null;setBusy(false);$('#personalSettingsStatus').textContent='Доступ или профиль изменились. Перепроверьте параметры.';$('#personalSettingsRetry').hidden=false;}
+  return { refresh,status,rejectAccess:invalidate,updateAccess(){const key=getAccess().key;if(key!==accessKey){accessKey=key;invalidate();if(getAccess().allowed)void refresh();}},accept(settings,{source='file'}={}){generation++;pending=null;render(settings,{refreshFx:false});setBusy(false);$('#personalSettingsStatus').textContent=source==='stored'?'Сохранённые личные параметры прочитаны.':'Личные параметры восстановлены из файла.';} };
 }

@@ -1,3 +1,4 @@
+import { isNotificationAlert } from './price-alerts-controller.js';
 const $ = selector => document.querySelector(selector);
 
 function formatDay(value) {
@@ -27,7 +28,7 @@ function addItem(host, { title, detail, time, unread, onClick }) {
   host.append(button);
 }
 
-export function initWorkspaceNotifications({ activateView }) {
+export function initWorkspaceNotifications({ activateView, getAlertAuthority = () => null, getServiceKey = () => null }) {
   const panel = $('#notificationPanel');
   const toggle = $('#notificationToggle');
   const items = $('#notificationItems');
@@ -39,6 +40,9 @@ export function initWorkspaceNotifications({ activateView }) {
   let knownAlertIds = null;
   let knownTickets = null;
   let supportUpdates = [];
+  let serviceKey = getServiceKey();
+  let alertAuthority = getAlertAuthority();
+  const notices = new Set();
 
   function closePanel() { panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); }
   function openSection(section) {
@@ -48,10 +52,17 @@ export function initWorkspaceNotifications({ activateView }) {
   }
   function openAlertView() { closePanel(); activateView('alerts'); }
   function desktopNotice(title, body, section) {
+    const authority = getAlertAuthority();
+    if (authority && !authority.isCurrent()) return;
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
     try {
       const notice = new Notification(title, { body, tag: `invest-${section}-${title}` });
-      notice.onclick = () => { window.focus(); section === 'alerts' ? openAlertView() : openSection(section); notice.close(); };
+      notices.add(notice);
+      notice.onclose = () => notices.delete(notice);
+      notice.onclick = () => {
+        if (authority !== getAlertAuthority() || authority && !authority.isCurrent()) { notice.close(); return; }
+        window.focus(); section === 'alerts' ? openAlertView() : openSection(section); notice.close();
+      };
     } catch { /* The host may disable native notifications; the in-app event remains available. */ }
   }
   function render() {
@@ -75,7 +86,7 @@ export function initWorkspaceNotifications({ activateView }) {
     if (!items.childElementCount) items.textContent = 'Новых событий пока нет.';
   }
   function renderPlan(data) {
-    const subscription = data.standardSubscription?.subscription || data.subscription;
+    const subscription = data.personalAccess || data.standardSubscription?.subscription || data.subscription;
     const catalog = data.standardSubscription?.catalog;
     const pro = (catalog?.plans || []).find(plan => /\bpro\b/i.test(`${plan.code || ''} ${plan.name || ''}`));
     const active = ['active', 'trial', 'grace'].includes(subscription?.status);
@@ -83,19 +94,19 @@ export function initWorkspaceNotifications({ activateView }) {
     planCard.querySelector('.rail-plan-progress')?.remove();
     if (active) {
       const name = subscription.planName || subscription.planCode || 'Invest Workspace';
-      $('#railPlanTitle').textContent = `Ваш план: ${name}`;
+      $('#railPlanTitle').textContent = `Ваш план · ${name}`;
       const days = Number.isFinite(Date.parse(subscription.periodEnd))
         ? Math.max(0, Math.ceil((Date.parse(subscription.periodEnd) - Date.now()) / 86400000)) : null;
-      $('#railPlanDescription').textContent = days == null ? 'Срок доступа указан в подписке' : `До конца периода: ${days} дн. · ${formatDay(subscription.periodEnd)}`;
+      $('#railPlanDescription').textContent = days == null ? subscription?.perpetual === true ? '∞ дней · бессрочно' : 'Срок не указан' : `До конца периода: ${days} дн. · ${formatDay(subscription.periodEnd)}`;
       $('#railPlanAction').textContent = 'Подробнее о подписке →';
       const start = Date.parse(subscription.periodStart);
       const end = Date.parse(subscription.periodEnd);
-      if (Number.isFinite(start) && Number.isFinite(end) && end > start) {
-        const progress = Math.max(0, Math.min(100, (end - Date.now()) / (end - start) * 100));
+      if (subscription?.perpetual === true || Number.isFinite(start) && Number.isFinite(end) && end > start) {
+        const progress = subscription.perpetual === true ? 100 : Math.max(0, Math.min(100, (end - Date.now()) / (end - start) * 100));
         const track = document.createElement('span');
         track.className = 'rail-plan-progress';
         track.setAttribute('role', 'progressbar');
-        track.setAttribute('aria-label', 'Оставшаяся часть периода');
+        track.setAttribute('aria-label', subscription.perpetual === true ? 'Бессрочный доступ' : 'Оставшаяся часть периода');
         track.setAttribute('aria-valuemin', '0');
         track.setAttribute('aria-valuemax', '100');
         track.setAttribute('aria-valuenow', String(Math.round(progress)));
@@ -112,8 +123,10 @@ export function initWorkspaceNotifications({ activateView }) {
   }
   async function refreshService() {
     if (typeof window.nexusProduct?.service?.overview !== 'function') return;
+    const key = getServiceKey();
     try {
       const result = await window.nexusProduct.service.overview();
+      if (key !== getServiceKey()) return;
       if (result?.ok !== true || !result.data) return;
       renderPlan(result.data);
       const tickets = result.data.support?.tickets || [];
@@ -130,15 +143,24 @@ export function initWorkspaceNotifications({ activateView }) {
     } catch { /* Keep the last confirmed state while Nexus is unavailable. */ }
   }
   document.addEventListener('invest:alerts-updated', event => {
-    alertEvents = Array.isArray(event.detail?.events) ? event.detail.events : [];
-    const latest = new Set(alertEvents.map(item => item.id));
-    if (knownAlertIds) {
+    const authority = getAlertAuthority();
+    if (!authority || event.detail?.authority !== authority) return;
+    if (alertAuthority !== authority) {
+      alertAuthority = authority; alertEvents = []; knownAlertIds = null; knownTickets = null; supportUpdates = [];
+      for (const notice of notices) notice.close(); notices.clear(); closePanel();
+    }
+    if (!authority.isCurrent()) { alertEvents = []; render(); return; }
+    alertEvents = Array.isArray(event.detail.events) ? event.detail.events.filter(isNotificationAlert) : [];
+    if (knownAlertIds && event.detail.fresh === true) {
       for (const item of alertEvents) {
-        if (item.readAt || !item.id || knownAlertIds.has(item.id)) continue;
+        if (item.readAt || !item.id || knownAlertIds.has(item.id) || knownAlertIds.size >= 8192) continue;
         desktopNotice(`Ценовой сигнал: ${item.symbol || 'инструмент'}`, `Уровень ${item.targetPrice ?? '—'} · цена ${item.actualPrice ?? '—'}`, 'alerts');
       }
     }
-    knownAlertIds = latest;
+    if (event.detail.fresh === true) {
+      knownAlertIds ||= new Set();
+      for (const item of alertEvents) if (knownAlertIds.size < 8192) knownAlertIds.add(item.id);
+    }
     render();
   });
   toggle.addEventListener('click', () => {
@@ -161,5 +183,10 @@ export function initWorkspaceNotifications({ activateView }) {
   });
   render();
   void refreshService();
-  setInterval(() => { void refreshService(); }, 60_000);
+  const timer=setInterval(() => { void refreshService(); }, 60_000);
+  window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});
+  return { updateBootstrap() {
+    const next=getServiceKey();if(next===serviceKey)return;serviceKey=next;
+    planCard.hidden=true;knownTickets=null;supportUpdates=[];render();void refreshService();
+  } };
 }

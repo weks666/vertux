@@ -1,0 +1,32 @@
+.terminal-series-passport{position:fixed;z-index:1250;width:min(520px,calc(100vw - 16px));max-height:calc(100dvh - 24px);overflow:auto;background:var(--surface-raised);color:var(--text);border:1px solid var(--line-strong);border-radius:8px;padding:12px;box-shadow:0 12px 30px #0003;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.terminal-series-passport[hidden]{display:none}.terminal-series-passport>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.terminal-series-passport h3{font-size:15px;margin:0}.terminal-series-passport h3:focus{outline:none}
+.terminal-series-passport .series-passport-facts{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin:18px 0}
+.terminal-series-passport dt{color:var(--muted);font-size:12px}.terminal-series-passport dd{margin:4px 0 0;min-width:0}
+.terminal-series-passport button,.terminal-series-passport summary{min-height:44px;font:inherit;white-space:normal}
+.terminal-series-passport button{padding:6px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--text)}
+.terminal-series-passport summary{padding:10px 0;cursor:pointer}.terminal-series-passport p{margin:12px 0}
+.terminal-series-passport button:focus-visible,.terminal-series-passport summary:focus-visible{outline:2px solid var(--vertux-soft);outline-offset:2px}
+.terminal-series-passport[data-outdated=true] [data-series-passport-status]{color:var(--warning)}
+@media(max-width:600px){.terminal-series-passport .series-passport-facts{grid-template-columns:1fr;gap:12px}}
+
+.terminal-study-row [data-explain-study]{grid-column:1/-1;justify-self:start;min-height:44px;max-width:100%;white-space:normal}
+.terminal-sma-explanation .sma-equation{font-variant-numeric:tabular-nums;font-weight:600;overflow-wrap:anywhere}
+.terminal-sma-explanation .sma-evidence-table{overflow:auto;max-width:100%}
+.terminal-sma-explanation table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.terminal-sma-explanation caption{text-align:left;margin:8px 0;color:var(--muted)}
+.terminal-sma-explanation th,.terminal-sma-explanation td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line-strong);overflow-wrap:anywhere}
+.terminal-sma-explanation .sma-evidence-pages{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.terminal-sma-explanation [data-sma-page]{font-size:12px;text-align:center}
+.terminal-sma-explanation[data-outdated=true] [data-sma-status]{color:var(--warning)}
+
+.terminal-sma-explanation[data-study=ema] table{min-width:560px}
+.terminal-sma-explanation[data-study=rsi] table{min-width:820px}
+.terminal-sma-explanation .sma-evidence-table:focus-visible{outline:2px solid var(--vertux-soft);outline-offset:2px}
+.terminal-sma-explanation .sma-evidence-pages{flex-wrap:wrap}
+.terminal-sma-explanation [data-sma-page]{flex:1 1 100px}
+.terminal-sma-explanation[data-study=ema] th,.terminal-sma-explanation[data-study=rsi] th{min-width:90px;overflow-wrap:normal;word-break:normal}
+.terminal-sma-explanation[data-study=ema] td,.terminal-sma-explanation[data-study=rsi] td{white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.terminal-sma-explanation .study-point-action{min-width:105px;white-space:normal}
+.terminal-sma-explanation .study-point-action button{max-width:140px;text-align:left}
+.terminal-sma-explanation .study-point-selection{padding-block:8px;border-block:1px solid var(--line-strong)}

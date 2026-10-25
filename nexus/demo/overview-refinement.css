@@ -26,6 +26,8 @@
 .overview-summary .headline-pnl[data-tone="positive"],
 .overview-metrics .metric-ledger > div[data-tone="positive"] { --card-accent: var(--positive); }
 .overview-metrics .metric-ledger > div[data-tone="warning"] { --card-accent: var(--warning); }
+[data-view-panel="analytics"] .analytics-grid > div:has(.positive) { --card-accent:var(--positive); }
+[data-view-panel="analytics"] .analytics-grid > div:has(.negative) { --card-accent:var(--negative); }
 .overview-metrics .metric-ledger > div[data-tone="neutral"] { --card-accent: var(--vertux); }
 .overview-metrics .metric-ledger dt { display:flex; align-items:center; gap:7px; }
 .overview-metrics .metric-ledger dt > svg {
@@ -154,3 +156,172 @@
 :root[data-visual-effects="off"] :is(.rail-plan-card,.portfolio-row,.positions-count) { background:var(--surface); border-color:var(--line); box-shadow:none; }
 :root[data-visual-effects="off"] :is(.view,.rail-plan-card,.portfolio-row,.notification-item) { animation:none; transition:none; }
 :root[data-visual-effects="off"] .market-price-pulse { animation:none; box-shadow:none; background:transparent; }
+/* Portfolio overview owns summary metrics and the single portfolio curve. */
+.overview-performance { margin:16px 0; border:0; background:none; box-shadow:none; }
+.overview-performance .analytics-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; margin:0; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.overview-performance .analytics-grid>div { min-width:0; padding:16px 20px; background:var(--surface); border:0; border-right:1px solid var(--line); box-shadow:none; }
+.overview-performance .analytics-grid>div:last-child { border-right:0; }
+.overview-performance .analytics-grid dt { display:flex; align-items:center; gap:7px; min-height:24px; color:var(--muted); font-size:12px; }
+.overview-performance .analytics-grid dd { margin:8px 0 0; font-size:24px; font-weight:600; font-variant-numeric:tabular-nums; }
+.overview-performance .metric-icon { width:17px; height:17px; fill:none; stroke:currentColor; flex:none; }
+.overview-performance .analytics-grid>div:has(dd.positive) { --card-accent:var(--positive); }
+.overview-performance .analytics-grid>div:has(dd.negative) { --card-accent:var(--negative); }
+:root:not([data-visual-effects="off"]) .overview-performance .analytics-grid>div:has(dd:is(.positive,.negative)) { background:linear-gradient(135deg,color-mix(in srgb,var(--card-accent) 10%,var(--surface)),var(--surface) 80%); }
+.overview-performance .analytics-grid>div:has(dd:is(.positive,.negative)) .metric-icon { color:var(--card-accent); }
+.position-chart-link { display:inline-flex; align-items:center; gap:5px; width:max-content; max-width:100%; min-height:44px; margin:2px 0 -4px; padding:4px 0; border:0; background:none; color:var(--vertux-soft); font:inherit; font-size:13px; text-align:left; cursor:pointer; }
+.position-chart-link:hover { text-decoration:underline; text-underline-offset:3px; }
+.position-chart-link:disabled { color:var(--muted); cursor:default; text-decoration:none; }
+.position-chart-link:focus-visible { outline:2px solid var(--vertux-soft); outline-offset:3px; border-radius:2px; }
+.overview-grid>.chart-surface[hidden] { display:none!important; }
+.overview-grid .analytics-chart-surface { margin:0; min-width:0; width:100%; background:var(--surface); box-shadow:none!important; }
+.overview-grid .analytics-chart-surface .surface-head { flex-wrap:wrap; gap:12px; }
+.overview-grid .analytics-chart-surface .chart-host { min-height:280px; }
+.portfolio-history-status { display:flex; justify-content:space-between; align-items:center; gap:20px; margin:12px 0 20px; padding:16px 20px; border:1px solid var(--line); border-radius:12px; background:var(--surface); }
+.portfolio-history-status[hidden] { display:none; }
+.portfolio-history-status strong { font-size:14px; font-weight:500; }
+.portfolio-history-status p { margin:6px 0; font-size:12px; color:var(--muted); max-width:90ch; line-height:1.6; }
+.portfolio-history-status small { color:var(--muted); font-size:11px; }
+.portfolio-history-status button { flex:none; border:1px solid var(--line-strong); color:var(--text); background:var(--surface-raised); padding:10px 14px; border-radius:8px; cursor:pointer; }
+/* Compact forms: rows size to their content, controls never stretch their labels. */
+.personal-settings fieldset,.personal-settings-grid { align-content:start; align-items:start; }
+.personal-settings label { align-self:start; grid-template-rows:auto auto; align-content:start; background:none; border:0; padding:0; }
+.personal-settings :is(select,input:not([type=checkbox]):not([type=radio])) { height:44px; min-height:44px; align-self:start; line-height:1.35; }
+/* Analytics: instrument header, section navigation, then a readable research canvas. */
+[data-view-panel=analytics]>.section-head { margin-bottom:24px; align-items:baseline; }
+.deep-analysis-tabs { display:flex; gap:24px; margin:0 0 24px; border-bottom:1px solid var(--line); }
+.deep-analysis-tabs button { background:none!important; border:0!important; border-radius:0; padding:12px 0; color:var(--muted); font-size:14px; }
+.deep-analysis-tabs button[aria-pressed=true] { color:var(--text); box-shadow:inset 0 -2px var(--vertux-soft); }
+.deep-instrument { min-width:0; }
+.deep-instrument-toolbar { padding:0 0 20px; margin:0; border:0; gap:10px; }
+.deep-instrument-toolbar label { display:flex; flex:1; min-width:0; gap:10px; }
+.deep-instrument-toolbar label>span { display:none; }
+.deep-instrument-toolbar select { flex:1; max-width:410px; }
+.deep-instrument-toolbar input { max-width:220px; }
+.deep-instrument-identity { padding:0 0 12px; }
+.deep-load-status { margin:0 0 24px; color:var(--muted); }
+.deep-instrument-insights { display:grid; grid-template-columns:168px minmax(0,1fr); gap:24px; border-top:1px solid var(--line); padding-top:24px; align-items:start; }
+.deep-instrument-insights .insight-tabs { display:flex; flex-direction:column; flex-wrap:nowrap; gap:4px; position:sticky; top:96px; margin:0; }
+.deep-instrument-insights .insight-tabs button { text-align:left; padding:12px; border:0; border-radius:8px; background:none; color:var(--muted); }
+.deep-instrument-insights .insight-tabs button[aria-pressed=true] { color:var(--text); background:var(--surface-strong); }
+.deep-instrument-insights .insight-content { min-width:0; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:24px; }
+.deep-instrument-insights .terminal-stat-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin:0; }
+.deep-instrument-insights .terminal-stat-grid>div { padding:16px 16px 18px 0; border:0; border-bottom:1px solid var(--line); background:none; min-width:0; }
+.deep-instrument-insights .terminal-stat-grid dd { font-size:20px; line-height:1.45; margin:6px 0; font-weight:500; font-variant-numeric:tabular-nums; }
+.deep-instrument-insights .terminal-stat-grid dt { color:var(--muted); font-size:12px; }
+.deep-instrument-insights .terminal-stat-grid small { font-size:11px; color:var(--muted); }
+.analysis-price-history { margin:0 0 24px; }
+.analysis-price-history header { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:0 0 16px; }
+.analysis-price-history h3 { font-size:15px; font-weight:500; margin:0; }
+.analysis-price-history header>span { font-size:20px; font-weight:500; font-variant-numeric:tabular-nums; }
+.analysis-price-plot { position:relative; padding-right:84px; }
+.analysis-price-plot svg { width:100%; height:220px; display:block; overflow:visible; }
+.analysis-price-plot polyline { fill:none; stroke:var(--vertux-soft); stroke-width:2; vector-effect:non-scaling-stroke; }
+.analysis-price-fill { fill:color-mix(in srgb,var(--vertux) 10%,transparent); }
+.analysis-price-axis { position:absolute; right:0; top:18px; bottom:20px; display:flex; flex-direction:column; justify-content:space-between; color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; }
+.analysis-price-history footer { display:flex; justify-content:space-between; gap:12px; margin-top:8px; color:var(--muted); font-size:11px; }
+.deep-trade-statistics { padding:24px; background:var(--surface); border:1px solid var(--line); border-radius:12px; }
+.deep-trade-statistics>header { margin-bottom:24px; }
+.deep-trade-statistics .terminal-stat-grid>div { border:0; border-bottom:1px solid var(--line); padding:16px 0; }
+#terminalStats .insight-tabs[hidden] { display:none; }
+#terminalStats .terminal-stat-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+#terminalStats [data-open-deep-analysis] { padding:8px 12px; margin:8px 0; color:var(--text); border:1px solid var(--line-strong); background:var(--surface-strong); border-radius:6px; cursor:pointer; }
+/* Integrated bookmark tabs and physically docked chart furniture. */
+.terminal-workbench .terminal-workspace-bar { padding:6px 10px 0; gap:8px; min-height:44px; background:var(--rail-bg); }
+.terminal-workbench .terminal-tabs { gap:4px; align-items:stretch; }
+.terminal-workbench .terminal-tab { margin-top:2px; padding:0 4px; border:1px solid transparent; border-bottom:0; border-radius:12px 12px 0 0; background:transparent; color:var(--muted); }
+.terminal-workbench .terminal-tab.active { border-color:var(--line); background:var(--surface); box-shadow:none; }
+.terminal-workbench .terminal-tab>button { color:inherit; background:transparent!important; border:0!important; border-radius:8px; }
+.terminal-workbench .terminal-tab.active>button { color:var(--text); }
+.terminal-workbench .terminal-tab>button:not([role=tab]) { opacity:.55; }
+.terminal-workbench .terminal-tab:hover>button { opacity:1; }
+.terminal-workbench .terminal-chart-controls { gap:8px; padding:4px 8px; min-height:42px; order:1; }
+.terminal-workbench .terminal-common-tools { gap:2px; }
+.terminal-workbench .terminal-common-tools>button { border:0; background:none; font-size:11px; padding:6px 8px; }
+.terminal-workbench .terminal-grid { order:3; }
+.terminal-ticker-row { order:0; }
+.terminal-ticker-row[data-edge=bottom] { order:4; }
+.terminal-chart-card { position:relative; }
+.terminal-chart-card>.terminal-chart-statusbar { flex:none; min-height:28px; padding:3px 10px; border-top:1px solid var(--line); background:var(--surface); margin:0; }
+.terminal-chart-card>.terminal-replay-bar { flex:none; margin:0; padding:8px 12px; border-top:1px solid var(--line); background:var(--surface-raised); gap:8px 16px; }
+.terminal-replay-bar .terminal-replay-actions { margin-left:auto; }
+.terminal-replay-bar .terminal-replay-status { flex-basis:100%; order:3; text-align:center; }
+.terminal-replay-bar>small { display:none; }
+.ticker-drag-preview { position:fixed!important; z-index:500; margin:0; pointer-events:none; opacity:.85; box-shadow:0 12px 28px #0005; }
+.terminal-ui-drop { position:fixed; z-index:501; border:1px dashed var(--vertux-soft); background:color-mix(in srgb,var(--vertux) 16%,transparent); pointer-events:none; border-radius:6px; }
+.terminal-workbench .terminal-ui-grip { display:flex; align-items:center; justify-content:center; flex:none; width:28px; height:28px; padding:5px; border:0; background:none; color:var(--muted); cursor:grab; touch-action:none; }
+.terminal-ui-grip svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+.terminal-workbench[data-layout-locked=true] .terminal-ui-grip { opacity:.3; cursor:default; }
+@media(max-width:1100px){.deep-instrument-insights{grid-template-columns:140px minmax(0,1fr);gap:16px}.deep-instrument-insights .insight-content{padding:18px}.deep-instrument-insights .terminal-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-performance .analytics-grid>div{padding:14px}.overview-performance .analytics-grid dd{font-size:21px}.analysis-price-history header{flex-wrap:wrap}}
+@media(max-width:760px){.deep-instrument-insights{display:block;padding-top:14px}.deep-instrument-insights .insight-tabs{position:static;flex-direction:row;overflow-x:auto;margin:0 0 16px;flex-wrap:nowrap}.deep-instrument-insights .insight-tabs button{white-space:nowrap;flex:none}.deep-instrument-toolbar{flex-wrap:wrap}.deep-instrument-toolbar label{flex-basis:100%}.deep-instrument-toolbar input{min-width:0;flex:1}.overview-performance .analytics-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.overview-performance .analytics-grid>div{border-bottom:1px solid var(--line)}.portfolio-history-status{flex-direction:column;align-items:stretch}.analysis-price-history footer span:nth-child(2){display:none}.analysis-price-plot svg{height:170px}.deep-trade-statistics{padding:16px}.terminal-replay-bar .terminal-replay-actions{margin-left:0}#terminalStats .terminal-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.ticker-drag-preview,.terminal-ui-drop,.terminal-tab{transition:none!important}}
+
+.analysis-price-plot .analysis-price-fill{stroke:none!important}
+.deep-instrument-insights .insight-provenance summary{min-height:44px;box-sizing:border-box;padding:12px 4px;cursor:pointer;overflow-wrap:anywhere;scroll-margin-top:140px}
+.deep-instrument-insights .insight-provenance summary:focus-visible,.deep-instrument-insights [data-retry-insights]:focus-visible{outline:2px solid var(--vertux-soft);outline-offset:3px}
+.deep-instrument-insights [data-retry-insights]{min-height:44px;max-width:100%;padding:10px 14px;white-space:normal;overflow-wrap:anywhere;scroll-margin-top:140px}
+.deep-instrument-insights [data-retry-insights][aria-disabled=true]{cursor:wait}
+
+#myTradingPlan .plan-draft-more{width:44px;height:44px;min-width:44px;justify-self:end}
+#myTradingPlan .plan-draft-actions{flex-wrap:wrap}
+#myTradingPlan .plan-draft-prices,#myTradingPlan .plan-draft-prices>div{min-width:0;max-width:100%;flex-wrap:wrap}
+#myTradingPlan .plan-draft-prices dd{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+#myTradingPlan .plan-history-toggle,#myTradingPlan [data-plan-history-retry],#myTradingPlan [data-plan-history-more]{min-height:44px;max-width:100%;white-space:normal;overflow-wrap:anywhere;scroll-margin-block:160px 20px}
+#myTradingPlan .plan-history{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;min-width:0;overflow-wrap:anywhere}
+#myTradingPlan .plan-history[hidden]{display:none}
+#myTradingPlan .plan-history h5{margin:0 0 10px;font-size:15px}
+#myTradingPlan .plan-history p{white-space:normal;line-height:1.55;margin:8px 0}
+#myTradingPlan .plan-history-caption{color:var(--muted);font-size:12px}
+#myTradingPlan .plan-history-versions{display:grid;gap:8px;margin:14px 0;padding:4px}
+#myTradingPlan .plan-history-version{border:1px solid var(--line);border-radius:8px;padding:0 12px;min-width:0}
+#myTradingPlan .plan-history-version summary{min-height:44px;box-sizing:border-box;padding:12px 0;cursor:pointer;line-height:1.5;white-space:normal}
+#myTradingPlan .plan-history-version dl{margin:10px 0;display:grid;gap:8px}
+#myTradingPlan .plan-history-version dl>div{display:flex;flex-wrap:wrap;gap:4px 12px}
+#myTradingPlan .plan-history-version dt{color:var(--muted)}
+#myTradingPlan .plan-history-version dd{margin:0;overflow-wrap:anywhere;min-width:0}
+#myTradingPlan .plan-history p.plan-history-note{white-space:pre-wrap}
+#myTradingPlan .plan-archive{margin-top:20px;border-top:1px solid var(--line);padding-top:8px;min-width:0;font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+#myTradingPlan .plan-archive p{max-width:75ch;margin:10px 0;color:var(--muted)}#myTradingPlan .plan-archive summary{cursor:pointer;min-height:44px;box-sizing:border-box;padding:12px 0;line-height:1.5;white-space:normal}
+#myTradingPlan .plan-archive :is(button,input,summary){scroll-margin-block:160px 48px}#myTradingPlan .plan-archive :is(button,input,summary):focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+#myTradingPlan .plan-archive button{min-height:44px;max-width:100%;white-space:normal}#myTradingPlan .plan-archive label{display:flex;flex-direction:column;gap:6px;margin:14px 0;max-width:580px;font-size:12px;color:var(--muted)}
+#myTradingPlan .plan-archive input{width:100%;min-width:0;min-height:44px;box-sizing:border-box;font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:8px 10px}
+#myTradingPlan .plan-archive input::file-selector-button{font:inherit;color:var(--text);background:var(--surface-strong);border:1px solid var(--line);border-radius:4px;padding:6px 10px;margin-inline-end:10px;cursor:pointer}
+#myTradingPlan .plan-archive h4{font-size:15px;margin:20px 0 12px}#myTradingPlan .plan-archive dl{display:grid;gap:8px;margin:12px 0}#myTradingPlan .plan-archive dl>div{display:flex;flex-wrap:wrap;gap:4px 12px}#myTradingPlan .plan-archive dt{color:var(--muted)}#myTradingPlan .plan-archive dd{margin:0}
+#myTradingPlan .plan-archive [data-plan-archive-idea]{border-top:1px solid var(--line);margin:12px 0;padding:4px 0}#myTradingPlan .plan-archive p.plan-archive-note{white-space:pre-wrap;color:var(--text)}#myTradingPlan .plan-archive-actions{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+#myTradingPlan :is(.plan-draft-more,.plan-history-toggle,.plan-history summary,[data-plan-history-retry],[data-plan-history-more]):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+#myTradingPlan .execution-observations{margin-top:16px;padding-top:16px;border-top:1px solid var(--line);min-width:0;overflow-wrap:anywhere}
+#myTradingPlan .execution-observations p{max-width:80ch;line-height:1.6}
+#myTradingPlan .execution-observations :is(h4,h5){font-size:14px;margin:12px 0}
+#myTradingPlan .execution-observations .observation-caption{color:var(--muted);font-size:13px}
+#myTradingPlan .observation-list{display:grid;gap:8px;margin:14px 0;padding:4px;min-width:0}
+#myTradingPlan .observation-record{border:1px solid var(--line);border-radius:8px;min-width:0;padding:0 12px}
+#myTradingPlan .observation-record summary{min-height:44px;box-sizing:border-box;padding:12px 0;cursor:pointer;line-height:1.5;white-space:normal}
+#myTradingPlan .observation-body dl{display:grid;gap:8px;margin:12px 0}
+#myTradingPlan .observation-body dl>div{display:flex;flex-wrap:wrap;gap:4px 12px}
+#myTradingPlan .observation-body dt{color:var(--muted)}
+#myTradingPlan .observation-body dd{margin:0;min-width:0;overflow-wrap:anywhere}
+#myTradingPlan .execution-observations .observation-warning{border-inline-start:3px solid var(--line);padding-inline-start:12px}
+#myTradingPlan .plan-draft-actions button,#myTradingPlan .execution-observations button{min-height:44px;white-space:normal;height:auto}
+#myTradingPlan .execution-observations :is(button,summary):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+#myTradingPlan .decision-timeline [aria-pressed="true"]{border-color:var(--focus);box-shadow:inset 0 -2px 0 var(--focus)}
+#myTradingPlan .decision-timeline .timeline-review-note{white-space:pre-wrap}
+
+/* Bond issue amounts retain all digits without crossing the next statistic. */
+.deep-instrument-insights .terminal-stat-grid[data-bond-issue-terms] :is(dt,dd){min-width:0;overflow-wrap:anywhere}
+@media(max-width:480px){.deep-instrument-insights .terminal-stat-grid[data-bond-issue-terms]>[data-bond-issue-money]{grid-column:1/-1}.deep-instrument-insights .terminal-stat-grid[data-bond-issue-terms] dd{font-size:16px}}
+.deep-instrument-insights .terminal-stat-grid[data-future-contract] :is(dt,dd){min-width:0;overflow-wrap:anywhere}
+@media(max-width:480px){.deep-instrument-insights .terminal-stat-grid[data-future-contract]>[data-future-contract-money]{grid-column:1/-1}.deep-instrument-insights .terminal-stat-grid[data-future-contract] dd{font-size:16px}}
+.deep-instrument-insights .insight-content:has([data-future-contract]) [data-insight-news]{min-height:44px}
+
+/* Source-linked choices remain ordinary actions within the instrument profile. */
+.instrument-catalog-links{min-width:0;margin:24px 0 0;padding-top:16px;border-top:1px solid var(--line);font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+.instrument-catalog-links h4{font-size:17px;margin:0 0 10px;color:var(--text)}
+.instrument-catalog-links p{margin:8px 0;max-width:75ch;color:var(--muted);white-space:normal}
+.instrument-catalog-links ul{list-style:none;margin:12px 0;padding:0;display:grid;gap:14px;min-width:0}
+.instrument-catalog-links li{min-width:0}
+.instrument-catalog-links .button{width:100%;max-width:760px;min-width:0;min-height:44px;height:auto;display:flex;align-items:flex-start;flex-direction:column;gap:4px;white-space:normal;text-align:left;line-height:1.5;overflow-wrap:anywhere;padding:10px 12px;color:var(--text)}
+.instrument-catalog-links .button :is(span,small){max-width:100%;min-width:0;overflow-wrap:anywhere;white-space:normal}
+.instrument-catalog-links .button small{font-size:13px;color:var(--muted)}
+.instrument-catalog-links .catalog-link-source{font-size:13px;color:var(--muted);margin:6px 0 0}
+.catalog-link-return{min-height:44px;height:auto;max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.5;margin:0 0 16px}
+.instrument-catalog-links button:focus-visible,.catalog-link-return:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.instrument-catalog-links button,.catalog-link-return{scroll-margin-block:170px 60px}

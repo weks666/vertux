@@ -1,0 +1,429 @@
+/* Existing Invest palette; optional light and layout are profile preferences. */
+/* Release corrections are appended below the original surface rules. */
+:root{--card-light-strength:30%;--card-light-color:var(--vertux)}
+body[data-visual-workspace="3"] :is(.workspace-history,.workspace-light-controls,.workspace-panel-setting-actions){display:flex;align-items:center;gap:8px}
+.workspace-history{flex:none}
+body[data-visual-workspace="3"] :is(.workspace-history button,.workspace-layout-toggle,.workspace-panel-tools button,.workspace-panel-editor header button){display:grid;place-items:center;width:36px;min-width:36px;height:36px;min-height:36px;padding:7px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}
+body[data-visual-workspace="3"] :is(.workspace-history,.workspace-layout-toggle,.workspace-panel-tools,.workspace-panel-editor,.today-item-source,.today-item-mark) svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.workspace-history button:disabled{opacity:.35;cursor:default}
+body[data-visual-workspace="3"] .topbar{gap:12px}
+body[data-visual-workspace="3"][data-current-view=terminal] .workspace>.topbar{display:flex!important;min-height:58px;padding:8px 18px;border-bottom:1px solid var(--line)}
+body[data-visual-workspace="3"][data-current-view=terminal] .topbar-title{display:block;flex:1}
+body[data-visual-workspace="3"][data-current-view=terminal] .topbar-title h1{font-size:17px}
+body[data-visual-workspace="3"][data-current-view=terminal] .topbar #viewContext{display:none!important}
+body[data-visual-workspace="3"][data-current-view=terminal] .workspace-context{display:flex!important;flex:1}
+body[data-visual-workspace="3"][data-current-view=terminal] .workspace-context [data-portfolio-period]{display:none!important}
+body[data-visual-workspace="3"] .workspace-card-lighting{margin:24px 0}
+.workspace-card-lighting h4,.workspace-panel-settings h4{margin:0 0 12px;font-size:17px}
+.workspace-light-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+body[data-visual-workspace="3"] .workspace-light-options button{display:flex;flex-direction:column;gap:10px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--text);text-align:left;font-size:13px;min-height:110px}
+body[data-visual-workspace="3"] .workspace-light-options button[aria-pressed=true]{border-color:var(--vertux-soft);outline:1px solid var(--vertux-soft);background:var(--surface)}
+.workspace-light-sample{display:block;width:100%;height:62px;border-radius:6px;border:1px solid var(--line);background:var(--surface-raised)}
+[data-light-sample=full]{background:color-mix(in srgb,var(--card-light-color) var(--card-light-strength),var(--surface-raised))}
+[data-light-sample=diffuse]{background:radial-gradient(ellipse at bottom left,color-mix(in srgb,var(--card-light-color) var(--card-light-strength),transparent),transparent 75%),var(--surface-raised)}
+[data-light-sample=corner]{background:linear-gradient(135deg,transparent 68%,color-mix(in srgb,var(--card-light-color) var(--card-light-strength),transparent)),var(--surface-raised)}
+.workspace-light-controls{flex-wrap:wrap;margin-top:16px}
+.workspace-light-controls label{display:flex;align-items:center;gap:10px;font-size:13px;min-height:44px}
+.workspace-light-controls input[type=color]{width:48px;height:36px;padding:3px}
+.workspace-light-controls input[type=range]{width:170px;accent-color:var(--vertux-soft)}
+.workspace-light-controls output{min-width:36px;font-variant-numeric:tabular-nums}
+.workspace-panel-settings{margin:24px 0;padding-top:20px;border-top:1px solid var(--line)}
+.workspace-panel-settings p{font-size:13px;color:var(--muted);max-width:68ch}
+.workspace-panel-setting-actions{flex-wrap:wrap}
+.workspace-panel-settings button,.workspace-light-controls button{min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;color:var(--text);background:var(--surface-raised)}
+
+/* One shared indicator moves between the existing buttons. */
+body[data-visual-workspace="3"] #mainContent .workspace-line-tabs{position:relative;isolation:isolate;border-bottom:1px solid var(--line);padding-bottom:0;gap:4px}
+body[data-visual-workspace="3"] #mainContent .workspace-line-tabs>button{position:relative;flex-shrink:0;border:0;border-radius:0;background:transparent!important;box-shadow:none!important;color:var(--muted);min-height:44px;padding:11px 14px;white-space:nowrap}
+body[data-visual-workspace="3"] #mainContent .workspace-line-tabs>button:is([aria-selected=true],[aria-pressed=true],[aria-current=page]){color:var(--text);font-weight:600;border:0!important;background:transparent!important}
+body[data-visual-workspace="3"] #mainContent .workspace-line-tabs>button::after{display:none!important}
+.workspace-tab-indicator{position:absolute;left:0;top:0;height:2px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--vertux-soft) 18%,var(--vertux-soft) 82%,transparent);transition:transform 220ms cubic-bezier(.16,1,.3,1),width 220ms cubic-bezier(.16,1,.3,1)}
+.workspace-tab-indicator::before{content:'';position:absolute;inset:-18px 0 0;background:radial-gradient(ellipse at bottom,color-mix(in srgb,var(--vertux) 16%,transparent),transparent 75%)}
+
+/* Registered nodes preserve their controllers, values, sources and permissions. */
+.workspace-panel-tools,.workspace-panel-resize{display:none!important}
+body[data-panels-unlocked=true] [data-workspace-panel]{position:relative!important;outline:1px dashed var(--line-strong);outline-offset:3px}
+body[data-panels-unlocked=true] #mainContent .workspace-panel-tools{display:flex!important;align-items:center;gap:2px;min-height:36px;margin:0 0 10px;padding:0;background:var(--surface);border-radius:7px;flex:0 0 auto;width:100%;grid-column:1/-1;order:-999;font-size:12px;color:var(--muted);z-index:5;white-space:normal}
+.workspace-panel-tools>span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-panels-unlocked=true] #mainContent .workspace-panel-tools button{border:0;background:transparent;flex:0 0 30px;width:30px;min-width:30px;height:34px;min-height:34px;padding:5px}
+[data-panel-grip]{cursor:grab;touch-action:none}
+body[data-panels-unlocked=true] #mainContent .workspace-panel-resize{display:grid!important;place-items:center;position:absolute;right:2px;bottom:2px;width:28px;height:28px;min-height:28px;padding:5px;border:0;background:var(--surface-raised);color:var(--muted);cursor:nwse-resize;touch-action:none;border-radius:5px;z-index:5}
+.workspace-panel-resize svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.4}
+body[data-visual-workspace="3"] #mainContent .workspace-panel-hidden{display:none!important}
+body[data-panels-unlocked=true] .workspace-panel-drop{outline:2px solid var(--vertux-soft)!important;background-color:var(--accent-surface)!important}
+.workspace-panel-dragging{opacity:.7}
+body[data-visual-workspace="3"] #mainContent [data-workspace-panel].workspace-panel-sized{min-height:var(--panel-height)!important}
+body[data-visual-workspace="3"] #mainContent [data-workspace-panel].workspace-panel-sized:not(.headline-copy,.headline-pnl,.metric-ledger>div,.analytics-grid>div,.overview-grid>*){width:var(--panel-width);max-width:100%}
+.workspace-panel-editor{position:fixed;right:16px;top:80px;bottom:20px;width:360px;max-width:calc(100vw - 24px);overflow:auto;z-index:250;padding:20px;border:1px solid var(--line-strong);border-radius:12px;background:var(--surface);color:var(--text);box-shadow:0 16px 45px #0004;font-size:14px;line-height:1.5}
+.workspace-panel-editor[hidden]{display:none}
+.workspace-panel-editor header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:18px}
+.workspace-panel-editor h3{font-size:20px;margin:0}
+.workspace-panel-editor label:not(.workspace-panel-check){display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:12px 0;color:var(--muted);font-size:13px;text-align:left;min-width:0}
+.workspace-panel-editor :is(select,input[type=number]){width:100%;min-width:0;min-height:42px;padding:8px;background:var(--surface-raised);border:1px solid var(--line-strong);border-radius:6px;color:var(--text)}
+.workspace-panel-check,.workspace-panel-visibility label{display:flex!important;flex-direction:row!important;align-items:center;gap:10px;min-height:36px}
+.workspace-panel-editor input[type=checkbox]{accent-color:var(--vertux-soft);width:18px;height:18px;min-width:18px;min-height:18px;padding:0;flex:none}
+.workspace-panel-dimensions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;gap:12px}
+.workspace-panel-editor :is(small,.workspace-panel-hint,[role=status]){font-size:12px;color:var(--muted)}
+.workspace-panel-editor [data-panel-apply-size]{margin:4px 0 10px}
+.workspace-panel-editor [data-panel-apply-size]+small{display:block}
+.workspace-panel-editor button:not(header button){min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:7px;background:var(--surface-raised);color:var(--text)}
+.workspace-panel-visibility{margin:20px 0;padding:14px 0;border-block:1px solid var(--line)}
+.workspace-panel-visibility summary{cursor:pointer;color:var(--text)}
+
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary{display:flex!important;flex-wrap:wrap;gap:12px;align-items:stretch}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(.portfolio-headline,.overview-metrics,.metric-ledger){display:contents!important}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(.headline-copy,.headline-pnl,.metric-ledger>div){flex:1 1 180px;min-width:0;min-height:126px;padding:15px 16px;display:flex;flex-direction:column;justify-content:flex-start;grid-column:auto;border:1px solid var(--line);border-radius:10px}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(.headline-copy,.headline-pnl,.metric-ledger>div).workspace-panel-sized{flex:1 1 calc(var(--panel-width) - 12px)}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(.headline-label,dt){display:flex;gap:7px;align-items:center;font-size:12px;min-height:27px}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(dt>svg,.headline-label>svg){width:17px;height:17px;flex:none}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger small{margin-top:4px;line-height:1.45}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dd{white-space:normal;text-align:left;font-size:25px;margin:8px 0 0}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-grid{display:flex;flex-wrap:wrap;gap:12px}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-grid>.analytics-chart-surface{flex:1 1 65%;min-width:0}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-grid>.portfolio-breakdown{flex:1 1 240px;min-width:0}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-grid>.workspace-panel-sized{flex:1 1 calc(var(--panel-width) - 12px)}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .ux-portfolio-support .analytics-grid{display:flex;flex-wrap:wrap;gap:12px}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .ux-portfolio-support .analytics-grid>div{display:flex;flex-direction:column;flex:1 1 200px;min-height:92px;padding:12px 16px}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .ux-portfolio-support .analytics-grid>div.workspace-panel-sized{flex:1 1 calc(var(--panel-width) - 12px)}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .ux-portfolio-support :is(dt,dd){margin:0;text-align:left}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-performance:has(.analytics-grid:empty){display:none}
+
+/* Consistent light on content cards; chart canvases retain a neutral background. */
+body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div){background-color:var(--surface);background-image:var(--workspace-card-light,none)!important}
+html[data-card-lighting=full]{--workspace-card-light:linear-gradient(color-mix(in srgb,var(--card-light-color) calc(var(--card-light-strength) * .35),transparent),color-mix(in srgb,var(--card-light-color) calc(var(--card-light-strength) * .2),transparent))}
+html[data-card-lighting=diffuse]{--workspace-card-light:radial-gradient(ellipse at bottom left,color-mix(in srgb,var(--card-light-color) var(--card-light-strength),transparent),transparent 72%)}
+html[data-card-lighting=corner]{--workspace-card-light:linear-gradient(135deg,transparent 72%,color-mix(in srgb,var(--card-light-color) var(--card-light-strength),transparent))}
+html[data-card-lighting=off]{--workspace-card-light:none}
+html[data-card-lighting=off] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div){background-image:none!important;background-color:var(--surface)!important}
+body[data-visual-workspace="3"] #mainContent [data-workspace-panel]::before{display:none!important}
+
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .today-heading{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 20px;margin:8px 0 14px}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .today-heading p{margin:0 0 0 auto;color:var(--muted);font-size:13px}
+body[data-visual-workspace="3"] #mainContent .today-column{border:1px solid var(--line);padding:18px 20px}
+body[data-visual-workspace="3"] #mainContent .today-column>header{align-items:center;margin-bottom:10px}
+body[data-visual-workspace="3"] #mainContent .today-column ol{padding:0;list-style:none;margin:0}
+body[data-visual-workspace="3"] #mainContent .today-column li{display:grid;grid-template-columns:minmax(0,1fr) 32px;gap:8px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0;margin:0}
+body[data-visual-workspace="3"] #mainContent .today-row{display:flex;align-items:center;gap:12px;min-width:0;min-height:58px;padding:0;border:0;background:transparent;text-align:left;width:100%}
+.today-item-copy{display:flex;flex-direction:column;min-width:0;gap:4px}
+body[data-visual-workspace="3"] #mainContent .today-row strong{font-size:14px;line-height:1.45;overflow-wrap:anywhere}
+.today-date-tile{width:43px;min-width:43px;min-height:49px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:7px;background:var(--surface)}
+.today-date-tile b{font-size:19px;line-height:1.15;font-weight:600}
+.today-date-tile small{font-size:11px;color:var(--muted)}
+.today-item-mark{width:43px;min-width:43px;min-height:43px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);border-radius:7px;color:var(--vertux-soft)}
+body[data-visual-workspace="3"] #mainContent .today-item-source>summary{display:grid;place-items:center;min-height:34px;width:32px;padding:6px;border:0;color:var(--muted);background:transparent;font-size:0}
+body[data-visual-workspace="3"] #mainContent .today-item-source>summary::after{display:none}
+body[data-visual-workspace="3"] #mainContent .today-column>.today-link{margin-top:12px;min-height:36px;font-size:13px;padding:5px 0;color:var(--vertux-soft)}
+body[data-visual-workspace="3"] #mainContent .today-source-bar{font-size:12px}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent #todayOverview{background-color:transparent!important;background-image:none!important}
+body[data-visual-workspace="3"] #mainContent details[data-visual-reader]>summary{justify-content:flex-start;gap:12px;align-items:center;text-align:left;flex-wrap:wrap}
+body[data-visual-workspace="3"] #mainContent details[data-visual-reader]>summary>.visual-reader-close{order:-1;margin:0;flex:none;font-size:13px}
+body[data-visual-workspace="3"] #mainContent details[data-visual-reader]>summary::after{display:none}
+
+/* Analytics is a task toolbar followed by an aligned result surface. */
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-toolbar{align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 18px}
+body[data-visual-workspace="3"] #mainContent .portfolio-quick-tools{flex:1;min-width:300px}
+body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker{display:flex;align-items:center;gap:8px;min-width:240px;margin:0;font-size:13px}
+body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker select{width:100%;max-width:340px;min-height:42px}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel{display:grid;gap:16px;align-items:start}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section:not([hidden]),body[data-visual-workspace="3"] #mainContent #portfolioPercentageMethods{margin:0;padding:20px 24px;border:1px solid var(--line);border-radius:12px;min-width:0}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details{border:0;background:transparent;margin:0;padding:0}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details>summary{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:0 0 18px;cursor:default;list-style:none;border:0;font-size:17px}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details>summary::after{display:none}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details>summary>span:first-child{display:flex;flex-direction:column;min-width:0;gap:5px}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details>summary small{font-size:13px;line-height:1.5;color:var(--muted);font-weight:400}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details>summary>span:last-child:not(:first-child){font-size:12px;color:var(--muted);max-width:210px;line-height:1.5;text-align:right;margin:0}
+body[data-visual-workspace="3"] #mainContent :is(.booked-components-body,.nav-risk-body,.saved-classes-body,.performance-methods-body,.portfolio-review-body){padding:0!important;min-width:0}
+body[data-visual-workspace="3"] #mainContent :is(.booked-components-metrics,.nav-risk-metrics,.performance-methods-grid){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:6px 0 20px}
+body[data-visual-workspace="3"] #mainContent :is(.booked-components-metrics,.nav-risk-metrics)>div{padding:16px;border:1px solid var(--line);border-radius:9px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px}
+body[data-visual-workspace="3"] #mainContent :is(.booked-components-metrics,.nav-risk-metrics) :is(dt,p,small){font-size:13px;line-height:1.5;color:var(--muted);margin:0;text-align:left}
+body[data-visual-workspace="3"] #mainContent :is(.booked-components-metrics,.nav-risk-metrics) dd{font-size:27px;line-height:1.3;margin:0;text-align:left;font-weight:600;overflow-wrap:anywhere}
+body[data-visual-workspace="3"] #mainContent :is(.nav-risk-facts,.performance-methods-periods,.portfolio-review-records){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:16px 0}
+body[data-visual-workspace="3"] #mainContent :is(.nav-risk-facts,.performance-methods-periods,.portfolio-review-records)>div{padding:0;display:flex;flex-direction:column;gap:5px;min-width:0}
+body[data-visual-workspace="3"] #mainContent :is(.nav-risk-facts,.performance-methods-periods,.portfolio-review-records) dt{font-size:12px;color:var(--muted)}
+body[data-visual-workspace="3"] #mainContent :is(.nav-risk-facts,.performance-methods-periods,.portfolio-review-records) dd{margin:0;font-size:14px;line-height:1.5;text-align:left}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace :is(p,li){max-width:78ch;line-height:1.6;font-size:13px}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace :is(.nav-risk-evidence,.booked-components-evidence,.performance-methods-note){color:var(--muted);font-size:12px}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace :is(.secondary-metrics,.position-analysis-details){margin:18px 0 0;padding:16px 0 0;border-top:1px solid var(--line)}
+body[data-visual-workspace="3"] #mainContent .performance-method{border:1px solid var(--line);padding:18px;border-radius:9px}
+body[data-visual-workspace="3"] #mainContent .performance-methods-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+body[data-visual-workspace="3"] #mainContent .performance-methods-primary strong{font-size:28px}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel[data-portfolio-panel=reviews]{grid-template-columns:minmax(0,1.65fr) minmax(260px,1fr);align-items:start}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-status:empty{display:none}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-controls{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-archive{position:static;min-height:0}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-archive>summary{font-size:17px;line-height:1.5}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-archive>summary strong{font-size:17px}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-file{display:flex;flex-direction:column;gap:10px;border:1px dashed var(--line-strong);border-radius:8px;padding:16px;font-size:13px}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-file input{min-width:0;max-width:100%;font-size:12px}
+body[data-visual-workspace="3"] #mainContent .plan-journal-account :is(label,span),body[data-visual-workspace="3"] #mainContent label:has([data-plan-account]){white-space:nowrap;word-break:normal;overflow-wrap:normal;min-width:max-content}
+body[data-visual-workspace="3"] #mainContent .risk-account-overview>header label{white-space:nowrap;word-break:normal;overflow-wrap:normal}
+
+@media(max-width:1100px){body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel[data-portfolio-panel=reviews]{grid-template-columns:minmax(0,1fr)}.workspace-history{order:0}body[data-visual-workspace="3"] .topbar-title{flex:1}.workspace-light-options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){
+ body[data-visual-workspace="3"] #mainContent :is(.booked-components-metrics,.nav-risk-metrics,.performance-methods-grid,.nav-risk-facts,.performance-methods-periods,.portfolio-review-records){grid-template-columns:minmax(0,1fr)}
+ body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section:not([hidden]),body[data-visual-workspace="3"] #mainContent #portfolioPercentageMethods{padding:16px}
+ body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details>summary{flex-direction:column;gap:8px}
+ body[data-visual-workspace="3"] #mainContent .portfolio-workspace-panel>section>details>summary>span:last-child:not(:first-child){text-align:left;max-width:none}
+ body[data-visual-workspace="3"] #mainContent .portfolio-quick-tools{min-width:0;flex-basis:100%;overflow-x:auto}
+ body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker{min-width:0;width:100%}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(.headline-copy,.headline-pnl,.metric-ledger>div){flex:1 1 calc(50% - 12px)!important;padding:12px;min-height:116px}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger>div{flex-basis:100%!important;min-height:82px}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-grid>*{flex:1 1 100%!important}
+ body[data-visual-workspace="3"] #mainContent [data-workspace-panel].workspace-panel-sized{width:auto!important}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .ux-portfolio-support .analytics-grid>div{flex:1 1 100%!important}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .today-heading p{margin:0;font-size:12px}
+ body[data-visual-workspace="3"] #mainContent .workspace-line-tabs>button{padding:10px;font-size:13px}
+ .workspace-panel-editor{right:12px;top:16px;bottom:16px;width:360px;padding:16px}
+ body[data-visual-workspace="3"] .topbar{gap:8px}.workspace-history{gap:3px}body[data-visual-workspace="3"] .workspace-history button{width:32px;min-width:32px}
+}
+@media(max-width:360px){
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dt>svg{display:none}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dd{font-size:20px}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dt{gap:4px}
+ body[data-visual-workspace="3"] #mainContent .deep-analysis-tabs>button{min-width:0;white-space:normal;padding-inline:6px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.workspace-tab-indicator{transition:none}}
+
+/* Retire the previous two-column result body before laying out the new cards. */
+body[data-visual-workspace="3"] #mainContent #bookedComponents .booked-components-body{display:block!important}
+body[data-visual-workspace="3"] #mainContent #bookedComponents :is(.booked-components-metrics,.analytics-chart-surface){grid-area:auto!important;width:auto;min-width:0;margin:16px 0}
+body[data-visual-workspace="3"] #mainContent #bookedComponents .booked-components-metrics{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+body[data-visual-workspace="3"] #mainContent .portfolio-area-tabs{display:flex;gap:10px;margin:0 0 12px;overflow-x:auto}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace-toolbar{margin-bottom:18px}
+body[data-visual-workspace="3"] #mainContent .portfolio-quick-tools{display:flex;gap:0;overflow-x:auto;min-width:0;max-width:100%;background:transparent;flex-basis:70%}
+body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker{display:none}
+body[data-visual-workspace="3"] #mainContent .portfolio-quick-tools>button{font-size:13px;padding-inline:12px}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace :is(.local-result-explanation,.local-method-explanation,.local-risk-explanation){border:0;border-top:1px solid var(--line);background:transparent;border-radius:0;padding:14px 0;margin-top:18px;box-shadow:none}
+body[data-visual-workspace="3"] #mainContent .portfolio-workspace :is(.local-result-controls,.local-method-controls,.local-risk-controls){display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+body[data-visual-workspace="3"] #mainContent .overview-performance .analytics-grid>div:has(#netReturn){display:none!important}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row){background-color:var(--surface)!important;background-image:var(--workspace-card-light,none)!important;border-color:var(--line)!important;box-shadow:none}
+body[data-visual-workspace="3"] #mainContent [data-workspace-panel="overview-chart"].workspace-panel-sized .chart-frame{height:max(230px,calc(var(--panel-height) - 155px))}
+body[data-visual-workspace="3"] #mainContent :is(.plan-journal-filters,.manual-plan-filters) label>span{white-space:nowrap;word-break:normal;overflow-wrap:normal}
+
+/* Terminal: one compact context strip, consistent watch rows and a larger plot. */
+body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext{padding:8px 12px;display:flex;flex:none;align-items:center;flex-wrap:wrap;gap:8px;border:0;border-bottom:1px solid var(--line);border-radius:0;margin:0;min-height:48px}
+body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext :is(.instrument-context-main,.instrument-context-state){display:none}
+body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .instrument-context-actions{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .instrument-context-details{margin:0 0 0 auto;padding:0;border:0}
+body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .instrument-context-details>summary{margin:0;padding:8px;min-height:34px;font-size:12px;gap:8px}
+body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .button{padding:6px 10px;min-height:34px;font-size:12px}
+body[data-visual-workspace="3"] #mainContent .terminal-stage{min-height:0}
+body[data-visual-workspace="3"] #mainContent .terminal-grid[data-count="1"] .terminal-chart-plot{min-height:410px;height:clamp(410px,56vh,740px)}
+body[data-visual-workspace="3"] #mainContent .terminal-ticker-strip{min-height:64px;gap:12px;padding:10px}
+body[data-visual-workspace="3"] #mainContent .ticker-symbol{flex:0 1 220px;min-width:90px;max-width:220px;overflow:hidden}
+body[data-visual-workspace="3"] #mainContent .ticker-symbol>.instrument-mark{flex:0 0 30px;width:30px;height:30px;position:static;margin:0}
+body[data-visual-workspace="3"] #mainContent .ticker-symbol>span:not(.instrument-mark){flex:1;min-width:0}
+body[data-visual-workspace="3"] #mainContent .ticker-symbol small{max-width:160px}
+body[data-visual-workspace="3"] #mainContent .terminal-chart-identity{min-width:0;flex:1;gap:8px}
+body[data-visual-workspace="3"] #mainContent .terminal-chart-identity .instrument-mark{position:static;flex:0 0 28px;width:28px;height:28px;margin:0}
+body[data-visual-workspace="3"] #mainContent .terminal-chart-quote{max-width:40%;flex:0 0 auto;min-width:0;text-align:right;padding-right:8px}
+body[data-visual-workspace="3"] #mainContent .terminal-chart-quote strong{font-size:20px;white-space:nowrap;letter-spacing:-.02em}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-watch-row{width:100%;min-width:0;display:flex;align-items:center;margin:0;padding:0}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-quick-item{width:100%;min-width:0;margin:0;box-sizing:border-box;padding:9px 10px;grid-template-columns:24px minmax(76px,1fr) var(--watch-cols,74px);gap:6px;align-items:center}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .watch-symbol{min-width:0;margin:0;padding:0;text-align:left}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-mark{position:static;margin:0;grid-column:1;width:24px;height:24px;justify-self:start}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .watch-symbol{grid-column:2}
+body[data-visual-workspace="3"] #mainContent .terminal-watch-quote>span{min-width:0;font-size:11px}
+body[data-visual-workspace="3"] #mainContent .terminal-workbench.terminal-custom-layout .terminal-grid[data-count="1"] .terminal-chart-plot{min-height:250px;height:100%}
+@media(max-width:800px){
+ body[data-visual-workspace="3"] #mainContent #bookedComponents .booked-components-metrics{grid-template-columns:minmax(0,1fr)!important}
+ body[data-visual-workspace="3"] #mainContent .portfolio-quick-tools{display:none}
+ body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker{display:flex;flex:1;min-width:200px}
+ body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker>span{display:none}
+ body[data-visual-workspace="3"] #mainContent .portfolio-area-tabs>button{font-size:12px;padding-inline:8px}
+ body[data-visual-workspace="3"] #mainContent .terminal-stage{min-height:0}
+ body[data-visual-workspace="3"] #mainContent .terminal-grid[data-count="1"] .terminal-chart-plot{height:390px;min-height:330px}
+ body[data-visual-workspace="3"] #mainContent .ticker-metrics{display:none}
+ body[data-visual-workspace="3"] #mainContent .terminal-chart-quote strong{font-size:16px}
+ body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext{padding:6px;gap:5px}
+ body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .instrument-context-details{margin:0}
+ body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .instrument-context-actions{flex:1 1 auto}
+ body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext [data-context-company]:disabled{display:none}
+ body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .instrument-context-details:not([open]){flex:0 0 auto;margin-left:auto}
+ body[data-visual-workspace="3"] #mainContent #terminalInstrumentContext .instrument-context-details:not([open])>summary{width:36px;min-width:36px;font-size:0;padding:8px}
+ body[data-visual-workspace="3"] #mainContent .terminal-chart-card{min-height:550px}
+ body[data-visual-workspace="3"] #mainContent .terminal-chart-area{flex:1 0 390px;min-height:390px}
+}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-quick-item{grid-template-columns:var(--watch-columns);min-width:0;gap:5px}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-watch-row{width:100%;min-width:var(--watch-min-width,303px)}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-watch-row>.instrument-quick-item{padding-right:32px}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .terminal-quote-head{padding:8px 32px 8px 10px;overflow:hidden;grid-template-columns:var(--watch-columns);min-width:0}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .terminal-quote-head>button{padding:4px 0!important;font-size:10px!important;min-width:0;white-space:nowrap!important;word-break:normal;overflow-wrap:normal}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-quick-item .watch-symbol{grid-column:1;display:grid;grid-template-columns:minmax(0,1fr);gap:0 8px;min-width:0}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .watch-with-logos .instrument-quick-item .watch-symbol{grid-template-columns:24px minmax(0,1fr)}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-quick-item .watch-symbol :is(strong,small){grid-column:1;margin:0}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .watch-with-logos .instrument-quick-item .watch-symbol :is(strong,small){grid-column:2}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-quick-item .instrument-mark{grid-row:1 / 3}
+body[data-visual-workspace="3"] #mainContent [data-view-panel=settings]>.section-head:not(:first-child){display:none}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-toolbar h3{font-size:18px;margin:0}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-toolbar p{margin:6px 0 0;color:var(--muted)}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-empty{padding:18px 0 8px}
+body[data-visual-workspace="3"] #mainContent .portfolio-review-empty h4{font-size:16px;margin:0 0 8px}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-mark{position:relative!important;overflow:hidden;isolation:isolate}
+body[data-visual-workspace="3"] #mainContent .terminal-stage .instrument-mark img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
+body[data-visual-workspace="3"] .topbar>#environmentBanner{position:static;display:flex;align-items:center;gap:5px;width:auto;margin:0;padding:0;min-height:0;background:transparent;border:0;flex:none;color:var(--muted);font-size:11px}
+body[data-visual-workspace="3"] .topbar>#environmentBanner[hidden]{display:none}
+body[data-visual-workspace="3"] .topbar>#environmentBanner strong{font-size:11px;white-space:nowrap}
+body[data-visual-workspace="3"] #mainContent .terminal-chart-controls{display:flex;flex-wrap:nowrap;align-items:center;flex:0 0 auto;gap:8px;min-height:48px;height:auto;max-width:100%;overflow-x:auto;overflow-y:hidden;padding:5px 8px;scrollbar-width:thin}
+body[data-visual-workspace="3"] #mainContent .terminal-chart-controls :is(.terminal-timeframes,.terminal-common-tools){display:flex;flex-wrap:nowrap;gap:3px;flex:0 0 auto;max-width:none;min-height:36px}
+body[data-visual-workspace="3"] #mainContent .terminal-chart-controls button{white-space:nowrap;flex-shrink:0;min-height:34px}
+@media(min-width:801px){
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist>.surface-head{min-height:44px;padding-block:4px}
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist>.surface-head button{min-height:34px;height:34px}
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist>.instrument-list-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;padding:8px}
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist #instrumentListSearch{grid-column:1/-1}
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist>.instrument-list-controls>*{min-width:0;min-height:34px;height:34px;font-size:12px;padding:6px 8px}
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist>.terminal-watch-controls{gap:4px;padding:5px 8px}
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist>.terminal-watch-controls :is(button,summary){font-size:11px;min-height:30px;height:30px;padding:4px 6px;white-space:nowrap}
+ body[data-visual-workspace="3"] #mainContent #terminalWatchlist>.terminal-watch-controls>details{margin:0;padding:0}
+ body[data-visual-workspace="3"] #mainContent .terminal-stage .terminal-quote-head{padding-block:4px}
+ body[data-visual-workspace="3"] #mainContent .terminal-stage .terminal-quote-head>button{min-height:28px;height:28px}
+}
+@media(min-width:801px){body[data-visual-workspace="3"] #mainContent .terminal-grid[data-count="1"] .terminal-chart-plot{height:100%;min-height:0}}
+@media(max-width:700px){body[data-visual-workspace="3"] .topbar>#environmentBanner{order:8;margin-left:auto;font-size:10px}body[data-visual-workspace="3"] .topbar>#environmentBanner strong{font-size:10px}}
+@media(max-width:700px){
+ body[data-visual-workspace="3"] .topbar{grid-template-columns:44px minmax(66px,1fr) auto!important}
+ body[data-visual-workspace="3"] .topbar>.workspace-history{grid-row:1;grid-column:2;width:auto;justify-content:flex-start}
+ body[data-visual-workspace="3"] .topbar>.topbar-actions{grid-row:1;grid-column:3}
+ body[data-visual-workspace="3"][data-current-view=terminal] .workspace>.topbar{display:grid!important;padding:8px 12px}
+ body[data-visual-workspace="3"][data-current-view=terminal] .topbar>#environmentBanner{grid-row:3;grid-column:1/-1}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger>div{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;min-height:72px;gap:6px}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger :is(dt,dd){justify-content:flex-start;margin:0}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dt{font-size:11px}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dd{font-size:22px}
+}
+@media(max-width:360px){
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dt{font-size:10px;word-break:normal;overflow-wrap:normal}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger dd{font-size:20px}
+}
+/* October release feedback: local gradients keep financial meaning. */
+body[data-visual-workspace="3"] #mainContent .portfolio-breakdown{overflow:visible!important}
+body[data-visual-workspace="3"] #mainContent .portfolio-breakdown:has(.accounts-more[open]){position:relative;z-index:10}
+body[data-visual-workspace="3"] #mainContent .accounts-overflow{box-shadow:0 16px 48px #0008;max-height:min(360px,60vh)}
+body[data-visual-workspace="3"] #mainContent .accounts-more>summary::before{display:none!important}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div){--panel-light-color:var(--card-light-color);background-color:var(--surface)!important;background-image:var(--workspace-card-light,none)!important}
+html[data-card-lighting=full] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div){--workspace-card-light:linear-gradient(color-mix(in srgb,var(--panel-light-color) calc(var(--card-light-strength) * .35),transparent),color-mix(in srgb,var(--panel-light-color) calc(var(--card-light-strength) * .2),transparent))}
+html[data-card-lighting=diffuse] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div){--workspace-card-light:radial-gradient(ellipse at bottom left,color-mix(in srgb,var(--panel-light-color) var(--card-light-strength),transparent),transparent 72%)}
+html[data-card-lighting=corner] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div){--workspace-card-light:linear-gradient(135deg,transparent 72%,color-mix(in srgb,var(--panel-light-color) var(--card-light-strength),transparent))}
+html[data-card-lighting=off] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div){--workspace-card-light:none}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div):has(>:is(dd,strong).positive){--panel-light-color:var(--positive)}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div):has(>:is(dd,strong).negative){--panel-light-color:var(--negative)}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent :is(.workspace-card:not(.ledger-summary),.today-column,.performance-method,.booked-components-metrics>div,.nav-risk-metrics>div,.portfolio-workspace-panel>section,.portfolio-workspace-panel>div,.analytics-grid>div,.ledger-summary>div,.sync-summary-cards>article,.data-surface,.ranking-surface,.portfolio-row,.risk-metrics>div,.margin-ledger>div,#riskSummaryMetrics>div):has(>#feesValue,>#operationSummaryFees){--panel-light-color:var(--warning)}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent .ledger-summary{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;gap:14px}
+body[data-visual-workspace="3"] #mainContent .ledger-summary>div{border:1px solid var(--line);border-radius:10px;padding:18px;min-height:100px}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent :is(.operations-surface,.closed-positions-surface) thead th{background:color-mix(in srgb,var(--card-light-color) calc(var(--card-light-strength) * .3),var(--surface))!important}
+html[data-card-lighting=off] body[data-visual-workspace="3"] #mainContent :is(.operations-surface,.closed-positions-surface) thead th{background:var(--surface-raised)!important}
+.workspace-background-settings,.workspace-reset-settings{margin:24px 0;padding:20px 0 0;border-top:1px solid var(--line)}
+:is(.workspace-background-settings,.workspace-reset-settings) h4{margin:0 0 10px;font-size:17px}
+:is(.workspace-background-settings,.workspace-reset-settings) p{font-size:13px;color:var(--muted)}
+.workspace-background-controls,.workspace-reset-controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+:is(.workspace-background-controls,.workspace-reset-controls) label{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px}
+.workspace-background-file{flex-basis:100%}
+.workspace-background-file input{max-width:100%;font-size:13px}
+:is(.workspace-background-controls,.workspace-reset-controls) button{min-height:40px;padding:8px 12px;color:var(--text);background:var(--surface-raised);border:1px solid var(--line);border-radius:8px}
+body[data-visual-workspace="3"] #mainContent .workspace-reset-controls{align-items:flex-end}
+body[data-visual-workspace="3"] #mainContent .workspace-reset-controls>label{display:flex;flex-direction:column;align-items:stretch;gap:8px;min-width:0;margin:0}
+body[data-visual-workspace="3"] #mainContent .workspace-reset-controls :is(select,button){min-height:44px;margin:0;max-width:100%}
+html[data-workspace-background=true] body{background-image:linear-gradient(color-mix(in srgb,var(--ink) var(--workspace-background-shade),transparent),color-mix(in srgb,var(--ink) var(--workspace-background-shade),transparent)),var(--workspace-background-image)!important;background-position:center;background-size:cover;background-attachment:fixed}
+html[data-workspace-background=true] body[data-visual-workspace="3"] .workspace{background:transparent!important}
+body[data-visual-workspace="3"] #mainContent :is(.portfolio-area-tabs,.portfolio-quick-tools){display:none!important}
+body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker{display:flex!important;flex:1;max-width:540px;gap:12px;align-items:center}
+body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker>span{display:block;flex:none;color:var(--muted)}
+body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker select{width:100%;min-width:0;min-height:44px}
+body[data-visual-workspace="3"] #mainContent .analytics-chart-surface>.surface-head{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:14px}
+body[data-visual-workspace="3"] #mainContent .analytics-chart-surface .analytics-chart-legend{grid-column:2;grid-row:1;width:auto;min-width:0;margin:0;justify-content:flex-end}
+body[data-visual-workspace="3"] #mainContent .analytics-chart-surface .range-control{flex-wrap:nowrap;white-space:nowrap}
+body[data-visual-workspace="3"] #mainContent .position-chart-link{display:grid!important;place-items:center!important;padding:7px!important;line-height:1}
+body[data-visual-workspace="3"] #mainContent .position-chart-link svg{display:block;width:20px;height:20px;margin:0;flex:none}
+.filter-select-options[popover]{color:var(--text);background:var(--surface);box-shadow:0 12px 40px #0006}
+.filter-select-trigger .filter-select-arrow{transition:transform 180ms ease}
+.filter-select-trigger[aria-expanded=true] .filter-select-arrow{transform:rotate(180deg)}
+body[data-visual-workspace="3"] select:not([multiple]):not([size]){appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m5 7 5 5 5-5' fill='none' stroke='%23909dad' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 10px center!important;background-size:18px!important;padding-right:34px!important}
+body[data-visual-workspace="3"] select:not([multiple]):not([size]):open{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='m5 12 5-5 5 5' fill='none' stroke='%23909dad' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E")!important}
+body[data-visual-workspace="3"] #mainContent details:not([data-visual-reader],.today-item-source,.workspace-detail-action)>summary{list-style:none;cursor:pointer}
+body[data-visual-workspace="3"] #mainContent details:not([data-visual-reader],.today-item-source,.workspace-detail-action)>summary::-webkit-details-marker{display:none}
+body[data-visual-workspace="3"] #mainContent details:not([data-visual-reader],.today-item-source,.workspace-detail-action)>summary::before{content:'';display:inline-block;width:7px;height:7px;border:0;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);margin:0 12px 2px 2px;flex:none;transition:transform 180ms ease}
+body[data-visual-workspace="3"] #mainContent details[open]:not([data-visual-reader],.today-item-source,.workspace-detail-action)>summary::before{transform:rotate(45deg)}
+body[data-visual-workspace="3"] #mainContent details:not([data-visual-reader],.today-item-source,.workspace-detail-action)>summary::after{display:none!important}
+body[data-visual-workspace="3"] #mainContent .percentage-headline-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0 0 24px}
+body[data-visual-workspace="3"] #mainContent .percentage-headline-metrics>div{border:1px solid var(--line);border-radius:10px;padding:18px}
+body[data-visual-workspace="3"] #mainContent .portfolio-performance-ledger{align-items:start}
+body[data-visual-workspace="3"] #mainContent .portfolio-performance-ledger>.paginated-surface{align-self:start;min-height:0;height:auto}
+body[data-visual-workspace="3"] #mainContent .cash-flow-surface{display:block;min-height:0;height:auto}
+body[data-visual-workspace="3"] #mainContent .cash-flow-details{margin:0;border-top:1px solid var(--line)}
+body[data-visual-workspace="3"] #mainContent .cash-flow-details>summary{display:flex;align-items:center}
+body[data-visual-workspace="3"] #mainContent .cash-flow-details:not([open]){padding-bottom:0}
+body[data-visual-workspace="3"] #mainContent .cash-flow-chart{padding:0}
+body[data-visual-workspace="3"] #mainContent .cash-flow-chart svg{aspect-ratio:720/260;min-height:220px;min-width:560px}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details .statistics-ledger{align-items:start;grid-template-columns:repeat(2,minmax(0,1fr))}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details .paginated-surface{display:flex;flex-direction:column;min-height:0;height:auto;align-self:stretch}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details .holding-filter{min-height:124px;align-content:start}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details :is(.relative-bar-chart,.efficiency-list){flex:0 0 auto;min-height:0}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details .list-pagination{margin-top:auto}
+body[data-visual-workspace="3"] #mainContent :is(#monthlyAssetChart .relative-bar-row,#efficiencyChart .efficiency-row){min-width:0;min-height:72px;align-content:center}
+body[data-visual-workspace="3"] #mainContent #efficiencyChart .efficiency-row{grid-template-columns:22px minmax(65px,1fr) auto auto;grid-template-rows:auto auto;gap:5px 12px;padding:12px 0}
+body[data-visual-workspace="3"] #mainContent #efficiencyChart .efficiency-row>span{grid-column:1;grid-row:1/3}
+body[data-visual-workspace="3"] #mainContent #efficiencyChart .efficiency-row>strong{grid-column:2;grid-row:1}
+body[data-visual-workspace="3"] #mainContent #efficiencyChart .efficiency-row>small{grid-column:3;grid-row:1;text-align:right;white-space:nowrap}
+body[data-visual-workspace="3"] #mainContent #efficiencyChart .efficiency-row>b{grid-column:4;grid-row:1;text-align:right;white-space:nowrap}
+body[data-visual-workspace="3"] #mainContent #efficiencyChart .efficiency-row>.relative-bar{grid-column:2/-1;grid-row:2;height:4px}
+body[data-visual-workspace="3"] #mainContent #efficiencyChart .efficiency-row>em{grid-column:2/-1;grid-row:3;text-align:left;font-size:11px}
+body[data-visual-workspace="3"] #mainContent .terminal-ticker-strip{transition:width 90ms linear,margin-left 90ms linear}
+@media(max-width:1100px){body[data-visual-workspace="3"] #mainContent .analytics-chart-surface>.surface-head{grid-template-columns:minmax(0,1fr)}body[data-visual-workspace="3"] #mainContent .analytics-chart-surface .analytics-chart-legend{grid-column:1;grid-row:2;justify-content:flex-start}}
+@media(max-width:800px){body[data-visual-workspace="3"] #mainContent .position-analysis-details .statistics-ledger{grid-template-columns:minmax(0,1fr)}body[data-visual-workspace="3"] #mainContent .position-analysis-details .holding-filter{min-height:0}body[data-visual-workspace="3"] #mainContent .percentage-headline-metrics{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){body[data-visual-workspace="3"] #mainContent .terminal-ticker-strip{width:100%!important;margin-left:0!important}body[data-visual-workspace="3"] #mainContent .portfolio-tool-picker>span{display:none}body[data-visual-workspace="3"] #mainContent .analytics-chart-surface .range-control{flex-wrap:wrap;justify-content:flex-start}body[data-visual-workspace="3"] #mainContent .ledger-summary{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.filter-select-trigger .filter-select-arrow,body[data-visual-workspace="3"] #mainContent summary::before,body[data-visual-workspace="3"] #mainContent .terminal-ticker-strip{transition:none}}
+
+/* Split layouts preserve each section's existing live cards and forms. */
+body[data-visual-workspace="3"] #mainContent .workspace-panel-dock{display:flex;flex-direction:column;flex:1 1 100%;grid-column:1/-1;min-width:0;width:100%;gap:0;background:none!important;border:0;padding:0}
+.workspace-panel-dock-split{display:grid;grid-template-columns:minmax(0,var(--workspace-dock-a,1fr)) 8px minmax(0,var(--workspace-dock-b,1fr));align-items:stretch;min-width:0;gap:0;flex:1}
+.workspace-panel-dock-split[data-axis=y]{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(min-content,var(--workspace-dock-a,1fr)) 8px minmax(min-content,var(--workspace-dock-b,1fr))}
+body[data-visual-workspace="3"] #mainContent .workspace-panel-dock-split>:is(:first-child,:last-child){min-width:0;width:auto;max-width:none;order:0!important;margin:0}
+body[data-visual-workspace="3"] #mainContent .workspace-panel-dock .analytics-chart-surface{display:flex;flex-direction:column}
+body[data-visual-workspace="3"] #mainContent .workspace-panel-dock .analytics-chart-surface>.chart-frame{flex:1;min-height:230px}
+.workspace-panel-divider{flex:0 0 8px;background:var(--surface);border-inline:1px solid var(--line);cursor:col-resize;touch-action:none;order:0}
+.workspace-panel-dock-split[data-axis=y]>.workspace-panel-divider{min-height:8px;border-inline:0;border-block:1px solid var(--line);cursor:row-resize}
+body:not([data-panels-unlocked=true]) .workspace-panel-divider{cursor:default;pointer-events:none}
+body[data-panels-unlocked=true] .workspace-panel-divider:is(:hover,:focus-visible){background:var(--vertux-soft);outline:0}
+.workspace-panel-drop-preview{position:fixed;z-index:1300;pointer-events:none;display:grid;place-items:center;text-align:center;border:2px solid var(--vertux-soft);border-radius:5px;background:color-mix(in srgb,var(--vertux-soft) 18%,transparent);color:var(--text);font-size:13px;padding:10px}
+.workspace-panel-drop-preview[hidden]{display:none}
+.workspace-panel-place{border:0;border-top:1px solid var(--line);padding:12px 0;margin:12px 0}
+.workspace-panel-place legend{padding-top:8px;font-size:13px;color:var(--muted)}
+.workspace-panel-place>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}
+@media(max-width:760px){
+ .workspace-panel-dock-split,.workspace-panel-dock-split[data-axis=y]{display:flex;flex-direction:column}
+ body[data-visual-workspace="3"] #mainContent .workspace-panel-dock-split>:is(:first-child,:last-child){flex:0 0 auto;width:100%;max-width:100%}
+ .workspace-panel-divider{display:none}
+ .workspace-panel-dock-split{gap:12px}
+}
+
+body[data-visual-workspace="3"] #mainContent .position-analysis-details>summary{display:flex;justify-content:flex-start;gap:4px}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details .holding-filter{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details .holding-filter label{display:grid;min-width:0;width:auto;max-width:100%;gap:6px}
+body[data-visual-workspace="3"] #mainContent .position-analysis-details .holding-filter p{grid-column:1/-1;min-width:0;max-width:none;margin:0;white-space:normal}
+
+/* Keep content inside its card as panels and intermediate windows get narrower. */
+body[data-visual-workspace="3"] #mainContent [data-workspace-panel]{min-width:0;max-width:100%;box-sizing:border-box}
+body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(.headline-value,.headline-pnl>strong,.metric-ledger dd){max-width:100%;white-space:normal;overflow-wrap:anywhere}
+body[data-visual-workspace="3"] #mainContent .deep-analysis-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;min-width:0;max-width:100%}
+body[data-visual-workspace="3"] #mainContent .deep-analysis-tabs>button{min-width:0;width:100%;white-space:normal;overflow-wrap:normal;text-align:center;justify-content:center}
+body[data-visual-workspace="3"] #mainContent :is(.ai-report.workspace-card,.deep-instrument-insights.workspace-card){padding:20px 24px}
+body[data-visual-workspace="3"] #mainContent :is(.ai-report,.deep-instrument-insights)>:first-child{margin-top:0}
+body[data-visual-workspace="3"] #mainContent :is(.ai-report,.deep-instrument-insights)>:last-child{margin-bottom:0}
+body[data-visual-workspace="3"] #mainContent :is(.data-surface>.empty-copy,.data-surface>div>.empty-copy,.terminal-chart-plot>.empty-copy){margin:0;padding:20px;max-width:100%;overflow-wrap:anywhere;box-sizing:border-box}
+html[data-card-lighting] body[data-visual-workspace="3"] #mainContent #todayOverview.today-overview{background:transparent!important;border:0;box-shadow:none}
+@media(min-width:701px) and (max-width:1200px){
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary :is(.headline-copy,.headline-pnl):not(.workspace-panel-sized){flex-basis:calc(50% - 6px)}
+ body[data-workspace-layout=classic][data-visual-workspace="3"] #mainContent .overview-summary .metric-ledger>div:not(.workspace-panel-sized){flex-basis:calc(33.333% - 8px)}
+}
+@media(max-width:700px){
+ body[data-visual-workspace="3"] #mainContent .deep-analysis-tabs{grid-template-columns:repeat(5,max-content);gap:4px;overflow-x:auto}
+ body[data-visual-workspace="3"] #mainContent .deep-analysis-tabs>button{white-space:nowrap}
+ body[data-visual-workspace="3"] #mainContent :is(.ai-report.workspace-card,.deep-instrument-insights.workspace-card){padding:16px}
+ body[data-visual-workspace="3"] #mainContent :is(.data-surface>.empty-copy,.data-surface>div>.empty-copy,.terminal-chart-plot>.empty-copy){padding:16px}
+}
+@media(max-width:700px){body[data-visual-workspace="3"] #mainContent .position-analysis-details .holding-filter{grid-template-columns:minmax(0,1fr)}}
+
+.terminal-workbench.terminal-plan-locked > :not(.terminal-plan-availability){display:none!important}
+.terminal-plan-availability{grid-column:1/-1;grid-row:1/-1;align-self:start;max-width:42rem;padding:24px;line-height:1.6}
+.terminal-plan-availability h2{margin:0 0 12px}.terminal-plan-availability p{margin:0 0 20px;color:var(--muted)}

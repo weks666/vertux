@@ -1,0 +1,32 @@
+.fundamental-history { margin-top:20px; padding-top:14px; border-top:1px solid var(--line); min-width:0; }
+.fundamental-history summary { min-height:44px; padding:10px 0; box-sizing:border-box; display:list-item; cursor:pointer; font-weight:600; }
+.fundamental-history :is(button,select) { min-height:44px; max-width:100%; white-space:normal; }
+.fundamental-history :is(button,select,summary):focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+.fundamental-history-actions { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0; }
+.fundamental-history-note,.fundamental-history dt,.fundamental-history small { color:var(--muted); line-height:1.6; }
+.fundamental-history p { max-width:72ch; overflow-wrap:anywhere; line-height:1.6; }
+.fundamental-history-selectors { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin:18px 0; }
+.fundamental-history-selectors[hidden] { display:none; }
+.fundamental-history-selectors label { display:grid; gap:7px; min-width:0; }
+.fundamental-history-selectors select { min-width:0; width:100%; }
+.fundamental-history-sources { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:18px 0; }
+.fundamental-history h5 { font-size:inherit; margin:0 0 6px; }
+.fundamental-history-row { padding:15px 0; border-top:1px solid var(--line); }
+.fundamental-history-row h5 small { display:block; font-size:var(--type-caption); font-weight:400; }
+.fundamental-history-row dl { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin:12px 0 0; }
+.fundamental-history-row dd { margin:5px 0; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+.fundamental-history-row small { overflow-wrap:anywhere; }
+.fundamental-history-all { margin-top:14px; }
+@media(max-width:600px) { .fundamental-history-selectors,.fundamental-history-sources,.fundamental-history-row dl { grid-template-columns:1fr; } }
+.company-comparison { border-top:1px solid var(--line); margin-top:18px; padding-top:8px; }
+.company-comparison-picker { display:flex; flex-wrap:wrap; align-items:end; gap:10px; margin:12px 0; }
+.company-comparison-picker label { display:grid; gap:7px; min-width:0; flex:1 1 240px; }
+.company-comparison-picker select { width:100%; min-width:0; }
+[data-fc="selection"] { display:flex; flex-wrap:wrap; gap:10px; }
+.company-comparison-sources,.company-comparison-metric dl { display:grid; grid-template-columns:repeat(var(--comparison-columns),minmax(0,1fr)); gap:16px; margin:18px 0; }
+.company-comparison-sources section,.company-comparison-metric dl>div { min-width:0; }
+.company-comparison-sources button { overflow-wrap:anywhere; }
+.company-comparison-metric { border-top:1px solid var(--line); padding:15px 0; }
+.company-comparison-metric dd { margin:6px 0; overflow-wrap:anywhere; font-variant-numeric:tabular-nums; }
+.company-comparison-metric dt { overflow-wrap:anywhere; }
+@media(max-width:800px) { .company-comparison-sources,.company-comparison-metric dl { grid-template-columns:1fr; } }

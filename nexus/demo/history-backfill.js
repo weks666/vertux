@@ -7,18 +7,23 @@ export function historyProgressCopy(value) {
 }
 
 export function createHistoryLoader({ request, eligible, onProgress, onChanged,
-  schedule = setTimeout, cancel = clearTimeout, intervalMs = 8000 }) {
-  let timer = null, stopped = false, running = false, revision = -1, complete = false;
+  getScope = () => null, schedule = setTimeout, cancel = clearTimeout, intervalMs = 8000 }) {
+  let timer = null, stopped = false, running = false, revision = -1, complete = false, scope = getScope(), epoch = 0;
   async function tick() {
     if (stopped || running) return;
     running = true;
     try {
       if (eligible()) {
+        const current = getScope();
+        if (current !== scope) { scope = current; revision = -1; complete = false; epoch++; }
+        const ticket = epoch;
         const value = await request('/api/history/backfill', {method:'POST',body:'{}'});
+        if (stopped || ticket !== epoch || scope !== getScope()) return;
         onProgress(value);
-        if (revision >= 0 && revision !== value.revision) await onChanged();
-        revision = value.revision;
-        complete = value.state === 'complete';
+        const changed = revision !== value.revision ? await onChanged() : true;
+        if (stopped || ticket !== epoch || scope !== getScope()) return;
+        if (changed !== false) revision = value.revision;
+        complete = value.state === 'complete' && changed !== false;
       }
     } catch { /* Current portfolio refresh remains independent of historical backfill. */ }
     finally {
@@ -27,5 +32,5 @@ export function createHistoryLoader({ request, eligible, onProgress, onChanged,
     }
   }
   return { start() { stopped=false; if (!timer && !running) void tick(); },
-    stop() { stopped = true; if (timer) cancel(timer); timer=null; } };
+    stop() { stopped = true; epoch++; if (timer) cancel(timer); timer=null; } };
 }

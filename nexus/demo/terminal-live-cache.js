@@ -8,6 +8,8 @@ function insert(rows,row) {
 export function applyLiveCache(prior,row,interval) {
   if(!prior || row.interval!==interval)return null;
   const normalized=normalizeMarketCandles([row],interval)[0];if(!normalized)return null;
+  const previous=prior.rows?.at(-1);
+  if(previous?.time===normalized.time&&Date.parse(normalized.capturedAt||'')<Date.parse(previous.capturedAt||''))return null;
   const rows=insert(prior.rows||[],normalized);
   const older=normalized.time<(prior.latestRows?.[0]?.time??-Infinity);
   return {...prior,rows,latestRows:older?prior.latestRows:insert(prior.latestRows||[],normalized),
