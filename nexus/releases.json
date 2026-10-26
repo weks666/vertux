@@ -2,6 +2,34 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-53",
+      "date": "2026-10-26",
+      "versions": {
+        "Invest": "0.6.53"
+      },
+      "title": {
+        "ru": "График Nexus как в TradingView, рисунки сохраняются",
+        "en": "Nexus chart reads like TradingView and keeps your drawings"
+      },
+      "changes": [
+        {
+          "type": "fixed",
+          "ru": "Рисунки на графике терминала больше не пропадают после закрытия вкладки: линии и разметка сохраняются для каждого инструмента и возвращаются, когда вы снова его открываете.",
+          "en": "Terminal chart drawings no longer disappear when you close a tab: lines and marks are saved per instrument and come back when you open it again."
+        },
+        {
+          "type": "changed",
+          "ru": "Основной график терминала — Nexus. Легенда с ценами открытия, максимума, минимума и закрытия, объём, значения индикаторов, время под перекрестием и шкалы оформлены как в TradingView, а панели остаются в цветах Nexus. График TradingView доступен переключателем «Nexus | TradingView»; рисунки сохраняются только на графике Nexus.",
+          "en": "The terminal's main chart is now Nexus. The legend with open, high, low and close, volume, indicator values, crosshair time and the scales look like TradingView, while the panels keep the Nexus colours. The TradingView chart is still available through the «Nexus | TradingView» switch; drawings are saved on the Nexus chart only."
+        },
+        {
+          "type": "added",
+          "ru": "Быстрые интервалы от 1 минуты до месяца над графиком и нижняя панель диапазонов 1Д, 5Д, 1М, 3М, 6М, YTD, 1Г, 5Л и «Все»: каждый диапазон сам выбирает подходящий интервал свечей, рядом — часы с часовым поясом.",
+          "en": "Quick intervals from one minute to one month above the chart and a bottom range bar 1D, 5D, 1M, 3M, 6M, YTD, 1Y, 5Y and All: each range picks a matching candle interval, next to a clock with the time zone."
+        }
+      ]
+    },
+    {
       "id": "nexus-0-6-87",
       "date": "2026-10-25",
       "versions": {
