@@ -2,6 +2,44 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-54",
+      "date": "2026-10-28",
+      "versions": {
+        "Invest": "0.6.54"
+      },
+      "title": {
+        "ru": "Быстрый старт, терминал как TradingView и перенос рисунков",
+        "en": "Fast start, a TradingView-like terminal and drawing transfer"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "После запуска Nexus Workspace показывает последний полный расчёт с его временем, пока считается свежая аналитика, затем заменяет его новым. Полный пересчёт в фоне идёт реже и меньше нагружает компьютер.",
+          "en": "After Nexus starts, Workspace shows the last full calculation with its time while fresh analytics are calculated, then replaces it. The full background recalculation runs less often and loads the computer less."
+        },
+        {
+          "type": "changed",
+          "ru": "Терминал в пропорциях TradingView: компактные панели, выпадающие списки интервалов и типов графика, окна индикаторов, поиска, сравнения, «Перейти к» и настроек в том же стиле. Список котировок стал плотнее — помещается больше строк. Цвета остаются цветами Nexus.",
+          "en": "The terminal follows TradingView proportions: compact toolbars, interval and chart type dropdowns, and indicator, search, compare, go-to-date and settings windows in the same style. The watchlist is denser and fits more rows. Colours stay Nexus."
+        },
+        {
+          "type": "added",
+          "ru": "Перенос рисунков из TradingView: закладка «Vertux: перенос рисунков» сохраняет рисунки открытых графиков TradingView, а в Invest их можно вставить через «Перенести рисунки из TradingView…» — линии, Фибоначчи, фигуры, тексты и позиции появятся на тех же инструментах.",
+          "en": "Drawing transfer from TradingView: the «Vertux: перенос рисунков» bookmark saves the drawings of your open TradingView charts, and Invest takes them in through «Перенести рисунки из TradingView…» — lines, Fibonacci tools, shapes, texts and positions appear on the same instruments."
+        },
+        {
+          "type": "added",
+          "ru": "Избранное прямо с графика: пункт «Добавить в избранное» в меню графика по правому клику.",
+          "en": "Favourites right from the chart: «Добавить в избранное» in the chart menu on right click."
+        },
+        {
+          "type": "fixed",
+          "ru": "Рисунки двигаются вместе с графиком при отдалении и сдвиге, без задержки в несколько секунд.",
+          "en": "Drawings move together with the chart when you zoom out or scroll, without a delay of several seconds."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-53",
       "date": "2026-10-26",
       "versions": {
