@@ -2,6 +2,49 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-0-6-55",
+      "date": "2026-10-28",
+      "versions": {
+        "Invest": "0.6.55"
+      },
+      "title": {
+        "ru": "Терминал как в TradingView, снимок графика и справка по инструментам",
+        "en": "A TradingView-style terminal, chart snapshots and drawing tool help"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Терминал ещё ближе к TradingView: «К портфелю», «Исследовать» и «Факты компании» встроены в строку инструмента, три избранных интервала видны сразу, левая колонка рисования разбита на группы и разделы TradingView, «Перейти к дате» — в нижней строке.",
+          "en": "The terminal moves closer to TradingView: portfolio, research and company links sit in the instrument row, three favourite intervals are visible at once, the drawing column uses TradingView groups and sections, and go-to-date sits in the bottom bar."
+        },
+        {
+          "type": "added",
+          "ru": "Снимок графика: кнопка с камерой копирует изображение графика с рисунками и индикаторами или сохраняет его в PNG — удобно отправить в чат.",
+          "en": "Chart snapshot: the camera button copies an image of the chart with its drawings and indicators or saves it as PNG, ready to share in a chat."
+        },
+        {
+          "type": "added",
+          "ru": "Справка по инструментам рисования: «?» в меню инструментов открывает описание — что это, как пользоваться и как построить.",
+          "en": "Drawing tool help: the «?» in the tools menu opens a description of the tool, how to use it and how to draw it."
+        },
+        {
+          "type": "changed",
+          "ru": "Новый порядок бокового меню: Обзор портфеля, Терминал, Nexus AI, сделки, аналитика и остальные разделы; синхронизация и словарь — внизу. Горячие клавиши разделов прежние.",
+          "en": "The side menu has a new order: portfolio overview, terminal, Nexus AI, trades, analytics and the other sections, with sync and the glossary at the bottom. Section shortcuts stay the same."
+        },
+        {
+          "type": "fixed",
+          "ru": "Nexus AI: поиск в интернете выключается, к прикреплённому инструменту можно написать свой вопрос, быстрые действия собраны в «+», появились слэш-команды.",
+          "en": "Nexus AI: web search turns off, you can write your own question about an attached instrument, quick actions live in «+», and slash commands are available."
+        },
+        {
+          "type": "fixed",
+          "ru": "Меню по правому клику на графике закрывается кликом мимо, график на весь экран сохраняет оформление, а повторное открытие окна сразу показывает последний расчёт.",
+          "en": "The chart's right-click menu closes when you click elsewhere, the full-screen chart keeps its look, and reopening the window shows the last calculation at once."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-54",
       "date": "2026-10-28",
       "versions": {
