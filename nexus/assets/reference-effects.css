@@ -176,3 +176,5 @@
 .nx-platform-soon { border:1px solid #c2acf14d; border-radius:12px; background:#c3a9ff0b; }
 @media(max-width:720px) { .nx-device-cards { grid-template-columns:1fr; }.nx-platform-intro h3 { font-size:24px; } }
 @media(prefers-reduced-motion:reduce) { .nx-platform-card { transition:none; } }
+/* Tablet: the menu opens as a compact panel under its button instead of a wide sheet with a narrow product list. */
+@media(min-width:761px) and (max-width:1100px) { .nx-site .main-nav,.nx-site.nexus-home .main-nav { left:auto; right:0; width:min(400px,100%); } .nx-site .nav-dropdown { position:static; width:100%; transform:none; margin:4px 0 12px; } }

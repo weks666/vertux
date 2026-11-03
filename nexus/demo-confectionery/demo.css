@@ -1,0 +1,2 @@
+/* Website demo: hide what needs a real Nexus account. */
+a[href="/launch?choose=1"],#cxProducts,#cxProfileProducts,#cxLogout,.cx-profile a[href="/account.html"]{display:none!important}

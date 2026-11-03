@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "confectionery-website-demo",
+  "builtAt": "2026-11-03",
+  "source": {
+    "repository": "vertux-nexus",
+    "path": "app",
+    "commit": "941d7ce509ed6464a6d9be9f9e8f967dd479ef10",
+    "workingTreeChanges": false
+  },
+  "data": "fictional, generated in the browser by demo-api.js",
+  "files": {
+    "lib/confectionery/model.mjs": "1c1ca5ec9aa06be98546cb33b95d2867388a5f2ef62d887e067c2206e0499097",
+    "public/confectionery/cabinet.css": "a0d328899b8bf526959a794f8ac7fdf28ccc6dd699ccbf4478e856bfda1558e5",
+    "public/confectionery/cabinet.html": "e4f8f330e717b1e159d1051003108b02dd12257a5649a87866a053cdcbe2a38d",
+    "public/confectionery/cabinet.js": "5a5243c91f6068bd8901f406d3ec087ac92138ef40fae1b8bf7698ed1d645e99",
+    "public/confectionery/storefront.css": "048937f351d60366f09c40eb01825f4ce14578d4f073de758e6dbd8110ee619c",
+    "public/confectionery/storefront.html": "408e1f7d6aef2febff3e246ce475187fb4f7cd0ff442b419171cb4d778807964",
+    "public/confectionery/storefront.js": "39d20a3abfb28c2bd68c58ad286a8c33d1f1128500457716379a8390ac079e71",
+    "public/fonts/Rubik-OFL.txt": "bb570b94e04c282dc257b4cc6b209e2cb27c6dbc5d2e2e66465fa9ce715734ea",
+    "public/fonts/choice-09472f217ad1.woff2": "09472f217ad1ebb61a7669cf532f9f2f80685e07652ee862fde9a79665aef479",
+    "public/fonts/choice-35e30483bb79.woff2": "35e30483bb79be6fd8de0fec4e038fda9e637fc7337f6ff61418c7d08077878b",
+    "public/fonts/choice-691cd1d9b4c0.woff2": "691cd1d9b4c0cdf31a1dcf04259c86f92c85e69f6622abab7964d81e36890691",
+    "public/fonts/choice-bdb2b33ab916.woff2": "bdb2b33ab916e9e7b42edb61f8aea5f5dd83ad773d6ee4e9b55665daf8954ce8",
+    "public/fonts/f00.woff2": "83c005d49d8a6a50474c73a5a36ac0468076e9c4a29da7bdb14995d80560a5be",
+    "public/fonts/f01.woff2": "e17cfd15fb96909d64095015f958207063a0c07191da3512df7d560a781aebdf",
+    "public/fonts/f02.woff2": "c268b459a9329e59fecf39a17618efd44c71735532048d60b12aab76a8c14914",
+    "public/fonts/f03.woff2": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+    "public/fonts/f04.woff2": "22f9b928aa3928a896340422b54d690fbb5875c30eae4c106f029c61f2289fd6",
+    "public/fonts/f05.woff2": "e30bf6a6063b6a47232bbd657e24c7cf4fdaf76fc2c50d92d9ee63e2ad2087cf",
+    "public/fonts/fonts.css": "bf37b8b7d158b92c166e4d49c09c6d7d079a7f09c93a0389c7409a5469fb9a66",
+    "public/fonts/rubik.css": "f79283bc6c54546ae615b0df3aae9124e9a1a4059c69c4cc61ad712017b0dc7a",
+    "public/icon.svg": "2ff65e348befc5b2068ac7dbe58efb755e8ea42d93198d23452815e2ea9476b7",
+    "public/styles.css": "a43e2683ab16d5893452dcafc74aeb5f53736df83c7807c94a0c824fecc11297"
+  }
+}

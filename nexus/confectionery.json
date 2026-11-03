@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "revision": "confectionery-2026-11-01-r1",
+  "product": "confectionery-workspace",
+  "status": "proposal",
+  "salesEnabled": false,
+  "onlinePaymentConnected": false,
+  "currency": "RUB",
+  "monthlyRubReference": 500,
+  "note": "Ориентир для обсуждения. Подписка подключается вручную: стоимость фиксируется при подключении, онлайн-оплата не подключена."
+}
