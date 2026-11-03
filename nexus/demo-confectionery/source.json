@@ -5,15 +5,15 @@
   "source": {
     "repository": "vertux-nexus",
     "path": "app",
-    "commit": "941d7ce509ed6464a6d9be9f9e8f967dd479ef10",
+    "commit": "955ef9f5e6ffaadb4024ffb3382be0b3f89c0e01",
     "workingTreeChanges": false
   },
   "data": "fictional, generated in the browser by demo-api.js",
   "files": {
     "lib/confectionery/model.mjs": "1c1ca5ec9aa06be98546cb33b95d2867388a5f2ef62d887e067c2206e0499097",
     "public/confectionery/cabinet.css": "a0d328899b8bf526959a794f8ac7fdf28ccc6dd699ccbf4478e856bfda1558e5",
-    "public/confectionery/cabinet.html": "e4f8f330e717b1e159d1051003108b02dd12257a5649a87866a053cdcbe2a38d",
-    "public/confectionery/cabinet.js": "5a5243c91f6068bd8901f406d3ec087ac92138ef40fae1b8bf7698ed1d645e99",
+    "public/confectionery/cabinet.html": "e332f32a779ebd1276a33ca2b30124c259bef0911c2ad08f8aa419a0cff40cdc",
+    "public/confectionery/cabinet.js": "bb2ca8344ddf3375931b3836d1e1f17506cb53c3bf97574a13e6ab7566d4ca6d",
     "public/confectionery/storefront.css": "048937f351d60366f09c40eb01825f4ce14578d4f073de758e6dbd8110ee619c",
     "public/confectionery/storefront.html": "408e1f7d6aef2febff3e246ce475187fb4f7cd0ff442b419171cb4d778807964",
     "public/confectionery/storefront.js": "39d20a3abfb28c2bd68c58ad286a8c33d1f1128500457716379a8390ac079e71",
@@ -31,6 +31,6 @@
     "public/fonts/fonts.css": "bf37b8b7d158b92c166e4d49c09c6d7d079a7f09c93a0389c7409a5469fb9a66",
     "public/fonts/rubik.css": "f79283bc6c54546ae615b0df3aae9124e9a1a4059c69c4cc61ad712017b0dc7a",
     "public/icon.svg": "2ff65e348befc5b2068ac7dbe58efb755e8ea42d93198d23452815e2ea9476b7",
-    "public/styles.css": "a43e2683ab16d5893452dcafc74aeb5f53736df83c7807c94a0c824fecc11297"
+    "public/styles.css": "c0a19f1d14bceb113aad16512719c30e6aa31cab66597eef3047345d95f2184a"
   }
 }

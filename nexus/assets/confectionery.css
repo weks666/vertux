@@ -115,9 +115,14 @@ html:has(.nx-confectionery){background:var(--cf-bg,#fff8f1)}
 .nx-cf-trust h2{color:#fff4ea!important;font-size:clamp(26px,3vw,38px)}.nx-cf-trust p{margin:12px 0 0;max-width:720px;color:#d9c2ae!important;font-size:15px;line-height:1.65}
 .nx-cf-text-link{display:inline-flex;align-items:center;gap:8px;color:#ffe3cb;font-weight:500;white-space:nowrap}.nx-cf-text-link:hover{color:#fff}
 
-.nx-cf-pricing{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,440px);gap:60px;align-items:center;padding-block:80px}
-.nx-cf-pricing>div>p{margin:22px 0 0;max-width:480px;font-size:16px;line-height:1.65}
-.nx-cf-price-card{display:grid;gap:16px;padding:30px;border:1px solid #e8792b59;border-radius:30px;background:var(--cf-surface);box-shadow:0 30px 80px #8a4a1a1f}
+.nx-cf-pricing{padding-block:80px}
+.nx-cf-price-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+.nx-cf-price-card{display:grid;grid-template-rows:auto auto auto 1fr auto;gap:16px;padding:30px;border:1px solid var(--cf-line);border-radius:30px;background:var(--cf-surface)}
+.nx-cf-price-card.is-main{border-color:#e8792b59;box-shadow:0 30px 80px #8a4a1a1f}
+.nx-cf-price-card h3{margin:0;color:var(--cf-text);font-size:22px;font-weight:600;letter-spacing:-.01em}
+.nx-cf-price-card strong.is-text{font-size:30px}
+.nx-cf-price-card ul{align-content:start}
+.nx-cf-price-note{margin:22px 0 0}
 .nx-cf-price-card strong{display:flex;align-items:baseline;gap:10px;color:var(--cf-text);font-size:44px;font-weight:500;letter-spacing:-.03em}.nx-cf-price-card strong small{color:var(--cf-muted);font-size:15px;letter-spacing:0}
 .nx-cf-price-card ul{margin:0;padding:0;list-style:none;display:grid;gap:10px;font-size:15px}.nx-cf-price-card li{display:flex;gap:10px;align-items:center}.nx-cf-price-card li .nx-icon{color:var(--cf-ok)}
 .nx-cf-price-card .nx-button{justify-content:center}.nx-cf-price-card .nx-cf-small{margin:0}
@@ -134,7 +139,8 @@ html:has(.nx-confectionery){background:var(--cf-bg,#fff8f1)}
 @media (max-width:1080px){
   .nx-cf-hero{padding-top:130px}
   .nx-cf-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .nx-cf-pricing,.nx-cf-rules,.nx-cf-faq{grid-template-columns:1fr;gap:30px}
+  .nx-cf-rules,.nx-cf-faq{grid-template-columns:1fr;gap:30px}
+  .nx-cf-price-grid{grid-template-columns:1fr;max-width:560px}
 }
 @media (max-width:760px){
   .nx-cf-hero{padding-top:112px;padding-bottom:24px}.nx-cf-hero-copy>p:not(.nx-cf-small){font-size:16px}
@@ -150,6 +156,6 @@ html:has(.nx-confectionery){background:var(--cf-bg,#fff8f1)}
   .nx-cf-head{display:block}.nx-cf-head p{margin-top:16px}
   .nx-cf-live,.nx-cf-features,.nx-cf-formats,.nx-cf-rules,.nx-cf-pricing,.nx-cf-faq{padding-block:44px}
   .nx-cf-trust{grid-template-columns:1fr;padding:26px}
-  .nx-cf-price-card{padding:24px}.nx-cf-price-card strong{font-size:36px}
+  .nx-cf-price-card{padding:24px}.nx-cf-price-card strong{font-size:36px}.nx-cf-price-card strong.is-text{font-size:26px}
 }
 @media (prefers-reduced-motion:reduce){.nx-cf-faq summary>span:last-child{transition:none}}

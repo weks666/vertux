@@ -8,11 +8,11 @@
   <title>Кабинет кондитерской · Vertux Nexus</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./fonts/fonts.css">
-  <link rel="stylesheet" href="./styles.css?v=202611032uzv">
-  <link rel="stylesheet" href="./cabinet.css?v=202611032uzv">
-  <script type="module" src="./demo-api.js?v=202611032uzv"></script>
-  <script type="module" src="./cabinet.js?v=202611032uzv"></script>
-  <link rel="stylesheet" href="./demo.css?v=202611032uzv">
+  <link rel="stylesheet" href="./styles.css?v=20261103q5z1">
+  <link rel="stylesheet" href="./cabinet.css?v=20261103q5z1">
+  <script type="module" src="./demo-api.js?v=20261103q5z1"></script>
+  <script type="module" src="./cabinet.js?v=20261103q5z1"></script>
+  <link rel="stylesheet" href="./demo.css?v=20261103q5z1">
 </head>
 <body class="cx-body">
   <a class="cx-skip" href="#cxMain">К содержанию</a>
@@ -217,6 +217,7 @@
           <ol class="cx-tiers" id="cxTiers"></ol>
           <button class="button ghost compact-button" type="button" id="cxTierAdd">Добавить условие</button>
           <h4 class="cx-subtitle">Приоритет в очереди</h4>
+          <p class="cx-hint cx-warning" id="cxPriorityPlan" hidden>Приоритет и места для постоянных входят в тариф «Расширенный». Чтобы подключить, напишите в поддержку Vertux.</p>
           <label>Мест в день для постоянных<input name="reservedPerDay" type="number" min="0" max="50" inputmode="numeric"></label>
           <p class="cx-hint">Эти места скрыты от остальных: в загруженный день гость увидит «занято», а покупатель с приоритетом ещё сможет записаться. Приоритет даёт условие с отметкой или ваша отметка в карточке покупателя.</p>
           <button class="button primary" type="submit">Сохранить скидки</button>
@@ -289,6 +290,10 @@
             </section>
             <section class="cx-settings-page" data-settings-panel="domain" aria-labelledby="cxDomainTitle">
               <h2 id="cxDomainTitle">Свой домен</h2>
+              <div class="panel cx-form cx-settings-card" id="cxDomainLocked" hidden>
+                <p class="cx-hint">Витрина работает по адресу Nexus. Свой домен, например zakaz.sladkiy-dom.ru, входит в тариф «Расширенный»: вы добавляете записи DNS, а сертификат для домена выпускает Vertux.</p>
+                <div class="cx-actions"><button class="button ghost compact-button" type="button" data-view-link="support">Написать в поддержку</button><button class="text-button" type="button" data-view-link="subscription">Мой тариф</button></div>
+              </div>
               <form class="panel cx-form cx-settings-card" id="cxDomainForm" novalidate>
                 <div class="cx-inline"><p class="cx-hint">Витрина уже работает по адресу Nexus. Её можно открыть и на своём домене, например zakaz.sladkiy-dom.ru.</p><span class="status-pill" id="cxDomainState"><i></i><span>Не подключён</span></span></div>
                 <label>Домен<input name="domain" maxlength="253" placeholder="zakaz.sladkiy-dom.ru" autocomplete="off" inputmode="url" spellcheck="false"></label>

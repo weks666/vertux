@@ -51,6 +51,8 @@ const dateText = (date, options = { day:'numeric', month:'long', weekday:'short'
 const timeText = value => new Intl.DateTimeFormat('ru-RU', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }).format(new Date(value));
 const monthShift = (month, delta) => { const date = new Date(`${month}-01T00:00:00Z`); date.setUTCMonth(date.getUTCMonth() + delta); return date.toISOString().slice(0, 7); };
 const can = capability => state.context?.capabilities?.[capability] === true;
+// Tariff features: a domain and priority places. Without plan data everything stays open.
+const planAllows = feature => state.context?.plan?.[feature] !== false;
 const setup = () => state.context?.setup === true;
 
 async function request(path, { method = 'GET', body } = {}) {
@@ -867,6 +869,10 @@ function copyButton(value) {
 }
 function renderDomain(info) {
   const form = $('#cxDomainForm'), [label, tone] = DOMAIN_STATES[info?.status] || DOMAIN_STATES.none;
+  // A domain saved before a tariff change stays editable so it can be switched off.
+  const locked = !planAllows('domain') && !info?.domain;
+  $('#cxDomainLocked').hidden = !locked; form.hidden = locked;
+  $$('#cxDomainLocked [data-view-link]').forEach(button => { button.hidden = state.context.setup === true; });
   const pill = $('#cxDomainState'); pill.className = `status-pill ${tone}`; pill.lastElementChild.textContent = label;
   form.elements.domain.value = info?.domain || '';
   const editable = can('manageDomain');
@@ -999,7 +1005,8 @@ async function loadCustomers() {
   } catch (error) { setState(host, error.message, 'error'); }
 }
 function renderCustomers() {
-  $('#cxCustomerFilters').replaceChildren(...CUSTOMER_FILTERS.map(([value, label]) => h('button', { type:'button', class:state.customerFilter === value ? 'active' : '',
+  if (state.customerFilter === 'priority' && !planAllows('priority')) state.customerFilter = 'all';
+  $('#cxCustomerFilters').replaceChildren(...CUSTOMER_FILTERS.filter(([value]) => value !== 'priority' || planAllows('priority')).map(([value, label]) => h('button', { type:'button', class:state.customerFilter === value ? 'active' : '',
     'aria-pressed':String(state.customerFilter === value), onclick:() => { state.customerFilter = value; renderCustomers(); } }, label)));
   const query = state.customerSearch.trim().toLowerCase();
   const shown = state.customers.filter(LOYALTY_FILTER[state.customerFilter])
@@ -1036,7 +1043,7 @@ async function openCustomer(id) {
   const field = (label, input) => h('label', {}, label, input);
   const prior = h('input', { type:'number', min:'0', max:'10000', inputmode:'numeric', value:String(customer.priorOrders), disabled:!editable });
   const priorAmount = h('input', { inputmode:'decimal', maxlength:'12', value:customer.priorAmountMinor ? String(customer.priorAmountMinor / 100) : '', placeholder:'0', disabled:!editable });
-  const priority = h('input', { type:'checkbox', checked:customer.priority, disabled:!editable });
+  const priority = h('input', { type:'checkbox', checked:customer.priority, disabled:!editable || (!planAllows('priority') && !customer.priority) });
   const note = h('textarea', { rows:'2', maxlength:'600', disabled:!editable }); note.value = customer.ownerNote || '';
   const summary = [standing.percent ? `Скидка сейчас: ${standing.label}` : 'Скидки пока нет',
     standing.upcoming ? `до скидки ${standing.upcoming.percent}% — ещё ${standing.upcoming.basis === 'orders' ? ordersWord(standing.upcoming.remaining) : money(standing.upcoming.remaining)}` : '',
@@ -1051,7 +1058,7 @@ async function openCustomer(id) {
       h('p', { class:'cx-buyer-note' }, `${ordersWord(standing.completedOrders)} и ${money(standing.spentMinor) || '0 ₽'} с учётом заказов до Nexus. ${summary}.`),
       h('h4', {}, 'Заказы до Nexus и приоритет'),
       h('div', { class:'form-row' }, field('Выдано заказов до Nexus', prior), field('На сумму, ₽', priorAmount)),
-      h('label', { class:'check-row' }, priority, h('span', {}, 'Приоритет в очереди: видит места, отложенные для постоянных')),
+      h('label', { class:'check-row' }, priority, h('span', {}, planAllows('priority') ? 'Приоритет в очереди: видит места, отложенные для постоянных' : 'Приоритет в очереди — на тарифе «Расширенный»')),
       field('Заметка для себя', note),
       editable ? h('button', { type:'button', class:'button primary compact-button', onclick:async event => {
         busy(event.currentTarget, true);
@@ -1086,11 +1093,14 @@ function renderLoyalty() {
     h('input', { type:'number', min:'0', max:'50', inputmode:'numeric', value:String(tier.percent), 'aria-label':'Скидка, %', disabled:!editable, oninput:event => { tier.percent = event.currentTarget.value; } }),
     h('span', {}, '%'),
     h('select', { 'aria-label':'Как действует', disabled:!editable, onchange:event => { tier.scope = event.currentTarget.value; } }, ...options(state.context.options.loyaltyScopes, tier.scope)),
-    h('label', { class:'check-row' }, h('input', { type:'checkbox', checked:tier.priority, disabled:!editable, onchange:event => { tier.priority = event.currentTarget.checked; } }), h('span', {}, 'приоритет')),
+    h('label', { class:'check-row' }, h('input', { type:'checkbox', checked:tier.priority, disabled:!editable || (!planAllows('priority') && !tier.priority), onchange:event => { tier.priority = event.currentTarget.checked; } }), h('span', {}, 'приоритет')),
     editable ? h('button', { type:'button', class:'icon-button', 'aria-label':'Убрать условие', onclick:() => { draft.tiers.splice(index, 1); renderLoyalty(); } }, '×') : null))
     : [h('li', { class:'cx-hint' }, 'Условий пока нет. Например: после 5 заказов — 5% на следующий, после 30 — 10% на все заказы.')]));
   form.elements.reservedPerDay.value = String(draft.reservedPerDay);
-  form.elements.reservedPerDay.disabled = !editable;
+  form.elements.reservedPerDay.disabled = !editable || (!planAllows('priority') && !Number(draft.reservedPerDay));
+  // Without the tariff the kept places can only go down.
+  form.elements.reservedPerDay.max = planAllows('priority') ? '50' : String(state.context.loyalty?.reservedPerDay || 0);
+  $('#cxPriorityPlan').hidden = planAllows('priority');
   $('#cxTierAdd').hidden = !editable || draft.tiers.length >= 8;
   form.querySelector('[type="submit"]').hidden = !editable;
 }

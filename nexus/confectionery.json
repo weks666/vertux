@@ -1,11 +1,16 @@
 {
-  "schemaVersion": 1,
-  "revision": "confectionery-2026-11-01-r1",
+  "schemaVersion": 2,
+  "revision": "confectionery-2026-11-03-r2",
   "product": "confectionery-workspace",
   "status": "proposal",
   "salesEnabled": false,
   "onlinePaymentConnected": false,
   "currency": "RUB",
   "monthlyRubReference": 500,
-  "note": "Ориентир для обсуждения. Подписка подключается вручную: стоимость фиксируется при подключении, онлайн-оплата не подключена."
+  "tiers": [
+    { "key": "base", "monthlyRubReference": 500 },
+    { "key": "extended", "monthlyRubReference": 990 },
+    { "key": "individual", "monthlyRubReference": null }
+  ],
+  "note": "Ориентиры для обсуждения. Подписка подключается вручную: тариф выбирает Vertux, стоимость фиксируется при подключении, онлайн-оплата не подключена."
 }

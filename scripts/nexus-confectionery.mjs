@@ -19,7 +19,7 @@ export function confectioneryPage({tr, link, plan}) {
 <h1>${tr('Ваши десерты.', 'Your desserts.')}<br><em>${tr('Заказы — в одном месте.', 'Orders in one place.')}</em></h1>
 <p>${tr('Витрина с каталогом, календарь свободных дат и заявки клиентов. Клиент выбирает торт и дату — вы видите заказ в кабинете и сами подтверждаете детали.', 'A storefront with your catalogue, a calendar of open dates and customer requests. Customers pick a cake and a date — you see the order in your workspace and confirm the details yourself.')}</p>
 <div class="nx-actions"><a class="nx-button nx-button-primary" href="${contact}" target="_blank" rel="noopener noreferrer">${tr('Подключить кондитерскую', 'Connect your bakery')}${glyph('arrow')}</a><a class="nx-button nx-button-quiet" href="#demo">${tr('Попробовать демо', 'Try the demo')}${glyph('arrow')}</a></div>
-<p class="nx-cf-small">${tr(`Подписка, ориентир — около ${price} ₽ в месяц. Условия фиксируются при подключении.`, `Subscription, about ${price} RUB per month as a guide. Terms are agreed when you connect.`)}</p></div></section>`;
+<p class="nx-cf-small">${tr(`Подписка — от ${price} ₽ в месяц, ориентир. Условия фиксируются при подключении.`, `Subscription from ${price} RUB per month as a guide. Terms are agreed when you connect.`)}</p></div></section>`;
 
   // The real storefront and cabinet, built from the Nexus app with fictional data.
   const views = [['storefront', 'Витрина клиента', 'Customer storefront', 'Демо: витрина кондитерской', 'Demo: bakery storefront'],
@@ -35,7 +35,7 @@ export function confectioneryPage({tr, link, plan}) {
     ['orders', 'Заказы', 'Orders', 'Список заявок, подробности, история статусов и заметки для команды.', 'Requests, details, status history and team notes.'],
     ['calendar', 'Календарь', 'Calendar', 'Рабочие дни, выходные, лимит заказов и занятые даты.', 'Working days, days off, daily limits and booked dates.'],
     ['catalog', 'Каталог', 'Catalogue', 'Фото, описание, состав, размеры, начинки, цены и цена «от».', 'Photos, descriptions, ingredients, sizes, fillings and “from” prices.'],
-    ['store', 'Витрина и домен', 'Storefront and domain', 'Витрина прямо в кабинете: нажмите на блок, чтобы изменить его, перетащите торты, чтобы поменять порядок. Четыре темы, свой цвет и домен.', 'The storefront right in your workspace: click a block to edit it, drag cakes to reorder them. Four themes, your own colour and domain.'],
+    ['store', 'Витрина и домен', 'Storefront and domain', 'Витрина прямо в кабинете: нажмите на блок, чтобы изменить его, перетащите торты, чтобы поменять порядок. Четыре темы и свой цвет, на «Расширенном» — свой домен.', 'The storefront right in your workspace: click a block to edit it, drag cakes to reorder them. Four themes and your own colour, plus your own domain on Extended.'],
     ['wait', 'Лист ожидания', 'Waitlist', 'Клиенты на занятые даты. Освободилась дата — сразу видно, кому написать.', 'Customers waiting for booked dates. When a date frees up, you see who to contact.'],
   ];
   const cabinet = `<section class="nx-cf-features shell"><div class="nx-cf-head"><h2>${tr('Кабинет владельца.', 'Your workspace.')}<br><em>${tr('Всё, что нужно для заказов.', 'Everything an order needs.')}</em></h2><p>${tr('Без лишней CRM: только каталог, заявки, даты и клиенты, которые ждут.', 'No bloated CRM: just your catalogue, requests, dates and waiting customers.')}</p></div><div class="nx-cf-feature-grid">${features.map(([name, ru, en, text, textEn]) => `<article>${glyph(name)}<h3>${tr(ru, en)}</h3><p>${tr(text, textEn)}</p></article>`).join('')}<article class="nx-cf-feature-note">${glyph('phone')}<h3>${tr('С телефона и компьютера', 'On phone and desktop')}</h3><p>${tr('Кабинет и витрина работают в браузере — установка не нужна.', 'Both the workspace and the storefront run in the browser — nothing to install.')}</p></article></div></section>`;
@@ -55,15 +55,35 @@ export function confectioneryPage({tr, link, plan}) {
 
   const trust = `<section class="nx-cf-trust shell">${glyph('lock')}<div><h2>${tr('Ваши клиенты — только ваши.', 'Your customers stay yours.')}</h2><p>${tr('У каждой кондитерской отдельная рабочая база. Доступ в кабинет — по аккаунту Nexus и роли в команде. Данные клиентов из заявок обрабатываете вы: на витрине можно указать ссылку на свою политику обработки данных.', 'Every bakery has its own workspace database. Access requires a Nexus account and a team role. You handle the customer data from requests, and you can link your own privacy policy on the storefront.')}</p></div><a class="nx-cf-text-link" href="security.html">${tr('Как устроена защита', 'How security works')}${glyph('arrow')}</a></section>`;
 
-  const pricing = `<section class="nx-cf-pricing shell" id="pricing"><div><h2>${tr('Подписка', 'Subscription')}<br><em>${tr('без сложных тарифов.', 'without complex plans.')}</em></h2><p>${tr('Один тариф на кондитерскую: витрина, заявки, календарь и лист ожидания. Подключение — по заявке, пробный период на старте.', 'One plan per bakery: storefront, requests, calendar and waitlist. Connection on request, with a trial period at the start.')}</p></div>
-<article class="nx-cf-price-card"><p class="nx-cf-tag">${tr('Ориентир', 'Guide price')}</p><strong>${tr(`около ${price} ₽`, `about ${price} RUB`)}<small>${tr('в месяц', 'per month')}</small></strong><ul>${[['Витрина с каталогом и фото', 'Storefront with catalogue and photos'], ['Заявки, статусы и история', 'Requests, statuses and history'], ['Календарь, лимиты и лист ожидания', 'Calendar, limits and waitlist'], ['Кабинет на телефоне и компьютере', 'Workspace on phone and desktop']].map(([ru, en]) => `<li>${glyph('check')}${tr(ru, en)}</li>`).join('')}</ul>
-<a class="nx-button nx-button-primary" href="${contact}" target="_blank" rel="noopener noreferrer">${tr('Оставить заявку на подключение', 'Request a connection')}${glyph('arrow')}</a><p class="nx-cf-small">${tr('Точная стоимость фиксируется при подключении. Онлайн-оплата подписки пока не подключена.', 'The exact price is agreed when you connect. Online subscription payment is not available yet.')}</p></article></section>`;
+  // What each tariff opens matches the Nexus template; guide prices come from confectionery.json.
+  const tierCopy = {
+    base:{name:['Базовый', 'Basic'], tag:['Всё для заказов', 'Everything for orders'], items:[
+      ['Витрина с каталогом и фото', 'Storefront with catalogue and photos'], ['Заявки, корзина и время получения', 'Requests, cart and pickup times'],
+      ['Календарь: лимиты, отпуск, лист ожидания', 'Calendar: limits, holidays, waitlist'], ['Кабинет покупателя и скидки постоянным', 'Customer accounts and loyalty discounts'],
+      ['Доступ для одного человека', 'Access for one person']]},
+    extended:{name:['Расширенный', 'Extended'], tag:['Для мастерской', 'For a workshop'], items:[
+      ['Всё из «Базового»', 'Everything in Basic'], ['Свой домен для витрины', 'Your own domain for the storefront'],
+      ['Места в календаре для постоянных', 'Calendar places kept for regulars'], ['Доступ до 3 человек', 'Access for up to 3 people']]},
+    individual:{name:['Индивидуальный', 'Custom'], tag:['По договорённости', 'By agreement'], items:[
+      ['Всё из «Расширенного»', 'Everything in Extended'], ['Команда до 20 человек', 'A team of up to 20'],
+      ['Перенос клиентов и настройка под ключ', 'Customer import and turnkey setup'], ['ИИ-консультант на витрине — обсуждаем отдельно', 'An AI assistant on the storefront — discussed separately']]},
+  };
+  const tierCard = ({key, monthlyRubReference}, index) => {
+    const copy = tierCopy[key], amount = monthlyRubReference == null ? null : Number(monthlyRubReference).toLocaleString('ru-RU');
+    return `<article class="nx-cf-price-card${index === 0 ? ' is-main' : ''}"><p class="nx-cf-tag">${tr(...copy.tag)}</p><h3>${tr(...copy.name)}</h3>`
+      + (amount ? `<strong>${tr(`около ${amount} ₽`, `about ${amount} RUB`)}<small>${tr('в месяц', 'per month')}</small></strong>` : `<strong class="is-text">${tr('по договорённости', 'by agreement')}</strong>`)
+      + `<ul>${copy.items.map(([ru, en]) => `<li>${glyph('check')}${tr(ru, en)}</li>`).join('')}</ul>`
+      + `<a class="nx-button ${index === 0 ? 'nx-button-primary' : 'nx-button-quiet'}" href="${contact}" target="_blank" rel="noopener noreferrer">${tr(amount ? 'Оставить заявку' : 'Обсудить', amount ? 'Request a connection' : 'Discuss')}${glyph('arrow')}</a></article>`;
+  };
+  const pricing = `<section class="nx-cf-pricing shell" id="pricing"><div class="nx-cf-head"><h2>${tr('Три тарифа.', 'Three plans.')}<br><em>${tr('Начните с базового.', 'Start with Basic.')}</em></h2><p>${tr('Подключение — по заявке, пробный период на старте. Тариф можно сменить в любой момент через поддержку: данные остаются на месте.', 'Connection on request, with a trial period at the start. You can switch plans at any time through support: your data stays in place.')}</p></div>
+<div class="nx-cf-price-grid">${plan.tiers.map(tierCard).join('')}</div>
+<p class="nx-cf-small nx-cf-price-note">${tr('Цены — ориентир: точная стоимость фиксируется при подключении. Онлайн-оплата подписки пока не подключена.', 'Prices are a guide: the exact price is agreed when you connect. Online subscription payment is not available yet.')}</p></section>`;
 
   const questions = [
     ['Нужен ли свой сайт?', 'Do I need my own website?', 'Нет. Витрина получает свою ссылку — её можно отправлять клиентам и ставить в профили соцсетей.', 'No. The storefront has its own link to share with customers and add to social profiles.'],
     ['Как я узнаю о новой заявке?', 'How will I know about a new request?', 'Заявка появляется в кабинете с отметкой «Нужно связаться». Автоматические уведомления пока не подключены, поэтому клиенту вы пишете или звоните сами.', 'The request appears in your workspace marked “Get in touch”. Automatic notifications are not connected yet, so you contact the customer yourself.'],
     ['Принимает ли витрина оплату?', 'Does the storefront take payments?', 'Нет. Заявка не списывает деньги: стоимость и предоплату вы согласуете с клиентом напрямую.', 'No. A request never charges money: you agree the price and deposit with the customer directly.'],
-    ['Можно ли работать командой?', 'Can a team use it?', 'Да. Используются роли Nexus: владелец и администратор настраивают витрину, менеджер ведёт заказы, наблюдатель только смотрит.', 'Yes. It uses Nexus roles: owners and admins set up the storefront, managers handle orders, viewers can only look.'],
+    ['Можно ли работать командой?', 'Can a team use it?', 'Да, на «Расширенном» — до 3 человек, на «Индивидуальном» — до 20. Используются роли Nexus: владелец и администратор настраивают витрину, менеджер ведёт заказы, наблюдатель только смотрит. На «Базовом» доступ у одного человека.', 'Yes: up to 3 people on Extended and up to 20 on Custom. It uses Nexus roles: owners and admins set up the storefront, managers handle orders, viewers can only look. Basic gives access to one person.'],
   ];
   const faq = `<section class="nx-cf-faq shell"><h2>${tr('Частые вопросы.', 'Questions.')}</h2><div>${questions.map(([q, qe, a, ae]) => `<details><summary>${tr(q, qe)}<span aria-hidden="true">+</span></summary><p>${tr(a, ae)}</p></details>`).join('')}</div></section>`;
 
