@@ -15,7 +15,9 @@ const VIEW_SECTION = { subscription:'service', support:'service' };
 const ROLE_LABELS = { owner:'Владелец', admin:'Администратор', manager:'Менеджер', viewer:'Наблюдатель', vertux_setup:'Настройка Vertux' };
 // Views that show orders, customers or billing; Vertux setup mode never opens them.
 const PRIVATE_VIEWS = new Set(['orders','waitlist','subscription','support','customers']);
-const DEFAULT_PREFS = { theme:'confectionery', accent:null, order:[...SECTIONS], hidden:[], pinned:[], compact:false,
+const LIGHT_DEFAULT = Object.freeze({ style:'off', color:null, intensity:30 });
+const HEX = /^#[0-9A-F]{6}$/iu;
+const DEFAULT_PREFS = { theme:'confectionery', accent:null, background:null, cardLight:{ ...LIGHT_DEFAULT }, wallpaper:null, order:[...SECTIONS], hidden:[], pinned:[], compact:false,
   shortcuts:{ orders:'Alt+1', calendar:'Alt+2', waitlist:'Alt+3', catalog:'Alt+4', storefront:'Alt+5', customers:'', subscription:'', support:'', settings:'Alt+0', profile:'' } };
 const THEME_SURFACE = { confectionery:'#FFF8F1', chocolate:'#1E1510', nexus:'#131318' };
 const SHOP_SURFACE = { cream:'#FFF8F1', white:'#FFFFFF', blush:'#FFF4F3', chocolate:'#21150F' };
@@ -101,17 +103,39 @@ function paint(element, tokens) {
 
 // ---------- personal look, menu and shortcuts ----------
 function remember(key, value) { try { localStorage.setItem(key, value); } catch { /* the look is reapplied from the account */ } }
+// Card lighting and a background photo dimmed by the page colour, as in Invest.
+function paintLook(element, { background, cardLight, wallpaper }, { bgName, prefix }) {
+  const light = cardLight || LIGHT_DEFAULT, strength = Math.max(0, Math.min(100, Number(light.intensity ?? 30)));
+  if (background) element.style.setProperty(bgName, background); else element.style.removeProperty(bgName);
+  if (['diffuse','full','corner'].includes(light.style)) element.dataset.cardLight = light.style; else delete element.dataset.cardLight;
+  element.style.setProperty(`--${prefix}-light`, light.color || 'var(--accent)');
+  element.style.setProperty(`--${prefix}-light-strength`, `${Math.round(strength * 0.4)}%`);
+  element.style.setProperty(`--${prefix}-light-soft`, `${Math.round(strength * 0.14)}%`);
+  if (wallpaper?.url) {
+    element.dataset.wallpaper = '';
+    element.style.setProperty(`--${prefix}-wallpaper`, `url("${wallpaper.url}")`);
+    element.style.setProperty(`--${prefix}-wallpaper-shade`, `${wallpaper.shade}%`);
+  } else { delete element.dataset.wallpaper; element.style.removeProperty(`--${prefix}-wallpaper`); }
+}
 function applyLook() {
-  const { theme, accent } = state.prefs, root = document.documentElement;
+  const { theme, accent, background, cardLight, wallpaper } = state.prefs, root = document.documentElement;
   root.dataset.cabinetTheme = theme;
   paint(root, accent ? accentTokens(accent, THEME_SURFACE[theme]) : null);
-  $('meta[name="theme-color"]')?.setAttribute('content', THEME_SURFACE[theme]);
-  remember('cx-cabinet-look', JSON.stringify({ theme, accent }));
+  paintLook(root, { background, cardLight, wallpaper:wallpaper && { url:wallpaper.data, shade:wallpaper.shade } }, { bgName:'--bg', prefix:'cx' });
+  $('meta[name="theme-color"]')?.setAttribute('content', background || THEME_SURFACE[theme]);
+  // The photo stays in the account settings only: it is too large to keep per device.
+  remember('cx-cabinet-look', JSON.stringify({ theme, accent, background, cardLight }));
 }
 function restoreLook() {
   try {
     const saved = JSON.parse(localStorage.getItem('cx-cabinet-look') || 'null');
-    if (saved && THEME_SURFACE[saved.theme]) { state.prefs.theme = saved.theme; state.prefs.accent = /^#[0-9A-F]{6}$/iu.test(saved.accent || '') ? saved.accent : null; applyLook(); }
+    if (saved && THEME_SURFACE[saved.theme]) {
+      state.prefs.theme = saved.theme; state.prefs.accent = HEX.test(saved.accent || '') ? saved.accent : null;
+      state.prefs.background = HEX.test(saved.background || '') ? saved.background : null;
+      if (['diffuse','full','corner','off'].includes(saved.cardLight?.style)) state.prefs.cardLight = { style:saved.cardLight.style,
+        color:HEX.test(saved.cardLight.color || '') ? saved.cardLight.color : null, intensity:Number.isInteger(saved.cardLight.intensity) ? saved.cardLight.intensity : 30 };
+      applyLook();
+    }
   } catch { /* first visit on this device */ }
 }
 
@@ -764,8 +788,77 @@ function renderAppearance() {
   const themes = state.context.options.cabinetThemes;
   $('#cxCabinetThemes').replaceChildren(...Object.entries(themes).map(([key, theme]) => themeCard({ label:theme.label, note:theme.note,
     checked:state.prefs.theme === key, preview:`cabinet-${key}`, onSelect:() => updatePrefs(prefs => { prefs.theme = key; }, { immediate:true }) })));
-  $('#cxCabinetAccent').value = state.prefs.accent || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim().slice(0, 7) || '#E8792B';
-  $('#cxCabinetAccentReset').disabled = !state.prefs.accent;
+  const computed = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim().slice(0, 7);
+  $('#cxCabinetAccent').value = state.prefs.accent || computed('--accent') || '#E8792B';
+  $('#cxCabinetBackground').value = state.prefs.background || THEME_SURFACE[state.prefs.theme] || '#FFF8F1';
+  $('#cxCabinetAccentReset').disabled = !state.prefs.accent && !state.prefs.background;
+  renderLookControls('cabinet', { cardLight:state.prefs.cardLight, hasWallpaper:Boolean(state.prefs.wallpaper), shade:state.prefs.wallpaper?.shade ?? 65,
+    accent:state.prefs.accent || computed('--accent') || '#E8792B' });
+}
+
+// The same lighting and background controls for the cabinet and the storefront.
+function renderLookControls(scope, { cardLight, hasWallpaper, shade, accent, editable = true }) {
+  const [lights, wallpaper] = $$(`[data-look="${scope}"]`), light = cardLight || LIGHT_DEFAULT;
+  lights.querySelector('[data-light-options]').replaceChildren(...Object.entries(state.context.options.cardLights || {}).map(([key, label]) =>
+    h('button', { type:'button', class:'cx-light-option', 'aria-pressed':String(light.style === key), disabled:!editable, dataset:{ lightStyle:key } },
+      h('span', { class:'cx-light-sample', dataset:{ lightSample:key }, 'aria-hidden':'true' }), h('span', {}, label))));
+  const color = lights.querySelector('[data-light-color]'), intensity = lights.querySelector('[data-light-intensity]');
+  color.value = light.color || accent; intensity.value = String(light.intensity ?? 30);
+  lights.querySelector('[data-light-output]').value = `${light.intensity ?? 30}%`;
+  color.disabled = intensity.disabled = !editable || light.style === 'off';
+  lights.querySelector('[data-light-reset]').disabled = !editable || (!light.color && (light.intensity ?? 30) === 30);
+  const shadeInput = wallpaper.querySelector('[data-wallpaper-shade]');
+  shadeInput.value = String(shade); wallpaper.querySelector('[data-wallpaper-output]').value = `${shade}%`;
+  shadeInput.disabled = !editable || !hasWallpaper;
+  wallpaper.querySelector('[data-wallpaper-file]').disabled = !editable;
+  wallpaper.querySelector('[data-wallpaper-remove]').hidden = !hasWallpaper;
+}
+function bindLookControls(scope, { light, setLight, shade, setShade, upload, remove }) {
+  const [lights, wallpaper] = $$(`[data-look="${scope}"]`);
+  lights.addEventListener('click', event => {
+    const option = event.target.closest('[data-light-style]');
+    if (option) setLight({ ...light(), style:option.dataset.lightStyle }, true);
+    if (event.target.closest('[data-light-reset]')) setLight({ ...light(), color:null, intensity:30 }, true);
+  });
+  // Dragging previews at once; the value is kept when the control is released.
+  lights.querySelector('[data-light-color]').addEventListener('input', event => setLight({ ...light(), color:event.currentTarget.value.toUpperCase() }, false));
+  lights.querySelector('[data-light-color]').addEventListener('change', event => setLight({ ...light(), color:event.currentTarget.value.toUpperCase() }, true));
+  lights.querySelector('[data-light-intensity]').addEventListener('input', event => {
+    lights.querySelector('[data-light-output]').value = `${event.currentTarget.value}%`; setLight({ ...light(), intensity:Number(event.currentTarget.value) }, false);
+  });
+  lights.querySelector('[data-light-intensity]').addEventListener('change', event => setLight({ ...light(), intensity:Number(event.currentTarget.value) }, true));
+  wallpaper.querySelector('[data-wallpaper-shade]').addEventListener('input', event => {
+    wallpaper.querySelector('[data-wallpaper-output]').value = `${event.currentTarget.value}%`; setShade(Number(event.currentTarget.value), false);
+  });
+  wallpaper.querySelector('[data-wallpaper-shade]').addEventListener('change', event => setShade(Number(event.currentTarget.value), true));
+  wallpaper.querySelector('[data-wallpaper-remove]').addEventListener('click', () => { remove(); wallpaper.querySelector('[data-wallpaper-status]').textContent = 'Фон убран.'; });
+  wallpaper.querySelector('[data-wallpaper-file]').addEventListener('change', async event => {
+    const input = event.currentTarget, file = input.files?.[0], status = wallpaper.querySelector('[data-wallpaper-status]');
+    input.value = '';
+    if (!file) return;
+    status.textContent = 'Подготавливаем фон…'; input.disabled = true;
+    try { status.textContent = await upload(file); }
+    catch (error) { status.textContent = error.message; }
+    finally { input.disabled = false; }
+  });
+}
+// A cabinet background lives in the account settings, so it is shrunk to a small JPEG.
+async function wallpaperData(file) {
+  if (!/^image\/(jpeg|png|webp)$/u.test(file.type)) throw new Error('Выберите изображение PNG, JPEG или WebP.');
+  if (file.size > 25 * 1024 * 1024) throw new Error('Изображение больше 25 МБ. Выберите другое.');
+  const bitmap = await createImageBitmap(file).catch(() => { throw new Error('Не удалось прочитать изображение. Попробуйте другое.'); });
+  try {
+    const limit = state.context.options.wallpaperLimit || 56000;
+    for (const bound of [1280, 1024, 800, 640, 480]) {
+      const scale = Math.min(1, bound / Math.max(bitmap.width, bitmap.height));
+      const canvas = h('canvas', { width:String(Math.max(1, Math.round(bitmap.width * scale))), height:String(Math.max(1, Math.round(bitmap.height * scale))) });
+      const context = canvas.getContext('2d');
+      context.fillStyle = THEME_SURFACE[state.prefs.theme] || '#FFF8F1'; context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      for (const quality of [0.72, 0.58, 0.45, 0.34]) { const data = canvas.toDataURL('image/jpeg', quality); if (data.length <= limit) return data; }
+    }
+    throw new Error('Не удалось уменьшить изображение. Выберите картинку попроще.');
+  } finally { bitmap.close?.(); }
 }
 
 function shortcutField(action) {
@@ -845,21 +938,28 @@ function renderMenuSettings() {
 
 function shopDraft() {
   const storefront = state.context.storefront;
-  state.shopDraft ??= { theme:storefront.theme || 'cream', accentColor:storefront.accentColor || '#E8792B' };
+  state.shopDraft ??= { theme:storefront.theme || 'cream', accentColor:storefront.accentColor || '#E8792B', backgroundColor:storefront.backgroundColor || null,
+    cardLight:{ ...LIGHT_DEFAULT, ...(storefront.cardLight || {}) }, backgroundMediaId:storefront.backgroundMediaId || null, backgroundShade:storefront.backgroundShade ?? 65 };
   return state.shopDraft;
 }
+const shopLook = value => JSON.stringify([value.theme || 'cream', (value.accentColor || '#E8792B').toUpperCase(), value.backgroundColor || null,
+  { ...LIGHT_DEFAULT, ...(value.cardLight || {}) }, value.backgroundMediaId || null, value.backgroundShade ?? 65]);
 function renderShopTheme() {
   const draft = shopDraft(), themes = state.context.options.storefrontThemes, saved = state.context.storefront;
   $('#cxShopThemes').replaceChildren(...Object.entries(themes).map(([key, theme]) => themeCard({ label:theme.label, note:theme.note,
     checked:draft.theme === key, preview:`shop-${key}`, onSelect:() => { draft.theme = key; renderShopTheme(); } })));
   $('#cxShopAccent').value = draft.accentColor;
+  $('#cxShopBackground').value = draft.backgroundColor || SHOP_SURFACE[draft.theme];
   const preview = $('#cxShopPreview');
   preview.dataset.shopTheme = draft.theme;
   paint(preview, accentTokens(draft.accentColor, SHOP_SURFACE[draft.theme]));
+  paintLook(preview, { background:draft.backgroundColor, cardLight:draft.cardLight,
+    wallpaper:draft.backgroundMediaId && { url:`${state.context.publicPath}/media/${draft.backgroundMediaId}`, shade:draft.backgroundShade } }, { bgName:'--p-bg', prefix:'p' });
+  renderLookControls('shop', { cardLight:draft.cardLight, hasWallpaper:Boolean(draft.backgroundMediaId), shade:draft.backgroundShade, accent:draft.accentColor,
+    editable:can('manageStorefront') });
   $$('.cx-theme-preview[class*="shop-"]').forEach(element => paint(element, accentTokens(draft.accentColor, SHOP_SURFACE[draft.theme])));
-  const changed = draft.theme !== (saved.theme || 'cream') || draft.accentColor.toUpperCase() !== (saved.accentColor || '#E8792B').toUpperCase();
-  $('#cxShopThemeSave').disabled = !changed;
-  $('#cxShopAccentReset').disabled = draft.accentColor.toUpperCase() === '#E8792B';
+  $('#cxShopThemeSave').disabled = shopLook(draft) === shopLook(saved);
+  $('#cxShopAccentReset').disabled = draft.accentColor.toUpperCase() === '#E8792B' && !draft.backgroundColor;
 }
 
 function copyButton(value) {
@@ -1156,16 +1256,44 @@ function bindEvents() {
   $$('#cxSettingsNav [data-settings-page]').forEach(button => button.addEventListener('click', () => openSettingsPage(button.dataset.settingsPage)));
   $('#cxCabinetAccent').addEventListener('input', event => { state.prefs.accent = event.currentTarget.value.toUpperCase(); applyLook(); });
   $('#cxCabinetAccent').addEventListener('change', event => updatePrefs(prefs => { prefs.accent = event.currentTarget.value.toUpperCase(); }, { immediate:true }));
-  $('#cxCabinetAccentReset').addEventListener('click', () => updatePrefs(prefs => { prefs.accent = null; }, { immediate:true }));
+  $('#cxCabinetAccentReset').addEventListener('click', () => updatePrefs(prefs => { prefs.accent = null; prefs.background = null; }, { immediate:true }));
+  $('#cxCabinetBackground').addEventListener('input', event => { state.prefs.background = event.currentTarget.value.toUpperCase(); applyLook(); });
+  $('#cxCabinetBackground').addEventListener('change', event => updatePrefs(prefs => { prefs.background = event.currentTarget.value.toUpperCase(); }, { immediate:true }));
+  bindLookControls('cabinet', {
+    light:() => ({ ...LIGHT_DEFAULT, ...(state.prefs.cardLight || {}) }),
+    setLight:(value, save) => { if (save) updatePrefs(prefs => { prefs.cardLight = value; }, { immediate:true }); else { state.prefs.cardLight = value; applyLook(); } },
+    setShade:(value, save) => {
+      if (!state.prefs.wallpaper) return;
+      if (save) updatePrefs(prefs => { prefs.wallpaper = { ...prefs.wallpaper, shade:value }; }, { immediate:true }); else { state.prefs.wallpaper = { ...state.prefs.wallpaper, shade:value }; applyLook(); }
+    },
+    upload:async file => { const data = await wallpaperData(file); updatePrefs(prefs => { prefs.wallpaper = { data, shade:prefs.wallpaper?.shade ?? 65 }; }, { immediate:true }); return 'Фон применён и сохранён в вашем аккаунте.'; },
+    remove:() => updatePrefs(prefs => { prefs.wallpaper = null; }, { immediate:true }),
+  });
+  $('#cxLookReset').addEventListener('click', () => {
+    if (!confirm('Вернуть стандартное оформление кабинета? Тема, цвета, подсветка и свой фон сбросятся.')) return;
+    updatePrefs(prefs => { Object.assign(prefs, { theme:DEFAULT_PREFS.theme, accent:null, background:null, cardLight:{ ...LIGHT_DEFAULT }, wallpaper:null }); }, { immediate:true });
+  });
   $('#cxCompact').addEventListener('change', event => updatePrefs(prefs => { prefs.compact = event.currentTarget.checked; }, { immediate:true }));
   $('#cxMenuReset').addEventListener('click', () => updatePrefs(prefs => {
     Object.assign(prefs, { order:[...DEFAULT_PREFS.order], hidden:[], pinned:[], compact:false, shortcuts:{ ...DEFAULT_PREFS.shortcuts } });
   }, { immediate:true }));
   $('#cxShopAccent').addEventListener('input', event => { shopDraft().accentColor = event.currentTarget.value.toUpperCase(); renderShopTheme(); });
-  $('#cxShopAccentReset').addEventListener('click', () => { shopDraft().accentColor = '#E8792B'; renderShopTheme(); });
+  $('#cxShopAccentReset').addEventListener('click', () => { Object.assign(shopDraft(), { accentColor:'#E8792B', backgroundColor:null }); renderShopTheme(); });
+  $('#cxShopBackground').addEventListener('input', event => { shopDraft().backgroundColor = event.currentTarget.value.toUpperCase(); renderShopTheme(); });
+  bindLookControls('shop', {
+    light:() => shopDraft().cardLight,
+    setLight:value => { shopDraft().cardLight = value; renderShopTheme(); },
+    setShade:value => { shopDraft().backgroundShade = value; renderShopTheme(); },
+    upload:async file => { const media = await api('media', { method:'POST', body:{ data:await compressImage(file) } }); shopDraft().backgroundMediaId = media.id; renderShopTheme(); return 'Фото загружено. Сохраните оформление, чтобы клиенты его увидели.'; },
+    remove:() => { shopDraft().backgroundMediaId = null; renderShopTheme(); },
+  });
   $('#cxShopThemeSave').addEventListener('click', async event => {
     const button = event.currentTarget, draft = shopDraft(); busy(button, true);
-    try { await saveStorefront({ theme:draft.theme, accentColor:draft.accentColor }, 'Оформление витрины сохранено — клиенты увидят его сразу'); state.shopDraft = null; renderShopTheme(); }
+    try {
+      await saveStorefront({ theme:draft.theme, accentColor:draft.accentColor, backgroundColor:draft.backgroundColor, cardLight:draft.cardLight,
+        backgroundMediaId:draft.backgroundMediaId, backgroundShade:draft.backgroundShade }, 'Оформление витрины сохранено — клиенты увидят его сразу');
+      state.shopDraft = null; renderShopTheme();
+    }
     catch (error) { toast(error.message, true); }
     finally { busy(button, false); renderShopTheme(); }
   });

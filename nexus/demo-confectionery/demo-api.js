@@ -1,7 +1,7 @@
 // Public website demo of the confectionery Workspace. The real storefront and
 // cabinet run unchanged; this module answers their /api/ calls from a fictional
 // shop kept in sessionStorage of this browser tab. Nothing leaves the browser.
-import * as model from './model.mjs?v=20261103q5z1';
+import * as model from './model.mjs?v=202611046a5c';
 
 const KEY = 'nexus-confectionery-demo-v2';
 const PRODUCT_ID = '00000000-0000-4000-8000-00000000c0de';
@@ -187,7 +187,7 @@ function cabinetRoute(section, target, action, method, body, query) {
       storefront: state.storefront, calendar: state.calendar, ordering: ordering(), loyalty: { ...model.defaultLoyalty(), revision: 0 }, accountsAvailable: false,
       onboarding: onboarding(), today: today(),
       options: { formats: model.FORMATS, contactMethods: model.CONTACT_METHODS, statuses: model.ORDER_STATUS_LABELS, timeZones: model.TIME_ZONES,
-        storefrontThemes: model.STOREFRONT_THEMES, cabinetThemes: model.CABINET_THEMES, loyaltyBases: model.LOYALTY_BASES, loyaltyScopes: model.LOYALTY_SCOPES } };
+        storefrontThemes: model.STOREFRONT_THEMES, cabinetThemes: model.CABINET_THEMES, cardLights: model.CARD_LIGHTS, wallpaperLimit: model.WALLPAPER_LIMIT, loyaltyBases: model.LOYALTY_BASES, loyaltyScopes: model.LOYALTY_SCOPES } };
   }
   if (section === 'ordering' && method === 'PUT') {
     const value = guard(() => model.normalizeOrdering(body));

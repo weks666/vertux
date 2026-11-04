@@ -26,6 +26,11 @@ export const CABINET_THEMES = Object.freeze({
   confectionery:{label:'Кондитерская', note:'Светлая, крем и оранжевый'}, chocolate:{label:'Шоколад', note:'Тёмная тёплая'},
   nexus:{label:'Nexus', note:'Тёмная фиолетовая'},
 });
+// Appearance as in Invest: card lighting and a custom background on top of the theme.
+export const CARD_LIGHTS = Object.freeze({diffuse:'Рассеянный свет', full:'Вся карточка', corner:'Только угол', off:'Без подсветки'});
+// A cabinet background is kept in the user's settings as a small JPEG data URL,
+// so one settings request stays under the 64 KB request limit in production.
+export const WALLPAPER_LIMIT = 56_000;
 export const CABINET_SECTIONS = Object.freeze(['orders','calendar','waitlist','catalog','storefront','customers']);
 export const CABINET_ACTIONS = Object.freeze([...CABINET_SECTIONS,'subscription','support','settings','profile']);
 // Browsers keep Ctrl+1…9 for their tabs, so the defaults use Alt. «Покупатели»
@@ -108,8 +113,37 @@ function mediaList(value, max) {
   return [...new Set(value)];
 }
 
+const HEX_COLOR = /^#[0-9A-F]{6}$/u;
+const WALLPAPER = /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/u;
+function hexColor(value, name) {
+  if (value === null || value === undefined || value === '') return null;
+  const color = text(value, 7, {name}).toUpperCase();
+  if (!HEX_COLOR.test(color)) throw invalid(`${name}: формат #RRGGBB.`);
+  return color;
+}
+function stepped(value, {name, min, max, fallback}) {
+  const result = integer(value ?? fallback, {name, min, max});
+  if (result % 5) throw invalid(`${name}: шаг 5%.`);
+  return result;
+}
+export const defaultCardLight = () => ({style:'off', color:null, intensity:30});
+export function normalizeCardLight(value) {
+  if (value === undefined || value === null) return defaultCardLight();
+  if (typeof value !== 'object' || Array.isArray(value)) throw invalid('Подсветка карточек не распознана.');
+  const style = value.style ?? 'off';
+  if (!Object.hasOwn(CARD_LIGHTS, style)) throw invalid('Выберите стиль подсветки карточек.');
+  return {style, color:hexColor(value.color, 'Цвет подсветки'), intensity:stepped(value.intensity, {name:'Интенсивность подсветки', min:0, max:100, fallback:30})};
+}
+function normalizeWallpaper(value) {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== 'object' || typeof value.data !== 'string') throw invalid('Фоновое изображение не распознано.');
+  if (value.data.length > WALLPAPER_LIMIT || !WALLPAPER.test(value.data)) throw invalid('Фон: выберите изображение PNG, JPEG или WebP ещё раз.');
+  return {data:value.data, shade:stepped(value.shade, {name:'Затемнение фона', min:20, max:90, fallback:65})};
+}
+
 export function defaultStorefront(name = '') {
   return {name, tagline:'', description:'', format:'custom', theme:'cream', accentColor:DEFAULT_ACCENT, logoMediaId:null, coverMediaIds:[],
+    backgroundColor:null, cardLight:defaultCardLight(), backgroundMediaId:null, backgroundShade:65,
     contacts:{phone:'', telegram:'', whatsapp:'', vk:'', email:'', instagram:'', address:'', hours:''},
     orderNote:'', privacyUrl:'', published:false, acceptingOrders:true};
 }
@@ -124,12 +158,15 @@ export function normalizeStorefront(body) {
   const privacyUrl = text(body.privacyUrl, 300, {name:'Ссылка на политику'});
   if (privacyUrl && !/^https:\/\/[^\s<>"']+$/u.test(privacyUrl)) throw invalid('Ссылка на политику должна начинаться с https://');
   const logo = body.logoMediaId ? mediaList([body.logoMediaId], 1)[0] : null;
+  const wallpaper = body.backgroundMediaId ? mediaList([body.backgroundMediaId], 1)[0] : null;
   return {
     name: text(body.name, 80, {name:'Название', required:true}),
     tagline: text(body.tagline, 140, {name:'Короткое описание'}),
     description: text(body.description, 1500, {name:'Описание', multiline:true}),
     format: body.format || 'custom', theme: body.theme || 'cream', accentColor: accent.toUpperCase(), logoMediaId: logo,
     coverMediaIds: mediaList(body.coverMediaIds, 6),
+    backgroundColor: hexColor(body.backgroundColor, 'Цвет фона витрины'), cardLight: normalizeCardLight(body.cardLight),
+    backgroundMediaId: wallpaper, backgroundShade: stepped(body.backgroundShade, {name:'Затемнение фона', min:20, max:90, fallback:65}),
     contacts: {
       phone: text(contacts.phone, 40, {name:'Телефон'}), telegram: text(contacts.telegram, 64, {name:'Telegram'}),
       whatsapp: text(contacts.whatsapp, 40, {name:'WhatsApp'}), vk: text(contacts.vk, 120, {name:'ВКонтакте'}),
@@ -142,7 +179,8 @@ export function normalizeStorefront(body) {
 }
 
 export function defaultCabinetPreferences() {
-  return {theme:'confectionery', accent:null, order:[...CABINET_SECTIONS], hidden:[], pinned:[], compact:false, shortcuts:{...DEFAULT_SHORTCUTS}};
+  return {theme:'confectionery', accent:null, background:null, cardLight:defaultCardLight(), wallpaper:null,
+    order:[...CABINET_SECTIONS], hidden:[], pinned:[], compact:false, shortcuts:{...DEFAULT_SHORTCUTS}};
 }
 
 export function normalizeCabinetPreferences(body) {
@@ -165,7 +203,8 @@ export function normalizeCabinetPreferences(body) {
     if (used.has(value)) throw invalid(`Сочетание ${value} уже занято другим действием.`);
     used.set(value, action); shortcuts[action] = value;
   }
-  return {theme, accent, order, hidden, pinned, compact:body.compact === true, shortcuts};
+  return {theme, accent, background:hexColor(body.background, 'Фон'), cardLight:normalizeCardLight(body.cardLight), wallpaper:normalizeWallpaper(body.wallpaper),
+    order, hidden, pinned, compact:body.compact === true, shortcuts};
 }
 
 export function hasContact(storefront) {

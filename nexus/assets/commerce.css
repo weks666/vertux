@@ -112,7 +112,7 @@
 .nx-screen-pan-hint { display:none; }
 @media(max-width:680px) { .nx-screen-pan-hint { display:block; flex-basis:100%; opacity:.85; } }
 /* Review refinements: translucent surfaces over the existing Nexus atmosphere. */
-.nx-tier-card { position:relative; background:linear-gradient(145deg,#e6d6ff10,#b99be906 60%); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px); border-color:#dec9ff38; box-shadow:inset 0 1px #ffffff15; }
+.nx-tier-card { position:relative; background:linear-gradient(145deg,#e6d6ff10,#b99be906 60%); border-color:#dec9ff38; box-shadow:inset 0 1px #ffffff15; }
 .nx-tier-card[data-tier-card="standard"] { background:linear-gradient(145deg,#e6d6ff10,#b99be906 60%); border-color:#dec9ff38; }
 .nx-tier-card[data-tier-card="plus"] { background:linear-gradient(145deg,#c094ff29,#b896ec0c 70%); border-color:#d7b3ff72; }
 .nx-tier-title { min-height:64px; }
@@ -134,7 +134,7 @@
 .nx-participants-upgrade { padding-block:20px; border-block:1px solid #d3b4f328; font-size:13px!important; }
 .nx-participants-upgrade strong { display:block; color:#efe7fa; font-size:24px; margin-top:9px; font-variant-numeric:tabular-nums; }
 .nx-participants-upgrade strong > .nx-upgrade-period { display:block; font-size:11px; font-weight:400; color:#c6b9d5; margin-top:4px; }
-.nx-participants-board { margin:0; padding:30px; border:1px solid #dec9ff38; border-radius:16px; background:linear-gradient(130deg,#d8bcff13,#1712265c); backdrop-filter:blur(20px); }
+.nx-participants-board { margin:0; padding:30px; border:1px solid #dec9ff38; border-radius:16px; background:linear-gradient(130deg,#d8bcff13,#1712265c); }
 .nx-participants-board figcaption { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:26px; }
 .nx-participants-board figcaption b { font-size:18px; font-weight:500; }
 .nx-participants-board figcaption small { display:block; color:#bdb2cd; font-size:11px; margin-top:6px; }
@@ -172,7 +172,7 @@
 
 /* Owner review: visible glass, compact legal line, current product screens. */
 .nx-participants-upgrade strong > b { font:inherit; }
-.nx-tier-card,.nx-tier-card[data-tier-card="standard"] { background:linear-gradient(135deg,#f0deff17,#bf9bdf06 68%); backdrop-filter:blur(9px) saturate(135%); -webkit-backdrop-filter:blur(9px) saturate(135%); border-color:#e5d1ff52; box-shadow:inset 0 1px #fff3,inset 0 -1px #ffffff08; }
+.nx-tier-card,.nx-tier-card[data-tier-card="standard"] { background:linear-gradient(135deg,#f0deff17,#bf9bdf06 68%); border-color:#e5d1ff52; box-shadow:inset 0 1px #fff3,inset 0 -1px #ffffff08; }
 .nx-tier-card[data-tier-card="plus"] { background:linear-gradient(135deg,#cfafff2b,#b689de0d 70%); border-color:#dfc5ff88; }
 .nx-tier-comparison .nx-comparison-scroll { border:1px solid #dec9ff38; border-radius:16px; overflow:auto; background:#d9b9ff05; }
 .nx-tier-comparison table { border:0; }
@@ -181,7 +181,7 @@
 .nx-site .footer-bottom .studio-credit { order:0; grid-column:2; justify-self:center; }
 .nx-site .footer-bottom .nx-seller { order:0; grid-column:3; justify-self:end; text-align:right; width:auto; max-width:none; font-size:11px; }
 .nx-current-tour .nx-tour-sticky { grid-template-columns:.48fr 1.52fr; gap:38px; }
-.nx-current-tour .nx-tour-visual { padding:12px; border-radius:16px; background:#c9a9ff0a; backdrop-filter:blur(9px); }
+.nx-current-tour .nx-tour-visual { padding:12px; border-radius:16px; background:#c9a9ff0a; }
 .nx-current-tour .nx-tour-panel { min-height:0; }
 .nx-current-screen { display:block; border-radius:8px; overflow:hidden; }
 .nx-current-caption { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 4px 3px; font-size:11px; color:#c7b8d5; }
@@ -193,8 +193,11 @@
 @media(max-width:520px) { .nx-site .footer-bottom { grid-template-columns:1fr; gap:10px; }.nx-site .footer-bottom > span,.nx-site .footer-bottom .nx-seller,.nx-site .footer-bottom .studio-credit { grid-column:1; grid-row:auto; justify-self:center; text-align:center; }.nx-site .footer-bottom .nx-seller { order:2; }.nx-site .footer-bottom .studio-credit { order:1; } }
 
 /* Reviewed release: the term selector shares the cards' violet glass. */
-.nx-term-controls { background:#d7c3ff0e; border-color:#e3d2ff42; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:inset 0 1px #ffffff20; }
+.nx-term-controls { background:#d7c3ff0e; border-color:#e3d2ff42; box-shadow:inset 0 1px #ffffff20; }
 .nx-term-controls button { background:#e6daff05; color:#e2d8ef; }
 .nx-term-controls button[aria-pressed="true"] { background:linear-gradient(135deg,#e8dbff,#c9b2f2); color:#241934; box-shadow:inset 0 1px #fff9; }
 .nx-term-controls button:hover:not([aria-pressed="true"]) { background:#e7d8ff20; }
 .nx-current-screen { cursor:default; }
+/* Still posters: a picture of the demo keeps its own proportions, no iframe to fit. */
+.nx-app-poster.nx-app-still { height:auto; }
+.nx-app-still img { display:block; width:100%; height:auto; }

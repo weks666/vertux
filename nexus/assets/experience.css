@@ -1,15 +1,18 @@
 /* The public Nexus experience. Clear HTML typography over a moving violet atmosphere. */
 .nx-site { --nx-muted:#c0bacf; --nx-line:#e4d8ff24; background:#100f1b; isolation:isolate; }
 .nx-atmosphere { position:fixed; z-index:-1; inset:0; overflow:hidden; pointer-events:none; background:radial-gradient(ellipse at 78% 14%,#49305c 0,transparent 50%),radial-gradient(ellipse at 10% 75%,#27366a 0,transparent 62%),linear-gradient(145deg,#151322,#151225 50%,#101523); }
-.nx-aurora { position:absolute; border-radius:50%; filter:blur(65px); will-change:transform; }
-.nx-aurora-one { width:70vw; height:65vh; right:-20vw; top:13vh; background:radial-gradient(ellipse,#a376e154,transparent 70%); animation:nx-drift-one 23s ease-in-out infinite alternate; }
-.nx-aurora-two { width:80vw; height:60vh; left:-23vw; bottom:0; background:radial-gradient(ellipse,#6578ed63,transparent 70%); animation:nx-drift-two 27s ease-in-out infinite alternate; }
-.nx-atmosphere > svg { position:absolute; inset:0; width:100%; height:100%; opacity:.3; transform:scale(1.1); animation:nx-ribbon-drift 28s ease-in-out infinite alternate; }
+/* The background stays still: a moving backdrop made every glass panel above it
+   re-blur on each frame, and huge blurred layers dropped pages to a few frames per second.
+   Soft radial gradients give the same glow without a blur filter. */
+.nx-aurora { position:absolute; border-radius:50%; }
+.nx-aurora-one { width:70vw; height:65vh; right:-24vw; top:20vh; background:radial-gradient(ellipse,#a376e14d,#a376e11f 38%,transparent 72%); transform:scale(1.08); }
+.nx-aurora-two { width:80vw; height:60vh; left:-16vw; bottom:-2vh; background:radial-gradient(ellipse,#6578ed59,#6578ed21 38%,transparent 72%); transform:scale(1.1); }
+.nx-atmosphere > svg { position:absolute; inset:0; width:100%; height:100%; opacity:.36; transform:translateY(-2vh) scale(1.16) rotate(2deg); }
 .nx-site .nx-atmosphere path { stroke:url(#nx-ribbon); stroke-width:.7; fill:none; }
 .nx-atmosphere path:nth-child(3n) { stroke-width:1.4; }
 .nx-site .site-header { background:#171322a8; border-color:#dcc5ff30; box-shadow:0 8px 40px #09071130,inset 0 1px #ffffff0b; }
 .nx-site main { position:relative; }
-.nx-site .site-footer { background:#100e1cd6; border-top:1px solid #cab3ef26; backdrop-filter:blur(18px); }
+.nx-site .site-footer { background:#100e1cd6; border-top:1px solid #cab3ef26; }
 .nx-site .nx-button { border-radius:12px; transition:background .2s,color .2s,border-color .2s,box-shadow .2s,transform .2s; }
 .nx-site .nx-button-primary { background:#e8ddff; box-shadow:0 2px 2px #0003,0 0 28px #ae7cf622,inset 0 1px #fff; }
 .nx-site .nx-button-primary:hover { background:#f6f0ff; box-shadow:0 0 38px #b992f644; transform:translateY(-2px); }
@@ -236,9 +239,6 @@
 .nx-enter[data-visible="false"] { opacity:0; transform:translateY(24px); }
 .nx-enter[data-visible="true"] { opacity:1; transform:none; }
 @property --nx-beam-angle { syntax:'<angle>'; initial-value:0deg; inherits:true; }
-@keyframes nx-drift-one { to { transform:translate(-20vw,18vh) scale(1.15); } }
-@keyframes nx-drift-two { to { transform:translate(24vw,-15vh) scale(1.2); } }
-@keyframes nx-ribbon-drift { to { transform:translateY(-5vh) scale(1.25) rotate(4deg); opacity:.48; } }
 @keyframes nx-border-orbit { to { --nx-beam-angle:360deg; } }
 @keyframes nx-invite { 50% { transform:translateY(4px); } }
 @keyframes nx-panel-in { from { opacity:.2; transform:translateY(10px); } to { opacity:1; transform:none; } }
@@ -365,7 +365,7 @@
   .nx-setup-panels p { font-size:14px; margin-top:14px; }
   .nx-setup-section { padding-bottom:55px; }
   .nx-requirements-section h2 { font-size:30px; }
-  .nx-aurora { filter:blur(40px); }
+  .nx-aurora { filter:none; }
 }
 @media(max-width:374px) {
   .nx-pv-portfolio { padding:20px 16px; }

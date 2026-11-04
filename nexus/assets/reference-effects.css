@@ -18,7 +18,6 @@
     linear-gradient(115deg,#62566f 0%,#b4a2cc 12%,#f1e9fb 19%,#837193 25%,#3d3548 36%,#76648c 47%,#c5b1e3 54%,#f3edff 59%,#796788 67%,#3d3548 79%,#9580ac 89%,#d2c1e6 100%) border-box;
   background-size:100% 100%,260% 100%; background-position:0 0,0% 50%;
   box-shadow:0 3px 9px #08051040; position:relative; isolation:isolate; overflow:hidden;
-  animation:nx-metal-reflection 8s linear infinite alternate;
   transition:box-shadow .2s,transform .2s,color .2s;
 }
 .nx-site .nx-button-primary:not(:disabled)::before,.nx-site .nav-cta::before { content:none; }
@@ -32,6 +31,8 @@
 .nx-site .nx-button-primary:hover::after,.nx-site .nav-cta:hover::after { opacity:1; }
 .nx-site .nx-button-primary:active:not(:disabled),.nx-site .nav-cta:active { transform:translateY(1px); }
 @keyframes nx-metal-reflection { to { background-position:0 0,100% 50%; } }
+/* The reflection moves only under the pointer or focus: an endless one kept the blurred header repainting on every page. */
+.nx-site .nx-button-primary:not(:disabled):is(:hover,:focus-visible),.nx-site .nav-cta:is(:hover,:focus-visible) { animation:nx-metal-reflection 2.4s ease-in-out infinite alternate; }
 .nx-site .nx-button-primary[data-motion-visible=false],.nx-site .nav-cta[data-motion-visible=false],html.nx-effects-hidden .nx-button-primary,html.nx-effects-hidden .nav-cta { animation-play-state:paused; }
 @media(prefers-reduced-motion:reduce) { .nx-site .nx-button-primary,.nx-site .nav-cta { animation:none!important; transition:none!important; transform:none!important; } }
 @media(forced-colors:active) { .nx-site .nx-button-primary:not(:disabled),.nx-site .nav-cta { background:ButtonFace; border-color:ButtonText; color:ButtonText; } }
@@ -114,7 +115,7 @@
 .nx-integration-map { position:relative; height:330px; width:100%; margin:0; }
 .nx-integration-wires { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
 .nx-wire-base { fill:none; stroke:#9e85d345; stroke-width:1.2; }
-.nx-wire-light { fill:none; stroke:#a8adff; stroke-width:1.8; stroke-dasharray:12 88; stroke-linecap:round; animation:nx-beam-travel 4s linear infinite; filter:drop-shadow(0 0 4px #9579ff); }
+.nx-wire-light { fill:none; stroke:#a8adff; stroke-width:1.8; stroke-dasharray:12 88; stroke-linecap:round; animation:nx-beam-travel 4s linear infinite; }
 .nx-wire-planned { stroke-dasharray:4 6; opacity:.5; }
 .nx-wire-future { display:none; }
 .nx-integration-hub { position:absolute; z-index:1; left:50%; top:50%; transform:translate(-50%,-50%); border-radius:24px; width:120px; height:120px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:9px; background:linear-gradient(135deg,#382950,#161221); box-shadow:inset 0 1px #e4d1ff30,0 0 55px #a36cf12a; border:1px solid #c6adff64; }

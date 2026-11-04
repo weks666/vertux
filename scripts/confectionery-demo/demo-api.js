@@ -187,7 +187,7 @@ function cabinetRoute(section, target, action, method, body, query) {
       storefront: state.storefront, calendar: state.calendar, ordering: ordering(), loyalty: { ...model.defaultLoyalty(), revision: 0 }, accountsAvailable: false,
       onboarding: onboarding(), today: today(),
       options: { formats: model.FORMATS, contactMethods: model.CONTACT_METHODS, statuses: model.ORDER_STATUS_LABELS, timeZones: model.TIME_ZONES,
-        storefrontThemes: model.STOREFRONT_THEMES, cabinetThemes: model.CABINET_THEMES, loyaltyBases: model.LOYALTY_BASES, loyaltyScopes: model.LOYALTY_SCOPES } };
+        storefrontThemes: model.STOREFRONT_THEMES, cabinetThemes: model.CABINET_THEMES, cardLights: model.CARD_LIGHTS, wallpaperLimit: model.WALLPAPER_LIMIT, loyaltyBases: model.LOYALTY_BASES, loyaltyScopes: model.LOYALTY_SCOPES } };
   }
   if (section === 'ordering' && method === 'PUT') {
     const value = guard(() => model.normalizeOrdering(body));

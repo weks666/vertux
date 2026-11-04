@@ -8,11 +8,11 @@
   <title>Кабинет кондитерской · Vertux Nexus</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./fonts/fonts.css">
-  <link rel="stylesheet" href="./styles.css?v=20261103q5z1">
-  <link rel="stylesheet" href="./cabinet.css?v=20261103q5z1">
-  <script type="module" src="./demo-api.js?v=20261103q5z1"></script>
-  <script type="module" src="./cabinet.js?v=20261103q5z1"></script>
-  <link rel="stylesheet" href="./demo.css?v=20261103q5z1">
+  <link rel="stylesheet" href="./styles.css?v=202611046a5c">
+  <link rel="stylesheet" href="./cabinet.css?v=202611046a5c">
+  <script type="module" src="./demo-api.js?v=202611046a5c"></script>
+  <script type="module" src="./cabinet.js?v=202611046a5c"></script>
+  <link rel="stylesheet" href="./demo.css?v=202611046a5c">
 </head>
 <body class="cx-body">
   <a class="cx-skip" href="#cxMain">К содержанию</a>
@@ -250,8 +250,20 @@
               <p class="cx-hint">Тема видна только вам и сохраняется в вашем аккаунте: одинаково на телефоне и компьютере.</p>
               <div class="cx-theme-grid" id="cxCabinetThemes" role="radiogroup" aria-label="Тема кабинета"></div>
               <div class="panel cx-form cx-settings-card">
-                <div class="cx-inline"><label class="cx-color">Акцент кабинета<input type="color" id="cxCabinetAccent" value="#E8792B"></label><button class="button ghost compact-button" type="button" id="cxCabinetAccentReset">Цвет темы</button></div>
+                <div class="cx-inline"><label class="cx-color">Акцент кабинета<input type="color" id="cxCabinetAccent" value="#E8792B"></label><label class="cx-color">Фон<input type="color" id="cxCabinetBackground" value="#FFF8F1"></label><button class="button ghost compact-button" type="button" id="cxCabinetAccentReset">Исходная палитра</button></div>
               </div>
+              <div class="panel cx-form cx-settings-card" data-look="cabinet">
+                <h3 class="cx-subtitle cx-look-title">Подсветка карточек</h3>
+                <div class="cx-light-options" role="group" aria-label="Стиль подсветки карточек" data-light-options></div>
+                <div class="cx-inline cx-look-controls"><label class="cx-color">Цвет света<input type="color" data-light-color value="#E8792B"></label><label class="cx-range">Интенсивность <output data-light-output>30%</output><input type="range" min="0" max="100" step="5" data-light-intensity aria-label="Интенсивность подсветки карточек"></label><button class="button ghost compact-button" type="button" data-light-reset>Исходный свет</button></div>
+              </div>
+              <div class="panel cx-form cx-settings-card" data-look="cabinet">
+                <h3 class="cx-subtitle cx-look-title">Свой фон</h3>
+                <p class="cx-hint">Изображение хранится в настройках вашего аккаунта и видно только вам. PNG, JPEG или WebP — кабинет сам уменьшит его.</p>
+                <div class="cx-inline cx-look-controls"><label class="button ghost compact-button cx-file">Выбрать изображение<input type="file" accept="image/png,image/jpeg,image/webp" data-wallpaper-file></label><label class="cx-range">Затемнение <output data-wallpaper-output>65%</output><input type="range" min="20" max="90" step="5" data-wallpaper-shade aria-label="Затемнение фонового изображения"></label><button class="text-button" type="button" data-wallpaper-remove>Убрать фон</button></div>
+                <p class="cx-hint" role="status" data-wallpaper-status></p>
+              </div>
+              <div class="cx-actions"><button class="button ghost compact-button" type="button" id="cxLookReset">Сбросить оформление</button></div>
             </section>
             <section class="cx-settings-page" data-settings-panel="menu" aria-labelledby="cxMenuTitle">
               <h2 id="cxMenuTitle">Меню и сочетания клавиш</h2>
@@ -267,11 +279,24 @@
             </section>
             <section class="cx-settings-page" data-settings-panel="shop" aria-labelledby="cxShopThemeTitle">
               <h2 id="cxShopThemeTitle">Витрина для клиентов</h2>
-              <p class="cx-hint">Тема и акцентный цвет страницы, которую видят клиенты. Изменения появятся на сайте после сохранения.</p>
+              <p class="cx-hint">Тема, цвета, подсветка карточек и фон страницы, которую видят клиенты. Изменения появятся на сайте после сохранения.</p>
               <div class="cx-theme-grid" id="cxShopThemes" role="radiogroup" aria-label="Тема витрины"></div>
               <div class="panel cx-form cx-settings-card">
-                <div class="cx-inline"><label class="cx-color">Акцентный цвет витрины<input type="color" id="cxShopAccent" value="#E8792B"></label><button class="button ghost compact-button" type="button" id="cxShopAccentReset">Оранжевый по умолчанию</button></div>
+                <div class="cx-inline"><label class="cx-color">Акцентный цвет витрины<input type="color" id="cxShopAccent" value="#E8792B"></label><label class="cx-color">Фон витрины<input type="color" id="cxShopBackground" value="#FFF8F1"></label><button class="button ghost compact-button" type="button" id="cxShopAccentReset">Исходная палитра</button></div>
                 <div class="cx-shop-preview" id="cxShopPreview" aria-hidden="true"><span class="cx-shop-preview-logo"></span><b></b><i></i><i></i><em>Оставить заявку</em></div>
+              </div>
+              <div class="panel cx-form cx-settings-card" data-look="shop">
+                <h3 class="cx-subtitle cx-look-title">Подсветка карточек</h3>
+                <div class="cx-light-options" role="group" aria-label="Стиль подсветки карточек" data-light-options></div>
+                <div class="cx-inline cx-look-controls"><label class="cx-color">Цвет света<input type="color" data-light-color value="#E8792B"></label><label class="cx-range">Интенсивность <output data-light-output>30%</output><input type="range" min="0" max="100" step="5" data-light-intensity aria-label="Интенсивность подсветки карточек"></label><button class="button ghost compact-button" type="button" data-light-reset>Исходный свет</button></div>
+              </div>
+              <div class="panel cx-form cx-settings-card" data-look="shop">
+                <h3 class="cx-subtitle cx-look-title">Свой фон</h3>
+                <p class="cx-hint">Фото увидят все посетители витрины. Оно ляжет под содержимое и затемнится цветом фона, чтобы текст оставался читаемым.</p>
+                <div class="cx-inline cx-look-controls"><label class="button ghost compact-button cx-file">Выбрать изображение<input type="file" accept="image/png,image/jpeg,image/webp" data-wallpaper-file></label><label class="cx-range">Затемнение <output data-wallpaper-output>65%</output><input type="range" min="20" max="90" step="5" data-wallpaper-shade aria-label="Затемнение фонового изображения"></label><button class="text-button" type="button" data-wallpaper-remove>Убрать фон</button></div>
+                <p class="cx-hint" role="status" data-wallpaper-status></p>
+              </div>
+              <div class="panel cx-form cx-settings-card">
                 <div class="cx-actions"><button class="button primary" type="button" id="cxShopThemeSave">Сохранить оформление витрины</button><a class="text-button" id="cxShopThemeOpen" href="/" target="_blank" rel="noopener">Открыть витрину</a></div>
               </div>
             </section>

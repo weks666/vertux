@@ -68,6 +68,22 @@ function applyAccent(hex) {
   document.documentElement.style.setProperty('--sf-on-accent', luminance > 0.36 ? '#2A1A0E' : '#FFFFFF');
 }
 
+// Background colour, card lighting and a background photo, as in Invest's appearance settings.
+function applyLook(shop) {
+  const root = document.documentElement, light = shop.cardLight || {};
+  if (/^#[0-9a-f]{6}$/iu.test(shop.backgroundColor || '')) root.style.setProperty('--sf-bg', shop.backgroundColor); else root.style.removeProperty('--sf-bg');
+  if (['diffuse','full','corner'].includes(light.style)) root.dataset.cardLight = light.style; else delete root.dataset.cardLight;
+  const strength = Math.max(0, Math.min(100, Number(light.intensity ?? 30)));
+  root.style.setProperty('--sf-light', /^#[0-9a-f]{6}$/iu.test(light.color || '') ? light.color : 'var(--sf-accent)');
+  root.style.setProperty('--sf-light-strength', `${Math.round(strength * 0.4)}%`);
+  root.style.setProperty('--sf-light-soft', `${Math.round(strength * 0.14)}%`);
+  if (/^[a-f0-9]{32}$/u.test(shop.backgroundMediaId || '')) {
+    root.dataset.wallpaper = '';
+    root.style.setProperty('--sf-wallpaper', `url("${media(shop.backgroundMediaId)}")`);
+    root.style.setProperty('--sf-wallpaper-shade', `${Math.max(20, Math.min(90, Number(shop.backgroundShade ?? 65)))}%`);
+  } else { delete root.dataset.wallpaper; root.style.removeProperty('--sf-wallpaper'); }
+}
+
 // Estimate of one line: size price or the base price, plus paid options, times quantity.
 function lineEstimate(item, line) {
   const pick = (list, label) => list.find(option => option.label === label);
@@ -106,7 +122,7 @@ const QUICK_CONTACTS = [['telegram','Telegram'],['whatsapp','WhatsApp'],['instag
 function renderShop() {
   const { shop, catalog } = state.shop;
   document.title = shop.name;
-  applyTheme(shop.theme); applyAccent(shop.accentColor);
+  applyTheme(shop.theme); applyAccent(shop.accentColor); applyLook(shop);
   $('#sfName').textContent = shop.name; $('#sfTagline').textContent = shop.tagline; $('#sfTagline').hidden = !shop.tagline;
   $('#sfLogo').replaceChildren(shop.logoMediaId ? h('img', { src:media(shop.logoMediaId), alt:'' }) : shop.name.slice(0, 1));
   $('#sfQuick').replaceChildren(...QUICK_CONTACTS.map(([key, label]) => [label, contactHref(key, shop.contacts?.[key] || '')]).filter(([, href]) => href).slice(0, 2)
@@ -167,19 +183,46 @@ function renderCatalog(catalog) {
     host.replaceChildren(addCard || h('div', { class:'sf-empty' }, h('h3', {}, 'Каталог скоро появится'), h('p', {}, 'Кондитерская ещё добавляет изделия. Пока можно связаться с ней напрямую — контакты ниже.')));
     return;
   }
-  const cta = !(state.shop.accepting || demoOnly()) ? 'Подробнее' : cartOn() ? 'Выбрать' : 'Выбрать дату';
-  host.replaceChildren(...catalog.map(item => {
+  const accepting = state.shop.accepting || demoOnly();
+  const cta = !accepting ? 'Подробнее' : cartOn() ? 'Выбрать' : 'Выбрать дату';
+  // «Добавить» on the photo only with the owner's cart; a tap on the card opens the item as before.
+  const quickAdd = accepting && cartOn() && !(editor.on && editor.canCatalog);
+  host.replaceChildren(...catalog.map((item, index) => {
     const lead = Math.max(item.leadDays || 0, state.shop.calendar.leadDays || 0);
-    return h('article', { class:'sf-card', 'data-id':item.id },
+    const card = h('article', { class:'sf-card', 'data-id':item.id },
       h('button', { type:'button', class:'sf-card-open', onclick:() => openCard(item), 'aria-label':`${item.title}, ${priceText(item)} — ${editor.on && editor.canCatalog ? 'изменить' : 'подробнее'}` },
-        h('span', { class:'sf-card-photo' }, item.mediaIds[0] ? h('img', { src:media(item.mediaIds[0]), alt:'', loading:'lazy', draggable:'false' }) : h('span', { class:'sf-card-placeholder', 'aria-hidden':'true' }, item.title.slice(0, 1))),
-        h('span', { class:'sf-card-body' }, h('strong', {}, item.title), item.summary ? h('span', { class:'sf-card-summary' }, item.summary) : null,
-          h('span', { class:'sf-card-meta' }, h('b', { class:'sf-card-price' }, priceText(item)), lead ? h('span', { class:'sf-chip' }, `за ${lead} ${plural(lead, 'день', 'дня', 'дней')}`) : null),
-          h('span', { class:'sf-card-cta', 'aria-hidden':'true' }, cta))),
+        h('span', { class:'sf-card-photo' }, item.mediaIds[0] ? h('img', { src:media(item.mediaIds[0]), alt:'', loading:'lazy', draggable:'false' }) : h('span', { class:'sf-card-placeholder', 'aria-hidden':'true' }, item.title.slice(0, 1)),
+          lead ? h('span', { class:'sf-card-badge' }, clockIcon(), `${lead} ${plural(lead, 'день', 'дня', 'дней')}`) : null),
+        h('span', { class:'sf-card-body' }, h('b', { class:'sf-card-price' }, priceText(item)), h('strong', {}, item.title),
+          item.summary ? h('span', { class:'sf-card-summary' }, item.summary) : null,
+          h('span', { class:'sf-card-meta' }, lead ? h('span', { class:'sf-card-lead' }, clockIcon(), `Срок от ${lead} ${plural(lead, 'дня', 'дней', 'дней')}`) : h('span'),
+            h('span', { class:'sf-card-cta', 'aria-hidden':'true' }, cta, ' →')))),
+      quickAdd ? h('button', { type:'button', class:'sf-card-add', 'aria-label':`Добавить «${item.title}» в корзину`, onclick:event => quickAddItem(item, event.currentTarget) }, 'Добавить') : null,
       canMove ? h('div', { class:'sf-card-tools' },
         h('button', { type:'button', class:'sf-handle', 'aria-label':`Переместить «${item.title}». Стрелки меняют место`, title:'Перетащите, чтобы поменять порядок', onkeydown:event => moveByKey(event, item.id) }, '⋮⋮'),
         h('button', { type:'button', class:'sf-card-edit', onclick:() => post('edit', { target:'item', id:item.id }) }, 'Изменить')) : null);
+    card.style.setProperty('--sf-card-index', String(Math.min(index, 8)));
+    return card;
   }), ...(addCard ? [addCard] : []));
+}
+function clockIcon() {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'), path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true'); svg.classList.add('sf-clock');
+  path.setAttribute('d', 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4v5l3 2');
+  svg.append(path);
+  return svg;
+}
+// An item with sizes, fillings or decorations needs a choice first, so it opens on its cart form.
+function quickAddItem(item, button) {
+  if (item.sizes.length || item.fillings.length || item.decorations.length) { openItem(item); return; }
+  const same = state.cart.find(entry => entry.itemId === item.id && !entry.size && !entry.filling && !entry.decoration);
+  if (same) same.quantity = Math.min(item.maxQuantity, same.quantity + item.minQuantity);
+  else if (state.cart.length >= 10) { openCart(); return; }
+  else state.cart.push({ key:uuid(), itemId:item.id, size:'', filling:'', decoration:'', quantity:item.minQuantity });
+  saveCart();
+  button.textContent = 'В корзине ✓'; button.classList.add('is-added');
+  $('#sfCartButton').classList.remove('sf-bump'); void $('#sfCartButton').offsetWidth; $('#sfCartButton').classList.add('sf-bump');
+  setTimeout(() => { button.textContent = 'Добавить'; button.classList.remove('is-added'); }, 1600);
 }
 function openCard(item) {
   if (editor.suppressClick) return;

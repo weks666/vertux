@@ -407,3 +407,30 @@
   .cx-buyer-row{grid-template-columns:1fr}.cx-buyer-row .cx-order-contact{border-left:0;border-top:1px solid var(--line)}
   .cx-buyer-open{grid-template-columns:36px minmax(0,1fr)}.cx-buyer-side{grid-column:2;justify-items:start}
 }
+/* Personal appearance as in Invest: card lighting and a background photo dimmed by the page colour. */
+:root[data-wallpaper] body.cx-body{background:linear-gradient(color-mix(in srgb,var(--bg) var(--cx-wallpaper-shade,65%),transparent),color-mix(in srgb,var(--bg) var(--cx-wallpaper-shade,65%),transparent)),var(--cx-wallpaper) center/cover fixed,var(--bg)}
+:root[data-card-light="diffuse"] :is(.cx-body .panel,.cx-order,.cx-item,.cx-wait,.cx-buyer-row,.cx-empty){background-image:radial-gradient(130% 90% at 0 0,color-mix(in srgb,var(--cx-light) var(--cx-light-strength),transparent),transparent 70%)}
+:root[data-card-light="full"] :is(.cx-body .panel,.cx-order,.cx-item,.cx-wait,.cx-buyer-row,.cx-empty){background-image:linear-gradient(155deg,color-mix(in srgb,var(--cx-light) var(--cx-light-strength),transparent),color-mix(in srgb,var(--cx-light) var(--cx-light-soft),transparent))}
+:root[data-card-light="corner"] :is(.cx-body .panel,.cx-order,.cx-item,.cx-wait,.cx-buyer-row,.cx-empty){background-image:radial-gradient(55% 45% at 100% 0,color-mix(in srgb,var(--cx-light) var(--cx-light-strength),transparent),transparent 100%)}
+.cx-light-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.cx-light-option{display:grid;gap:8px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);font:inherit;font-size:12px;font-weight:600;text-align:center;cursor:pointer}
+.cx-light-option:hover{border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.cx-light-option[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 28%,transparent)}
+.cx-light-option:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+.cx-light-option:disabled{opacity:.6;cursor:default}
+.cx-light-sample{height:46px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.cx-light-sample[data-light-sample="diffuse"]{background-image:radial-gradient(130% 90% at 0 0,color-mix(in srgb,var(--accent) 42%,transparent),transparent 72%)}
+.cx-light-sample[data-light-sample="full"]{background-image:linear-gradient(155deg,color-mix(in srgb,var(--accent) 38%,transparent),color-mix(in srgb,var(--accent) 12%,transparent))}
+.cx-light-sample[data-light-sample="corner"]{background-image:radial-gradient(55% 55% at 100% 0,color-mix(in srgb,var(--accent) 50%,transparent),transparent 100%)}
+/* Phones hide menu subtitles; the appearance cards keep their titles. */
+.cx-subtitle.cx-look-title{display:block!important}
+.cx-look-controls{justify-content:flex-start;gap:14px 22px}
+.cx-range{display:flex;align-items:center;gap:10px}
+.cx-range input{width:160px;padding:0;accent-color:var(--accent);background:transparent;border:0}
+.cx-range input:disabled{opacity:.5}
+.cx-range output{min-width:40px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cx-shop-preview[data-wallpaper]{background:linear-gradient(color-mix(in srgb,var(--p-bg) var(--p-wallpaper-shade,65%),transparent),color-mix(in srgb,var(--p-bg) var(--p-wallpaper-shade,65%),transparent)),var(--p-wallpaper) center/cover,var(--p-bg)}
+.cx-shop-preview[data-card-light="diffuse"] i{background-image:radial-gradient(130% 90% at 0 0,color-mix(in srgb,var(--p-light) var(--p-light-strength),transparent),transparent 70%)}
+.cx-shop-preview[data-card-light="full"] i{background-image:linear-gradient(155deg,color-mix(in srgb,var(--p-light) var(--p-light-strength),transparent),color-mix(in srgb,var(--p-light) var(--p-light-soft),transparent))}
+.cx-shop-preview[data-card-light="corner"] i{background-image:radial-gradient(55% 45% at 100% 0,color-mix(in srgb,var(--p-light) var(--p-light-strength),transparent),transparent 100%)}
+@media (max-width:560px){.cx-light-options{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-range input{width:120px}}

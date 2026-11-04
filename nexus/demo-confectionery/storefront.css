@@ -90,21 +90,41 @@ h1,h2,h3{font-family:var(--sf-display)}
 .sf-section-head h2{margin:0;font-size:clamp(26px,3.2vw,36px);font-weight:800;letter-spacing:-.03em;line-height:1.05}.sf-section-head>p{margin:0;max-width:380px;color:var(--sf-muted);font-size:14px}
 /* At most three cards in a row, however wide the screen is. */
 .sf-catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(250px,calc((100% - 40px) / 3)),1fr));gap:20px;outline:0}
-.sf-card{position:relative;display:flex;border-radius:var(--sf-radius);background:var(--sf-surface);box-shadow:0 1px 0 var(--sf-line),0 16px 34px var(--sf-shadow);overflow:hidden;transition:box-shadow .2s,transform .2s}
-.sf-card:hover{box-shadow:0 1px 0 var(--sf-line),0 22px 44px color-mix(in srgb,var(--sf-shadow) 160%,transparent)}
+/* Item card: photo with a soft shade, lead time on the photo, price, name and a quiet next step.
+   With the owner's cart, «Добавить» rises over the photo on hover; on touch screens it always shows. */
+.sf-card{position:relative;display:grid;border-radius:var(--sf-radius);background:var(--sf-surface);box-shadow:0 1px 0 var(--sf-line),0 16px 34px var(--sf-shadow);overflow:hidden;
+  transition:box-shadow .25s,transform .25s cubic-bezier(.2,.8,.2,1);animation:sf-card-in .5s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--sf-card-index,0) * 60ms)}
+.sf-card>.sf-card-open,.sf-card>.sf-card-add{grid-area:1/1}
+.sf-card:hover{transform:translateY(-4px);box-shadow:0 1px 0 var(--sf-line),0 26px 50px color-mix(in srgb,var(--sf-shadow) 170%,transparent)}
 .sf-card-open{width:100%;padding:0;display:flex;flex-direction:column;border:0;background:none;text-align:left}
-.sf-card-open:hover .sf-card-photo img{transform:scale(1.04)}
-.sf-card-photo{margin:10px 10px 0;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden;border-radius:16px;background:var(--sf-tint)}
-.sf-card-photo img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.sf-card-open:focus-visible{outline:3px solid var(--sf-accent);outline-offset:-3px;border-radius:var(--sf-radius)}
+.sf-card:hover .sf-card-photo img{transform:scale(1.06)}
+.sf-card-photo{position:relative;margin:10px 10px 0;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden;border-radius:16px;background:var(--sf-tint)}
+.sf-card-photo::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(26,14,6,.42),transparent 46%);pointer-events:none}
+.sf-card-photo img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
 .sf-card-placeholder{width:100%;height:100%;display:grid;place-items:center;background:var(--sf-tint);color:var(--sf-accent);font:800 52px/1 var(--sf-display)}
-.sf-card-body{flex:1;padding:16px 18px 18px;display:flex;flex-direction:column;gap:7px}
+.sf-card-badge{position:absolute;top:10px;right:10px;z-index:1;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:color-mix(in srgb,var(--sf-surface) 88%,transparent);color:var(--sf-text);font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(26,14,6,.14);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sf-clock{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sf-card-body{flex:1;padding:14px 18px 18px;display:flex;flex-direction:column;gap:6px}
 .sf-card-body strong{font:650 18px/1.2 var(--sf-display);letter-spacing:-.01em}
 .sf-card-summary{display:-webkit-box;overflow:hidden;color:var(--sf-muted);font-size:14px;-webkit-box-orient:vertical;-webkit-line-clamp:2}
-.sf-card-meta{margin-top:auto;padding-top:8px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px}
-.sf-card-price{font:700 17px/1.2 var(--sf-display)}
+.sf-card-meta{margin-top:auto;padding-top:10px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;color:var(--sf-muted);font-size:13px}
+.sf-card-lead{display:inline-flex;align-items:center;gap:6px}
+.sf-card-price{color:var(--sf-accent-text,var(--sf-text));font:750 19px/1.2 var(--sf-display)}
 .sf-chip{padding:4px 9px;border-radius:999px;background:var(--sf-surface-2);color:var(--sf-muted);font-size:12px;font-weight:700;white-space:nowrap}
-.sf-card-cta{margin-top:10px;min-height:42px;display:grid;place-items:center;border:1px solid var(--sf-line-strong);border-radius:13px;font-size:14px;font-weight:800;transition:background .18s,border-color .18s,color .18s}
-.sf-card-open:hover .sf-card-cta,.sf-card-open:focus-visible .sf-card-cta{border-color:var(--sf-accent);background:var(--sf-accent);color:var(--sf-on-accent)}
+.sf-card-cta{color:var(--sf-text);font-weight:800;transition:color .18s}
+.sf-card-open:hover .sf-card-cta,.sf-card-open:focus-visible .sf-card-cta{color:var(--sf-accent-text,var(--sf-accent))}
+.sf-card-add{z-index:1;align-self:start;justify-self:center;min-height:40px;margin-top:calc((100% - 20px) * .75 + 10px - 54px);padding:0 22px;border:1px solid color-mix(in srgb,var(--sf-surface) 50%,transparent);border-radius:12px;
+  background:color-mix(in srgb,var(--sf-surface) 82%,transparent);color:var(--sf-text);font-size:13px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 10px 24px rgba(26,14,6,.2);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transform:translateY(10px);transition:opacity .25s,transform .25s,background .18s,color .18s}
+.sf-card:hover .sf-card-add,.sf-card-add:focus-visible,.sf-card-add.is-added{opacity:1;transform:none}
+.sf-card-add:hover,.sf-card-add.is-added{background:var(--sf-accent);color:var(--sf-on-accent)}
+.sf-card-add:active{transform:scale(.95)}
+@media (hover:none){.sf-card-add{opacity:1;transform:none}}
+@keyframes sf-card-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.sf-bump{animation:sf-bump .45s ease}
+@keyframes sf-bump{40%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.sf-card,.sf-bump{animation:none}.sf-card,.sf-card-photo img,.sf-card-add{transition:none}.sf-card:hover{transform:none}}
 .sf-empty{grid-column:1/-1;padding:40px 24px;border:1px dashed var(--sf-line-strong);border-radius:var(--sf-radius);text-align:center}.sf-empty h3{margin:0 0 6px}.sf-empty p{margin:0;color:var(--sf-muted)}
 
 .sf-footer{padding:30px;display:grid;gap:18px;border-radius:28px;background:var(--sf-footer);color:var(--sf-footer-text)}
@@ -250,3 +270,9 @@ h1,h2,h3{font-family:var(--sf-display)}
   .sf-cart-line.compact{grid-template-areas:none}
   .sf-dialog-narrow{width:100vw}
 }
+
+/* Owner appearance: card lighting and a background photo dimmed by the page colour. */
+:root[data-wallpaper] body{background:linear-gradient(color-mix(in srgb,var(--sf-bg) var(--sf-wallpaper-shade,65%),transparent),color-mix(in srgb,var(--sf-bg) var(--sf-wallpaper-shade,65%),transparent)),var(--sf-wallpaper) center/cover fixed,var(--sf-bg)}
+:root[data-card-light="diffuse"] .sf-card{background-image:radial-gradient(130% 90% at 0 0,color-mix(in srgb,var(--sf-light) var(--sf-light-strength),transparent),transparent 70%)}
+:root[data-card-light="full"] .sf-card{background-image:linear-gradient(155deg,color-mix(in srgb,var(--sf-light) var(--sf-light-strength),transparent),color-mix(in srgb,var(--sf-light) var(--sf-light-soft),transparent))}
+:root[data-card-light="corner"] .sf-card{background-image:radial-gradient(55% 45% at 100% 0,color-mix(in srgb,var(--sf-light) var(--sf-light-strength),transparent),transparent 100%)}

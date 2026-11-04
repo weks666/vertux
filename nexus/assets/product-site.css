@@ -42,7 +42,7 @@ input,textarea { caret-color:var(--nx-soft); }
 .nx-platform-hero,.nx-invest-hero { display:grid; grid-template-columns:1.1fr 1fr; align-items:center; gap:64px; min-height:min(900px,100svh); padding-block:156px 94px; }
 .nx-launch-scene,.nx-invest-scene { position:relative; min-width:0; }
 .nx-scene-light { position:absolute; z-index:0; inset:-80px -100px; pointer-events:none; background:radial-gradient(ellipse at 62% 37%,#816bb51c,transparent 66%); }
-.nx-launch-window { position:relative; background:linear-gradient(140deg,#ffffff0b,#ffffff03 50%),#14141cda; border:1px solid #ffffff20; border-radius:var(--nx-radius); overflow:hidden; backdrop-filter:blur(16px); }
+.nx-launch-window { position:relative; background:linear-gradient(140deg,#ffffff0b,#ffffff03 50%),#14141cda; border:1px solid #ffffff20; border-radius:var(--nx-radius); overflow:hidden; }
 .nx-window-bar { display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:52px; padding:12px 21px; border-bottom:1px solid var(--nx-line); font-size:11px; color:var(--nx-muted); }
 .nx-window-mark { display:flex; align-items:center; gap:10px; color:#e4e1ed; font-size:13px; font-weight:500; }
 .nx-window-mark img { border-radius:6px; }
