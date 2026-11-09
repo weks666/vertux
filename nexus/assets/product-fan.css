@@ -19,12 +19,24 @@
 .nx-fan-copy em{position:absolute;right:20px;bottom:20px;padding:7px 13px;border:1px solid #ffffff2e;border-radius:999px;background:#ffffff14;font-size:12px;font-style:normal;font-weight:600;
   -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s}
 .nx-fan-card.is-active .nx-fan-copy em,.nx-fan-card:focus-visible .nx-fan-copy em{opacity:1;transform:none}
+.nx-fan-dots{display:none}
+/* Phone: the cards scroll sideways across the full width, the middle one starts
+   in the centre, the neighbours peek in smaller, and dots show where you are. */
 @media (max-width:760px){
-  .nx-fan{height:auto;display:flex;gap:14px;margin:40px -20px 8px;padding:8px 20px 18px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .nx-fan{height:auto;display:flex;gap:12px;width:100vw;margin:36px 0 0 calc(50% - 50vw);padding:16px 11vw 34px;
+    overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
   .nx-fan::-webkit-scrollbar{display:none}
-  .nx-fan-card,.nx-fan.is-ready .nx-fan-card{position:relative;left:auto;flex:0 0 82%;width:auto;margin:0;opacity:1;transform:none;scroll-snap-align:center}
+  .nx-fan-card,.nx-fan.is-ready .nx-fan-card{position:relative;left:auto;flex:0 0 78vw;width:auto;margin:0;opacity:1;transform:none;scroll-snap-align:center;
+    box-shadow:0 16px 36px #05040c80,inset 0 1px #ffffff1f;transition:transform .35s ease,opacity .35s ease,border-color .3s}
+  .nx-fan.is-ready .nx-fan-card:not(.is-current){transform:scale(.92);opacity:.7}
+  .nx-fan-card.is-current{border-color:#cdb0ff80}
   .nx-fan-copy em{opacity:1;transform:none}
+  .nx-fan-dots{display:flex;justify-content:center;gap:2px;margin:-14px 0 4px}
+  .nx-fan-dots button{display:grid;place-items:center;width:28px;height:28px;padding:0;border:0;background:none;cursor:pointer}
+  .nx-fan-dots button::before{content:"";width:8px;height:8px;border-radius:99px;background:#ffffff47;transition:width .3s,background .3s}
+  .nx-fan-dots button[aria-current="true"]::before{width:22px;background:#cdb0ff}
+  .nx-fan-dots button:focus-visible{outline:2px solid #cdb0ff;outline-offset:2px;border-radius:99px}
 }
 @media (prefers-reduced-motion:reduce){
-  .nx-fan-card,.nx-fan.is-ready .nx-fan-card,.nx-fan.is-settled .nx-fan-card,.nx-fan-media img{transition:none}
+  .nx-fan-card,.nx-fan.is-ready .nx-fan-card,.nx-fan.is-settled .nx-fan-card,.nx-fan-media img,.nx-fan-dots button::before{transition:none}
 }

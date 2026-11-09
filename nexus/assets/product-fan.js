@@ -37,6 +37,37 @@
   // Cards fly out from the centre once; after that hover moves stay quick.
   requestAnimationFrame(() => requestAnimationFrame(() => fan.classList.add('is-ready')));
   setTimeout(() => fan.classList.add('is-settled'), 1300);
-  // On a phone the cards scroll sideways: start on the middle one.
-  if (narrow.matches && cards[1]) fan.scrollLeft = cards[1].offsetLeft - (fan.clientWidth - cards[1].clientWidth) / 2;
+  // On a phone the cards scroll sideways. The middle one starts in the centre,
+  // the card in the centre is marked, and dots under the row show the position;
+  // a dot brings its card to the centre.
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const dots = document.createElement('div');
+  dots.className = 'nx-fan-dots';
+  cards.forEach((card, index) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.setAttribute('aria-label', card.querySelector('b')?.textContent.trim() || String(index + 1));
+    dot.addEventListener('click', () => center(index, !reduced));
+    dots.append(dot);
+  });
+  fan.after(dots);
+  function center(index, smooth) {
+    const card = cards[index];
+    fan.scrollTo({left:card.offsetLeft - (fan.clientWidth - card.offsetWidth) / 2, behavior:smooth ? 'smooth' : 'auto'});
+  }
+  function mark() {
+    const middle = fan.scrollLeft + fan.clientWidth / 2;
+    let current = 0, distance = Infinity;
+    cards.forEach((card, index) => {
+      const gap = Math.abs(card.offsetLeft + card.offsetWidth / 2 - middle);
+      if (gap < distance) { distance = gap; current = index; }
+    });
+    cards.forEach((card, index) => card.classList.toggle('is-current', narrow.matches && index === current));
+    [...dots.children].forEach((dot, index) => dot.setAttribute('aria-current', String(index === current)));
+  }
+  let pending = 0;
+  fan.addEventListener('scroll', () => { if (!pending) pending = requestAnimationFrame(() => { pending = 0; mark(); }); }, {passive:true});
+  const arrange = () => { if (narrow.matches && cards[1]) center(1, false); mark(); };
+  narrow.addEventListener('change', arrange);
+  arrange();
 })();

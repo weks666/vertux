@@ -71,6 +71,8 @@ const api = (section, options) => request(`/api/confectionery/${encodeURICompone
 
 let toastTimer = null;
 function toast(message, error = false) {
+  // Sonner-style stack (toaster.js); the old single toast stays as a fallback.
+  if (window.NexusToaster) { window.NexusToaster.show(message, { kind: error ? 'error' : 'success' }); return; }
   const element = $('#cxToast'); element.textContent = message; element.hidden = false; element.classList.toggle('cx-toast-error', error);
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { element.hidden = true; }, 4200);
 }
@@ -562,6 +564,9 @@ function openItem(item) {
     form.elements.leadDays.value = item.leadDays ?? ''; form.elements.capacityUnits.value = item.capacityUnits;
     form.elements.minQuantity.value = item.minQuantity; form.elements.maxQuantity.value = item.maxQuantity;
     form.elements.sizes.value = optionLines(item.sizes); form.elements.decorations.value = optionLines(item.decorations); form.elements.fillings.value = optionLines(item.fillings);
+    const autoplay = item.photoAutoplay || {};
+    form.elements.autoplay.checked = autoplay.on === true;
+    form.elements.autoplaySeconds.value = String(autoplay.seconds || 5); form.elements.autoplayDirection.value = autoplay.direction || 'forward';
   }
   renderItemMedia();
   $('#cxItemDialog').showModal();
@@ -756,12 +761,14 @@ async function saveStorefront(changes, message) {
 
 // ---------- settings ----------
 const SETTINGS_PAGES = { appearance:() => true, menu:() => true, shop:() => can('manageStorefront'), ordering:() => can('manageStorefront') || can('manageCustomers'),
-  domain:() => can('manageDomain'), access:() => can('manageAccess') };
+  // The domain and Vertux access share one page; each card shows only with its right.
+  domain:() => can('manageDomain') || can('manageAccess') };
 function renderSettings() {
   $$('#cxSettingsNav [data-settings-page]').forEach(button => { button.hidden = !SETTINGS_PAGES[button.dataset.settingsPage](); });
   openSettingsPage(state.settingsPage);
 }
 function openSettingsPage(page) {
+  if (page === 'access') page = 'domain';
   if (!SETTINGS_PAGES[page]?.()) page = 'appearance';
   if (page !== state.settingsPage) state.shopDraft = null;
   state.settingsPage = page;
@@ -774,7 +781,7 @@ function openSettingsPage(page) {
   renderSettingsPage();
 }
 function renderSettingsPage() {
-  const renderers = { appearance:renderAppearance, menu:renderMenuSettings, shop:renderShopTheme, ordering:renderOrdering, domain:() => renderDomain(state.context.domain), access:renderAccess };
+  const renderers = { appearance:renderAppearance, menu:renderMenuSettings, shop:renderShopTheme, ordering:renderOrdering, domain:renderDomainAndAccess };
   renderers[state.settingsPage]();
 }
 
@@ -1005,6 +1012,14 @@ async function saveDomain(value) {
   }
   busy(button, false);
 }
+function renderDomainAndAccess() {
+  const domain = can('manageDomain'), access = can('manageAccess');
+  for (const id of ['cxDomainTitle', 'cxDomainLocked', 'cxDomainForm']) if (!domain) $('#' + id).hidden = true;
+  $('#cxDomainTitle').hidden = !domain;
+  $('#cxAccessTitle').hidden = !access; $('#cxAccessPanel').hidden = !access;
+  if (domain) renderDomain(state.context.domain);
+  if (access) renderAccess();
+}
 function renderAccess() { $('#cxVertuxSetup').checked = state.context.vertuxSetup === true; }
 
 // ---------- profile ----------
@@ -1055,6 +1070,14 @@ async function renderService() {
   const component = h('vertux-service-center', { section, 'hide-header':true });
   component.serviceAdapter = createAccountServiceAdapter({ productId, request:(path, body, method = body ? 'POST' : 'GET') => request(path, { method, body }) });
   host.replaceChildren(component);
+  themeService(component);
+}
+const SERVICE_THEME = '.subscription-access::before{display:none}.subscription-hero-note{display:none}.subscription-access-heading{padding-right:0}';
+function themeService(component) {
+  const root = component.shadowRoot;
+  if (!root || !('adoptedStyleSheets' in root)) return;
+  try { const sheet = new CSSStyleSheet(); sheet.replaceSync(SERVICE_THEME); root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet]; }
+  catch { /* the module keeps its own look */ }
 }
 
 // ---------- ordering options: cart and customer accounts ----------
@@ -1363,6 +1386,7 @@ function bindEvents() {
         leadDays:value('leadDays') === '' ? null : Number(value('leadDays')), capacityUnits:Number(value('capacityUnits') || 1),
         minQuantity:Number(value('minQuantity') || 1), maxQuantity:Number(value('maxQuantity') || 50),
         sizes:parseOptions(value('sizes')), decorations:parseOptions(value('decorations')), fillings:parseOptions(value('fillings')), mediaIds:state.itemMedia,
+        photoAutoplay:{ on:form.elements.autoplay.checked, seconds:Number(value('autoplaySeconds') || 5), direction:value('autoplayDirection') || 'forward' },
         sortOrder:state.editing?.sortOrder ?? Math.min(10000, Math.max(0, ...state.items.map(item => item.sortOrder)) + 10) };
       if (state.editing) await api(`catalog/${state.editing.id}`, { method:'PUT', body:{ ...body, revision:state.editing.revision } });
       else await api('catalog', { method:'POST', body });
@@ -1417,6 +1441,74 @@ function bindEvents() {
   state.poll = setInterval(() => { if (!setup() && state.view === 'orders' && document.visibilityState === 'visible') void loadOrders({ quiet:true }); }, 60000);
 }
 
+// ---------- welcome: a short tour the first time someone opens this cabinet ----------
+const WELCOME_STEPS = [
+  { view:'catalog', icon:'M4 10h16v10H4zM6 10V8a6 6 0 0 1 12 0v2M4 14h16', title:'Каталог',
+    text:'Добавьте изделия: фото, цены, размеры и начинки. Покупатели увидят их на витрине.', action:'Открыть каталог' },
+  { view:'calendar', icon:'M7 3v4m10-4v4M3 11h18M4 6h16v15H4z', title:'Календарь',
+    text:'Отметьте выходные и сколько заказов берёте в день — занятые даты закроются сами.', action:'Открыть календарь' },
+  { view:'storefront', icon:'M3 9 5 4h14l2 5M3 9h18v11H3zM3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0', title:'Витрина',
+    text:'Выберите оформление, опубликуйте витрину и поделитесь ссылкой с покупателями.', action:'Открыть витрину' },
+  { view:'orders', icon:'M6 3h12v18l-3-2-3 2-3-2-3 2V3ZM9 8h6M9 12h6M9 16h3', title:'Заказы',
+    text:'Новые заявки приходят сюда. Свяжитесь с покупателем и меняйте статус — он видит, как идёт его заказ.', action:'К заказам' },
+];
+// Shown once per person and cabinet; never in Vertux setup mode. Without
+// browser storage it is not shown at all rather than on every visit.
+const welcomeKey = () => `nexus-cx-welcome:${productId}:${state.me?.id || state.me?.email || state.me?.name || ''}`;
+function maybeWelcome() {
+  if (setup() || !state.context || !state.me) return;
+  let seen = true;
+  try { seen = localStorage.getItem(welcomeKey()) === '1'; } catch { return; }
+  if (!seen) setTimeout(openWelcome, 450);
+}
+function openWelcome() {
+  const context = state.context, shop = context.storefront.name || context.product.name;
+  const first = String(state.me.name || '').trim().split(/\s+/u)[0];
+  const total = WELCOME_STEPS.length;
+  let step = 0;
+  const remember = () => { try { localStorage.setItem(welcomeKey(), '1'); } catch { /* storage closed: nothing to remember */ } };
+  const slides = WELCOME_STEPS.map((item, index) => h('section', { class:'cx-welcome-slide', 'aria-label':`Шаг ${index + 1} из ${total}: ${item.title}` },
+    h('span', { class:'cx-welcome-icon' }, icon(item.icon)),
+    h('small', {}, `Шаг ${index + 1} из ${total}`), h('h3', {}, item.title), h('p', {}, item.text),
+    allowedView(item.view) ? h('button', { type:'button', class:'cx-welcome-link', onclick:() => finish(item.view) }, `${item.action} →`) : null));
+  const track = h('div', { class:'cx-welcome-track', 'data-step':'0' }, ...slides);
+  const dots = WELCOME_STEPS.map((item, index) => h('button', { type:'button', class:'cx-welcome-dot', 'aria-label':`Шаг ${index + 1}: ${item.title}`, onclick:() => go(index) }));
+  const back = h('button', { type:'button', class:'button ghost compact-button', onclick:() => go(step - 1) }, 'Назад');
+  const next = h('button', { type:'button', class:'button primary compact-button', onclick:() => (step === total - 1 ? finish('catalog') : go(step + 1)) });
+  const mark = context.storefront.logoMediaId ? h('img', { src:mediaUrl(context.storefront.logoMediaId), alt:'' }) : (shop || 'К').trim().slice(0, 1).toUpperCase();
+  const dialog = h('dialog', { class:'cx-dialog cx-welcome', 'aria-labelledby':'cxWelcomeTitle' },
+    h('div', { class:'cx-welcome-hero' },
+      h('button', { type:'button', class:'cx-welcome-skip', onclick:() => finish(null) }, 'Пропустить'),
+      h('span', { class:'cx-welcome-mark', 'aria-hidden':'true' }, mark),
+      h('h2', { id:'cxWelcomeTitle' }, first ? `Добро пожаловать, ${first}!` : 'Добро пожаловать!'),
+      h('p', {}, `Кабинет «${shop}» готов. Четыре шага — и витрина начнёт принимать заявки.`)),
+    h('div', { class:'cx-welcome-body' }, track),
+    h('div', { class:'cx-welcome-foot' }, back, h('div', { class:'cx-welcome-dots' }, ...dots), next));
+  function go(index) {
+    step = Math.max(0, Math.min(total - 1, index));
+    track.dataset.step = String(step);
+    slides.forEach((slide, position) => { slide.inert = position !== step; });
+    dots.forEach((dot, position) => dot.setAttribute('aria-current', String(position === step)));
+    back.disabled = step === 0;
+    next.textContent = step === total - 1 ? 'Начать с каталога' : 'Далее';
+  }
+  function finish(view) {
+    remember();
+    dialog.close();
+    if (view && allowedView(view)) showView(view);
+  }
+  dialog.addEventListener('keydown', event => {
+    if (event.target.closest('input, textarea, select')) return;
+    if (event.key === 'ArrowRight') { event.preventDefault(); go(step + 1); }
+    if (event.key === 'ArrowLeft') { event.preventDefault(); go(step - 1); }
+  });
+  dialog.addEventListener('close', () => { remember(); dialog.remove(); });
+  document.body.append(dialog);
+  go(0);
+  dialog.showModal();
+  next.focus();
+}
+
 function fatal(title, text) {
   $('#cxBoot').hidden = true; $('#cxShell').hidden = true;
   $('#cxFatalTitle').textContent = title; $('#cxFatalText').textContent = text; $('#cxFatal').hidden = false;
@@ -1440,6 +1532,7 @@ async function start() {
   void loadOtherProducts();
   $('#cxBoot').hidden = true; $('#cxShell').hidden = false;
   showView(VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : homeView(), { focus:false });
+  maybeWelcome();
 }
 
 void start();

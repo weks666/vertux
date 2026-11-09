@@ -8,11 +8,13 @@
   <title>Кабинет кондитерской · Vertux Nexus</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./fonts/fonts.css">
-  <link rel="stylesheet" href="./styles.css?v=202611046a5c">
-  <link rel="stylesheet" href="./cabinet.css?v=202611046a5c">
-  <script type="module" src="./demo-api.js?v=202611046a5c"></script>
-  <script type="module" src="./cabinet.js?v=202611046a5c"></script>
-  <link rel="stylesheet" href="./demo.css?v=202611046a5c">
+  <link rel="stylesheet" href="./styles.css?v=20261105j9yj">
+  <link rel="stylesheet" href="./cabinet.css?v=20261105j9yj">
+  <link rel="stylesheet" href="./toaster.css?v=20261105j9yj">
+  <script src="./toaster.js?v=20261105j9yj" defer></script>
+  <script type="module" src="./demo-api.js?v=20261105j9yj"></script>
+  <script type="module" src="./cabinet.js?v=20261105j9yj"></script>
+  <link rel="stylesheet" href="./demo.css?v=20261105j9yj">
 </head>
 <body class="cx-body">
   <a class="cx-skip" href="#cxMain">К содержанию</a>
@@ -75,7 +77,8 @@
       </section>
 
       <section class="view" data-view="calendar" aria-labelledby="cxTitle">
-        <div class="cx-split">
+        <div class="cx-split cx-calendar-split">
+          <div class="cx-stack cx-calendar-main">
           <article class="panel">
             <div class="panel-head"><div><p class="eyebrow">Месяц</p><h3 id="cxMonthTitle">—</h3></div>
               <div class="cx-actions"><button class="icon-button" type="button" id="cxPrevMonth" aria-label="Предыдущий месяц"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button class="icon-button" type="button" id="cxNextMonth" aria-label="Следующий месяц"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
@@ -85,7 +88,29 @@
               <li><i class="available"></i>Свободно</li><li><i class="few"></i>Мало мест</li><li><i class="full"></i>Занято</li><li><i class="unavailable"></i>Не принимаем</li>
             </ul>
           </article>
-          <div class="cx-stack">
+            <form class="panel cx-form" id="cxRangeForm" novalidate>
+              <div class="panel-head"><div><p class="eyebrow">Отпуск и выходные</p><h3>Закрыть период</h3></div></div>
+              <div class="form-row"><label>С<input name="from" type="date" required></label><label>По<input name="to" type="date" required></label></div>
+              <label>Заметка для себя<input name="note" maxlength="200" placeholder="Например, отпуск"></label>
+              <p class="cx-hint">Клиенты не смогут выбрать эти даты. Уже принятые заказы останутся — кабинет покажет, сколько их.</p>
+              <div class="cx-actions"><button class="button primary compact-button" type="submit">Закрыть даты</button><button class="button ghost compact-button" type="button" id="cxRangeOpen">Вернуть общие правила</button></div>
+            </form>
+          </div>
+          <div class="cx-stack cx-calendar-side">
+            <form class="panel cx-form" id="cxDateForm" novalidate hidden>
+              <div class="panel-head"><div><p class="eyebrow">Дата</p><h3 id="cxDateTitle">—</h3></div><button class="icon-button" type="button" id="cxDateClose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <p class="cx-hint" id="cxDateLoad"></p>
+              <fieldset class="cx-choice"><legend>Состояние даты</legend>
+                <label class="check-row"><input type="radio" name="kind" value="default"><span>По общим правилам</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="limit"><span>Свой лимит на эту дату</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="open"><span>Открыть в выходной</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="full"><span>Всё занято (лист ожидания открыт)</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="closed"><span>Не принимаем заказы</span></label>
+              </fieldset>
+              <label id="cxDateCapacity">Лимит заказов на дату<input name="capacity" type="number" min="0" max="200" inputmode="numeric"></label>
+              <label>Заметка для себя<input name="note" maxlength="200" placeholder="Например, свадебный заказ"></label>
+              <button class="button primary" type="submit">Сохранить дату</button>
+            </form>
             <form class="panel cx-form" id="cxCalendarForm" novalidate>
               <div class="panel-head"><div><p class="eyebrow">Правила</p><h3>Рабочие дни и лимит</h3></div></div>
               <fieldset class="cx-days"><legend>Принимаем заказы на</legend><div id="cxWeekdays"></div></fieldset>
@@ -107,27 +132,6 @@
               <p class="cx-hint">Изделие может занимать несколько производственных слотов — это задаётся в карточке каталога. Отменённые заказы освобождают слоты.</p>
               <p class="cx-hint" id="cxReservedHint" hidden></p>
               <button class="button primary" type="submit">Сохранить правила</button>
-            </form>
-            <form class="panel cx-form" id="cxRangeForm" novalidate>
-              <div class="panel-head"><div><p class="eyebrow">Отпуск и выходные</p><h3>Закрыть период</h3></div></div>
-              <div class="form-row"><label>С<input name="from" type="date" required></label><label>По<input name="to" type="date" required></label></div>
-              <label>Заметка для себя<input name="note" maxlength="200" placeholder="Например, отпуск"></label>
-              <p class="cx-hint">Клиенты не смогут выбрать эти даты. Уже принятые заказы останутся — кабинет покажет, сколько их.</p>
-              <div class="cx-actions"><button class="button primary compact-button" type="submit">Закрыть даты</button><button class="button ghost compact-button" type="button" id="cxRangeOpen">Вернуть общие правила</button></div>
-            </form>
-            <form class="panel cx-form" id="cxDateForm" novalidate hidden>
-              <div class="panel-head"><div><p class="eyebrow">Дата</p><h3 id="cxDateTitle">—</h3></div><button class="icon-button" type="button" id="cxDateClose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-              <p class="cx-hint" id="cxDateLoad"></p>
-              <fieldset class="cx-choice"><legend>Состояние даты</legend>
-                <label class="check-row"><input type="radio" name="kind" value="default"><span>По общим правилам</span></label>
-                <label class="check-row"><input type="radio" name="kind" value="limit"><span>Свой лимит на эту дату</span></label>
-                <label class="check-row"><input type="radio" name="kind" value="open"><span>Открыть в выходной</span></label>
-                <label class="check-row"><input type="radio" name="kind" value="full"><span>Всё занято (лист ожидания открыт)</span></label>
-                <label class="check-row"><input type="radio" name="kind" value="closed"><span>Не принимаем заказы</span></label>
-              </fieldset>
-              <label id="cxDateCapacity">Лимит заказов на дату<input name="capacity" type="number" min="0" max="200" inputmode="numeric"></label>
-              <label>Заметка для себя<input name="note" maxlength="200" placeholder="Например, свадебный заказ"></label>
-              <button class="button primary" type="submit">Сохранить дату</button>
             </form>
           </div>
         </div>
@@ -241,8 +245,7 @@
             <button type="button" data-settings-page="menu">Меню и клавиши</button>
             <button type="button" data-settings-page="shop">Витрина</button>
             <button type="button" data-settings-page="ordering">Заказы</button>
-            <button type="button" data-settings-page="domain">Домен</button>
-            <button type="button" data-settings-page="access">Доступ Vertux</button>
+            <button type="button" data-settings-page="domain">Домен и доступ</button>
           </nav>
           <div class="cx-settings-body">
             <section class="cx-settings-page" data-settings-panel="appearance" aria-labelledby="cxAppearanceTitle">
@@ -313,8 +316,9 @@
                 <p class="cx-hint cx-warning" id="cxAccountsUnavailable" hidden>Вход покупателей по почте пока не настроен на сервере Nexus. Напишите в поддержку.</p>
               </div>
             </section>
-            <section class="cx-settings-page" data-settings-panel="domain" aria-labelledby="cxDomainTitle">
-              <h2 id="cxDomainTitle">Свой домен</h2>
+            <section class="cx-settings-page" data-settings-panel="domain" aria-labelledby="cxDomainPageTitle">
+              <h2 id="cxDomainPageTitle">Домен и доступ</h2>
+              <h3 class="cx-settings-sub" id="cxDomainTitle">Свой домен</h3>
               <div class="panel cx-form cx-settings-card" id="cxDomainLocked" hidden>
                 <p class="cx-hint">Витрина работает по адресу Nexus. Свой домен, например zakaz.sladkiy-dom.ru, входит в тариф «Расширенный»: вы добавляете записи DNS, а сертификат для домена выпускает Vertux.</p>
                 <div class="cx-actions"><button class="button ghost compact-button" type="button" data-view-link="support">Написать в поддержку</button><button class="text-button" type="button" data-view-link="subscription">Мой тариф</button></div>
@@ -326,10 +330,9 @@
                 <p class="cx-domain-error" id="cxDomainError" role="alert"></p>
                 <div class="cx-actions"><button class="button primary compact-button" type="submit">Сохранить домен</button><button class="button ghost compact-button" type="button" id="cxDomainVerify" hidden>Проверить DNS</button><button class="text-button" type="button" id="cxDomainRemove" hidden>Отключить домен</button></div>
               </form>
-            </section>
-            <section class="cx-settings-page" data-settings-panel="access" aria-labelledby="cxAccessTitle">
-              <h2 id="cxAccessTitle">Доступ Vertux</h2>
+              <h3 class="cx-settings-sub" id="cxAccessTitle">Доступ Vertux</h3>
               <div class="panel cx-form cx-settings-card" id="cxAccessPanel">
+                <p class="cx-hint">Команда Vertux может помочь с настройкой: заполнить каталог, оформить витрину, настроить календарь и домен. Для этого она входит в ваш кабинет в режиме настройки.</p>
                 <label class="cx-switch"><input type="checkbox" id="cxVertuxSetup"><span>Разрешить администратору Vertux настраивать каталог, витрину, календарь и домен</span></label>
                 <p class="cx-hint">Заказы, лист ожидания и контакты клиентов администратору Vertux недоступны в любом случае. Каждое его изменение записывается в журнал.</p>
               </div>
@@ -373,6 +376,13 @@
         <label>Примечания<textarea name="notes" rows="2" maxlength="600" placeholder="Хранить в холодильнике до 48 часов"></textarea></label>
         <div class="cx-thumbs" id="cxItemMedia"></div>
         <label class="button ghost compact-button cx-file">Добавить фото<input type="file" accept="image/jpeg,image/png,image/webp" id="cxItemMediaInput" multiple></label>
+        <div class="cx-autoplay">
+          <label class="check-row"><input type="checkbox" name="autoplay"><span>Листать фото автоматически <small>когда фото больше одного</small></span></label>
+          <details class="cx-autoplay-more"><summary>Скорость и направление</summary>
+            <div class="form-row"><label>Смена фото<select name="autoplaySeconds"><option value="3">каждые 3 секунды</option><option value="5" selected>каждые 5 секунд</option><option value="8">каждые 8 секунд</option><option value="12">каждые 12 секунд</option></select></label>
+              <label>Направление<select name="autoplayDirection"><option value="forward" selected>вперёд</option><option value="backward">назад</option></select></label></div>
+          </details>
+        </div>
         <label class="check-row"><input type="checkbox" name="hidden"><span>Скрыть с витрины</span></label>
       </div>
       <p class="form-error" id="cxItemError" role="alert"></p>

@@ -250,23 +250,99 @@ function showPane(name) {
   heading.focus();
 }
 
+// ---------- item photos: a large photo with thumbnails; arrows, a swipe or the keys switch them ----------
+function photoViewer(item) {
+  const photos = item.mediaIds;
+  if (!photos.length) return [h('span', { class:'sf-card-placeholder', 'aria-hidden':'true' }, item.title.slice(0, 1))];
+  const alt = index => index === 0 ? item.title : `${item.title}, фото ${index + 1}`;
+  const many = photos.length > 1;
+  let current = 0;
+  const main = h('img', { class:'sf-view-main', src:media(photos[0]), alt:alt(0), loading:'eager' });
+  const count = many ? h('span', { class:'sf-view-count', 'aria-hidden':'true' }, `1 / ${photos.length}`) : null;
+  const thumbs = many ? photos.map((id, index) => h('button', { type:'button', class:'sf-view-thumb', 'aria-label':`Фото ${index + 1} из ${photos.length}`, 'aria-pressed':String(index === 0),
+    onclick:() => select(index) }, h('img', { src:media(id), alt:'', loading:'lazy' }))) : [];
+  function select(index, focus = false) {
+    current = (index + photos.length) % photos.length;
+    main.classList.remove('is-in');
+    void main.offsetWidth;
+    main.src = media(photos[current]); main.alt = alt(current);
+    main.classList.add('is-in');
+    thumbs.forEach((button, position) => button.setAttribute('aria-pressed', String(position === current)));
+    thumbs[current]?.scrollIntoView({ block:'nearest', inline:'nearest' });
+    if (focus) thumbs[current]?.focus();
+    if (count) count.textContent = `${current + 1} / ${photos.length}`;
+  }
+  const stage = h('div', { class:'sf-view-stage' }, main, count, many ? [
+    h('button', { type:'button', class:'sf-view-arrow is-prev', 'aria-label':'Предыдущее фото', onclick:() => select(current - 1) }, '‹'),
+    h('button', { type:'button', class:'sf-view-arrow is-next', 'aria-label':'Следующее фото', onclick:() => select(current + 1) }, '›')] : null);
+  // Photos change by themselves when the owner turned it on: never with reduced
+  // motion, paused while the pointer or focus is on the photos.
+  clearInterval(state.viewerTimer);
+  const autoplay = item.photoAutoplay;
+  if (many && autoplay?.on && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let paused = false;
+    const pause = value => () => { paused = value; };
+    state.viewerTimer = setInterval(() => { if (!paused && main.isConnected) select(current + (autoplay.direction === 'backward' ? -1 : 1)); }, (autoplay.seconds || 5) * 1000);
+    stage.addEventListener('pointerenter', pause(true)); stage.addEventListener('pointerleave', pause(false));
+    stage.addEventListener('focusin', pause(true)); stage.addEventListener('focusout', pause(false));
+  }
+  if (many) {
+    // A sideways swipe on the photo switches it; vertical moves still scroll the dialog.
+    let startX = null;
+    stage.addEventListener('pointerdown', event => { if (event.pointerType !== 'mouse' && !event.target.closest('button')) startX = event.clientX; });
+    stage.addEventListener('pointerup', event => { if (startX === null) return; const distance = event.clientX - startX; startX = null; if (Math.abs(distance) > 40) select(current + (distance < 0 ? 1 : -1)); });
+    stage.addEventListener('pointercancel', () => { startX = null; });
+  }
+  const strip = many ? h('div', { class:'sf-view-thumbs', role:'group', 'aria-label':'Фото изделия', onkeydown:event => {
+    if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') { event.preventDefault(); select(current + (event.key === 'ArrowRight' ? 1 : -1), true); }
+  } }, ...thumbs) : null;
+  return [stage, strip].filter(Boolean);
+}
+
+// ---------- choices in the item card: size, filling and decoration as buttons with
+// their price; the total follows the choice and the choice goes on to the request ----------
+const CHOICE_GROUPS = [['size', 'Размер', 'sizes', null], ['filling', 'Начинка', 'fillings', 'Не выбрано'], ['decoration', 'Оформление', 'decorations', 'Без оформления']];
+function renderChoices(item) {
+  const host = $('#sfItemChoices');
+  const groups = CHOICE_GROUPS.filter(([, , key]) => item[key].length).map(([name, legend, key, none]) => {
+    const price = option => option.priceMinor === null ? '' : name === 'size' ? money(option.priceMinor) : `+${money(option.priceMinor)}`;
+    const choices = [...(none ? [{ label:'', title:none, price:'' }] : []), ...item[key].map(option => ({ label:option.label, title:option.label, price:price(option) }))];
+    return h('fieldset', { class:'sf-choice' }, h('legend', {}, legend), h('div', { class:'sf-choice-options' }, ...choices.map(choice => h('label', { class:'sf-option' },
+      h('input', { type:'radio', name:`choice-${name}`, value:choice.label, checked:state.choice[name] === choice.label, onchange:() => { state.choice[name] = choice.label; updateItemTotal(); } }),
+      h('span', {}, choice.title, choice.price ? h('small', {}, choice.price) : null)))));
+  });
+  host.replaceChildren(...groups);
+  host.hidden = !groups.length;
+}
+function updateItemTotal() {
+  const item = state.item, quantity = item.minQuantity, estimate = lineEstimate(item, { ...state.choice, quantity });
+  const unit = quantity > 1 ? ` за ${quantity} ${item.unit}` : '';
+  $('#sfItemTotal').replaceChildren(...(estimate
+    ? [h('span', {}, 'Итого ориентировочно'), h('strong', {}, `${estimate.from ? 'от ' : ''}${money(estimate.minor)}${unit}`)]
+    : [h('span', {}, 'Стоимость назовёт кондитерская')]));
+  if (cartOn() && $('#sfCartConfig').isConnected) updateCartEstimate();
+}
+
 function openItem(item) {
   state.item = item; state.date = null; state.requestId = ''; state.checkout = false;
+  state.choice = { size:item.sizes[0]?.label || '', filling:'', decoration:'' };
   $('#sfItemTitle').textContent = item.title;
   $('#sfItemPrice').textContent = priceText(item);
   $('#sfItemDescription').textContent = item.description || item.summary || '';
   const gallery = $('#sfGallery');
-  gallery.replaceChildren(...(item.mediaIds.length ? item.mediaIds.map((id, index) => h('img', { src:media(id), alt:index === 0 ? item.title : `${item.title}, фото ${index + 1}`, loading:index ? 'lazy' : 'eager' }))
-    : [h('span', { class:'sf-card-placeholder', 'aria-hidden':'true' }, item.title.slice(0, 1))]));
+  gallery.replaceChildren(...photoViewer(item));
   const lead = Math.max(item.leadDays || 0, state.shop.calendar.leadDays || 0);
-  const option = list => list.map(entry => entry.priceMinor === null ? entry.label : `${entry.label} — ${money(entry.priceMinor)}`).join('\n');
-  const facts = [['Состав и начинка', item.composition], ['Размеры', option(item.sizes)], ['Начинки на выбор', option(item.fillings)], ['Оформление', option(item.decorations)],
+  const facts = [['Состав и начинка', item.composition],
     ['Срок изготовления', lead ? `заказ минимум за ${lead} ${plural(lead, 'день', 'дня', 'дней')}` : 'можно заказать на ближайшие свободные даты'], ['Примечания', item.notes]].filter(([, value]) => value);
   $('#sfItemFacts').replaceChildren(...facts.flatMap(([term, value]) => [h('dt', {}, term), h('dd', {}, value)]));
+  renderChoices(item);
+  updateItemTotal();
   const chooser = $('#sfChooseDate'), ordering = state.shop.accepting || demoOnly();
   chooser.hidden = !ordering || cartOn();
   chooser.textContent = demoOnly() ? 'Посмотреть календарь (предпросмотр)' : 'Выбрать дату';
   $('#sfCartConfig').hidden = !ordering || !cartOn();
+  $('#sfItemCta').classList.toggle('is-cart', cartOn());
+  $('#sfItemTotal').hidden = cartOn();
   if (cartOn()) renderCartConfig(item);
   if (!$('#sfItemDialog').open) $('#sfItemDialog').showModal();
   showPane('details');
@@ -277,8 +353,8 @@ const plural = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one : [2,
 function renderCartConfig(item) {
   const form = $('#sfCartConfig');
   form.reset();
-  $('#sfCartChoices').replaceChildren(...[selectField('size', 'Размер', item.sizes), selectField('filling', 'Начинка', item.fillings), selectField('decoration', 'Оформление', item.decorations)].filter(Boolean));
-  $('#sfCartChoices').hidden = !$('#sfCartChoices').children.length;
+  $('#sfCartChoices').replaceChildren();
+  $('#sfCartChoices').hidden = true;
   const quantity = form.elements.quantity;
   quantity.min = String(item.minQuantity); quantity.max = String(item.maxQuantity); quantity.value = String(item.minQuantity);
   $('#sfCartError').textContent = ''; $('#sfCartAdded').hidden = true;
@@ -286,7 +362,8 @@ function renderCartConfig(item) {
 }
 const configLine = () => {
   const form = $('#sfCartConfig');
-  return { itemId:state.item.id, size:form.elements.size?.value || '', filling:form.elements.filling?.value || '', decoration:form.elements.decoration?.value || '',
+  const choice = state.choice || {};
+  return { itemId:state.item.id, size:choice.size || '', filling:choice.filling || '', decoration:choice.decoration || '',
     quantity:Math.floor(Number(form.elements.quantity.value)) || 0 };
 };
 function updateCartEstimate() {
@@ -423,7 +500,14 @@ function renderForm() {
   $('#sfFormLines').replaceChildren(...entries.map(({ line, item: entry }) => h('li', { class:'sf-cart-line compact' },
     h('span', { class:'sf-cart-copy' }, h('strong', {}, `${entry.title} × ${line.quantity}`), optionsText(line) ? h('small', {}, optionsText(line)) : null))));
   $('#sfChoiceRow').replaceChildren(...(checkout ? [] : [selectField('size', 'Размер', item.sizes), selectField('filling', 'Начинка', item.fillings), selectField('decoration', 'Оформление', item.decorations)].filter(Boolean)));
-  $('#sfChoiceRow').hidden = waitlist || !$('#sfChoiceRow').children.length;
+  // The choice made in the item card: shown as a line with «Изменить», sent by the
+  // selects behind it (kept for the request, hidden from view).
+  const chosen = checkout ? '' : optionsText(state.choice || {});
+  if (!checkout) for (const name of ['size', 'filling', 'decoration']) if (form.elements[name]) form.elements[name].value = state.choice?.[name] || '';
+  $('#sfChoiceRow').hidden = true;
+  $('#sfFormChoice').hidden = waitlist || !chosen;
+  $('#sfFormChoice').replaceChildren(...(chosen ? [h('span', {}, 'Ваш выбор: '), h('strong', {}, chosen),
+    h('button', { type:'button', class:'sf-link', onclick:() => showPane('details') }, 'Изменить')] : []));
   const quantity = form.elements.quantity;
   quantity.closest('label').hidden = waitlist || checkout;
   if (!checkout) { quantity.min = String(item.minQuantity); quantity.max = String(item.maxQuantity); quantity.value = String(item.minQuantity); }
@@ -524,15 +608,28 @@ function renderDone(result) {
       h('button', { type:'button', class:'sf-button', onclick:() => $('#sfItemDialog').close() }, 'Вернуться к каталогу'));
   } else {
     const link = result.token ? `${location.origin}${location.pathname}?order=${result.token}` : '';
-    const what = result.lines?.length > 1 ? result.lines.map(line => `${line.itemTitle} × ${line.quantity}`).join(', ') : result.itemTitle;
+    const chosen = state.checkout ? '' : optionsText(state.choice || {});
+    const what = result.lines?.length > 1 ? result.lines.map(line => `${line.itemTitle} × ${line.quantity}`).join(', ') : `${result.itemTitle}${chosen ? ` (${chosen})` : ''}`;
     const when = `${dateText(result.date, { day:'numeric', month:'long' })}${result.pickupWindow ? `, ${result.pickupWindow}` : ''}`;
     pane.replaceChildren(...[h('div', { class:'sf-done-mark', 'aria-hidden':'true' }, '✓'), h('h2', {}, `Заявка №${result.number} отправлена`),
-      h('p', {}, `${what} на ${when}. Статус: «${result.statusLabel}». Кондитерская свяжется с вами, чтобы подтвердить детали и стоимость.`),
+      h('p', {}, `${what} на ${when}. Статус: «${result.statusLabel}».${!result.discountPercent && result.estimateMinor !== null && result.estimateMinor !== undefined ? ` Ориентировочно ${result.estimateFrom ? 'от ' : ''}${money(result.estimateMinor)}.` : ''} Кондитерская свяжется с вами, чтобы подтвердить детали и стоимость.`),
+      orderTrack(result.status || 'new'),
       result.discountPercent ? h('p', { class:'sf-done-discount' }, `Скидка постоянного покупателя ${result.discountPercent}%${result.totalMinor !== null && result.totalMinor !== undefined ? `: ориентировочно ${result.estimateFrom ? 'от ' : ''}${money(result.totalMinor)}` : ''}.`) : null,
       state.account ? h('p', {}, 'Заявка уже в вашем кабинете покупателя.') : link ? h('p', { class:'sf-done-link' }, 'Статус заявки можно проверить по ссылке — сохраните её: ', h('a', { href:link }, 'открыть статус')) : null,
       h('button', { type:'button', class:'sf-button', onclick:() => $('#sfItemDialog').close() }, 'Готово')].filter(Boolean));
   }
   showPane('done');
+}
+
+// ---------- order tracking: the request's way from "accepted" to "picked up" ----------
+const TRACK_STEPS = [['new', 'Заявка принята'], ['contacted', 'Кондитер на связи'], ['confirmed', 'Подтверждена'],
+  ['in_progress', 'Готовится'], ['ready', 'Готова к выдаче'], ['completed', 'Выдана']];
+function orderTrack(status, { compact = false } = {}) {
+  const cancelled = status === 'cancelled';
+  const at = cancelled ? 0 : Math.max(0, TRACK_STEPS.findIndex(([key]) => key === status));
+  return h('ol', { class:`sf-track sf-track-at-${at}${compact ? ' sf-track-compact' : ''}${cancelled ? ' is-cancelled' : ''}`, 'aria-label':'Ход заявки' },
+    ...TRACK_STEPS.map(([, label], index) => h('li', { class:cancelled ? '' : index < at ? 'is-done' : index === at ? 'is-current' : '', 'aria-current':!cancelled && index === at ? 'step' : null },
+      h('span', { class:'sf-track-dot', 'aria-hidden':'true' }), h('span', { class:'sf-track-label' }, label))));
 }
 
 async function showOrderStatus(token) {
@@ -541,7 +638,8 @@ async function showOrderStatus(token) {
   try {
     const order = await api(`/orders/${encodeURIComponent(token)}`);
     host.replaceChildren(h('p', { class:'sf-status-label' }, `Заявка №${order.number}`), h('h2', {}, order.statusLabel),
-      h('p', {}, `${order.itemTitle} · ${dateText(order.date, { day:'numeric', month:'long', weekday:'long' })}${order.pickupWindow ? `, ${order.pickupWindow}` : ''}`));
+      h('p', {}, `${order.itemTitle} · ${dateText(order.date, { day:'numeric', month:'long', weekday:'long' })}${order.pickupWindow ? `, ${order.pickupWindow}` : ''}`),
+      orderTrack(order.status));
     host.dataset.status = order.status;
   } catch (error) { host.replaceChildren(h('p', {}, error.message)); host.dataset.status = 'error'; }
 }
@@ -643,6 +741,7 @@ function renderAccountHome(host) {
   const account = state.account, profile = account.profile;
   const orders = account.orders.length ? h('ol', { class:'sf-history' }, ...account.orders.map(order => h('li', {},
     h('span', { class:'sf-history-head' }, h('strong', {}, `№${order.number} · ${dateText(order.date, { day:'numeric', month:'long' })}${order.pickupWindow ? `, ${order.pickupWindow}` : ''}`), h('em', {}, order.statusLabel)),
+    orderTrack(order.status, { compact:true }),
     h('small', {}, order.lines.map(line => `${line.itemTitle} × ${line.quantity}`).join(', ')),
     order.totalMinor !== null && order.totalMinor !== undefined ? h('small', {}, `${order.estimateFrom ? 'от ' : ''}${money(order.totalMinor)}${order.discountPercent ? ` · скидка ${order.discountPercent}%` : ''}`) : null)))
     : h('p', { class:'sf-account-note' }, 'Заказов пока нет. Оформленные после входа заявки появятся здесь.');
@@ -823,7 +922,7 @@ function bind() {
   $('#sfContactMethod').addEventListener('change', syncContactHint);
   $('#sfFatalRetry').addEventListener('click', () => location.reload());
   // The close event arrives as a later task: skip it if the dialog was opened again meanwhile.
-  $('#sfItemDialog').addEventListener('close', event => { if (!event.currentTarget.open) { state.requestId = ''; state.checkout = false; } });
+  $('#sfItemDialog').addEventListener('close', event => { if (!event.currentTarget.open) { state.requestId = ''; state.checkout = false; clearInterval(state.viewerTimer); } });
 }
 
 async function start() {

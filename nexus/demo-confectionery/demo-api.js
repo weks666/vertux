@@ -1,7 +1,7 @@
 // Public website demo of the confectionery Workspace. The real storefront and
 // cabinet run unchanged; this module answers their /api/ calls from a fictional
 // shop kept in sessionStorage of this browser tab. Nothing leaves the browser.
-import * as model from './model.mjs?v=202611046a5c';
+import * as model from './model.mjs?v=20261105j9yj';
 
 const KEY = 'nexus-confectionery-demo-v2';
 const PRODUCT_ID = '00000000-0000-4000-8000-00000000c0de';
@@ -21,7 +21,7 @@ function seed() {
   const option = (label, price = null) => ({ label, priceMinor: price === null ? null : price * 100 });
   const item = (key, title, summary, details) => ({ id: id(), status: 'active', sortOrder: 0, title, summary, description: details.description || '', composition: details.composition || '',
     priceMinor: details.price * 100, priceFrom: details.from === true, unit: details.unit || 'шт.', leadDays: details.lead ?? null, capacityUnits: details.slots || 1, notes: details.notes || '',
-    sizes: details.sizes || [], decorations: details.decorations || [], fillings: details.fillings || [], mediaIds: [MEDIA[key]], minQuantity: details.min || 1, maxQuantity: details.max || 50,
+    sizes: details.sizes || [], decorations: details.decorations || [], fillings: details.fillings || [], mediaIds: [MEDIA[key], ...(details.photos || []).map(photo => MEDIA[photo])], photoAutoplay: details.autoplay || { on: false, seconds: 5, direction: 'forward' }, minQuantity: details.min || 1, maxQuantity: details.max || 50,
     revision: 1, createdAt: nowIso(), updatedAt: nowIso() });
   const items = [
     item('honey', 'Медовик', 'Тонкие медовые коржи и нежный сметанный крем', { price: 2400, from: true, lead: 2, composition: 'Мёд, мука, сметана, сливки, сливочное масло',
@@ -29,7 +29,7 @@ function seed() {
     item('cocoa', 'Шоколадный с вишней', 'Шоколадный бисквит, вишнёвый конфитюр, крем на сливках', { price: 3200, from: true, lead: 3, slots: 2,
       composition: 'Шоколадный бисквит, вишня, сливки, тёмный шоколад 70%', sizes: [option('1,5 кг', 3200), option('2 кг', 4100)], decorations: [option('Надпись'), option('Шоколадный декор', 400)],
       notes: 'Большие торты занимают два производственных слота' }),
-    item('cupcakes', 'Капкейки', 'Ванильные и шоколадные, с кремом-чиз', { price: 180, unit: 'шт.', min: 6, max: 48, fillings: [option('Ваниль'), option('Шоколад'), option('Солёная карамель', 20)] }),
+    item('cupcakes', 'Капкейки', 'Ванильные и шоколадные, с кремом-чиз', { price: 180, unit: 'шт.', min: 6, max: 48, photos: ['cover2', 'cover3'], autoplay: { on: true, seconds: 3, direction: 'forward' }, fillings: [option('Ваниль'), option('Шоколад'), option('Солёная карамель', 20)] }),
     item('eclairs', 'Эклеры', 'Заварное тесто, крем пломбир, глазурь', { price: 150, unit: 'шт.', min: 6, max: 60 }),
     item('macarons', 'Макарон, набор', '12 штук: фисташка, малина, лаванда, шоколад', { price: 1300, unit: 'набор', max: 10 }),
     item('cheesecake', 'Чизкейк Нью-Йорк', 'Плотный сливочный, на песочной основе', { price: 2200, from: true, lead: 2, sizes: [option('1 кг', 2200), option('1,5 кг', 3100)] }),

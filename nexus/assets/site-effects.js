@@ -10,7 +10,7 @@
 
   // Spotlight on cards.
   const SPOTLIGHT = ['.nx-product-choice', '.nx-account-list li', '.nx-tier-card', '.nx-section-rows article', '.nx-section-steps article',
-    '.nx-cf-price-card', '.nx-cf-feature-grid article', '.nx-cf-strip > div', '.nx-cf-format-grid article', '.nx-connection-section li'].join(',');
+    '.nx-cf-price-card', '.nx-cf-feature-grid article', '.nx-cf-strip > div', '.nx-cf-format-grid article', '.nx-connection-section li', '.nx-choose-row'].join(',');
   if (pointer && !reduced) {
     for (const card of document.querySelectorAll(SPOTLIGHT)) {
       const glow = document.createElement('span');

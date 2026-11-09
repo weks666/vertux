@@ -434,3 +434,82 @@
 .cx-shop-preview[data-card-light="full"] i{background-image:linear-gradient(155deg,color-mix(in srgb,var(--p-light) var(--p-light-strength),transparent),color-mix(in srgb,var(--p-light) var(--p-light-soft),transparent))}
 .cx-shop-preview[data-card-light="corner"] i{background-image:radial-gradient(55% 45% at 100% 0,color-mix(in srgb,var(--p-light) var(--p-light-strength),transparent),transparent 100%)}
 @media (max-width:560px){.cx-light-options{grid-template-columns:repeat(2,minmax(0,1fr))}.cx-range input{width:120px}}
+
+/* Welcome tour on the first visit: a greeting, four steps that slide, dots. */
+.cx-welcome{width:min(520px,calc(100vw - 24px));overflow:hidden}
+.cx-welcome[open]{animation:cx-welcome-in .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes cx-welcome-in{from{opacity:0;transform:translateY(18px) scale(.97)}}
+.cx-welcome-hero{position:relative;display:grid;justify-items:center;gap:6px;padding:34px 28px 26px;text-align:center;
+  background:radial-gradient(120% 90% at 50% 0,color-mix(in srgb,var(--accent) 30%,transparent),transparent 70%),linear-gradient(180deg,color-mix(in srgb,var(--accent) 10%,var(--surface)),var(--surface))}
+.cx-welcome-mark{display:grid;place-items:center;width:64px;height:64px;margin-bottom:8px;overflow:hidden;border-radius:18px;background:var(--accent);color:var(--on-accent,#fff);
+  font-size:28px;font-weight:700;box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 40%,transparent);animation:cx-welcome-float 4s ease-in-out infinite}
+.cx-welcome-mark img{width:100%;height:100%;object-fit:cover}
+@keyframes cx-welcome-float{50%{transform:translateY(-4px)}}
+.cx-welcome-hero h2{margin:0;font-size:24px;line-height:1.2}
+.cx-welcome-hero p{max-width:36ch;margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.cx-welcome-skip{position:absolute;top:14px;right:14px;padding:6px 10px;border:0;border-radius:8px;background:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer}
+.cx-welcome-skip:hover{color:var(--text);background:color-mix(in srgb,var(--text) 7%,transparent)}
+.cx-welcome-body{overflow:hidden}
+.cx-welcome-track{display:flex;transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.cx-welcome-track[data-step="1"]{transform:translateX(-100%)}
+.cx-welcome-track[data-step="2"]{transform:translateX(-200%)}
+.cx-welcome-track[data-step="3"]{transform:translateX(-300%)}
+.cx-welcome-slide{flex:0 0 100%;box-sizing:border-box;display:grid;justify-items:start;align-content:start;gap:6px;min-height:206px;padding:22px 28px 6px;transition:opacity .35s}
+.cx-welcome-slide[inert]{opacity:0}
+.cx-welcome-icon{display:grid;place-items:center;width:44px;height:44px;margin-bottom:6px;border-radius:13px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent)}
+.cx-welcome-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cx-welcome-slide small{color:var(--muted);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.cx-welcome-slide h3{margin:0;font-size:20px}
+.cx-welcome-slide p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+.cx-welcome-link{margin-top:8px;padding:0;border:0;background:none;color:var(--accent);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.cx-welcome-link:hover{text-decoration:underline}
+.cx-welcome-foot{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:16px 22px 20px}
+.cx-welcome-dots{display:flex;justify-content:center;gap:2px}
+.cx-welcome-dot{display:grid;place-items:center;width:24px;height:24px;padding:0;border:0;background:none;cursor:pointer}
+.cx-welcome-dot::before{content:"";width:7px;height:7px;border-radius:99px;background:var(--line-strong);transition:width .3s,background .3s}
+.cx-welcome-dot[aria-current="true"]::before{width:20px;background:var(--accent)}
+.cx-welcome-dot:focus-visible,.cx-welcome-link:focus-visible,.cx-welcome-skip:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+@media (prefers-reduced-motion:reduce){.cx-welcome[open],.cx-welcome-mark{animation:none}.cx-welcome-track,.cx-welcome-slide{transition:none}}
+/* On a phone other dialogs open as full-screen sheets; the welcome stays a centred card. */
+.cx-dialog.cx-welcome{width:min(520px,calc(100vw - 24px));max-width:none;height:fit-content;max-height:calc(100svh - 24px);margin:auto;border-radius:20px}
+
+/* Customers: a gap between the filter chips and the list (orders have it from the toolbar). */
+#cxCustomerFilters{margin-bottom:14px}
+
+/* Subscription and support come from the shared Vertux service module, dark by
+   default. The cabinet hands it its own theme through the module's custom
+   properties, which win over the module's :host defaults; the module stays as is. */
+#cxServiceHost vertux-service-center{--vsc-surface:var(--surface);--vsc-surface-strong:color-mix(in srgb,var(--text) 5%,var(--surface));--vsc-text:var(--text);
+  --vsc-muted:var(--muted);--vsc-accent:var(--accent);--vsc-success:var(--success);--vsc-warning:var(--warning);--vsc-danger:var(--danger);
+  --vsc-border:var(--line);--vsc-radius:20px;--vsc-radius-small:12px;--vsc-shadow:var(--cx-shadow)}
+
+/* Calendar: two columns that stack on their own — month and "close a period" on
+   the left, the chosen date and the working rules on the right. On a narrow
+   screen one column: month, chosen date, rules, period. */
+.cx-calendar-split .cx-stack{align-content:start}
+@media (max-width:1100px){
+  .cx-calendar-split .cx-stack{display:contents}
+  .cx-calendar-main>.panel:first-child{order:1}
+  .cx-calendar-split #cxDateForm{order:2}
+  .cx-calendar-split #cxCalendarForm{order:3}
+  .cx-calendar-split #cxRangeForm{order:4}
+}
+
+/* Settings: "Домен и доступ" holds two cards, each under its own small heading. */
+.cx-settings-sub{margin:18px 0 8px;font-size:15px}
+.cx-settings-page>h2+.cx-settings-sub{margin-top:4px}
+
+/* A notice inside a card keeps the card's inner margins instead of touching its border. */
+.panel>.cx-state:not(:empty){margin:14px 16px 2px}
+/* First steps: every step card the same height, however long its label. */
+.cx-steps{grid-auto-rows:1fr}
+.cx-steps>li{display:flex}
+.cx-steps>li>button{height:100%}
+/* Two fields side by side line up at the bottom and keep the same height, even
+   when one label carries a hint such as «необязательно». */
+.cx-form .form-row{align-items:end}
+.cx-form .form-row>label{align-content:end}
+/* Photo autoplay settings in the item editor. */
+.cx-autoplay{display:grid;gap:6px}
+.cx-autoplay-more>summary{width:fit-content;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer}
+.cx-autoplay-more[open]>summary{margin-bottom:10px}

@@ -50,6 +50,11 @@ cabinetHtml = cabinetHtml.replace(/href="\/confectionery\/cabinet\.css[^"]*"/u, 
   .replace(/\s*<script src="\/service-module\/[^"]+" defer><\/script>/u, '')
   .replace(/<script type="module" src="\/confectionery\/cabinet\.js[^"]*"><\/script>/u, `${demoScript}<script type="module" src="./cabinet.js?${V}"></script>\n  <link rel="stylesheet" href="./demo.css?${V}">`);
 if (!cabinetHtml.includes('./cabinet.js') || cabinetHtml.includes('/service-module/')) throw new Error('Demo export contract changed: cabinet scripts');
+// Shared Sonner-style toasts of the Nexus app.
+cabinetHtml = cabinetHtml.replace(/href="\/toaster\.css[^"]*"/u, `href="./toaster.css?${V}"`).replace(/src="\/toaster\.js[^"]*"/u, `src="./toaster.js?${V}"`);
+if (!cabinetHtml.includes('./toaster.js') || !cabinetHtml.includes('./toaster.css')) throw new Error('Demo export contract changed: cabinet toasts');
+await copyFile(join(app, 'public/toaster.js'), join(output, 'toaster.js')); await source('public/toaster.js');
+await copyFile(join(app, 'public/toaster.css'), join(output, 'toaster.css')); await source('public/toaster.css');
 await writeFile(join(output, 'cabinet.html'), cabinetHtml);
 
 let cabinetJs = (await source('public/confectionery/cabinet.js')).toString('utf8');

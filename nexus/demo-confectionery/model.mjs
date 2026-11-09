@@ -351,6 +351,18 @@ export function normalizeOverride(body) {
   return {kind, capacity, note: text(body.note, 200, {name:'Заметка'})};
 }
 
+// Photos of an item can change by themselves on the storefront (only with more
+// than one photo): every 3, 5, 8 or 12 seconds, forwards or backwards.
+export const AUTOPLAY_SECONDS = Object.freeze([3, 5, 8, 12]);
+export function normalizePhotoAutoplay(value) {
+  if (value === undefined || value === null) return {on:false, seconds:5, direction:'forward'};
+  if (typeof value !== 'object' || Array.isArray(value)) throw invalid('Листание фото: выберите настройки.');
+  const seconds = value.seconds === undefined ? 5 : Number(value.seconds);
+  if (!AUTOPLAY_SECONDS.includes(seconds)) throw invalid('Листание фото: каждые 3, 5, 8 или 12 секунд.');
+  if (value.direction !== undefined && !['forward','backward'].includes(value.direction)) throw invalid('Листание фото: вперёд или назад.');
+  return {on:value.on === true, seconds, direction:value.direction || 'forward'};
+}
+
 export function normalizeItem(body) {
   if (!body || typeof body !== 'object') throw invalid('Заполните карточку изделия.');
   if (body.status !== undefined && !['active','hidden'].includes(body.status)) throw invalid('Состояние изделия: в каталоге или скрыто.');
@@ -373,6 +385,7 @@ export function normalizeItem(body) {
     decorations: options(body.decorations, 'Оформление'),
     fillings: options(body.fillings, 'Начинки'),
     mediaIds: mediaList(body.mediaIds, 8),
+    photoAutoplay: normalizePhotoAutoplay(body.photoAutoplay),
     minQuantity, maxQuantity,
     sortOrder: integer(body.sortOrder ?? 0, {name:'Порядок', min:-10000, max:10000}),
   };

@@ -143,8 +143,27 @@ h1,h2,h3{font-family:var(--sf-display)}
 .sf-pane{outline:0}
 .sf-pane[data-pane="details"]:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px}
 .sf-gallery{display:grid;gap:8px;align-content:start}
-.sf-gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:18px}
-.sf-gallery img:not(:first-child){display:inline-block;width:calc(33.333% - 6px);aspect-ratio:1}
+/* Item photos: a large photo with thumbnails; arrows, a swipe or the keys switch them. */
+.sf-view-stage{position:relative;overflow:hidden;border-radius:18px;background:var(--sf-surface);touch-action:pan-y}
+.sf-view-main{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.sf-view-main.is-in{animation:sf-view-in .35s ease}
+@keyframes sf-view-in{from{opacity:.35;transform:scale(1.025)}}
+.sf-view-count{position:absolute;right:10px;bottom:10px;padding:4px 9px;border-radius:999px;background:#1c120ab3;color:#fff;font-size:12px;font-weight:700;letter-spacing:.02em}
+.sf-view-arrow{position:absolute;top:50%;display:grid;place-items:center;width:38px;height:38px;margin-top:-19px;padding:0 0 3px;border:0;border-radius:50%;
+  background:#fffffff0;color:#2a1a0e;font-size:26px;line-height:1;cursor:pointer;box-shadow:0 6px 18px #2a1a0e33;opacity:0;transition:opacity .2s,transform .2s}
+.sf-view-arrow.is-prev{left:10px}.sf-view-arrow.is-next{right:10px}
+.sf-view-stage:hover .sf-view-arrow,.sf-view-arrow:focus-visible{opacity:1}
+.sf-view-arrow:active{transform:scale(.94)}
+.sf-view-arrow:focus-visible{outline:2px solid var(--sf-accent);outline-offset:2px}
+@media (hover:none){.sf-view-arrow{opacity:.92}}
+.sf-view-thumbs{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none}
+.sf-view-thumbs::-webkit-scrollbar{display:none}
+.sf-view-thumb{flex:0 0 64px;height:64px;padding:0;overflow:hidden;border:2px solid transparent;border-radius:12px;background:var(--sf-surface);cursor:pointer;opacity:.62;transition:opacity .2s,border-color .2s}
+.sf-view-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.sf-view-thumb:hover{opacity:.9}
+.sf-view-thumb[aria-pressed="true"]{border-color:var(--sf-accent);opacity:1}
+.sf-view-thumb:focus-visible{outline:2px solid var(--sf-accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.sf-view-main.is-in{animation:none}.sf-view-arrow{transition:none}}
 .sf-gallery .sf-card-placeholder{aspect-ratio:4/3;border-radius:18px}
 .sf-item-copy{display:grid;align-content:start;gap:10px}
 .sf-item-copy h2{margin:0;font-size:30px;line-height:1.08;letter-spacing:-.03em}.sf-price{margin:0;font:700 20px/1.2 var(--sf-display)}
@@ -276,3 +295,79 @@ h1,h2,h3{font-family:var(--sf-display)}
 :root[data-card-light="diffuse"] .sf-card{background-image:radial-gradient(130% 90% at 0 0,color-mix(in srgb,var(--sf-light) var(--sf-light-strength),transparent),transparent 70%)}
 :root[data-card-light="full"] .sf-card{background-image:linear-gradient(155deg,color-mix(in srgb,var(--sf-light) var(--sf-light-strength),transparent),color-mix(in srgb,var(--sf-light) var(--sf-light-soft),transparent))}
 :root[data-card-light="corner"] .sf-card{background-image:radial-gradient(55% 45% at 100% 0,color-mix(in srgb,var(--sf-light) var(--sf-light-strength),transparent),transparent 100%)}
+
+/* Order tracking: the request's way from "accepted" to "picked up". Done steps
+   carry a check, the current one pulses, and the line fills up to it. */
+.sf-track{--sf-track-fill:0;position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin:18px 0 2px;padding:0;list-style:none}
+.sf-track-at-1{--sf-track-fill:.2}.sf-track-at-2{--sf-track-fill:.4}.sf-track-at-3{--sf-track-fill:.6}.sf-track-at-4{--sf-track-fill:.8}.sf-track-at-5{--sf-track-fill:1}
+.sf-track::before,.sf-track::after{content:"";position:absolute;top:11px;left:calc(100% / 12);height:3px;border-radius:3px}
+.sf-track::before{right:calc(100% / 12);background:var(--sf-line)}
+.sf-track::after{width:calc((100% - 100% / 6) * var(--sf-track-fill));background:var(--sf-accent);animation:sf-track-fill 1s cubic-bezier(.2,.7,.2,1) both}
+@keyframes sf-track-fill{from{width:0}}
+.sf-track li{position:relative;z-index:1;display:grid;justify-items:center;gap:8px;text-align:center}
+.sf-track-dot{display:grid;place-items:center;box-sizing:border-box;width:25px;height:25px;border:2px solid var(--sf-line-strong);border-radius:50%;background:var(--sf-surface);
+  color:var(--sf-on-accent);font-size:13px;font-weight:800;line-height:1}
+.sf-track-label{max-width:11ch;color:var(--sf-muted);font-size:12px;line-height:1.3}
+.sf-track .is-done .sf-track-dot{border-color:var(--sf-accent);background:var(--sf-accent)}
+.sf-track .is-done .sf-track-dot::after{content:"✓"}
+.sf-track .is-current .sf-track-dot{border-color:var(--sf-accent);background:var(--sf-surface);box-shadow:0 0 0 0 color-mix(in srgb,var(--sf-accent) 45%,transparent);animation:sf-track-pulse 1.8s ease-out infinite}
+.sf-track .is-current .sf-track-dot::after{content:"";width:9px;height:9px;border-radius:50%;background:var(--sf-accent)}
+.sf-track .is-current .sf-track-label{color:var(--sf-text);font-weight:700}
+@keyframes sf-track-pulse{70%{box-shadow:0 0 0 9px color-mix(in srgb,var(--sf-accent) 0%,transparent)}100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--sf-accent) 0%,transparent)}}
+.sf-track.is-cancelled{opacity:.55}
+.sf-track.is-cancelled::after{display:none}
+/* In "My orders" a thin bar is enough: the status itself is written next to the number. */
+.sf-track-compact{margin:4px 0 2px}
+.sf-track-compact::before,.sf-track-compact::after{top:4px;height:2px}
+.sf-track-compact li{gap:0}
+.sf-track-compact .sf-track-dot{width:10px;height:10px;border-width:2px;font-size:0}
+.sf-track-compact .is-done .sf-track-dot::after{content:none}
+.sf-track-compact .is-current .sf-track-dot{animation:none}
+.sf-track-compact .is-current .sf-track-dot::after{width:4px;height:4px}
+.sf-track-compact .sf-track-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media (max-width:560px){
+  .sf-track:not(.sf-track-compact){grid-template-columns:none;gap:14px;margin-top:16px}
+  .sf-track:not(.sf-track-compact)::before,.sf-track:not(.sf-track-compact)::after{top:12px;left:11px;width:3px;height:auto}
+  .sf-track:not(.sf-track-compact)::before{right:auto;bottom:12px}
+  .sf-track:not(.sf-track-compact)::after{height:calc((100% - 24px) * var(--sf-track-fill));animation-name:sf-track-fill-down}
+  .sf-track:not(.sf-track-compact) li{grid-template-columns:25px 1fr;justify-items:start;align-items:center;gap:12px;text-align:left}
+  .sf-track:not(.sf-track-compact) .sf-track-label{max-width:none;font-size:14px}
+}
+@keyframes sf-track-fill-down{from{height:0}}
+@media (prefers-reduced-motion:reduce){.sf-track::after,.sf-track .is-current .sf-track-dot{animation:none}}
+
+/* Item card (05.11): the photo across the whole dialog on top, then the text,
+   choices as buttons and a total that stays at the bottom while the text scrolls. */
+.sf-pane[data-pane="details"]:not([hidden]){display:block}
+.sf-pane[data-pane="details"] .sf-gallery{margin:0 -22px 20px}
+.sf-pane[data-pane="details"] .sf-view-stage{border-radius:0}
+.sf-pane[data-pane="details"] .sf-view-main{aspect-ratio:16/10;max-height:58vh}
+.sf-pane[data-pane="details"] .sf-view-thumbs{padding:2px 22px}
+.sf-pane[data-pane="details"] .sf-gallery>.sf-card-placeholder{display:grid;aspect-ratio:16/10;max-height:46vh;border-radius:0}
+.sf-item-copy{display:grid;gap:10px}
+.sf-item-copy>h2{margin:0}
+.sf-item-copy>.sf-price{margin:0}
+.sf-choices{display:grid;gap:14px;margin:6px 0 2px}
+.sf-choice{margin:0;padding:0;border:0;min-width:0}
+.sf-choice>legend{margin-bottom:8px;padding:0;color:var(--sf-muted);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.sf-choice-options{display:flex;flex-wrap:wrap;gap:8px}
+.sf-option{position:relative;cursor:pointer}
+.sf-option>input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+.sf-option>span{display:inline-flex;align-items:baseline;gap:7px;padding:9px 14px;border:1.5px solid var(--sf-line-strong);border-radius:999px;background:var(--sf-surface);
+  color:var(--sf-text);font-size:14px;font-weight:600;transition:border-color .15s,background .15s,color .15s}
+.sf-option>span>small{color:var(--sf-muted);font-size:12px;font-weight:700}
+.sf-option:hover>span{border-color:var(--sf-accent)}
+.sf-option>input:checked+span{border-color:var(--sf-accent);background:color-mix(in srgb,var(--sf-accent) 12%,var(--sf-surface));color:var(--sf-accent-text,var(--sf-text))}
+.sf-option>input:checked+span>small{color:inherit}
+.sf-option>input:focus-visible+span{outline:2px solid var(--sf-accent);outline-offset:2px}
+.sf-item-cta{position:sticky;bottom:-22px;z-index:2;display:grid;gap:10px;margin:8px -22px -22px;padding:14px 22px 22px;border-top:1px solid var(--sf-line);background:var(--sf-surface)}
+.sf-item-cta.is-cart{position:static;border-top:0;margin-top:4px;padding-top:0}
+.sf-item-total{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:0;color:var(--sf-muted);font-size:14px}
+.sf-item-total>strong{color:var(--sf-text);font-size:20px;font-variant-numeric:tabular-nums}
+.sf-form-choice{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;margin:0;padding:12px 14px;border:1px solid var(--sf-line);border-radius:14px;background:color-mix(in srgb,var(--sf-accent) 6%,var(--sf-surface))}
+.sf-form-choice>.sf-link{margin-left:auto;padding:0;border:0;background:none;color:var(--sf-accent);font:inherit;font-weight:700;cursor:pointer}
+@media (max-width:760px){
+  .sf-pane[data-pane="details"] .sf-gallery{margin:0 -16px 16px}
+  .sf-pane[data-pane="details"] .sf-view-thumbs{padding:2px 16px}
+  .sf-item-cta{bottom:-16px;margin:8px -16px -16px;padding:12px 16px 16px}
+}

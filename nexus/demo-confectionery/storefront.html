@@ -8,10 +8,10 @@
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./fonts/fonts.css">
   <link rel="stylesheet" href="./fonts/rubik.css">
-  <link rel="stylesheet" href="./storefront.css?v=202611046a5c">
-  <script type="module" src="./demo-api.js?v=202611046a5c"></script>
-  <script type="module" src="./storefront.js?v=202611046a5c"></script>
-  <link rel="stylesheet" href="./demo.css?v=202611046a5c">
+  <link rel="stylesheet" href="./storefront.css?v=20261105j9yj">
+  <script type="module" src="./demo-api.js?v=20261105j9yj"></script>
+  <script type="module" src="./storefront.js?v=20261105j9yj"></script>
+  <link rel="stylesheet" href="./demo.css?v=20261105j9yj">
 </head>
 <body>
   <a class="sf-skip" href="#sfCatalog">К каталогу</a>
@@ -77,16 +77,20 @@
           <h2 id="sfItemTitle"></h2>
           <p class="sf-price" id="sfItemPrice"></p>
           <p id="sfItemDescription"></p>
+          <div class="sf-choices" id="sfItemChoices" hidden></div>
           <dl class="sf-facts" id="sfItemFacts"></dl>
+          <div class="sf-item-cta" id="sfItemCta">
+          <p class="sf-item-total" id="sfItemTotal" aria-live="polite"></p>
           <button class="sf-button sf-button-wide" type="button" id="sfChooseDate">Выбрать дату</button>
           <form class="sf-form sf-cart-config" id="sfCartConfig" novalidate hidden>
-            <div class="sf-row" id="sfCartChoices"></div>
+            <div class="sf-row" id="sfCartChoices" hidden></div>
             <label>Количество<input name="quantity" type="number" inputmode="numeric" min="1" value="1" required></label>
             <p class="sf-estimate" id="sfCartEstimate" aria-live="polite"></p>
             <p class="sf-error" id="sfCartError" role="alert"></p>
             <button class="sf-button sf-button-wide" type="submit">Добавить в корзину</button>
             <p class="sf-added" id="sfCartAdded" role="status" hidden></p>
           </form>
+          </div>
         </div>
       </section>
       <section class="sf-pane" data-pane="cart" hidden>
@@ -106,6 +110,7 @@
         <div class="sf-pane-head"><button class="sf-back" type="button" data-back="date">← Дата</button><h2 id="sfFormTitle">Заявка</h2><p id="sfFormDate"></p></div>
         <form class="sf-form" id="sfOrderForm" novalidate>
           <ul class="sf-cart sf-cart-summary" id="sfFormLines" hidden></ul>
+          <p class="sf-form-choice" id="sfFormChoice" hidden></p>
           <div class="sf-row" id="sfChoiceRow"></div>
           <label id="sfPickupField" hidden>Время получения<select name="pickupWindow" id="sfPickup"></select></label>
           <label>Количество<input name="quantity" type="number" inputmode="numeric" min="1" value="1" required></label>
