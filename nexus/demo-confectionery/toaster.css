@@ -1,0 +1,46 @@
+/* Toasts (toaster.js): a Sonner-like stack in the page's own colours. The page
+   theme provides --surface, --text, --muted, --line-strong, --success, --danger,
+   --warning and --accent; --nt-bg and --nt-fg override them where needed. */
+.nt-toaster{--nt-width:356px;position:fixed;inset:auto 24px 24px auto;z-index:2147483000;box-sizing:border-box;width:var(--nt-width);max-width:calc(100vw - 32px);
+  height:var(--nt-stack,0px);margin:0;padding:0;overflow:visible;border:0;background:none;color:inherit;list-style:none;pointer-events:none;transition:height .32s ease}
+.nt-toast{--nt-y:0px;--nt-scale:1;--nt-swipe:0px;position:absolute;right:0;bottom:0;left:0;box-sizing:border-box;display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;
+  align-items:start;gap:10px;height:var(--nt-height,auto);overflow:hidden;padding:13px 12px 13px 14px;
+  border:1px solid var(--line-strong,rgba(255,255,255,.14));border-radius:14px;background:var(--nt-bg,var(--surface,#17151f));color:var(--nt-fg,var(--text,#f3f1f7));
+  box-shadow:0 14px 38px rgba(0,0,0,.26);font-size:13px;line-height:1.4;pointer-events:auto;touch-action:pan-y;user-select:none;
+  transform-origin:50% 100%;opacity:0;transform:translate3d(var(--nt-swipe),calc(var(--nt-y) + 110%),0) scale(var(--nt-scale));
+  transition:transform .42s cubic-bezier(.21,1.02,.73,1),opacity .36s ease,height .32s ease}
+.nt-toast[data-mounted]{opacity:1;transform:translate3d(var(--nt-swipe),var(--nt-y),0) scale(var(--nt-scale))}
+.nt-toast[data-hidden="true"]{opacity:0;pointer-events:none}
+.nt-toast[data-swiping]{transition:none;cursor:grabbing}
+.nt-toast[data-measuring]{height:auto !important;transition:none}
+.nt-toast[data-leaving]{opacity:0;transform:translate3d(var(--nt-swipe),calc(var(--nt-y) + 45%),0) scale(var(--nt-scale))}
+.nt-toast[data-swiped-out="right"]{transform:translate3d(120%,var(--nt-y),0)}
+.nt-toast[data-swiped-out="left"]{transform:translate3d(-120%,var(--nt-y),0)}
+/* Collapsed, only the edge of an older toast shows behind the front one. */
+.nt-toast>*{transition:opacity .25s ease}
+.nt-toaster:not([data-expanded]) .nt-toast[data-front="false"]>*{opacity:0}
+.nt-icon{display:grid;place-items:center;width:20px;height:20px;margin-top:1px;color:var(--muted,#a9a3b8)}
+.nt-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nt-success .nt-icon{color:var(--success,#55d6a7)}
+.nt-error .nt-icon{color:var(--danger,#f07777)}
+.nt-warning .nt-icon{color:var(--warning,#f0c36b)}
+.nt-info .nt-icon{color:var(--accent,#a685ef)}
+.nt-error{border-color:color-mix(in srgb,var(--danger,#f07777) 42%,var(--line-strong,rgba(255,255,255,.14)))}
+.nt-spinner{display:block;width:15px;height:15px;box-sizing:border-box;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:nt-spin .8s linear infinite}
+@keyframes nt-spin{to{transform:rotate(360deg)}}
+.nt-copy{min-width:0;padding-top:1px}
+.nt-title{display:block;font-weight:600;overflow-wrap:anywhere}
+.nt-description{margin:3px 0 0;color:var(--muted,#a9a3b8);font-weight:400}
+.nt-action{align-self:center;padding:6px 11px;border:0;border-radius:8px;background:var(--accent,#a685ef);color:var(--accent-text,#fff);font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.nt-close{display:grid;place-items:center;width:24px;height:24px;margin:-2px -2px 0 0;padding:0;border:0;border-radius:7px;background:none;color:var(--muted,#a9a3b8);cursor:pointer}
+.nt-close svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.nt-close:hover{background:color-mix(in srgb,currentColor 14%,transparent);color:var(--text,#f3f1f7)}
+.nt-close:focus-visible,.nt-action:focus-visible{outline:2px solid var(--accent,#a685ef);outline-offset:2px}
+@media (max-width:640px){
+  .nt-toaster{inset:auto 13px calc(78px + env(safe-area-inset-bottom,0px)) 13px;width:auto;max-width:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .nt-toaster,.nt-toast{transition:opacity .2s ease}
+  .nt-toast,.nt-toast[data-mounted],.nt-toast[data-leaving]{transform:translate3d(0,var(--nt-y),0) scale(var(--nt-scale))}
+  .nt-spinner{animation-duration:2s}
+}

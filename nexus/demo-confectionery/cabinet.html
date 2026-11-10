@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="ru" data-cabinet-theme="confectionery">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff8f1">
+  <meta name="robots" content="noindex">
+  <title>Кабинет кондитерской · Vertux Nexus</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./fonts/fonts.css">
+  <link rel="stylesheet" href="./styles.css?v=20261105j9yj">
+  <link rel="stylesheet" href="./cabinet.css?v=20261105j9yj">
+  <link rel="stylesheet" href="./toaster.css?v=20261105j9yj">
+  <script src="./toaster.js?v=20261105j9yj" defer></script>
+  <script type="module" src="./demo-api.js?v=20261105j9yj"></script>
+  <script type="module" src="./cabinet.js?v=20261105j9yj"></script>
+  <link rel="stylesheet" href="./demo.css?v=20261105j9yj">
+</head>
+<body class="cx-body">
+  <a class="cx-skip" href="#cxMain">К содержанию</a>
+  <div class="cx-boot" id="cxBoot" role="status"><span class="cx-spinner" aria-hidden="true"></span><span id="cxBootText">Открываем кабинет…</span></div>
+  <div class="cx-fatal" id="cxFatal" hidden role="alert">
+    <div class="panel cx-fatal-card">
+      <p class="eyebrow">Кабинет кондитерской</p>
+      <h1 id="cxFatalTitle">Кабинет недоступен</h1>
+      <p id="cxFatalText">Проверьте доступ и попробуйте снова.</p>
+      <div class="cx-actions"><button class="button primary" type="button" id="cxRetry">Повторить</button><a class="button ghost" href="/launch?choose=1">Мои продукты</a></div>
+    </div>
+  </div>
+  <div class="app-shell cx-shell" id="cxShell" hidden>
+    <aside class="sidebar cx-sidebar" aria-label="Меню кабинета">
+      <div class="cx-brand-row">
+        <a class="brand" href="#" data-home-link><span class="brand-mark cx-mark" aria-hidden="true" id="cxBrandMark">К</span><span><strong id="cxBrandName">Кондитерская</strong><small>Nexus</small></span></a>
+        <button class="icon-button cx-collapse" type="button" id="cxCollapse" aria-label="Свернуть меню" title="Свернуть меню"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button>
+      </div>
+      <nav class="nav cx-nav" id="cxNav" aria-label="Разделы кабинета">
+        <button class="nav-item" type="button" data-view-link="orders" data-section="orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg><span>Заказы</span><b class="cx-badge" id="cxNewBadge" hidden></b></button>
+        <button class="nav-item" type="button" data-view-link="calendar" data-section="calendar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18"/></svg><span>Календарь</span></button>
+        <button class="nav-item" type="button" data-view-link="waitlist" data-section="waitlist"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Лист ожидания</span><b class="cx-badge" id="cxWaitBadge" hidden></b></button>
+        <button class="nav-item" type="button" data-view-link="catalog" data-section="catalog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16v10H4zM6 10V8a6 6 0 0 1 12 0v2"/><path d="M4 14h16"/></svg><span>Каталог</span></button>
+        <button class="nav-item" type="button" data-view-link="storefront" data-section="storefront"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9 5 4h14l2 5M3 9h18v11H3zM3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/></svg><span>Витрина</span></button>
+        <button class="nav-item" type="button" data-view-link="customers" data-section="customers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a5 5 0 0 1 3 6"/></svg><span>Покупатели</span></button>
+      </nav>
+      <div class="sidebar-foot cx-foot">
+        <button class="nav-item" type="button" data-view-link="subscription" data-system><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg><span>Подписка</span></button>
+        <button class="nav-item" type="button" data-view-link="support" data-system><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a8 8 0 0 1 16 0v4a2 2 0 0 1-2 2h-2v-7h4M4 13h4v7H6a2 2 0 0 1-2-2v-4Z"/></svg><span>Поддержка</span></button>
+        <button class="nav-item" type="button" data-view-link="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M2 12h3m14 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg><span>Настройки</span></button>
+        <button class="cx-owner" type="button" data-view-link="profile" aria-label="Открыть профиль"><span class="avatar" id="cxAvatar" aria-hidden="true">·</span><span><strong id="cxUserName">—</strong><small id="cxUserRole">—</small></span></button>
+      </div>
+    </aside>
+
+    <main class="main" id="cxMain" tabindex="-1">
+      <header class="topbar">
+        <div><p class="eyebrow" id="cxEyebrow">Кабинет кондитерской</p><h1 id="cxTitle" tabindex="-1">Заказы</h1></div>
+        <div class="topbar-actions">
+          <span class="status-pill" id="cxPublishState"><i></i><span>Витрина не опубликована</span></span>
+          <a class="button ghost compact-button" id="cxTopStorefront" href="/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg><span>Витрина</span></a>
+          <button class="button ghost compact-button" type="button" id="cxProducts" hidden title="Другие продукты Nexus"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Продукты</span></button>
+        </div>
+      </header>
+
+      <p class="cx-setup-banner" id="cxSetupBanner" hidden role="note"><b>Режим настройки Vertux.</b> Доступны каталог, витрина, календарь и домен. Заказы, лист ожидания и контакты клиентов видят только сотрудники компании. Все изменения записываются в журнал.</p>
+
+      <section class="cx-onboarding panel" id="cxOnboarding" hidden aria-labelledby="cxOnboardingTitle">
+        <div><p class="eyebrow">Первые шаги</p><h2 id="cxOnboardingTitle">Подготовьте витрину к первым заявкам</h2><p>Клиенты увидят страницу только после публикации. Начните с контактов и календаря — без них заявки не принимаются.</p></div>
+        <ol class="cx-steps" id="cxSteps"></ol>
+      </section>
+
+      <section class="view" data-view="orders" aria-labelledby="cxTitle">
+        <div class="cx-toolbar">
+          <div class="cx-filters" role="group" aria-label="Фильтр заказов" id="cxOrderFilters"></div>
+          <button class="button ghost compact-button" type="button" id="cxOrdersRefresh">Обновить</button>
+        </div>
+        <p class="cx-manual-note" id="cxManualNote" hidden>Автоматические уведомления о заявках пока не подключены. Новые заявки отмечены «Нужно связаться» — напишите или позвоните клиенту по указанному контакту, затем смените статус.</p>
+        <div class="cx-state" id="cxOrdersState" role="status"></div>
+        <div class="cx-board" id="cxOrders"></div>
+      </section>
+
+      <section class="view" data-view="calendar" aria-labelledby="cxTitle">
+        <div class="cx-split cx-calendar-split">
+          <div class="cx-stack cx-calendar-main">
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Месяц</p><h3 id="cxMonthTitle">—</h3></div>
+              <div class="cx-actions"><button class="icon-button" type="button" id="cxPrevMonth" aria-label="Предыдущий месяц"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><button class="icon-button" type="button" id="cxNextMonth" aria-label="Следующий месяц"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+            <div class="cx-state" id="cxCalendarState" role="status"></div>
+            <div class="cx-calendar" id="cxCalendar" role="grid" aria-labelledby="cxMonthTitle"></div>
+            <ul class="cx-legend" aria-label="Обозначения">
+              <li><i class="available"></i>Свободно</li><li><i class="few"></i>Мало мест</li><li><i class="full"></i>Занято</li><li><i class="unavailable"></i>Не принимаем</li>
+            </ul>
+          </article>
+            <form class="panel cx-form" id="cxRangeForm" novalidate>
+              <div class="panel-head"><div><p class="eyebrow">Отпуск и выходные</p><h3>Закрыть период</h3></div></div>
+              <div class="form-row"><label>С<input name="from" type="date" required></label><label>По<input name="to" type="date" required></label></div>
+              <label>Заметка для себя<input name="note" maxlength="200" placeholder="Например, отпуск"></label>
+              <p class="cx-hint">Клиенты не смогут выбрать эти даты. Уже принятые заказы останутся — кабинет покажет, сколько их.</p>
+              <div class="cx-actions"><button class="button primary compact-button" type="submit">Закрыть даты</button><button class="button ghost compact-button" type="button" id="cxRangeOpen">Вернуть общие правила</button></div>
+            </form>
+          </div>
+          <div class="cx-stack cx-calendar-side">
+            <form class="panel cx-form" id="cxDateForm" novalidate hidden>
+              <div class="panel-head"><div><p class="eyebrow">Дата</p><h3 id="cxDateTitle">—</h3></div><button class="icon-button" type="button" id="cxDateClose" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+              <p class="cx-hint" id="cxDateLoad"></p>
+              <fieldset class="cx-choice"><legend>Состояние даты</legend>
+                <label class="check-row"><input type="radio" name="kind" value="default"><span>По общим правилам</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="limit"><span>Свой лимит на эту дату</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="open"><span>Открыть в выходной</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="full"><span>Всё занято (лист ожидания открыт)</span></label>
+                <label class="check-row"><input type="radio" name="kind" value="closed"><span>Не принимаем заказы</span></label>
+              </fieldset>
+              <label id="cxDateCapacity">Лимит заказов на дату<input name="capacity" type="number" min="0" max="200" inputmode="numeric"></label>
+              <label>Заметка для себя<input name="note" maxlength="200" placeholder="Например, свадебный заказ"></label>
+              <button class="button primary" type="submit">Сохранить дату</button>
+            </form>
+            <form class="panel cx-form" id="cxCalendarForm" novalidate>
+              <div class="panel-head"><div><p class="eyebrow">Правила</p><h3>Рабочие дни и лимит</h3></div></div>
+              <fieldset class="cx-days"><legend>Принимаем заказы на</legend><div id="cxWeekdays"></div></fieldset>
+              <div class="form-row">
+                <label>Заказов в день<input name="dailyCapacity" type="number" min="1" max="200" inputmode="numeric" required></label>
+                <label>Заказ минимум за, дней<input name="leadDays" type="number" min="0" max="90" inputmode="numeric" required></label>
+              </div>
+              <div class="form-row">
+                <label>Принимать вперёд, дней<input name="horizonDays" type="number" min="7" max="180" inputmode="numeric" required></label>
+                <label>Часовой пояс<select name="timeZone" id="cxTimeZone"></select></label>
+              </div>
+              <label class="cx-switch"><input type="checkbox" id="cxWeekdayToggle"><span>Свой лимит для каждого дня недели</span></label>
+              <div class="cx-weekday-limits" id="cxWeekdayLimits" hidden></div>
+              <label class="cx-switch"><input type="checkbox" id="cxPickupToggle"><span>Время получения — клиент выбирает интервал</span></label>
+              <div class="cx-pickup" id="cxPickupBlock" hidden>
+                <label>Интервалы <small>по строке: 10:00–12:00</small><textarea name="pickupWindows" rows="3" placeholder="10:00–12:00&#10;16:00–18:00"></textarea></label>
+                <label>Заказов на один интервал <small>пусто — без ограничения</small><input name="perWindow" type="number" min="1" max="50" inputmode="numeric"></label>
+              </div>
+              <p class="cx-hint">Изделие может занимать несколько производственных слотов — это задаётся в карточке каталога. Отменённые заказы освобождают слоты.</p>
+              <p class="cx-hint" id="cxReservedHint" hidden></p>
+              <button class="button primary" type="submit">Сохранить правила</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="catalog" aria-labelledby="cxTitle">
+        <div class="cx-toolbar"><p class="cx-lead">Карточки изделий, которые увидят клиенты. Скрытые изделия остаются в кабинете.</p><button class="button primary compact-button" type="button" id="cxAddItem">Добавить изделие</button></div>
+        <div class="cx-state" id="cxCatalogState" role="status"></div>
+        <div class="cx-catalog" id="cxCatalog"></div>
+      </section>
+
+      <section class="view" data-view="storefront" aria-labelledby="cxTitle">
+        <div class="cx-sf-toolbar">
+          <div class="cx-seg" role="group" aria-label="Режим витрины" id="cxSfModes">
+            <button type="button" data-sf-mode="view" aria-pressed="true">Просмотр</button>
+            <button type="button" data-sf-mode="edit" aria-pressed="false">Редактировать</button>
+          </div>
+          <div class="cx-seg cx-sf-devices" role="group" aria-label="Размер экрана">
+            <button type="button" data-sf-device="desktop" aria-pressed="true">Компьютер</button>
+            <button type="button" data-sf-device="phone" aria-pressed="false">Телефон</button>
+          </div>
+          <span class="cx-sf-badge" id="cxSfBadge"></span>
+          <span class="cx-sf-spacer" aria-hidden="true"></span>
+          <button class="button ghost compact-button" type="button" id="cxSfReload">Обновить</button>
+          <a class="button ghost compact-button" id="cxSfOpen" href="/" target="_blank" rel="noopener">Открыть сайт</a>
+        </div>
+        <p class="cx-hint cx-sf-hint" id="cxSfHint"></p>
+        <div class="cx-sf-editor">
+          <div class="cx-sf-stage" id="cxSfStage" data-device="desktop">
+            <div class="cx-sf-screen">
+              <iframe id="cxSfFrame" title="Предпросмотр витрины"></iframe>
+              <div class="cx-sf-cover" id="cxSfCover" role="status"><span class="cx-spinner" aria-hidden="true"></span><span id="cxSfCoverText">Загружаем витрину…</span><button class="button ghost compact-button" type="button" id="cxSfRetry" hidden>Повторить</button></div>
+            </div>
+          </div>
+        <form class="cx-storefront cx-sf-inspector" id="cxStorefrontForm" novalidate>
+          <article class="panel cx-form" data-sf-section="brand">
+            <div class="panel-head"><div><p class="eyebrow">Кондитерская</p><h3>Название и описание</h3></div></div>
+            <label>Название<input name="name" maxlength="80" required></label>
+            <label>Короткое описание<input name="tagline" maxlength="140" placeholder="Торты и десерты на заказ"></label>
+            <label>О кондитерской<textarea name="description" rows="4" maxlength="1500"></textarea></label>
+            <label>Формат<select name="format" id="cxFormat"></select></label>
+            <label>Условия заказа<textarea name="orderNote" rows="3" maxlength="600" placeholder="Предоплата, доставка, самовывоз"></textarea></label>
+            <p class="cx-hint">Цвета и тема витрины — в разделе <button class="text-button" type="button" data-settings-link="shop">Настройки → Витрина</button>.</p>
+          </article>
+          <article class="panel cx-form" data-sf-section="media">
+            <div class="panel-head"><div><p class="eyebrow">Фото</p><h3>Логотип и обложка</h3></div></div>
+            <div class="cx-media-row"><div class="cx-logo" id="cxLogoPreview"></div><div><label class="button ghost compact-button cx-file">Загрузить логотип<input type="file" accept="image/jpeg,image/png,image/webp" id="cxLogoInput"></label><button class="text-button" type="button" id="cxLogoRemove">Убрать</button></div></div>
+            <div class="cx-thumbs" id="cxCoverPreview"></div>
+            <label class="button ghost compact-button cx-file">Добавить фото обложки<input type="file" accept="image/jpeg,image/png,image/webp" id="cxCoverInput" multiple></label>
+          </article>
+          <article class="panel cx-form" data-sf-section="contacts">
+            <div class="panel-head"><div><p class="eyebrow">Контакты</p><h3>Как клиентам связаться с вами</h3></div></div>
+            <div class="form-row"><label>Телефон<input name="phone" maxlength="40" inputmode="tel"></label><label>Telegram<input name="telegram" maxlength="64" placeholder="@username"></label></div>
+            <div class="form-row"><label>WhatsApp<input name="whatsapp" maxlength="40" inputmode="tel"></label><label>ВКонтакте<input name="vk" maxlength="120"></label></div>
+            <div class="form-row"><label>Почта<input name="email" maxlength="120" type="email"></label><label>Instagram<input name="instagram" maxlength="64"></label></div>
+            <label>Адрес или район<input name="address" maxlength="200"></label>
+            <label>Часы работы<input name="hours" maxlength="120" placeholder="Вт–Вс, 10:00–19:00"></label>
+            <label>Ссылка на вашу политику обработки данных <small>необязательно</small><input name="privacyUrl" maxlength="300" placeholder="https://"></label>
+          </article>
+          <article class="panel cx-form" data-sf-section="publish">
+            <div class="panel-head"><div><p class="eyebrow">Публикация</p><h3>Витрина и приём заявок</h3></div></div>
+            <label class="check-row"><input type="checkbox" name="published"><span>Витрина опубликована</span></label>
+            <label class="check-row"><input type="checkbox" name="acceptingOrders"><span>Принимать заявки онлайн</span></label>
+            <p class="cx-hint" id="cxPublicUrl"></p>
+          </article>
+          <div class="cx-sf-savebar"><span id="cxSfDirty" role="status"></span><button class="button primary" type="submit">Сохранить витрину</button></div>
+        </form>
+        </div>
+      </section>
+
+      <section class="view" data-view="customers" aria-labelledby="cxTitle">
+        <div class="cx-toolbar">
+          <div class="cx-seg" role="tablist" aria-label="Покупатели" id="cxCustomerTabs">
+            <button type="button" role="tab" id="cxCustomerTab-list" aria-controls="cxCustomerPanel-list" data-customer-tab="list">Покупатели</button>
+            <button type="button" role="tab" id="cxCustomerTab-loyalty" aria-controls="cxCustomerPanel-loyalty" data-customer-tab="loyalty">Скидки и приоритет</button>
+          </div>
+          <input class="cx-customer-search" id="cxCustomerSearch" type="search" placeholder="Имя, почта или контакт" aria-label="Найти покупателя">
+        </div>
+        <div id="cxCustomerPanel-list" role="tabpanel" aria-labelledby="cxCustomerTab-list">
+          <div class="cx-filters" role="group" aria-label="Показать" id="cxCustomerFilters"></div>
+          <div class="cx-state" id="cxCustomersState" role="status"></div>
+          <div class="cx-list" id="cxCustomers"></div>
+        </div>
+        <form class="panel cx-form cx-loyalty" id="cxCustomerPanel-loyalty" role="tabpanel" aria-labelledby="cxCustomerTab-loyalty" novalidate hidden>
+          <div class="panel-head"><div><p class="eyebrow">Постоянным покупателям</p><h3>Скидки за заказы</h3></div></div>
+          <p class="cx-hint">Скидка считается по выданным заказам и их сумме, включая заказы до Nexus, которые вы укажете в карточке покупателя. «На следующий заказ» действует один раз, «на все заказы» — всегда. Скидки получают только покупатели с кабинетом.</p>
+          <ol class="cx-tiers" id="cxTiers"></ol>
+          <button class="button ghost compact-button" type="button" id="cxTierAdd">Добавить условие</button>
+          <h4 class="cx-subtitle">Приоритет в очереди</h4>
+          <p class="cx-hint cx-warning" id="cxPriorityPlan" hidden>Приоритет и места для постоянных входят в тариф «Расширенный». Чтобы подключить, напишите в поддержку Vertux.</p>
+          <label>Мест в день для постоянных<input name="reservedPerDay" type="number" min="0" max="50" inputmode="numeric"></label>
+          <p class="cx-hint">Эти места скрыты от остальных: в загруженный день гость увидит «занято», а покупатель с приоритетом ещё сможет записаться. Приоритет даёт условие с отметкой или ваша отметка в карточке покупателя.</p>
+          <button class="button primary" type="submit">Сохранить скидки</button>
+        </form>
+      </section>
+
+      <section class="view" data-view="waitlist" aria-labelledby="cxTitle">
+        <p class="cx-lead">Клиенты, которым нужна занятая дата. Когда дата освобождается, запись отмечается — свяжитесь с клиентом сами.</p>
+        <div class="cx-state" id="cxWaitState" role="status"></div>
+        <div class="cx-list" id="cxWaitlist"></div>
+      </section>
+
+      <section class="view" data-view="service" aria-labelledby="cxTitle">
+        <div id="cxServiceHost" class="cx-service"></div>
+      </section>
+
+      <section class="view" data-view="settings" aria-labelledby="cxTitle">
+        <div class="cx-settings">
+          <nav class="cx-settings-nav" aria-label="Разделы настроек" id="cxSettingsNav">
+            <button type="button" data-settings-page="appearance">Внешний вид</button>
+            <button type="button" data-settings-page="menu">Меню и клавиши</button>
+            <button type="button" data-settings-page="shop">Витрина</button>
+            <button type="button" data-settings-page="ordering">Заказы</button>
+            <button type="button" data-settings-page="domain">Домен и доступ</button>
+          </nav>
+          <div class="cx-settings-body">
+            <section class="cx-settings-page" data-settings-panel="appearance" aria-labelledby="cxAppearanceTitle">
+              <h2 id="cxAppearanceTitle">Внешний вид кабинета</h2>
+              <p class="cx-hint">Тема видна только вам и сохраняется в вашем аккаунте: одинаково на телефоне и компьютере.</p>
+              <div class="cx-theme-grid" id="cxCabinetThemes" role="radiogroup" aria-label="Тема кабинета"></div>
+              <div class="panel cx-form cx-settings-card">
+                <div class="cx-inline"><label class="cx-color">Акцент кабинета<input type="color" id="cxCabinetAccent" value="#E8792B"></label><label class="cx-color">Фон<input type="color" id="cxCabinetBackground" value="#FFF8F1"></label><button class="button ghost compact-button" type="button" id="cxCabinetAccentReset">Исходная палитра</button></div>
+              </div>
+              <div class="panel cx-form cx-settings-card" data-look="cabinet">
+                <h3 class="cx-subtitle cx-look-title">Подсветка карточек</h3>
+                <div class="cx-light-options" role="group" aria-label="Стиль подсветки карточек" data-light-options></div>
+                <div class="cx-inline cx-look-controls"><label class="cx-color">Цвет света<input type="color" data-light-color value="#E8792B"></label><label class="cx-range">Интенсивность <output data-light-output>30%</output><input type="range" min="0" max="100" step="5" data-light-intensity aria-label="Интенсивность подсветки карточек"></label><button class="button ghost compact-button" type="button" data-light-reset>Исходный свет</button></div>
+              </div>
+              <div class="panel cx-form cx-settings-card" data-look="cabinet">
+                <h3 class="cx-subtitle cx-look-title">Свой фон</h3>
+                <p class="cx-hint">Изображение хранится в настройках вашего аккаунта и видно только вам. PNG, JPEG или WebP — кабинет сам уменьшит его.</p>
+                <div class="cx-inline cx-look-controls"><label class="button ghost compact-button cx-file">Выбрать изображение<input type="file" accept="image/png,image/jpeg,image/webp" data-wallpaper-file></label><label class="cx-range">Затемнение <output data-wallpaper-output>65%</output><input type="range" min="20" max="90" step="5" data-wallpaper-shade aria-label="Затемнение фонового изображения"></label><button class="text-button" type="button" data-wallpaper-remove>Убрать фон</button></div>
+                <p class="cx-hint" role="status" data-wallpaper-status></p>
+              </div>
+              <div class="cx-actions"><button class="button ghost compact-button" type="button" id="cxLookReset">Сбросить оформление</button></div>
+            </section>
+            <section class="cx-settings-page" data-settings-panel="menu" aria-labelledby="cxMenuTitle">
+              <h2 id="cxMenuTitle">Меню и сочетания клавиш</h2>
+              <p class="cx-hint">Меняйте порядок разделов стрелками или перетаскиванием, закрепляйте нужные и скрывайте лишние. Закреплённые идут первыми. Подписка, поддержка, настройки и профиль всегда внизу.</p>
+              <div class="panel cx-form cx-settings-card">
+                <label class="cx-switch"><input type="checkbox" id="cxCompact"><span>Компактное меню — только значки с подсказками</span></label>
+                <ol class="cx-menu-list" id="cxMenuList"></ol>
+                <h3 class="cx-subtitle">Системные действия</h3>
+                <ol class="cx-menu-list cx-menu-system" id="cxSystemList"></ol>
+                <p class="cx-hint">Нажмите на поле сочетания и нажмите клавиши: например Alt+1. Delete — убрать сочетание, Esc — отмена. Сочетания работают и для скрытых разделов.</p>
+                <div class="cx-actions"><button class="button ghost compact-button" type="button" id="cxMenuReset">Сбросить меню и клавиши</button></div>
+              </div>
+            </section>
+            <section class="cx-settings-page" data-settings-panel="shop" aria-labelledby="cxShopThemeTitle">
+              <h2 id="cxShopThemeTitle">Витрина для клиентов</h2>
+              <p class="cx-hint">Тема, цвета, подсветка карточек и фон страницы, которую видят клиенты. Изменения появятся на сайте после сохранения.</p>
+              <div class="cx-theme-grid" id="cxShopThemes" role="radiogroup" aria-label="Тема витрины"></div>
+              <div class="panel cx-form cx-settings-card">
+                <div class="cx-inline"><label class="cx-color">Акцентный цвет витрины<input type="color" id="cxShopAccent" value="#E8792B"></label><label class="cx-color">Фон витрины<input type="color" id="cxShopBackground" value="#FFF8F1"></label><button class="button ghost compact-button" type="button" id="cxShopAccentReset">Исходная палитра</button></div>
+                <div class="cx-shop-preview" id="cxShopPreview" aria-hidden="true"><span class="cx-shop-preview-logo"></span><b></b><i></i><i></i><em>Оставить заявку</em></div>
+              </div>
+              <div class="panel cx-form cx-settings-card" data-look="shop">
+                <h3 class="cx-subtitle cx-look-title">Подсветка карточек</h3>
+                <div class="cx-light-options" role="group" aria-label="Стиль подсветки карточек" data-light-options></div>
+                <div class="cx-inline cx-look-controls"><label class="cx-color">Цвет света<input type="color" data-light-color value="#E8792B"></label><label class="cx-range">Интенсивность <output data-light-output>30%</output><input type="range" min="0" max="100" step="5" data-light-intensity aria-label="Интенсивность подсветки карточек"></label><button class="button ghost compact-button" type="button" data-light-reset>Исходный свет</button></div>
+              </div>
+              <div class="panel cx-form cx-settings-card" data-look="shop">
+                <h3 class="cx-subtitle cx-look-title">Свой фон</h3>
+                <p class="cx-hint">Фото увидят все посетители витрины. Оно ляжет под содержимое и затемнится цветом фона, чтобы текст оставался читаемым.</p>
+                <div class="cx-inline cx-look-controls"><label class="button ghost compact-button cx-file">Выбрать изображение<input type="file" accept="image/png,image/jpeg,image/webp" data-wallpaper-file></label><label class="cx-range">Затемнение <output data-wallpaper-output>65%</output><input type="range" min="20" max="90" step="5" data-wallpaper-shade aria-label="Затемнение фонового изображения"></label><button class="text-button" type="button" data-wallpaper-remove>Убрать фон</button></div>
+                <p class="cx-hint" role="status" data-wallpaper-status></p>
+              </div>
+              <div class="panel cx-form cx-settings-card">
+                <div class="cx-actions"><button class="button primary" type="button" id="cxShopThemeSave">Сохранить оформление витрины</button><a class="text-button" id="cxShopThemeOpen" href="/" target="_blank" rel="noopener">Открыть витрину</a></div>
+              </div>
+            </section>
+            <section class="cx-settings-page" data-settings-panel="ordering" aria-labelledby="cxOrderingTitle">
+              <h2 id="cxOrderingTitle">Как клиенты оформляют заказ</h2>
+              <p class="cx-hint">Всё необязательно: без этих настроек клиент выбирает одно изделие и дату и оставляет заявку без регистрации.</p>
+              <div class="panel cx-form cx-settings-card">
+                <label class="cx-switch"><input type="checkbox" id="cxCartSwitch"><span>Корзина: несколько изделий в одной заявке</span></label>
+                <p class="cx-hint">Клиент добавляет изделия с размером и начинкой в корзину, затем выбирает одну дату для всего заказа. Изделия занимают слоты календаря вместе.</p>
+              </div>
+              <div class="panel cx-form cx-settings-card">
+                <label class="cx-switch"><input type="checkbox" id="cxAccountsSwitch"><span>Кабинет покупателя: вход по почте, история заказов и скидки</span></label>
+                <p class="cx-hint">Покупатель входит по коду из письма — имя и контакт подставятся сами, а заказы будут копиться для скидок. Заказывать без входа по-прежнему можно. Список покупателей и скидки — в разделе «Покупатели».</p>
+                <p class="cx-hint cx-warning" id="cxAccountsUnavailable" hidden>Вход покупателей по почте пока не настроен на сервере Nexus. Напишите в поддержку.</p>
+              </div>
+            </section>
+            <section class="cx-settings-page" data-settings-panel="domain" aria-labelledby="cxDomainPageTitle">
+              <h2 id="cxDomainPageTitle">Домен и доступ</h2>
+              <h3 class="cx-settings-sub" id="cxDomainTitle">Свой домен</h3>
+              <div class="panel cx-form cx-settings-card" id="cxDomainLocked" hidden>
+                <p class="cx-hint">Витрина работает по адресу Nexus. Свой домен, например zakaz.sladkiy-dom.ru, входит в тариф «Расширенный»: вы добавляете записи DNS, а сертификат для домена выпускает Vertux.</p>
+                <div class="cx-actions"><button class="button ghost compact-button" type="button" data-view-link="support">Написать в поддержку</button><button class="text-button" type="button" data-view-link="subscription">Мой тариф</button></div>
+              </div>
+              <form class="panel cx-form cx-settings-card" id="cxDomainForm" novalidate>
+                <div class="cx-inline"><p class="cx-hint">Витрина уже работает по адресу Nexus. Её можно открыть и на своём домене, например zakaz.sladkiy-dom.ru.</p><span class="status-pill" id="cxDomainState"><i></i><span>Не подключён</span></span></div>
+                <label>Домен<input name="domain" maxlength="253" placeholder="zakaz.sladkiy-dom.ru" autocomplete="off" inputmode="url" spellcheck="false"></label>
+                <div class="cx-dns" id="cxDomainDns" hidden></div>
+                <p class="cx-domain-error" id="cxDomainError" role="alert"></p>
+                <div class="cx-actions"><button class="button primary compact-button" type="submit">Сохранить домен</button><button class="button ghost compact-button" type="button" id="cxDomainVerify" hidden>Проверить DNS</button><button class="text-button" type="button" id="cxDomainRemove" hidden>Отключить домен</button></div>
+              </form>
+              <h3 class="cx-settings-sub" id="cxAccessTitle">Доступ Vertux</h3>
+              <div class="panel cx-form cx-settings-card" id="cxAccessPanel">
+                <p class="cx-hint">Команда Vertux может помочь с настройкой: заполнить каталог, оформить витрину, настроить календарь и домен. Для этого она входит в ваш кабинет в режиме настройки.</p>
+                <label class="cx-switch"><input type="checkbox" id="cxVertuxSetup"><span>Разрешить администратору Vertux настраивать каталог, витрину, календарь и домен</span></label>
+                <p class="cx-hint">Заказы, лист ожидания и контакты клиентов администратору Vertux недоступны в любом случае. Каждое его изменение записывается в журнал.</p>
+              </div>
+            </section>
+            <p class="cx-settings-status" id="cxSettingsStatus" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" data-view="profile" aria-labelledby="cxTitle">
+        <article class="panel cx-profile">
+          <div class="cx-profile-head"><span class="avatar cx-avatar-large" id="cxProfileAvatar" aria-hidden="true">·</span><div><h2 id="cxProfileName">—</h2><p id="cxProfileEmail">—</p></div></div>
+          <dl class="cx-details" id="cxProfileFacts"></dl>
+          <div class="cx-actions"><a class="button ghost compact-button" href="/account.html" target="_blank" rel="noopener">Аккаунт Nexus: пароль и вход</a><button class="button ghost compact-button" type="button" id="cxProfileProducts" hidden>Другие продукты</button><button class="button danger compact-button" type="button" id="cxLogout">Выйти</button></div>
+        </article>
+      </section>
+    </main>
+
+    <nav class="cx-mobile-nav" id="cxMobileNav" aria-label="Разделы кабинета"></nav>
+    <div class="cx-more panel" id="cxMore" hidden></div>
+  </div>
+
+  <dialog class="cx-dialog" id="cxOrderDialog" aria-labelledby="cxOrderTitle">
+    <form method="dialog" class="cx-dialog-body" id="cxOrderPanel"></form>
+  </dialog>
+  <dialog class="cx-dialog cx-dialog-wide" id="cxItemDialog" aria-labelledby="cxItemTitle">
+    <form class="cx-dialog-body cx-form" id="cxItemForm" novalidate>
+      <div class="panel-head"><div><p class="eyebrow">Каталог</p><h3 id="cxItemTitle">Новое изделие</h3></div><button class="icon-button" type="button" data-close-dialog aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <div class="cx-dialog-scroll">
+        <label>Название<input name="title" maxlength="90" required placeholder="Медовик"></label>
+        <label>Кратко для карточки<input name="summary" maxlength="160" placeholder="Нежные коржи и сметанный крем"></label>
+        <div class="form-row"><label>Цена, ₽ <small>пусто — по запросу</small><input name="price" inputmode="decimal" maxlength="12"></label><label>Единица<input name="unit" maxlength="16" value="шт." required></label></div>
+        <label class="check-row"><input type="checkbox" name="priceFrom"><span>Показывать как цену «от»</span></label>
+        <label>Подробности<textarea name="description" rows="3" maxlength="2000"></textarea></label>
+        <label>Состав и начинка<textarea name="composition" rows="3" maxlength="1000"></textarea></label>
+        <label>Размеры и вес <small>по строке: название — цена</small><textarea name="sizes" rows="3" placeholder="1,5 кг — 3200&#10;2 кг — 4200"></textarea></label>
+        <label>Начинки на выбор <small>по строке</small><textarea name="fillings" rows="3" placeholder="Шоколад — вишня&#10;Сметанный крем"></textarea></label>
+        <label>Варианты оформления <small>по строке: название — доплата</small><textarea name="decorations" rows="3" placeholder="Ягоды — 500&#10;Надпись"></textarea></label>
+        <div class="form-row"><label>Срок изготовления, дней <small>необязательно</small><input name="leadDays" type="number" min="0" max="90" inputmode="numeric"></label><label>Производственных слотов<input name="capacityUnits" type="number" min="1" max="20" value="1" inputmode="numeric" required></label></div>
+        <div class="form-row"><label>Минимум, шт.<input name="minQuantity" type="number" min="1" max="500" value="1" inputmode="numeric"></label><label>Максимум, шт.<input name="maxQuantity" type="number" min="1" max="1000" value="50" inputmode="numeric"></label></div>
+        <label>Примечания<textarea name="notes" rows="2" maxlength="600" placeholder="Хранить в холодильнике до 48 часов"></textarea></label>
+        <div class="cx-thumbs" id="cxItemMedia"></div>
+        <label class="button ghost compact-button cx-file">Добавить фото<input type="file" accept="image/jpeg,image/png,image/webp" id="cxItemMediaInput" multiple></label>
+        <div class="cx-autoplay">
+          <label class="check-row"><input type="checkbox" name="autoplay"><span>Листать фото автоматически <small>когда фото больше одного</small></span></label>
+          <details class="cx-autoplay-more"><summary>Скорость и направление</summary>
+            <div class="form-row"><label>Смена фото<select name="autoplaySeconds"><option value="3">каждые 3 секунды</option><option value="5" selected>каждые 5 секунд</option><option value="8">каждые 8 секунд</option><option value="12">каждые 12 секунд</option></select></label>
+              <label>Направление<select name="autoplayDirection"><option value="forward" selected>вперёд</option><option value="backward">назад</option></select></label></div>
+          </details>
+        </div>
+        <label class="check-row"><input type="checkbox" name="hidden"><span>Скрыть с витрины</span></label>
+      </div>
+      <p class="form-error" id="cxItemError" role="alert"></p>
+      <div class="cx-dialog-actions"><button class="button danger compact-button" type="button" id="cxItemArchive" hidden>Удалить из каталога</button><span></span><button class="button ghost" type="button" data-close-dialog>Отмена</button><button class="button primary" type="submit">Сохранить</button></div>
+    </form>
+  </dialog>
+  <dialog class="cx-dialog" id="cxCustomerDialog" aria-labelledby="cxCustomerTitle">
+    <form method="dialog" class="cx-dialog-body" id="cxCustomerPanel"></form>
+  </dialog>
+  <div class="toast" id="cxToast" role="status" hidden></div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru" data-shop="vanilnoe-oblako">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFF8F1">
+  <title>Кондитерская</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./fonts/fonts.css">
+  <link rel="stylesheet" href="./fonts/rubik.css">
+  <link rel="stylesheet" href="./storefront.css?v=20261105j9yj">
+  <script type="module" src="./demo-api.js?v=20261105j9yj"></script>
+  <script type="module" src="./storefront.js?v=20261105j9yj"></script>
+  <link rel="stylesheet" href="./demo.css?v=20261105j9yj">
+</head>
+<body>
+  <a class="sf-skip" href="#sfCatalog">К каталогу</a>
+  <div class="sf-boot" id="sfBoot" role="status"><span class="sf-spinner" aria-hidden="true"></span>Загружаем витрину…</div>
+  <main class="sf-fatal" id="sfFatal" hidden>
+    <div><h1 id="sfFatalTitle">Витрина недоступна</h1><p id="sfFatalText">Попробуйте открыть страницу позже.</p><button class="sf-button" type="button" id="sfFatalRetry">Обновить</button></div>
+  </main>
+  <div class="sf-awning" aria-hidden="true"></div>
+  <div class="sf-page" id="sfPage" hidden>
+    <p class="sf-banner" id="sfDemoBanner" hidden></p>
+    <p class="sf-banner" id="sfPreviewBanner" hidden>Предпросмотр для владельца: витрина ещё не опубликована, заявки отсюда не отправляются.</p>
+    <p class="sf-banner sf-banner-muted" id="sfClosedBanner" hidden>Онлайн-заявки сейчас не принимаются. Свяжитесь с кондитерской по контактам внизу страницы.</p>
+    <header class="sf-header" data-edit="brand" data-edit-label="Название и логотип">
+      <div class="sf-brand"><span class="sf-logo" id="sfLogo" aria-hidden="true"></span><div><p class="sf-name" id="sfName"></p><p class="sf-tagline" id="sfTagline"></p></div></div>
+      <div class="sf-header-side">
+        <nav class="sf-quick" id="sfQuick" aria-label="Связаться"></nav>
+        <div class="sf-tools" id="sfTools" hidden>
+          <button class="sf-pill sf-tool" type="button" id="sfAccountButton" hidden>Войти</button>
+          <button class="sf-pill sf-tool" type="button" id="sfCartButton" hidden>Корзина <b class="sf-tool-count" id="sfCartCount">0</b></button>
+        </div>
+      </div>
+    </header>
+
+    <section class="sf-status" id="sfOrderStatus" hidden aria-live="polite"></section>
+
+    <section class="sf-hero" id="sfHero">
+      <div class="sf-hero-copy" data-edit="hero" data-edit-label="Заголовок и описание">
+        <p class="sf-eyebrow" id="sfEyebrow"></p>
+        <h1 id="sfHeroTitle"></h1>
+        <p class="sf-lead" id="sfDescription"></p>
+        <div class="sf-hero-actions"><a class="sf-button" href="#sfCatalog" id="sfHeroAction">Выбрать изделие</a><a class="sf-button sf-button-ghost" href="#sfContacts">Контакты</a></div>
+        <ol class="sf-steps-line" id="sfSteps" aria-label="Как заказать">
+          <li><b>1</b><span>Выберите изделие</span></li>
+          <li><b>2</b><span>Выберите дату</span></li>
+          <li><b>3</b><span id="sfStepAction">Оставьте заявку</span></li>
+        </ol>
+      </div>
+      <div class="sf-hero-media" data-edit="covers" data-edit-label="Фото обложки"><div class="sf-hero-frame" id="sfCovers"></div></div>
+    </section>
+
+    <section class="sf-note-block" id="sfOrderNoteBlock" data-edit="terms" data-edit-label="Условия заказа" hidden>
+      <h2>Условия заказа</h2><p id="sfOrderNote"></p>
+    </section>
+
+    <section class="sf-section" aria-labelledby="sfCatalogTitle">
+      <div class="sf-section-head"><div><p class="sf-kicker">Каталог</p><h2 id="sfCatalogTitle">Что можно заказать</h2></div><p id="sfCatalogNote">Нажмите на изделие, чтобы увидеть подробности и выбрать дату.</p></div>
+      <div class="sf-catalog" id="sfCatalog" tabindex="-1"></div>
+    </section>
+
+    <footer class="sf-footer" id="sfContacts" data-edit="contacts" data-edit-label="Контакты">
+      <div><h2>Контакты</h2><dl class="sf-contacts" id="sfContactList"></dl></div>
+      <p class="sf-powered">Витрина работает на <a href="https://vertux.online/nexus/confectionery.html" target="_blank" rel="noopener">Vertux Nexus</a></p>
+    </footer>
+  </div>
+
+  <dialog class="sf-dialog" id="sfItemDialog" aria-labelledby="sfItemTitle">
+    <div class="sf-dialog-inner">
+      <button class="sf-close" type="button" data-close aria-label="Закрыть">×</button>
+      <div class="sf-steps" aria-hidden="true"><span data-step="details" class="active">Изделие</span><span data-step="date">Дата</span><span data-step="form">Заявка</span></div>
+      <section class="sf-pane" data-pane="details">
+        <div class="sf-gallery" id="sfGallery"></div>
+        <div class="sf-item-copy">
+          <h2 id="sfItemTitle"></h2>
+          <p class="sf-price" id="sfItemPrice"></p>
+          <p id="sfItemDescription"></p>
+          <div class="sf-choices" id="sfItemChoices" hidden></div>
+          <dl class="sf-facts" id="sfItemFacts"></dl>
+          <div class="sf-item-cta" id="sfItemCta">
+          <p class="sf-item-total" id="sfItemTotal" aria-live="polite"></p>
+          <button class="sf-button sf-button-wide" type="button" id="sfChooseDate">Выбрать дату</button>
+          <form class="sf-form sf-cart-config" id="sfCartConfig" novalidate hidden>
+            <div class="sf-row" id="sfCartChoices" hidden></div>
+            <label>Количество<input name="quantity" type="number" inputmode="numeric" min="1" value="1" required></label>
+            <p class="sf-estimate" id="sfCartEstimate" aria-live="polite"></p>
+            <p class="sf-error" id="sfCartError" role="alert"></p>
+            <button class="sf-button sf-button-wide" type="submit">Добавить в корзину</button>
+            <p class="sf-added" id="sfCartAdded" role="status" hidden></p>
+          </form>
+          </div>
+        </div>
+      </section>
+      <section class="sf-pane" data-pane="cart" hidden>
+        <div class="sf-pane-head"><h2>Корзина</h2><p>Дату и время получения выберете на следующем шаге — одну для всего заказа.</p></div>
+        <ul class="sf-cart" id="sfCartList"></ul>
+        <p class="sf-estimate" id="sfCartTotal" aria-live="polite"></p>
+        <button class="sf-button sf-button-wide" type="button" id="sfCartCheckout">Выбрать дату</button>
+      </section>
+      <section class="sf-pane" data-pane="date" hidden>
+        <div class="sf-pane-head"><button class="sf-back" type="button" data-back="details">← Изделие</button><h2>Когда нужен заказ?</h2><p id="sfLeadNote"></p></div>
+        <div class="sf-calendar-head"><button class="sf-icon" type="button" id="sfPrevMonth" aria-label="Предыдущий месяц">‹</button><h3 id="sfMonthTitle" aria-live="polite"></h3><button class="sf-icon" type="button" id="sfNextMonth" aria-label="Следующий месяц">›</button></div>
+        <div class="sf-calendar-state" id="sfCalendarState" role="status"></div>
+        <div class="sf-calendar" id="sfCalendar" role="grid" aria-labelledby="sfMonthTitle"></div>
+        <ul class="sf-legend"><li><i class="available"></i>Можно заказать</li><li><i class="few"></i>Осталось мало мест</li><li><i class="full"></i>Занято — лист ожидания</li><li><i class="unavailable"></i>Недоступно</li></ul>
+      </section>
+      <section class="sf-pane" data-pane="form" hidden>
+        <div class="sf-pane-head"><button class="sf-back" type="button" data-back="date">← Дата</button><h2 id="sfFormTitle">Заявка</h2><p id="sfFormDate"></p></div>
+        <form class="sf-form" id="sfOrderForm" novalidate>
+          <ul class="sf-cart sf-cart-summary" id="sfFormLines" hidden></ul>
+          <p class="sf-form-choice" id="sfFormChoice" hidden></p>
+          <div class="sf-row" id="sfChoiceRow"></div>
+          <label id="sfPickupField" hidden>Время получения<select name="pickupWindow" id="sfPickup"></select></label>
+          <label>Количество<input name="quantity" type="number" inputmode="numeric" min="1" value="1" required></label>
+          <label id="sfWishesField">Пожелания<textarea name="wishes" rows="3" maxlength="1500" placeholder="Надпись, цвет, повод, аллергии"></textarea></label>
+          <label>Ваше имя<input name="customerName" maxlength="80" autocomplete="name" required></label>
+          <div class="sf-row"><label>Как связаться<select name="contactMethod" id="sfContactMethod"></select></label><label>Контакт<input name="contactValue" maxlength="120" autocomplete="tel" required id="sfContactValue"></label></div>
+          <label class="sf-hp" aria-hidden="true">Сайт<input name="website" tabindex="-1" autocomplete="off"></label>
+          <label class="sf-check"><input type="checkbox" name="consent" required><span id="sfConsentText"></span></label>
+          <p class="sf-estimate" id="sfEstimate" aria-live="polite"></p>
+          <p class="sf-offer" id="sfAccountOffer" hidden></p>
+          <p class="sf-error" id="sfFormError" role="alert"></p>
+          <button class="sf-button sf-button-wide" type="submit" id="sfSubmit">Отправить заявку</button>
+        </form>
+      </section>
+      <section class="sf-pane sf-done" data-pane="done" hidden tabindex="-1" id="sfDone"></section>
+    </div>
+  </dialog>
+
+  <dialog class="sf-dialog sf-dialog-narrow" id="sfAccountDialog" aria-labelledby="sfAccountTitle">
+    <div class="sf-dialog-inner">
+      <button class="sf-close" type="button" data-close aria-label="Закрыть">×</button>
+      <section class="sf-account" id="sfAccount"></section>
+    </div>
+  </dialog>
+</body>
+</html>

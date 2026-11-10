@@ -61,7 +61,8 @@
     const enabled=desktopTour.matches&&!reduced.matches;tour.dataset.enhanced=String(enabled);if(!enabled)return;
     const rect=tour.getBoundingClientRect(),distance=Math.max(1,rect.height-680);
     const progress=Math.min(1,Math.max(0,(120-rect.top)/distance));
-    tour.style.setProperty('--tour-progress',Math.max(.04,progress));
+    // Only the bar reads the progress: setting it on the whole tour restyled every screen inside on each scroll frame.
+    (tour.querySelector('.nx-tour-progress > i')||tour).style.setProperty('--tour-progress',Math.max(.04,progress));
     if(manualTourY!==null&&Math.abs(window.scrollY-manualTourY)<100)return;
     manualTourY=null;if(rect.top>180||rect.bottom<200)return;
     const selected=Math.min(2,Math.floor(progress*3));

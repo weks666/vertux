@@ -44,16 +44,17 @@ async function language(page, wanted) {
   if (await page.locator('html').getAttribute('lang') !== wanted) await page.locator('[data-lang-toggle]').click();
   await page.waitForFunction(lang => document.documentElement.lang === lang, wanted);
 }
+// Posters and product cards are pictures of the real interface: each must load and show.
 async function readyPoster(page, selector) {
   const poster = page.locator(selector);
   await poster.scrollIntoViewIfNeeded();
   await page.waitForFunction(sel => {
-    const host = document.querySelector(sel);
-    return host?.classList.contains('is-ready') && host.querySelector('iframe')?.contentDocument?.documentElement.dataset.demoReady === 'true';
+    const image = document.querySelector(sel)?.querySelector('img');
+    return Boolean(image?.complete && image.naturalWidth > 0);
   }, selector, {timeout: 25000});
   const details = await poster.evaluate(node => {
-    const frame = node.querySelector('iframe');
-    return {src: frame.getAttribute('src'), ready: node.classList.contains('is-ready'), width: node.clientWidth, height: node.clientHeight};
+    const image = node.querySelector('img');
+    return {src: image.getAttribute('src'), ready: image.naturalWidth > 0, width: node.clientWidth, height: node.clientHeight};
   });
   assert.ok(details.width > 0 && details.height > 0);
   return details;
@@ -169,13 +170,15 @@ try {
     for (const file of ['index.html', 'invest.html']) {
       await runCase(file.replace('.html', ''), width, async (page, result) => {
         await page.goto(localPage(file), {waitUntil: 'networkidle'});
-        result.posters = [await readyPoster(page, file === 'index.html' ? '#home-invest-scene [data-app-poster]' : '.nx-experience-invest [data-app-poster]')];
+        result.posters = file === 'index.html'
+          ? await Promise.all([0, 1, 2].map(i => readyPoster(page, `.nx-fan .nx-fan-card:nth-child(${i + 1})`)))
+          : [await readyPoster(page, '.nx-experience-invest .nx-app-still')];
         await page.screenshot({path: resolve(out, `${file.replace('.html', '')}-${width}-hero.png`), animations: 'disabled'});
         if (file === 'invest.html') {
           for (let i = 0; i < 3; i++) {
             const tab = page.locator(`[data-tour-tab="${i}"]`);
             await tab.click();
-            result.posters.push(await readyPoster(page, `#tour-panel-${i} [data-app-poster]`));
+            result.posters.push(await readyPoster(page, `#tour-panel-${i} .nx-app-still`));
             await page.locator(`#tour-panel-${i}`).screenshot({path: resolve(out, `invest-${width}-poster-${i}.png`), animations: 'disabled'});
           }
           await page.locator('.nx-demo-frame').scrollIntoViewIfNeeded();
