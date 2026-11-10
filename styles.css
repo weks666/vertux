@@ -557,6 +557,7 @@ a { color: inherit; }
 .foot-col a:hover { color: var(--accent-2); }
 .foot-col a:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 5px; }
 .footer-bottom { padding-top: var(--s8); color: var(--faint); font-size: 10px; }
+.footer-legal { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
 @media (max-width: 1100px) {
   .footer-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .foot-brand { grid-column: 1 / -1; }

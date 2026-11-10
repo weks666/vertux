@@ -108,7 +108,7 @@ const T = {
     'ct.num':'КОНТАКТ','ct.title':'Разберём твою задачу<br><span class="accent-word">лично</span>',
     'ct.sub':'Опиши в двух словах, что нужно - вернусь с идеей и цифрой в течение дня. Можно просто потыкать виджет внизу справа: он тоже собирает заявки.',
     'ct.name':'Как тебя зовут','ct.contact':'Telegram или телефон','ct.need':'Что нужно','ct.chip1':'Сайт','ct.chip2':'Виджет','ct.chip3':'Сайт и виджет','ct.chip4':'Пока не знаю','ct.brief':'Пара слов о задаче (опционально)','ct.send':'Отправить заявку →',
-    'ft.tag':'Сайты и виджеты, которые продают.','ft.nav':'Навигация','ft.contact':'Связь','ft.leave':'Оставить заявку','ft.examples':'Концепты вживую','ft.made':'собрано вручную',
+    'ft.tag':'Сайты и виджеты, которые продают.','ft.nav':'Навигация','ft.contact':'Связь','ft.leave':'Оставить заявку','ft.examples':'Концепты вживую','ft.made':'собрано вручную','ft.seller':'Самозанятый','ft.inn':'ИНН','ft.city':'г. Санкт-Петербург',
     'chat.title':'Vertux · бот',
   },
   en: {
@@ -189,7 +189,7 @@ const T = {
     'ct.num':'CONTACT','ct.title':'Let us review your task<br><span class="accent-word">in person</span>',
     'ct.sub':'Describe in a couple words what you need - I will come back with an idea and a number within a day. Or just play with the widget bottom right: it collects leads too.',
     'ct.name':'Your name','ct.contact':'Telegram or phone','ct.need':'What you need','ct.chip1':'Site','ct.chip2':'Widget','ct.chip3':'Site and widget','ct.chip4':'Not sure yet','ct.brief':'A couple words about the task (optional)','ct.send':'Send request →',
-    'ft.tag':'Sites and widgets that sell.','ft.nav':'Navigation','ft.contact':'Contact','ft.leave':'Leave a request','ft.examples':'Concepts live','ft.made':'built by hand',
+    'ft.tag':'Sites and widgets that sell.','ft.nav':'Navigation','ft.contact':'Contact','ft.leave':'Leave a request','ft.examples':'Concepts live','ft.made':'built by hand','ft.seller':'Self-employed (NPD)','ft.inn':'Tax ID (INN)','ft.city':'Saint Petersburg, Russia',
     'chat.title':'Vertux · bot',
   },
 };
