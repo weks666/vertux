@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": "invest-npd-2026-10-14-r1",
+  "revision": "invest-npd-2026-11-10-r1",
   "approval": "approved",
   "salesEnabled": false,
   "currency": "RUB",
@@ -37,9 +37,9 @@
     "name": "Бесплатный",
     "en": "Free",
     "monthlyRub": 0,
-    "status": "proposal",
-    "description": "Знакомство со своим портфелем.",
-    "descriptionEn": "Get to know your own portfolio."
+    "status": "available",
+    "description": "Свой портфель без оплаты и без срока.",
+    "descriptionEn": "Your portfolio with no payment and no time limit."
   },
   "plans": [
     {
@@ -169,5 +169,7 @@
     "repeatTrial": false
   },
   "approvedOn": "2026-10-14",
-  "approvalBasis": "Owner requested current Standard, Plus and Pro plans and working checkout in the next update. Merchant activation requires its actual configuration."
+  "approvalBasis": "Owner requested current Standard, Plus and Pro plans and working checkout in the next update. Merchant activation requires its actual configuration.",
+  "previousRevision": "invest-npd-2026-10-14-r1",
+  "revisionDate": "2026-11-10"
 }

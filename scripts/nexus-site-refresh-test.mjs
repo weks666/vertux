@@ -123,8 +123,9 @@ try {
             const actionBounds = await action.boundingBox();
             assert.ok(actionBounds.y >= featureBounds.y + featureBounds.height - 1, 'Plan action follows its features');
             if (plan.id === 'free') {
-              assert.equal(plan.status, 'proposal');
-              assert.equal(await action.getAttribute('href'), 'invest.html#demo');
+              // An available free plan starts with registration; an announced one leads to the demo.
+              assert.ok(['proposal', 'available'].includes(plan.status));
+              assert.equal(await action.getAttribute('href'), plan.status === 'available' ? 'https://nexus.vertux.online/account.html' : 'invest.html#demo');
               continue;
             }
             const link = new URL(await action.getAttribute('href'));

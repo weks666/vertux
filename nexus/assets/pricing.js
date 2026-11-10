@@ -14,7 +14,7 @@
       const card=document.querySelector('[data-tier-card="'+plan.id+'"]');
       if(!card)continue;
       const total=Math.round(plan.monthlyRub*selected.factor);
-      const action=card.querySelector('a[href*="account.html"]');
+      const action=plan.id==='free'?null:card.querySelector('a[href*="account.html"]');
       if(action){const target=new URL(action.href);target.searchParams.set('months',String(selected.months));action.href=target.href;}
       const price=card.querySelector('[data-tier-total] strong span');
       if(plan.id==='free'){
