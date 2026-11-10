@@ -1,16 +1,25 @@
 {
   "schemaVersion": 2,
-  "revision": "confectionery-2026-11-03-r2",
+  "revision": "confectionery-2026-11-10-r3",
   "product": "confectionery-workspace",
-  "status": "proposal",
+  "status": "published",
   "salesEnabled": false,
   "onlinePaymentConnected": false,
   "currency": "RUB",
   "monthlyRubReference": 500,
   "tiers": [
-    { "key": "base", "monthlyRubReference": 500 },
-    { "key": "extended", "monthlyRubReference": 990 },
-    { "key": "individual", "monthlyRubReference": null }
+    {
+      "key": "base",
+      "monthlyRubReference": 500
+    },
+    {
+      "key": "extended",
+      "monthlyRubReference": 990
+    },
+    {
+      "key": "individual",
+      "monthlyRubReference": null
+    }
   ],
-  "note": "Ориентиры для обсуждения. Подписка подключается вручную: тариф выбирает Vertux, стоимость фиксируется при подключении, онлайн-оплата не подключена."
+  "note": "Фиксированные цены за месяц (решение владельца 10.11.2026): Базовый 500 ₽, Расширенный 990 ₽, Индивидуальный по договорённости. Подключение по заявке, оплата по счёту после подключения; онлайн-продажа с сайта выключена."
 }

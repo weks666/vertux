@@ -29,7 +29,7 @@ const tierCopy = {
 export const confectioneryTierCard = tr => ({key, monthlyRubReference}, index) => {
   const copy = tierCopy[key], amount = monthlyRubReference == null ? null : Number(monthlyRubReference).toLocaleString('ru-RU');
   return `<article class="nx-cf-price-card${index === 0 ? ' is-main' : ''}"><p class="nx-cf-tag">${tr(...copy.tag)}</p><h3>${tr(...copy.name)}</h3>`
-    + (amount ? `<strong>${tr(`около ${amount} ₽`, `about ${amount} RUB`)}<small>${tr('в месяц', 'per month')}</small></strong>` : `<strong class="is-text">${tr('по договорённости', 'by agreement')}</strong>`)
+    + (amount ? `<strong>${tr(`${amount} ₽`, `${amount} RUB`)}<small>${tr('в месяц', 'per month')}</small></strong>` : `<strong class="is-text">${tr('по договорённости', 'by agreement')}</strong>`)
     + `<ul>${copy.items.map(([ru, en]) => `<li>${glyph('check')}${tr(ru, en)}</li>`).join('')}</ul>`
     + `<a class="nx-button ${index === 0 ? 'nx-button-primary' : 'nx-button-quiet'}" href="${CONTACT}" target="_blank" rel="noopener noreferrer">${tr(amount ? 'Оставить заявку' : 'Обсудить', amount ? 'Request a connection' : 'Discuss')}${glyph('arrow')}</a></article>`;
 };
@@ -41,7 +41,7 @@ export function confectioneryPage({tr, link, plan}) {
 <h1>${tr('Ваши десерты.', 'Your desserts.')}<br><em>${tr('Заказы — в одном месте.', 'Orders in one place.')}</em></h1>
 <p>${tr('Витрина с каталогом, календарь свободных дат и заявки клиентов. Клиент выбирает торт и дату — вы видите заказ в кабинете и сами подтверждаете детали.', 'A storefront with your catalogue, a calendar of open dates and customer requests. Customers pick a cake and a date — you see the order in your workspace and confirm the details yourself.')}</p>
 <div class="nx-actions"><a class="nx-button nx-button-primary" href="${contact}" target="_blank" rel="noopener noreferrer">${tr('Подключить кондитерскую', 'Connect your bakery')}${glyph('arrow')}</a><a class="nx-button nx-button-quiet" href="#demo">${tr('Попробовать демо', 'Try the demo')}${glyph('arrow')}</a></div>
-<p class="nx-cf-small">${tr(`Подписка — от ${price} ₽ в месяц, ориентир. Условия фиксируются при подключении.`, `Subscription from ${price} RUB per month as a guide. Terms are agreed when you connect.`)}</p></div></section>`;
+<p class="nx-cf-small">${tr(`Подписка — от ${price} ₽ в месяц. Подключение по заявке.`, `Subscription from ${price} RUB per month. Connection on request.`)}</p></div></section>`;
 
   // The real storefront and cabinet, built from the Nexus app with fictional data.
   const views = [['storefront', 'Витрина клиента', 'Customer storefront', 'Демо: витрина кондитерской', 'Demo: bakery storefront'],
@@ -80,7 +80,7 @@ export function confectioneryPage({tr, link, plan}) {
   const tierCard = confectioneryTierCard(tr);
   const pricing = `<section class="nx-cf-pricing shell" id="pricing"><div class="nx-cf-head"><h2>${tr('Три тарифа.', 'Three plans.')}<br><em>${tr('Начните с базового.', 'Start with Basic.')}</em></h2><p>${tr('Подключение — по заявке, пробный период на старте. Тариф можно сменить в любой момент через поддержку: данные остаются на месте.', 'Connection on request, with a trial period at the start. You can switch plans at any time through support: your data stays in place.')}</p></div>
 <div class="nx-cf-price-grid">${plan.tiers.map(tierCard).join('')}</div>
-<p class="nx-cf-small nx-cf-price-note">${tr('Цены — ориентир: точная стоимость фиксируется при подключении. Онлайн-оплата подписки пока не подключена.', 'Prices are a guide: the exact price is agreed when you connect. Online subscription payment is not available yet.')} <a class="nx-cf-text-link" href="confectionery-plans.html">${tr('Сравнить тарифы', 'Compare plans')}</a></p></section>`;
+<p class="nx-cf-small nx-cf-price-note">${tr('Цены указаны за месяц. Подключение по заявке: мы создаём кабинет и витрину, вы оплачиваете подписку по выбранному тарифу.', 'Prices are per month. Connection on request: we set up your workspace and storefront, then you pay for the chosen plan.')} <a class="nx-cf-text-link" href="confectionery-plans.html">${tr('Сравнить тарифы', 'Compare plans')}</a></p></section>`;
 
   const questions = [
     ['Нужен ли свой сайт?', 'Do I need my own website?', 'Нет. Витрина получает свою ссылку — её можно отправлять клиентам и ставить в профили соцсетей.', 'No. The storefront has its own link to share with customers and add to social profiles.'],
