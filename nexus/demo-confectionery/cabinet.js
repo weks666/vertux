@@ -588,9 +588,12 @@ async function compressImage(file) {
   canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close?.();
   const encode = (type, quality) => new Promise(resolve => canvas.toBlob(resolve, type, quality));
+  // The photo travels as base64 inside JSON and the production proxy accepts 2 MB per request.
+  const limit = 1.4 * 1024 * 1024;
   let blob = await encode('image/webp', 0.84);
   if (!blob || blob.type !== 'image/webp') blob = await encode('image/jpeg', 0.84);
-  if (blob.size > 2.8 * 1024 * 1024) blob = await encode('image/jpeg', 0.7);
+  for (const quality of [0.7, 0.55, 0.4]) { if (blob.size <= limit) break; blob = await encode('image/jpeg', quality); }
+  if (blob.size > limit) throw new Error('Фото слишком большое даже после сжатия. Выберите другое.');
   const bytes = new Uint8Array(await blob.arrayBuffer());
   let binary = '';
   for (let index = 0; index < bytes.length; index += 0x8000) binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));

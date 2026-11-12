@@ -1,7 +1,7 @@
 // Public website demo of the confectionery Workspace. The real storefront and
 // cabinet run unchanged; this module answers their /api/ calls from a fictional
 // shop kept in sessionStorage of this browser tab. Nothing leaves the browser.
-import * as model from './model.mjs?v=20261105j9yj';
+import * as model from './model.mjs?v=20261112vvw4';
 
 const KEY = 'nexus-confectionery-demo-v2';
 const PRODUCT_ID = '00000000-0000-4000-8000-00000000c0de';

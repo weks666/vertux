@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
   "kind": "confectionery-website-demo",
-  "builtAt": "2026-11-05",
+  "builtAt": "2026-11-12",
   "source": {
     "repository": "vertux-nexus",
     "path": "app",
-    "commit": "ef4fcbfa2ea83f35b55d3c0c45d493a86a1560b7",
-    "workingTreeChanges": true
+    "commit": "49cf445c30d66f7bbf95cf25d4ff9fab443ad46e",
+    "workingTreeChanges": false
   },
   "data": "fictional, generated in the browser by demo-api.js",
   "files": {
     "lib/confectionery/model.mjs": "17cf821fbe408f0e396266fd11dcbcc6044285cc486c23193ee98a4eb354ea39",
     "public/confectionery/cabinet.css": "fc107ff9fe8e80bf23c57582342ba9ec845b78b6617f7b3b7e1da71caeebc88c",
-    "public/confectionery/cabinet.html": "e9fca4405d94615ef424600e0034b224e620fe76886dc51df49581a5be7bc0ab",
-    "public/confectionery/cabinet.js": "fdc061f724bd04887485f3fd1ad5ad07bc76f19e9ea6f9e62832d7be09865c8e",
+    "public/confectionery/cabinet.html": "b414f34283bd79060d64d78f700c5463c18dcc6654880aa6e791d33ea9117b88",
+    "public/confectionery/cabinet.js": "6448bd357a37c011ac6e221a7d9be0e1a090d0610363b658d03f7ca194bd088f",
     "public/confectionery/storefront.css": "ef618d5d53b82c890a50c5ab46a7471367c410fe7f9674b093af41a0ac6eefb4",
     "public/confectionery/storefront.html": "83131cbc09be0ecc46db2363b7c39d117c1bc17660f64befcbaa3d44be7091f7",
     "public/confectionery/storefront.js": "b34ad017c090d24b341504cce5316dffbc0cb4228654465629a25fc5e16fc3b1",

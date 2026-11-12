@@ -4,7 +4,7 @@
 export const PRODUCTS = {
   invest:{name:['Invest Workspace', 'Invest Workspace'], note:['Портфель, аналитика и ваш план', 'Portfolio, analytics and your plan'],
     overview:'invest.html', plans:'pricing.html', security:'security.html', updates:'updates.html'},
-  confectionery:{name:['Кондитерская', 'Confectionery'], note:['Каталог, заявки и календарь заказов', 'Catalogue, requests and order calendar'],
+  confectionery:{name:['Pastry Workspace', 'Pastry Workspace'], note:['Каталог, заявки и календарь заказов', 'Catalogue, requests and order calendar'],
     overview:'confectionery.html', plans:'confectionery-plans.html', security:'confectionery-security.html', updates:'confectionery-updates.html'},
   workspace:{name:['Custom Workspace', 'Custom Workspace'], note:['Для себя, проекта или команды', 'For you, a project or a team'],
     overview:'workspace.html', plans:'workspace-plans.html', security:'workspace-security.html', updates:'workspace-updates.html'},
@@ -89,7 +89,7 @@ export function confectioneryPlansPage({tr, plan, tiers}) {
     ['Покупатели платят через витрину?', 'Do customers pay through the storefront?', 'Нет. Заявка не списывает деньги: стоимость и предоплату вы согласуете с клиентом напрямую.', 'No. A request never charges money: you agree the price and deposit with the customer directly.'],
     ['Как оплатить подписку?', 'How do I pay for the subscription?', 'После подключения кабинета мы выставляем счёт по цене выбранного тарифа. Чек самозанятого приходит на почту.', 'Once your workspace is set up we send an invoice at your plan price. The self-employed receipt arrives by email.'],
   ]);
-  return hero({tr, product:'confectionery', current:'plans', title:[['Тарифы Кондитерской.', 'Confectionery plans.'], ['Начните с базового.', 'Start with Basic.']],
+  return hero({tr, product:'confectionery', current:'plans', title:[['Тарифы Pastry Workspace.', 'Pastry Workspace plans.'], ['Начните с базового.', 'Start with Basic.']],
     lede:['Один кабинет и одна витрина на всех тарифах. Цены указаны за месяц.', 'One workspace and storefront on every plan. Prices are per month.']})
     + `<section class="nx-section-block shell"><div class="nx-cf-price-grid">${plan.tiers.map(tiers).join('')}</div></section>` + compare + steps + faq
     + `<section class="nx-cf-final shell"><h2>${tr('Выберите тариф.', 'Pick a plan.')}<br><em>${tr('Остальное настроим вместе.', 'We’ll set up the rest together.')}</em></h2><p>${tr('Напишите нам — подключим кондитерскую и поможем с первым запуском.', 'Message us — we’ll connect your bakery and help with the first launch.')}</p>${contactLink(tr, 'Подключить кондитерскую', 'Connect your bakery')}</section>`;
@@ -105,24 +105,24 @@ export function confectionerySecurityPage({tr}) {
       ['tool', 'Помощь Vertux — с вашего разрешения', 'Help from Vertux only with your permission', 'Vertux может настроить каталог, витрину, календарь и домен, если владелец это разрешил. Заказы и контакты клиентов при этом недоступны, каждое изменение записывается в журнал. Владелец отключает доступ одной кнопкой.', 'Vertux can set up the catalogue, storefront, calendar and domain if the owner allows it. Orders and customer contacts stay closed, and every change is logged. The owner switches access off with one button.'],
       ['globe', 'Свой домен открывает только витрину', 'Your domain opens only the storefront', 'На своём домене нет входа, кабинета и других страниц Nexus — только витрина этой кондитерской. Домен подключается после проверки записи DNS.', 'Your domain has no sign-in, workspace or other Nexus pages — only this bakery’s storefront. A domain connects after a DNS record check.'],
       ['card', 'Деньги не проходят через витрину', 'No money passes through the storefront', 'Заявка не списывает деньги и не запрашивает данные карты. Стоимость и предоплату вы согласуете с клиентом напрямую.', 'A request never charges money or asks for card details. You agree the price and deposit with the customer directly.'],
-    ])}${note(tr, 'Публичный запуск ещё готовится. Данные клиентов из заявок обрабатываете вы: на витрине можно указать ссылку на свою политику обработки данных. Эта страница описывает устройство продукта и не заменяет политику или договор.', 'The public launch is still being prepared. You handle the customer data from requests, and you can link your own privacy policy on the storefront. This page describes how the product works and does not replace a policy or contract.')}</section>`
+    ])}${note(tr, 'Данные клиентов из заявок обрабатываете вы: на витрине можно указать ссылку на свою политику обработки данных. Эта страница описывает устройство продукта и не заменяет политику или договор.', 'You handle the customer data from requests, and you can link your own privacy policy on the storefront. This page describes how the product works and does not replace a policy or contract.')}</section>`
     + `<section class="nx-cf-final shell"><h2>${tr('Остались вопросы?', 'Any questions?')}</h2><p>${tr('Расскажем, как устроены доступ и хранение данных в вашем случае.', 'We’ll explain how access and storage work for you.')}</p>${contactLink(tr, 'Задать вопрос', 'Ask a question')}</section>`;
 }
 
 export function confectioneryUpdatesPage({tr}) {
-  return hero({tr, product:'confectionery', current:'updates', title:[['Обновления', 'Confectionery'], ['Кондитерской.', 'updates.']],
+  return hero({tr, product:'confectionery', current:'updates', title:[['Обновления', 'Pastry Workspace'], ['Pastry Workspace.', 'updates.']],
     lede:['Кабинет и витрина работают в браузере: обновления приходят сами, устанавливать ничего не нужно.', 'The workspace and storefront run in the browser: updates arrive on their own, nothing to install.']})
-    + `<section class="nx-section-block shell"><div class="nx-section-empty">${icon('refresh')}<div><h2>${tr('Первый выпуск готовится.', 'The first release is being prepared.')}</h2><p>${tr('Кондитерская подключается по заявке. Каждый выпуск появится здесь с датой и списком изменений — как история выпусков Invest.', 'Bakeries are connected on request. Every release will appear here with its date and list of changes — like the Invest release history.')}</p></div></div>
-<div class="nx-cf-head nx-section-subhead"><h2>${tr('Что войдёт', 'What the first')}<br><em>${tr('в первый выпуск.', 'release includes.')}</em></h2><p>${tr('Это состав, который сейчас готовится. Он не выпущен и может измениться до запуска.', 'This is what is being prepared now. It is not released and may change before launch.')}</p></div>
+    + `<section class="nx-section-block shell"><div class="nx-section-empty">${icon('refresh')}<div><h2>${tr('Первый выпуск — 13 ноября 2026 года.', 'The first release shipped on 13 November 2026.')}</h2><p>${tr('Pastry Workspace подключается по заявке: Vertux создаёт кабинет и передаёт владельцу код входа. Каждый следующий выпуск появится здесь с датой и списком изменений.', 'Pastry Workspace is connected on request: Vertux creates the workspace and gives the owner a sign-in code. Every next release will appear here with its date and list of changes.')}</p></div></div>
+<div class="nx-cf-head nx-section-subhead"><h2>${tr('Что вошло', 'What the first')}<br><em>${tr('в первый выпуск.', 'release includes.')}</em></h2><p>${tr('Кабинет и витрина работают в браузере на компьютере и телефоне.', 'The workspace and storefront run in the browser on a computer and a phone.')}</p></div>
 <ul class="nx-section-list">${[
       ['Витрина с каталогом, фото, размерами и начинками', 'Storefront with catalogue, photos, sizes and fillings'],
       ['Календарь: лимиты по дням недели, отпуск, время получения', 'Calendar: weekday limits, holidays, pickup times'],
       ['Заявки и корзина из нескольких изделий', 'Requests and a multi-item cart'],
       ['Лист ожидания на занятые даты', 'Waitlist for booked dates'],
       ['Кабинет покупателя по коду из письма и скидки постоянным', 'Customer accounts by email code and loyalty discounts'],
-      ['Свой домен и места для постоянных — на тарифе «Расширенный»', 'Own domain and places for regulars — on Extended'],
-    ].map(([ru, en]) => `<li><span class="nx-section-tag">${tr('ГОТОВИТСЯ', 'PREPARING')}</span>${tr(ru, en)}</li>`).join('')}</ul></section>`
-    + `<section class="nx-cf-final shell"><h2>${tr('Хотите попробовать раньше?', 'Want to try it earlier?')}</h2><p>${tr('Демо витрины и кабинета работает уже сейчас — на вымышленных данных.', 'The storefront and workspace demo works right now — on fictional data.')}</p><a class="nx-button nx-button-primary" href="confectionery.html#demo">${tr('Открыть демо', 'Open the demo')}${icon('arrow')}</a></section>`;
+      ['Свой домен и места для постоянных — на тарифе «Расширенный»; домен подключает Vertux по заявке', 'Own domain and places for regulars — on Extended; Vertux connects the domain on request'],
+    ].map(([ru, en]) => `<li><span class="nx-section-tag">${tr('ВЫПУЩЕНО', 'RELEASED')}</span>${tr(ru, en)}</li>`).join('')}</ul></section>`
+    + `<section class="nx-cf-final shell"><h2>${tr('Хотите посмотреть?', 'Want to take a look?')}</h2><p>${tr('Демо витрины и кабинета работает на вымышленных данных.', 'The storefront and workspace demo runs on fictional data.')}</p><a class="nx-button nx-button-primary" href="confectionery.html#demo">${tr('Открыть демо', 'Open the demo')}${icon('arrow')}</a></section>`;
 }
 
 // ---------- Custom Workspace ----------
@@ -136,7 +136,7 @@ export function workspacePlansPage({tr}) {
     ].map(([n, ru, en, text, textEn]) => `<article><span class="nx-section-step">${n}</span><h2>${tr(ru, en)}</h2><p>${tr(text, textEn)}</p></article>`).join('')}</div></section>`
     + faqBlock(tr, ['Частые вопросы.', 'Questions.'], [
       ['Сколько стоит Custom Workspace?', 'How much does a Custom Workspace cost?', 'Зависит от задачи: разделов, данных и подключений. Стоимость обсуждаем после разбора процесса.', 'It depends on the task: sections, data and connections. We discuss the price once we understand the process.'],
-      ['Есть ли готовые тарифы?', 'Are there fixed plans?', 'Для готовых шаблонов — да: например, у Кондитерской три тарифа. Custom Workspace собирается под вас, поэтому тарифной сетки у него нет.', 'Ready templates have them — Confectionery has three plans. A Custom Workspace is built for you, so it has no fixed plans.'],
+      ['Есть ли готовые тарифы?', 'Are there fixed plans?', 'Для готовых шаблонов — да: например, у Pastry Workspace три тарифа. Custom Workspace собирается под вас, поэтому тарифной сетки у него нет.', 'Ready templates have them — Pastry Workspace has three plans. A Custom Workspace is built for you, so it has no fixed plans.'],
       ['Можно ли начать с небольшой задачи?', 'Can we start small?', 'Да. Удобно начать с одного процесса и расширять систему по мере необходимости.', 'Yes. It is convenient to start with one process and grow the system as needed.'],
     ])
     + `<section class="nx-final shell"><h2>${tr('Расскажите о своей задаче.', 'Tell us about your task.')}</h2><p>${tr('Обсудим нужные разделы и действия — для вас, вашего проекта или команды.', 'We’ll discuss the sections and actions you need — for you, your project or your team.')}</p>${contactLink(tr, 'Написать в Telegram', 'Message on Telegram')}</section>`;
