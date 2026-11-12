@@ -2,6 +2,40 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-0-6-91-invest-0-6-56",
+      "date": "2026-11-12",
+      "versions": {
+        "Nexus": "0.6.91",
+        "Invest": "0.6.56"
+      },
+      "title": {
+        "ru": "Бесплатный тариф Invest",
+        "en": "The Invest free plan"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "Бесплатный тариф: когда заканчивается пробный период или оплаченный срок, Invest не закрывается, а переходит на «Бесплатный» — один брокерский счёт, история сделок и операций, базовая аналитика и до трёх устройств. Платный тариф можно выбрать в любой момент.",
+          "en": "Free plan: when the trial or a paid term ends, Invest no longer closes and moves to the Free plan — one brokerage account, trade and operation history, basic analytics and up to three devices. A paid plan can be chosen at any time."
+        },
+        {
+          "type": "changed",
+          "ru": "На бесплатном тарифе терминал, планирование, календарь, исследования, полная аналитика и остальные счета показывают, что входят в платные тарифы. История и подключение к брокеру сохраняются.",
+          "en": "On the Free plan, the terminal, planning, calendar, research, full analytics and other accounts show that they belong to the paid plans. Your history and broker connection are kept."
+        },
+        {
+          "type": "changed",
+          "ru": "Nexus 0.6.91 поставляется с Invest 0.6.56. Установщик на сайте обновлён.",
+          "en": "Nexus 0.6.91 ships with Invest 0.6.56. The website installer has been updated."
+        },
+        {
+          "type": "changed",
+          "ru": "Оферта: редакция от 12 ноября 2026 года описывает бесплатный тариф и переход на него после пробного или оплаченного срока.",
+          "en": "Offer: the revision of 12 November 2026 describes the Free plan and the move to it after a trial or paid term."
+        }
+      ]
+    },
+    {
       "id": "invest-0-6-55",
       "date": "2026-10-28",
       "versions": {
