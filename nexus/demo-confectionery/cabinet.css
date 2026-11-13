@@ -513,3 +513,14 @@
 .cx-autoplay{display:grid;gap:6px}
 .cx-autoplay-more>summary{width:fit-content;color:var(--accent);font-size:13px;font-weight:600;cursor:pointer}
 .cx-autoplay-more[open]>summary{margin-bottom:10px}
+
+/* Online payment in the order card */
+/* Robokassa addresses in payment settings: long URLs wrap inside the card on phones. */
+.cx-dns > * { min-width: 0; }
+.cx-dns dt { color: var(--muted); font-size: 12px; }
+.cx-dns dd { margin: 0 0 4px; }
+.cx-dns dd code { font: 500 11px var(--mono); overflow-wrap: anywhere; color: var(--cx-code); }
+.cx-order-payment { display: grid; gap: .5rem; margin: 1rem 0; padding-top: .75rem; border-top: 1px solid var(--line, rgba(0,0,0,.08)); }
+.cx-order-payment h4 { margin: 0; }
+.cx-order-payment .cx-inline { align-items: end; gap: .75rem; }
+.cx-order-payment input[type="number"] { max-width: 10rem; }

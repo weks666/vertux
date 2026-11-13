@@ -371,3 +371,9 @@ h1,h2,h3{font-family:var(--sf-display)}
   .sf-pane[data-pane="details"] .sf-view-thumbs{padding:2px 16px}
   .sf-item-cta{bottom:-16px;margin:8px -16px -16px;padding:12px 16px 16px}
 }
+
+/* Online payment on the order status page */
+.sf-payment { display: grid; gap: .5rem; margin-top: 1rem; }
+.sf-payment .sf-pay { justify-self: start; text-decoration: none; }
+.sf-paid { font-weight: 600; }
+.sf-hint { font-size: .875rem; opacity: .75; margin: 0; }

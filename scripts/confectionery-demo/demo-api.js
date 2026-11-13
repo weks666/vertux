@@ -182,8 +182,8 @@ function cabinetRoute(section, target, action, method, body, query) {
   if (section === 'context' && method === 'GET') {
     return { product: { id: PRODUCT_ID, name: state.storefront.name, organizationName: 'Пример: Ванильное облако' }, role: 'owner', setup: false,
       capabilities: { viewOrders: true, manageStorefront: true, manageCatalog: true, manageCalendar: true, manageDomain: false, manageOrders: true, manageWaitlist: true, manageAccess: false,
-        viewCustomers: false, manageCustomers: false },
-      publicPath: './storefront.html', vertuxSetup: true, domain: { domain: null, status: 'none', target: 'nexus.vertux.online' },
+        viewCustomers: false, manageCustomers: false, managePayments: true },
+      publicPath: './storefront.html', vertuxSetup: true, domain: { domain: null, status: 'none', target: 'nexus.vertux.online' }, payments: { configured: false },
       storefront: state.storefront, calendar: state.calendar, ordering: ordering(), loyalty: { ...model.defaultLoyalty(), revision: 0 }, accountsAvailable: false,
       onboarding: onboarding(), today: today(),
       options: { formats: model.FORMATS, contactMethods: model.CONTACT_METHODS, statuses: model.ORDER_STATUS_LABELS, timeZones: model.TIME_ZONES,
@@ -283,6 +283,12 @@ function cabinetRoute(section, target, action, method, body, query) {
     entry.status = body.status; entry.updatedAt = nowIso(); save(); return entry;
   }
   if (section === 'domain' || section === 'access') throw fail('В демо свой домен и доступы не настраиваются.', 400);
+  // Online payment needs the bakery's own Robokassa shop; the demo shows the page and never sends anything.
+  if (section === 'payments' && method === 'GET' && !target) {
+    const base = `https://nexus.vertux.online/api/confectionery/${PRODUCT_ID}/payments/robokassa`;
+    return { settings: { configured: false }, urls: { resultUrl: `${base}/result`, resultMethod: 'POST', successUrl: `${base}/success`, successMethod: 'GET', failUrl: `${base}/fail`, failMethod: 'GET' } };
+  }
+  if (section === 'payments') throw fail('В демо онлайн-оплата не подключается: в своём кабинете владелец вводит данные магазина Робокассы, и покупатель оплачивает заказ по ссылке.', 400);
   throw fail('Метод не найден.', 404);
 }
 

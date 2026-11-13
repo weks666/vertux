@@ -414,6 +414,7 @@ async function openOrder(id) {
       h('div', { class:'cx-customer' }, h('strong', {}, order.customerName), contactNode(order.contactMethod, order.contactValue), buyer),
       lines,
       h('dl', { class:'cx-details' }, ...details.flatMap(([term, value]) => [h('dt', {}, term), h('dd', {}, value)])),
+      orderPaymentBlock(order),
       can('manageOrders') ? h('h4', {}, 'Сменить статус') : null,
       actions,
       h('label', {}, 'Заметка для команды', note),
@@ -762,10 +763,82 @@ async function saveStorefront(changes, message) {
   if (state.preview.loaded) { renderPreviewToolbar(); refreshPreview(); }
 }
 
+// ---------- online payment (the confectioner's own Robokassa shop) ----------
+const PAYMENT_URL_LABELS = [['resultUrl', 'Result URL', 'resultMethod'], ['successUrl', 'Success URL', 'successMethod'], ['failUrl', 'Fail URL', 'failMethod']];
+async function copyText(value, message) { try { await navigator.clipboard.writeText(value); toast(message); } catch { toast(value); } }
+async function renderPayments() {
+  const host = $('#cxPaymentsState'), form = $('#cxPaymentsForm');
+  host.replaceChildren(h('p', { class:'cx-hint' }, 'Загружаем настройки…'));
+  let data;
+  try { data = await api('payments'); } catch (error) { host.replaceChildren(h('p', { class:'cx-hint cx-warning' }, error.message)); return; }
+  const settings = data.settings || { configured:false };
+  state.context.payments = settings;
+  host.replaceChildren(
+    h('p', {}, settings.configured
+      ? `Подключено: магазин «${settings.merchantLogin}», ${settings.testMode ? 'тестовый режим — деньги не списываются' : 'боевой режим'}.`
+      : 'Онлайн-оплата не подключена. Заказы работают как раньше: расчёт напрямую с покупателем.'),
+    h('p', { class:'cx-hint' }, 'В личном кабинете Робокассы, в технических настройках магазина, укажите эти адреса:'),
+    h('dl', { class:'cx-dns' }, ...PAYMENT_URL_LABELS.flatMap(([key, label, method]) => [
+      h('dt', {}, `${label} · ${data.urls[method]}`),
+      h('dd', {}, h('code', {}, data.urls[key]), ' ', h('button', { type:'button', class:'text-button', onclick:() => copyText(data.urls[key], 'Адрес скопирован') }, 'Копировать'))])));
+  form.elements.merchantLogin.value = settings.merchantLogin || '';
+  form.elements.password1.value = ''; form.elements.password2.value = '';
+  form.elements.algorithm.value = settings.algorithm || 'sha256';
+  form.elements.sno.value = settings.receipt?.sno || '';
+  form.elements.tax.value = settings.receipt?.tax || 'none';
+  form.elements.testMode.checked = settings.configured ? settings.testMode === true : true;
+  $('#cxPaymentsDisable').hidden = !settings.configured;
+  $('#cxPaymentsError').textContent = '';
+}
+async function savePayments(form) {
+  const button = form.querySelector('[type="submit"]'); busy(button, true); $('#cxPaymentsError').textContent = '';
+  try {
+    await api('payments', { method:'PUT', body:{ merchantLogin:form.elements.merchantLogin.value.trim(), password1:form.elements.password1.value,
+      password2:form.elements.password2.value, algorithm:form.elements.algorithm.value, testMode:form.elements.testMode.checked,
+      receipt:{ sno:form.elements.sno.value || null, tax:form.elements.tax.value } } });
+    toast('Онлайн-оплата подключена');
+    await renderPayments();
+  } catch (error) { $('#cxPaymentsError').textContent = error.message; }
+  finally { busy(button, false); }
+}
+async function disablePayments(button) {
+  if (!confirm('Отключить онлайн-оплату? Настройки магазина и пароли будут удалены, уже полученные оплаты останутся в заказах.')) return;
+  busy(button, true);
+  try { await api('payments', { method:'DELETE', body:{} }); toast('Онлайн-оплата отключена'); await renderPayments(); }
+  catch (error) { toast(error.message, true); } finally { busy(button, false); }
+}
+// Order card: paid so far, the current link and a new link for the agreed amount.
+function orderPaymentBlock(order) {
+  if (!state.context.payments?.configured || !can('viewOrders')) return null;
+  const box = h('div', { class:'cx-order-payment' }, h('h4', {}, 'Оплата'), h('p', { class:'cx-hint' }, 'Загружаем…'));
+  const render = payment => {
+    const parts = [h('h4', {}, 'Оплата')];
+    parts.push(h('p', {}, payment.paidMinor ? `Оплачено ${money(payment.paidMinor)}${payment.paidAt ? `, ${timeText(payment.paidAt)}` : ''}.` : 'Оплат по этому заказу пока нет.'));
+    if (payment.pending) parts.push(h('p', {}, `Ссылка на ${money(payment.pending.amountMinor)} ждёт оплаты. Покупатель видит кнопку «Оплатить» на странице статуса заказа. `,
+      h('button', { type:'button', class:'text-button', onclick:() => copyText(payment.pending.url, 'Ссылка на оплату скопирована') }, 'Скопировать ссылку')));
+    if (payment.testMode) parts.push(h('p', { class:'cx-hint' }, 'Тестовый режим Робокассы: деньги не списываются.'));
+    if (can('manageOrders') && order.status !== 'cancelled') {
+      const amount = h('input', { type:'number', min:'1', max:'1000000', step:'1', inputmode:'decimal' });
+      const suggested = order.totalMinor ?? order.estimateMinor;
+      if (suggested) amount.value = String(Math.round(suggested / 100));
+      parts.push(h('div', { class:'cx-inline' }, h('label', {}, 'Сумма к оплате, ₽', amount),
+        h('button', { type:'button', class:'button ghost compact-button', onclick:async event => {
+          const amountMinor = Math.round(Number(amount.value) * 100);
+          busy(event.currentTarget, true);
+          try { const next = await api(`orders/${order.id}/payment`, { method:'POST', body:{ amountMinor } }); render(next); if (next.pending) void copyText(next.pending.url, 'Ссылка на оплату скопирована'); }
+          catch (error) { toast(error.message, true); busy(event.currentTarget, false); }
+        } }, payment.pending ? 'Новая ссылка' : 'Ссылка на оплату')));
+    }
+    box.replaceChildren(...parts);
+  };
+  api(`orders/${order.id}/payment`).then(render, error => box.replaceChildren(h('h4', {}, 'Оплата'), h('p', { class:'cx-hint cx-warning' }, error.message)));
+  return box;
+}
+
 // ---------- settings ----------
 const SETTINGS_PAGES = { appearance:() => true, menu:() => true, shop:() => can('manageStorefront'), ordering:() => can('manageStorefront') || can('manageCustomers'),
   // The domain and Vertux access share one page; each card shows only with its right.
-  domain:() => can('manageDomain') || can('manageAccess') };
+  domain:() => can('manageDomain') || can('manageAccess'), payments:() => can('managePayments') };
 function renderSettings() {
   $$('#cxSettingsNav [data-settings-page]').forEach(button => { button.hidden = !SETTINGS_PAGES[button.dataset.settingsPage](); });
   openSettingsPage(state.settingsPage);
@@ -784,7 +857,7 @@ function openSettingsPage(page) {
   renderSettingsPage();
 }
 function renderSettingsPage() {
-  const renderers = { appearance:renderAppearance, menu:renderMenuSettings, shop:renderShopTheme, ordering:renderOrdering, domain:renderDomainAndAccess };
+  const renderers = { appearance:renderAppearance, menu:renderMenuSettings, shop:renderShopTheme, ordering:renderOrdering, domain:renderDomainAndAccess, payments:renderPayments };
   renderers[state.settingsPage]();
 }
 
@@ -998,7 +1071,7 @@ function renderDomain(info) {
   dns.replaceChildren(
     info.status === 'verified'
       ? h('p', {}, 'Домен подтверждён: ', h('a', { href:info.url, target:'_blank', rel:'noopener' }, info.url), '. Если страница пока не открывается по HTTPS, сертификат для домена ещё выпускается администратором Vertux.')
-      : h('p', {}, 'Добавьте у регистратора домена две записи и нажмите «Проверить DNS». Изменения DNS могут появляться до суток.'),
+      : h('p', {}, 'Добавьте у регистратора домена две записи и нажмите «Проверить DNS». Изменения DNS могут появляться до суток. Для домена без поддомена (sladkiy-dom.ru) многие регистраторы не принимают CNAME — проще подключить поддомен, например zakaz.sladkiy-dom.ru.'),
     row('CNAME', info.domain, info.target),
     row('TXT', info.txtName, info.txtValue));
 }
@@ -1425,6 +1498,8 @@ function bindEvents() {
     } catch (error) { toast(error.message, true); } finally { busy(button, false); }
   });
   $('#cxDomainForm').addEventListener('submit', event => { event.preventDefault(); void saveDomain(event.currentTarget.elements.domain.value.trim()); });
+  $('#cxPaymentsForm').addEventListener('submit', event => { event.preventDefault(); void savePayments(event.currentTarget); });
+  $('#cxPaymentsDisable').addEventListener('click', event => { void disablePayments(event.currentTarget); });
   $('#cxDomainRemove').addEventListener('click', () => { if (confirm('Отключить свой домен? Витрина останется доступной по адресу Nexus.')) void saveDomain(''); });
   $('#cxDomainVerify').addEventListener('click', async event => {
     const button = event.currentTarget; busy(button, true);

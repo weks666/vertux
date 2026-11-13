@@ -8,13 +8,13 @@
   <title>Pastry Workspace · Vertux Nexus</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./fonts/fonts.css">
-  <link rel="stylesheet" href="./styles.css?v=20261112vvw4">
-  <link rel="stylesheet" href="./cabinet.css?v=20261112vvw4">
-  <link rel="stylesheet" href="./toaster.css?v=20261112vvw4">
-  <script src="./toaster.js?v=20261112vvw4" defer></script>
-  <script type="module" src="./demo-api.js?v=20261112vvw4"></script>
-  <script type="module" src="./cabinet.js?v=20261112vvw4"></script>
-  <link rel="stylesheet" href="./demo.css?v=20261112vvw4">
+  <link rel="stylesheet" href="./styles.css?v=20261113wue7">
+  <link rel="stylesheet" href="./cabinet.css?v=20261113wue7">
+  <link rel="stylesheet" href="./toaster.css?v=20261113wue7">
+  <script src="./toaster.js?v=20261113wue7" defer></script>
+  <script type="module" src="./demo-api.js?v=20261113wue7"></script>
+  <script type="module" src="./cabinet.js?v=20261113wue7"></script>
+  <link rel="stylesheet" href="./demo.css?v=20261113wue7">
 </head>
 <body class="cx-body">
   <a class="cx-skip" href="#cxMain">К содержанию</a>
@@ -245,6 +245,7 @@
             <button type="button" data-settings-page="menu">Меню и клавиши</button>
             <button type="button" data-settings-page="shop">Витрина</button>
             <button type="button" data-settings-page="ordering">Заказы</button>
+            <button type="button" data-settings-page="payments">Онлайн-оплата</button>
             <button type="button" data-settings-page="domain">Домен и доступ</button>
           </nav>
           <div class="cx-settings-body">
@@ -315,6 +316,23 @@
                 <p class="cx-hint">Покупатель входит по коду из письма — имя и контакт подставятся сами, а заказы будут копиться для скидок. Заказывать без входа по-прежнему можно. Список покупателей и скидки — в разделе «Покупатели».</p>
                 <p class="cx-hint cx-warning" id="cxAccountsUnavailable" hidden>Вход покупателей по почте пока не настроен на сервере Nexus. Напишите в поддержку.</p>
               </div>
+            </section>
+            <section class="cx-settings-page" data-settings-panel="payments" aria-labelledby="cxPaymentsTitle">
+              <h2 id="cxPaymentsTitle">Онлайн-оплата заказов</h2>
+              <p class="cx-hint">Покупатель платит картой через вашу Робокассу: деньги приходят в ваш магазин, Vertux их не получает. Чек по 54-ФЗ или для самозанятых формирует ваш магазин в Робокассе.</p>
+              <div class="panel cx-form cx-settings-card" id="cxPaymentsState"><p class="cx-hint">Загружаем настройки…</p></div>
+              <form class="panel cx-form cx-settings-card" id="cxPaymentsForm" novalidate>
+                <label>Идентификатор магазина<input name="merchantLogin" maxlength="50" autocomplete="off" spellcheck="false" placeholder="sladkiy-dom"></label>
+                <label>Пароль №1<input name="password1" type="password" autocomplete="new-password" maxlength="200"></label>
+                <label>Пароль №2<input name="password2" type="password" autocomplete="new-password" maxlength="200"></label>
+                <label>Алгоритм подписи<select name="algorithm"><option value="sha256">SHA256</option><option value="md5">MD5</option><option value="sha1">SHA1</option><option value="sha384">SHA384</option><option value="sha512">SHA512</option><option value="ripemd160">RIPEMD160</option></select></label>
+                <label>Система налогообложения в чеке<select name="sno"><option value="">Как в настройках магазина</option><option value="usn_income">УСН «доходы»</option><option value="usn_income_outcome">УСН «доходы минус расходы»</option><option value="osn">ОСН</option><option value="patent">Патент</option><option value="esn">ЕСХН</option></select></label>
+                <label>НДС в чеке<select name="tax"><option value="none">Без НДС</option><option value="vat0">0 %</option><option value="vat5">5 %</option><option value="vat7">7 %</option><option value="vat10">10 %</option><option value="vat20">20 %</option></select></label>
+                <label class="cx-switch"><input type="checkbox" name="testMode" checked><span>Тестовый режим Робокассы — платежи без списания денег</span></label>
+                <p class="cx-hint">Пароли хранятся отдельно от данных кабинета и после сохранения не показываются. Чтобы изменить настройки, введите оба пароля заново.</p>
+                <p class="cx-domain-error" id="cxPaymentsError" role="alert"></p>
+                <div class="cx-actions"><button class="button primary compact-button" type="submit">Сохранить</button><button class="button ghost compact-button" type="button" id="cxPaymentsDisable" hidden>Отключить онлайн-оплату</button></div>
+              </form>
             </section>
             <section class="cx-settings-page" data-settings-panel="domain" aria-labelledby="cxDomainPageTitle">
               <h2 id="cxDomainPageTitle">Домен и доступ</h2>

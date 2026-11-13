@@ -632,6 +632,16 @@ function orderTrack(status, { compact = false } = {}) {
       h('span', { class:'sf-track-dot', 'aria-hidden':'true' }), h('span', { class:'sf-track-label' }, label))));
 }
 
+// Online payment through the confectioner's Robokassa shop, when they sent a payment link.
+function orderPayment(payment) {
+  if (!payment) return null;
+  const parts = [];
+  if (payment.paidMinor) parts.push(h('p', { class:'sf-paid' }, `Оплачено ${money(payment.paidMinor)}.`));
+  if (payment.pending) parts.push(h('a', { class:'sf-button sf-pay', href:payment.pending.url, rel:'noopener' }, `Оплатить ${money(payment.pending.amountMinor)}`),
+    h('p', { class:'sf-hint' }, payment.testMode ? 'Тестовый режим: деньги не списываются.' : 'Оплата картой на странице Робокассы. Деньги получает кондитерская.'));
+  return parts.length ? h('div', { class:'sf-payment' }, ...parts) : null;
+}
+
 async function showOrderStatus(token) {
   const host = $('#sfOrderStatus');
   host.hidden = false; host.replaceChildren(h('p', {}, 'Проверяем статус заявки…'));
@@ -639,7 +649,7 @@ async function showOrderStatus(token) {
     const order = await api(`/orders/${encodeURIComponent(token)}`);
     host.replaceChildren(h('p', { class:'sf-status-label' }, `Заявка №${order.number}`), h('h2', {}, order.statusLabel),
       h('p', {}, `${order.itemTitle} · ${dateText(order.date, { day:'numeric', month:'long', weekday:'long' })}${order.pickupWindow ? `, ${order.pickupWindow}` : ''}`),
-      orderTrack(order.status));
+      orderTrack(order.status), orderPayment(order.payment));
     host.dataset.status = order.status;
   } catch (error) { host.replaceChildren(h('p', {}, error.message)); host.dataset.status = 'error'; }
 }
