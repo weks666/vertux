@@ -2,6 +2,33 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "invest-trial-on-demand-2026-11-17",
+      "date": "2026-11-17",
+      "versions": {},
+      "label": "INVEST / СЕРВИС",
+      "title": {
+        "ru": "Пробный Pro — по кнопке",
+        "en": "The Pro trial — on demand"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Новый аккаунт сразу работает на бесплатном тарифе. 30 дней тарифа Pro включаются кнопкой в личном кабинете — один раз, без оплаты и карты. У тех, кто уже получил пробный доступ при регистрации, срок сохраняется.",
+          "en": "A new account starts on the free plan. 30 days of Pro are switched on with a button in your account — once, with no payment or card. Accounts that already got a trial at registration keep its term."
+        },
+        {
+          "type": "added",
+          "ru": "Если старая версия приложения не умеет работать с бесплатным тарифом, лаунчер Nexus просит обновить приложение вместо пустого списка продуктов.",
+          "en": "If an older app version cannot use the free plan, the Nexus launcher asks you to update instead of showing an empty product list."
+        },
+        {
+          "type": "changed",
+          "ru": "Оферта: редакция invest-npd-2026-11-17-r1 описывает пробный доступ по кнопке и подписку Pastry Workspace; политика обработки данных — редакция privacy-2026-11-17-r1.",
+          "en": "Offer: revision invest-npd-2026-11-17-r1 describes the trial on demand and the Pastry Workspace subscription; privacy policy revision privacy-2026-11-17-r1."
+        }
+      ]
+    },
+    {
       "id": "invest-trial-30-days-2026-11-13",
       "date": "2026-11-13",
       "versions": {},
