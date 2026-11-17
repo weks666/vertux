@@ -13,6 +13,8 @@ const glyph = name => `<svg viewBox="0 0 24 24" aria-hidden="true" class="nx-ico
 })[name]}</svg>`;
 
 const CONTACT = 'https://t.me/VertuxManager';
+// The owner makes the workspace in the Nexus account; it opens after the first payment.
+const SIGNUP = 'https://nexus.vertux.online/account.html?product=pastry';
 // What each tariff opens matches the Nexus template; guide prices come from confectionery.json.
 const tierCopy = {
   base:{name:['Базовый', 'Basic'], tag:['Всё для заказов', 'Everything for orders'], items:[
@@ -31,7 +33,7 @@ export const confectioneryTierCard = tr => ({key, monthlyRubReference}, index) =
   return `<article class="nx-cf-price-card${index === 0 ? ' is-main' : ''}"><p class="nx-cf-tag">${tr(...copy.tag)}</p><h3>${tr(...copy.name)}</h3>`
     + (amount ? `<strong>${tr(`${amount} ₽`, `${amount} RUB`)}<small>${tr('в месяц', 'per month')}</small></strong>` : `<strong class="is-text">${tr('по договорённости', 'by agreement')}</strong>`)
     + `<ul>${copy.items.map(([ru, en]) => `<li>${glyph('check')}${tr(ru, en)}</li>`).join('')}</ul>`
-    + `<a class="nx-button ${index === 0 ? 'nx-button-primary' : 'nx-button-quiet'}" href="${CONTACT}" target="_blank" rel="noopener noreferrer">${tr(amount ? 'Оставить заявку' : 'Обсудить', amount ? 'Request a connection' : 'Discuss')}${glyph('arrow')}</a></article>`;
+    + `<a class="nx-button ${index === 0 ? 'nx-button-primary' : 'nx-button-quiet'}" href="${amount ? SIGNUP : CONTACT}"${amount ? '' : ' target="_blank" rel="noopener noreferrer"'}>${tr(amount ? 'Оформить подписку' : 'Обсудить', amount ? 'Subscribe' : 'Discuss')}${glyph('arrow')}</a></article>`;
 };
 
 export function confectioneryPage({tr, link, plan}) {
@@ -40,8 +42,8 @@ export function confectioneryPage({tr, link, plan}) {
   const hero = `<section class="nx-cf-hero shell"><div class="nx-cf-hero-copy"><nav class="nx-breadcrumb" aria-label="Путь по сайту" data-nx-aria-en="Breadcrumb"><a href="index.html">Nexus</a><span aria-hidden="true">/</span><span aria-current="page">${tr('Pastry Workspace', 'Pastry Workspace')}</span></nav>
 <h1>${tr('Ваши десерты.', 'Your desserts.')}<br><em>${tr('Заказы — в одном месте.', 'Orders in one place.')}</em></h1>
 <p>${tr('Витрина с каталогом, календарь свободных дат и заявки клиентов. Клиент выбирает торт и дату — вы видите заказ в кабинете и сами подтверждаете детали.', 'A storefront with your catalogue, a calendar of open dates and customer requests. Customers pick a cake and a date — you see the order in your workspace and confirm the details yourself.')}</p>
-<div class="nx-actions"><a class="nx-button nx-button-primary" href="${contact}" target="_blank" rel="noopener noreferrer">${tr('Подключить кондитерскую', 'Connect your bakery')}${glyph('arrow')}</a><a class="nx-button nx-button-quiet" href="#demo">${tr('Попробовать демо', 'Try the demo')}${glyph('arrow')}</a></div>
-<p class="nx-cf-small">${tr(`Подписка — от ${price} ₽ в месяц. Подключение по заявке.`, `Subscription from ${price} RUB per month. Connection on request.`)}</p></div></section>`;
+<div class="nx-actions"><a class="nx-button nx-button-primary" href="${SIGNUP}">${tr('Создать кабинет', 'Create your workspace')}${glyph('arrow')}</a><a class="nx-button nx-button-quiet" href="#demo">${tr('Попробовать демо', 'Try the demo')}${glyph('arrow')}</a></div>
+<p class="nx-cf-small">${tr(`Подписка — от ${price} ₽ в месяц. Кабинет создаёте сами, он открывается после оплаты.`, `Subscription from ${price} RUB per month. You create the workspace yourself; it opens after payment.`)}</p></div></section>`;
 
   // The real storefront and cabinet, built from the Nexus app with fictional data.
   const views = [['storefront', 'Витрина клиента', 'Customer storefront', 'Демо: витрина кондитерской', 'Demo: bakery storefront'],
@@ -78,19 +80,19 @@ export function confectioneryPage({tr, link, plan}) {
   const trust = `<section class="nx-cf-trust shell">${glyph('lock')}<div><h2>${tr('Ваши клиенты — только ваши.', 'Your customers stay yours.')}</h2><p>${tr('У каждой кондитерской отдельная рабочая база. Доступ в кабинет — по аккаунту Nexus и роли в команде. Данные клиентов из заявок обрабатываете вы: на витрине можно указать ссылку на свою политику обработки данных.', 'Every bakery has its own workspace database. Access requires a Nexus account and a team role. You handle the customer data from requests, and you can link your own privacy policy on the storefront.')}</p></div><a class="nx-cf-text-link" href="confectionery-security.html">${tr('Как устроена защита', 'How security works')}${glyph('arrow')}</a></section>`;
 
   const tierCard = confectioneryTierCard(tr);
-  const pricing = `<section class="nx-cf-pricing shell" id="pricing"><div class="nx-cf-head"><h2>${tr('Три тарифа.', 'Three plans.')}<br><em>${tr('Начните с базового.', 'Start with Basic.')}</em></h2><p>${tr('Подключение — по заявке, пробный период на старте. Тариф можно сменить в любой момент через поддержку: данные остаются на месте.', 'Connection on request, with a trial period at the start. You can switch plans at any time through support: your data stays in place.')}</p></div>
+  const pricing = `<section class="nx-cf-pricing shell" id="pricing"><div class="nx-cf-head"><h2>${tr('Три тарифа.', 'Three plans.')}<br><em>${tr('Начните с базового.', 'Start with Basic.')}</em></h2><p>${tr('Кабинет вы создаёте сами в личном кабинете Nexus; он открывается после оплаты подписки. Тариф меняется там же: данные остаются на месте.', 'You create the workspace yourself in your Nexus account; it opens once the subscription is paid. You change plans there too: your data stays in place.')}</p></div>
 <div class="nx-cf-price-grid">${plan.tiers.map(tierCard).join('')}</div>
-<p class="nx-cf-small nx-cf-price-note">${tr('Цены указаны за месяц. Подключение по заявке: мы создаём кабинет и витрину, вы оплачиваете подписку по выбранному тарифу.', 'Prices are per month. Connection on request: we set up your workspace and storefront, then you pay for the chosen plan.')} <a class="nx-cf-text-link" href="confectionery-plans.html">${tr('Сравнить тарифы', 'Compare plans')}</a></p></section>`;
+<p class="nx-cf-small nx-cf-price-note">${tr('Цены указаны за месяц; за три месяца −10 %, год — по цене десяти месяцев. Оплата разовая, без автоматических списаний.', 'Prices are per month; three months are 10% off and a year costs ten months. One-off payment, no automatic charges.')} <a class="nx-cf-text-link" href="confectionery-plans.html">${tr('Сравнить тарифы', 'Compare plans')}</a></p></section>`;
 
   const questions = [
     ['Нужен ли свой сайт?', 'Do I need my own website?', 'Нет. Витрина получает свою ссылку — её можно отправлять клиентам и ставить в профили соцсетей.', 'No. The storefront has its own link to share with customers and add to social profiles.'],
-    ['Как я узнаю о новой заявке?', 'How will I know about a new request?', 'Заявка появляется в кабинете с отметкой «Нужно связаться». Автоматические уведомления пока не подключены, поэтому клиенту вы пишете или звоните сами.', 'The request appears in your workspace marked “Get in touch”. Automatic notifications are not connected yet, so you contact the customer yourself.'],
+    ['Как я узнаю о новой заявке?', 'How will I know about a new request?', 'Заявка появляется в кабинете с отметкой «Нужно связаться», а владелец и администраторы получают письмо. В письме нет имени и контактов покупателя: они остаются в кабинете.', 'The request appears in your workspace marked “Get in touch”, and the owner and administrators get an email. The email carries no customer name or contacts: they stay in the workspace.'],
     ['Принимает ли витрина оплату?', 'Does the storefront take payments?', 'Да, если подключить свой магазин Робокассы: в заказе появляется ссылка на оплату согласованной суммы, покупатель платит на странице Робокассы, деньги приходят напрямую вам. Сама заявка ничего не списывает; без подключения расчёт — напрямую с клиентом.', 'Yes, if you connect your own Robokassa shop: an order gets a payment link for the agreed amount, the customer pays on the Robokassa page and the money goes straight to you. A request itself never charges anything; without a shop you settle with the customer directly.'],
     ['Можно ли работать командой?', 'Can a team use it?', 'Да, на «Расширенном» — до 3 человек, на «Индивидуальном» — до 20. Используются роли Nexus: владелец и администратор настраивают витрину, менеджер ведёт заказы, наблюдатель только смотрит. На «Базовом» доступ у одного человека.', 'Yes: up to 3 people on Extended and up to 20 on Custom. It uses Nexus roles: owners and admins set up the storefront, managers handle orders, viewers can only look. Basic gives access to one person.'],
   ];
   const faq = `<section class="nx-cf-faq shell"><h2>${tr('Частые вопросы.', 'Questions.')}</h2><div>${questions.map(([q, qe, a, ae]) => `<details><summary>${tr(q, qe)}<span aria-hidden="true">+</span></summary><p>${tr(a, ae)}</p></details>`).join('')}</div></section>`;
 
-  const final = `<section class="nx-cf-final shell"><h2>${tr('Покажите десерты.', 'Show your desserts.')}<br><em>${tr('Заявки придут сами.', 'Requests will follow.')}</em></h2><p>${tr('Напишите нам — подключим кондитерскую, а витрину, каталог и календарь вы настроите за вечер.', 'Message us — we’ll connect your bakery, and you can set up the storefront, catalogue and calendar in an evening.')}</p>${link(contact, 'Подключить кондитерскую', 'Connect your bakery').replace('href=', 'target="_blank" rel="noopener noreferrer" href=')}</section>`;
+  const final = `<section class="nx-cf-final shell"><h2>${tr('Покажите десерты.', 'Show your desserts.')}<br><em>${tr('Заявки придут сами.', 'Requests will follow.')}</em></h2><p>${tr('Создайте кабинет — витрину, каталог и календарь вы настроите за вечер.', 'Create your workspace — you can set up the storefront, catalogue and calendar in an evening.')}</p>${link(SIGNUP, 'Создать кабинет', 'Create your workspace')}</section>`;
 
   return hero + demo + strip + cabinet + rules + formats + trust + pricing + faq + final;
 }

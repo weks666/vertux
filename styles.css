@@ -1578,3 +1578,6 @@ html[lang="en"] .cc-title { font-style: italic; }
 
 /* Legal links and explicit inquiry consent. */
 .legal-check a{color:var(--accent-2,#c8bcff);text-underline-offset:4px}.legal-check{display:flex;align-items:flex-start;gap:12px;font-size:14px;line-height:1.6;margin:4px 0 22px;color:var(--text,#f4f1ff)}.legal-check input[type=checkbox]{width:20px;height:20px;min-width:20px;margin:3px 0 0;accent-color:var(--accent,#7c5cff)}.legal-check input:focus-visible{outline:2px solid var(--accent-2,#c8bcff);outline-offset:5px}
+
+/* Honeypot fields: hidden from people, left for bots that fill every input */
+.hp-field{position:absolute!important;left:-10000px!important;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}

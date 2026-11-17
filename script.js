@@ -1,30 +1,61 @@
 // ===== CONFIG =====
-console.log('%c Vertux build v16 — Nexus launch ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
-const N8N_WEBHOOK_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-lead';
-const VERTUX_BOT_URL = 'https://zxcqweksn8n.duckdns.org/webhook/vertux-widget';
+console.log('%c Vertux build v17 — Nexus intake ', 'background:#7C5CFF;color:#fff;padding:3px 8px;border-radius:4px;font-weight:700');
+// The form and the chat widget write to the Nexus server in Russia first; it passes
+// the request on to the studio request server. A local preview talks to a local Nexus.
+const INTAKE_BASE = /^(127\.0\.0\.1|localhost)$/.test(location.hostname)
+  ? 'http://127.0.0.1:47951/site-intake'
+  : 'https://nexus.vertux.online/site-intake';
+const LEAD_URL = INTAKE_BASE + '/lead';
+const VERTUX_BOT_URL = INTAKE_BASE + '/widget';
+const BOT_SESSION_URL = INTAKE_BASE + '/widget/session';
 
 // Heavy WebGL/scene animations are disabled on mobile (perf + battery).
 const IS_MOBILE = window.matchMedia('(max-width: 760px)').matches;
 
 // ===== BOT API =====
-function getSessionId(key) {
-  let id = localStorage.getItem(key);
-  if (!id) {
-    id = key + '-' + Math.random().toString(36).slice(2, 10) + '-' + Date.now().toString(36);
-    localStorage.setItem(key, id);
-  }
-  return id;
+// The server issues a short-lived chat session token; an expired one is renewed
+// with the same conversation.
+function readBotSession(key) {
+  try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch { return null; }
 }
-async function vertuxBot(message, sessionKey) {
-  const session_id = getSessionId(sessionKey);
-  const res = await fetch(VERTUX_BOT_URL, {
+function saveBotSession(key, value) {
+  try { value ? localStorage.setItem(key, JSON.stringify(value)) : localStorage.removeItem(key); } catch {}
+}
+async function botToken(channel, renew) {
+  const key = 'vertux_bot_' + channel;
+  const saved = readBotSession(key);
+  if (!renew && saved && saved.exp - Date.now() > 30000) return saved.token;
+  const res = await fetch(BOT_SESSION_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ session_id, message, site: 'vertux' })
+    body: JSON.stringify({ channel, previous: (saved && saved.token) || '' })
   });
-  if (!res.ok) throw new Error('Bot HTTP ' + res.status);
-  const data = await res.json();
-  if (data.action === 'HOT_LEAD') localStorage.removeItem(sessionKey);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.token) throw Object.assign(new Error('Bot session HTTP ' + res.status), { reply: data.reply });
+  saveBotSession(key, { token: data.token, exp: Date.now() + data.expiresIn * 1000 });
+  return data.token;
+}
+async function vertuxBot(message, channel) {
+  const website = (document.getElementById('chatHp') || {}).value || '';
+  const ask = async (token) => fetch(VERTUX_BOT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, message, website })
+  });
+  let res;
+  try {
+    res = await ask(await botToken(channel));
+    if (res.status === 401) res = await ask(await botToken(channel, true));
+  } catch (err) {
+    if (err.reply) return { reply: err.reply };
+    throw err;
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    if (data.reply) return data;
+    throw new Error('Bot HTTP ' + res.status);
+  }
+  if (data.action === 'HOT_LEAD') saveBotSession('vertux_bot_' + channel, null);
   return data;
 }
 
@@ -284,7 +315,7 @@ document.querySelectorAll('.faq-item').forEach(item => item.querySelector('.faq-
 
 // ===== LEAD SEND =====
 async function sendLead(data) {
-  const res = await fetch(N8N_WEBHOOK_URL, {
+  const res = await fetch(LEAD_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...data, url: location.href, ts: new Date().toISOString() })
@@ -443,7 +474,7 @@ async function aiReply(text) {
   t.innerHTML = '<span></span><span></span><span></span>';
   demoBody.appendChild(t); demoBody.scrollTop = demoBody.scrollHeight;
   try {
-    const { reply } = await vertuxBot(text, 'vertux_session_demo');
+    const { reply } = await vertuxBot(text, 'demo');
     t.remove();
     dMsg(reply || (lang==='ru' ? 'Пустой ответ.' : 'Empty reply.'), 'bot');
   } catch (e) {
@@ -489,7 +520,7 @@ chatForm.addEventListener('submit', async (e) => {
   cMsg(v,'user'); chatInput.value=''; chatInput.disabled = true;
   const t = cTyping();
   try {
-    const { reply } = await vertuxBot(v, 'vertux_session_chat');
+    const { reply } = await vertuxBot(v, 'chat');
     t.remove();
     cMsg(reply || (lang==='ru'?'Пустой ответ.':'Empty reply.'),'bot');
   } catch (err) {

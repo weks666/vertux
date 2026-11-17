@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vertux — сайты и виджеты, которые продают</title>
 <meta name="description" content="Делаю конверсионные сайты и умные виджеты сбора заявок. Сайт - лицо бизнеса, виджет - менеджер 24/7. Примеры, тарифы, бесплатный триал.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Unbounded:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/manrope-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/unbounded-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/fonts/site-fonts.css?v=20261116">
 <link rel="icon" href="favicon.ico?v=1" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
-<link rel="stylesheet" href="styles.css?v=20261110-legal">
+<link rel="stylesheet" href="styles.css?v=20261116-intake">
 </head>
 <body>
 
@@ -713,6 +713,7 @@
       </div>
       <div class="cf-field"><label class="mono" data-i18n="ct.brief">Пара слов о задаче (опционально)</label><textarea name="brief" rows="3" placeholder="Например: сайт для студии маникюра + виджет записи" data-i18n-ph="ct.ph.brief"></textarea></div>
       <label class="legal-check"><input type="checkbox" name="inquiryConsent" value="true" required><span>Даю <a href="/nexus/consent.html" target="_blank" rel="noopener noreferrer">согласие на обработку заявки</a>. <a href="/nexus/privacy.html" target="_blank" rel="noopener noreferrer">Политика конфиденциальности</a></span></label><input type="hidden" name="consentVersion" value="studio-inquiry-2026-09-17">
+      <div class="hp-field" aria-hidden="true"><label>Не заполняйте это поле<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
       <button type="submit" class="btn btn-primary btn-lg btn-full magnetic" data-magnetic data-i18n="ct.send">Отправить заявку <span class="arr">→</span></button>
       <div class="cf-result" id="cfResult"></div>
     </form>
@@ -779,12 +780,13 @@
   </div>
   <div class="chat-body" id="chatBody"></div>
   <form class="chat-input-form" id="chatForm" style="display:none;">
-    <input type="text" class="chat-input" id="chatInput" placeholder="Ответ..." autocomplete="off">
+    <input type="text" class="chat-input" id="chatInput" placeholder="Ответ..." autocomplete="off" maxlength="1000">
+    <div class="hp-field" aria-hidden="true"><label>Не заполняйте это поле<input type="text" name="website" id="chatHp" tabindex="-1" autocomplete="off"></label></div>
     <button type="submit" class="chat-send">→</button>
   </form>
 </div>
 
 <script src="legal-forms.js?v=20260917"></script>
-<script src="script.js?v=16"></script>
+<script src="script.js?v=17"></script>
 </body>
 </html>
