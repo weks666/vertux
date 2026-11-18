@@ -167,6 +167,7 @@
 .nx-platform-card { display:flex; flex-direction:column; background:radial-gradient(ellipse at 50% 45%,#8560b873,transparent 68%),linear-gradient(145deg,#2b2042e8,#12121ee8); transition:box-shadow .35s; }
 .nx-platform-android { background:radial-gradient(ellipse at 50% 45%,#516ebd66,transparent 68%),linear-gradient(145deg,#22223ce8,#11121ee8); }
 .nx-platform-card:hover { box-shadow:0 18px 60px #9e72ec24; }
+.nx-device-cards.nx-device-cards-single { grid-template-columns:minmax(0,1fr); max-width:640px; }
 .nx-platform-intro { padding:30px 25px 0; text-align:center; }
 .nx-platform-intro h3 { font-size:27px; font-weight:500; letter-spacing:-.03em; margin:12px 0; }
 .nx-platform-intro p { color:#cfc2e3; font-size:14px; margin:0; line-height:1.5; }
