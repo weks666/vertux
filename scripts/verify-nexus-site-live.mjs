@@ -9,7 +9,7 @@ const base='https://vertux.online/';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 // .nojekyll is a build marker; Pages intentionally does not serve dotfiles.
 const files=(await readdir('nexus/demo',{recursive:true,withFileTypes:true})).filter(f=>f.isFile()&&!f.name.startsWith('.')).map(f=>resolve(f.parentPath,f.name).slice(process.cwd().length+1).replaceAll('\\','/'));
-files.push(...['index','invest','pricing','workspace','download','security','updates','offer','privacy','consent'].map(f=>'nexus/'+f+'.html'));
+files.push(...['index','invest','pricing','workspace','download','security','updates','offer','payment','privacy','consent'].map(f=>'nexus/'+f+'.html'));
 files.push(...['demo-frame.css','demo-runtime.js','demo-service.js'].map(f=>'nexus/assets/'+f));
 const report={commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),checkedAt:new Date().toISOString(),base,files:[],browserErrors:[],demoNetworkAttempts:[]};
 let cursor=0;

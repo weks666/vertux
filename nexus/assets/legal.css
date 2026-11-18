@@ -7,6 +7,12 @@ body { margin: 0; background: var(--bg, #08090b); color: var(--text, #f4f1ff); f
 .legal-document h2 { font-size: 23px; line-height: 1.35; margin: 44px 0 14px; scroll-margin-top: 24px; }
 .legal-document h3 { font-size: 19px; line-height: 1.4; margin: 28px 0 12px; scroll-margin-top: 24px; }
 .legal-document p { max-width: 74ch; color: #d6d2e0; margin: 16px 0; overflow-wrap: anywhere; }
+.legal-document .legal-list { max-width: 74ch; color: #d6d2e0; margin: 12px 0 18px; padding-left: 1.4em; }
+.legal-document .legal-list li { margin: 6px 0; overflow-wrap: anywhere; }
+.legal-document .legal-list li::marker { color: #8f88a0; }
+.legal-document strong { color: #f4f1ff; font-weight: 500; }
+.legal-document p[id] { scroll-margin-top: 24px; }
+.legal-document .legal-related [aria-current] { color: #f4f1ff; }
 .legal-document .legal-revision { color: #a4a0ad; font-size: 13px; margin-bottom: 28px; }
 .legal-document a, .legal-header a, .legal-footer a { color: #c8bcff; text-underline-offset: 4px; }
 .legal-toc { margin: 28px 0 36px; padding: 24px 0; border-block: 1px solid #ffffff26; }
@@ -32,7 +38,7 @@ a:focus-visible, .legal-table:focus-visible { outline: 2px solid #c8bcff; outlin
 @media print {
   :root { color-scheme: light; }
   body { background: white; color: black; }
-  .legal-document p, .legal-table th, .legal-table td { color: black; }
+  .legal-document p, .legal-document .legal-list, .legal-table th, .legal-table td { color: black; }
   .legal-header, .legal-toc, .legal-related, .legal-footer { display: none; }
   .legal-document { width: 100%; padding: 0; }
   .legal-document a { color: inherit; }

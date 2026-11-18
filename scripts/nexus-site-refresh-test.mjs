@@ -142,7 +142,9 @@ try {
         assert.equal(await first.getAttribute('aria-pressed'), 'true');
         assert.ok(await page.locator('footer a[href="offer.html"]').count());
         assert.ok(await page.locator('footer a[href="privacy.html"]').count());
-        assert.ok(await page.locator('a[href="offer.html#section-6"]').count());
+        assert.ok(await page.locator('a[href="offer.html#section-7"]').count());
+        assert.ok(await page.locator('a[href="payment.html#section-7"]').count());
+        assert.ok(await page.locator('footer a[href="payment.html"]').count());
         await seller(page);
         const size = await noOverflow(page);
         const headingsFit = await page.locator('[data-tier-card]').evaluateAll(cards => cards.every(card => {
@@ -162,7 +164,7 @@ try {
         result.languages.push({lang, ...size, terms: data.terms.map(t => t.months), sellerFits: true});
         await page.evaluate(() => scrollTo(0, 0));
       }
-      for (const file of ['offer.html', 'privacy.html', 'consent.html']) {
+      for (const file of ['offer.html', 'payment.html', 'privacy.html', 'consent.html']) {
         const response = await page.request.get(localPage(file));
         assert.equal(response.status(), 200, `Document ${file} is reachable`);
       }

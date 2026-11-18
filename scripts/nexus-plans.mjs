@@ -1,5 +1,6 @@
 import { participantsSection } from './nexus-participants.mjs';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
+import { buildLegalDocuments } from './nexus-legal.mjs';
 
 const catalogPath = new URL('../nexus/plans.json', import.meta.url);
 export const catalog = JSON.parse(await readFile(catalogPath, 'utf8'));
@@ -12,7 +13,7 @@ export function validateCatalog() {
   // 'available' is published only together with the server and application
   // release that really provide the free plan; 'proposal' keeps the preview card.
   if (catalog.freePlan?.id !== 'free' || catalog.freePlan.monthlyRub !== 0 || !['proposal','available'].includes(catalog.freePlan.status)) throw new Error('Free plan must be a zero-price plan, announced or available');
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(catalog.revisionDate || '') || !catalog.revision.includes(catalog.revisionDate)) throw new Error('Offer revision and its date must match');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(catalog.revisionDate || '') || ![catalog.revision, catalog.privacyRevision, catalog.consentRevision].every(r => typeof r === 'string' && r.includes(catalog.revisionDate))) throw new Error('Offer, privacy and consent revisions must carry the revision date');
   for (const f of catalog.features) if (f.values.length !== catalog.plans.length || !f.freeValue) throw new Error('Feature columns must match the displayed plans');
   for (const t of catalog.terms) {
     if (!Number.isInteger(t.months)||t.months<1||!Number.isFinite(t.factor)||t.factor<=0||t.factor>t.months) throw new Error('Invalid term');
@@ -55,12 +56,12 @@ export function buildPricing({tr, icon, link, faq}) {
   const comparison = features.map(f=>'<tr><th scope="row">'+tr(f.ru,f.en)+'</th>'+f.values.map(v=>'<td class="is-'+v+'">'+state(v,true)+'</td>').join('')+'</tr>').join('');
   return '<section class="nx-pricing-hero shell"><h1>'+tr('Один Invest.','One Invest.')+'<br><em>'+tr('Для знакомства и для работы.','For exploring and working.')+'</em></h1><p>'+tr('Выберите свой набор инструментов и срок доступа. Полная стоимость — в каждой карточке.','Choose your tools and access term. Each card shows the full price.')+'</p>'+
     '<p class="nx-trial-note">'+(freeAvailable?tr('Бесплатный тариф без срока — сразу после регистрации. 30 дней тарифа Pro включаются кнопкой в кабинете, без привязки карты.','The free plan with no time limit starts right after registration. 30 days of Pro start with one button in your account, no card required.'):tr('30 дней пробного доступа без привязки карты.','A 30-day trial with no card required.'))+'</p>'+
-    '<div class="nx-term-controls" role="group" aria-label="Срок подписки" data-nx-aria-en="Subscription term">'+catalog.terms.map((t,i)=>'<button type="button" disabled data-subscription-term="'+t.id+'" aria-pressed="'+(i===0)+'">'+tr(t.label,t.en)+(t.discount?'<small>−'+t.discount+'%</small>':t.months===12&&t.factor<t.months?'<small>'+tr((t.months-t.factor)+' месяца в подарок',(t.months-t.factor)+' months included')+'</small>':'')+'</button>').join('')+'</div><noscript><p>Без JavaScript показана цена за месяц. <a href="offer.html#section-3">Все сроки и суммы — в оферте.</a></p></noscript></section>'+
+    '<div class="nx-term-controls" role="group" aria-label="Срок подписки" data-nx-aria-en="Subscription term">'+catalog.terms.map((t,i)=>'<button type="button" disabled data-subscription-term="'+t.id+'" aria-pressed="'+(i===0)+'">'+tr(t.label,t.en)+(t.discount?'<small>−'+t.discount+'%</small>':t.months===12&&t.factor<t.months?'<small>'+tr((t.months-t.factor)+' месяца в подарок',(t.months-t.factor)+' months included')+'</small>':'')+'</button>').join('')+'</div><noscript><p>Без JavaScript показана цена за месяц. <a href="offer.html#section-7">Все сроки и суммы — в оферте.</a></p></noscript></section>'+
     '<section class="nx-tier-section shell" aria-label="Тарифы Invest" data-nx-aria-en="Invest plans"><div class="nx-tier-grid">'+cards+'</div><p class="nx-pricing-announcement" role="status" aria-live="polite" data-pricing-announcement></p>'+
     '<p class="nx-pricing-note">'+(freeAvailable
       ?tr('Бесплатный тариф не нужно оформлять: новый аккаунт начинает с него и возвращается на него, когда заканчивается пробный доступ или оплаченный срок. Цены платных тарифов указаны в рублях за весь выбранный срок. Оформление и подтверждение оплаты — в личном кабинете Nexus. Данные карты вводятся на странице Robokassa.','The free plan needs no order: a new account starts on it and returns to it when the trial or a paid term ends. Paid plan prices cover the entire selected term in RUB. Choose your plan and confirm payment in your Nexus account. Card details are entered on Robokassa. USD values are indicative.')
       :tr('Бесплатный режим готовится к запуску; познакомиться с Invest можно в демо. Цены платных тарифов указаны в рублях за весь выбранный срок. Оформление и подтверждение оплаты — в личном кабинете Nexus. Данные карты вводятся на странице Robokassa.','Free access is being prepared; explore Invest in the demo. Paid plan prices cover the entire selected term in RUB. Choose your plan and confirm payment in your Nexus account. Card details are entered on Robokassa. USD values are indicative.'))+'</p>'+
-    '<div class="nx-pricing-links"><a href="offer.html#section-3">'+tr('Стоимость и условия','Prices and terms')+'</a><a href="offer.html#section-6">'+tr('Возврат оплаты','Refunds')+'</a><a href="offer.html#section-8">'+tr('Продавец и контакты','Seller and contacts')+'</a></div></section>'+
+    '<div class="nx-pricing-links"><a href="offer.html#section-7">'+tr('Стоимость и условия','Prices and terms')+'</a><a href="payment.html#section-7">'+tr('Возврат оплаты','Refunds')+'</a><a href="offer.html#section-18">'+tr('Продавец и контакты','Seller and contacts')+'</a></div></section>'+
     '<section class="nx-plan-comparison nx-tier-comparison shell"><div><h2>'+tr('Что входит в каждый тариф.','What each plan includes.')+'</h2><p>'+(freeAvailable
       ?tr('Бесплатный — обзор одного счёта, история операций и базовая аналитика. Обычный — подробный учёт, Plus — терминал и исследование инструментов, Pro — исторические данные об участниках рынка.','Free covers one account, transaction history and basic analytics. Standard covers portfolio tracking, Plus adds the terminal and instrument research, and Pro includes historical market participant data.')
       :tr('Бесплатный — базовый обзор одного счёта, готовится к запуску. Обычный — подробный учёт, Plus — терминал и исследование инструментов, Pro — исторические данные об участниках рынка.','Free is being prepared for a basic overview of one account. Standard covers portfolio tracking, Plus adds the terminal and instrument research, and Pro includes historical market participant data.'))+'</p></div><div class="nx-comparison-scroll" role="region" aria-label="Сравнение четырёх тарифов" data-nx-aria-en="Plan comparison" tabindex="0"><table><caption class="nx-visually-hidden">'+tr('Возможности четырёх тарифов','Features across four plans')+'</caption><thead><tr><th scope="col">'+tr('Возможности','Features')+'</th>'+plans.map(p=>'<th scope="col">'+tr(p.name,p.en)+'</th>').join('')+'</tr></thead><tbody>'+comparison+'</tbody></table></div>'+
@@ -83,8 +84,6 @@ export function buildPricing({tr, icon, link, faq}) {
 }
 
 export async function buildOffer() {
-  const path = new URL('../nexus/legal/offer-template.md', import.meta.url);
-  let md = await readFile(path, 'utf8');
   const table = ['| Срок | '+catalog.plans.map(p=>p.name).join(' | ')+' |','| '+Array(catalog.plans.length+1).fill('---').join(' | ')+' |',
     ...catalog.terms.map(t=>'| '+t.label+' | '+catalog.plans.map(p=>rub(priceFor(p,t))).join(' | ')+' |')].join('\n');
   const termRules=catalog.terms.map(t=>t.label+': '+(t.factor===t.months?'без скидки.':t.discount?'скидка '+t.discount+'% от суммы ежемесячной оплаты.':'цена равна '+t.factor+' месячным платежам.')).join(' ');
@@ -95,38 +94,11 @@ export async function buildOffer() {
   if (pastryTiers.length !== 2) throw new Error('Pastry Workspace needs two priced tiers');
   const pastryTable = ['| Срок | '+pastryTiers.map(tier=>pastryNames[tier.key]).join(' | ')+' |','| '+Array(pastryTiers.length+1).fill('---').join(' | ')+' |',
     ...catalog.terms.map(t=>'| '+t.label+' | '+pastryTiers.map(tier=>rub(Math.round(tier.monthlyRubReference*t.factor))).join(' | ')+' |')].join('\n');
-  md=md.replace('{{PASTRY_TABLE}}',pastryTable).replace('{{TERM_RULES}}',termRules).replace('{{REVISION}}',catalog.revision).replace('{{PRICE_TABLE}}',table)
-    .replace('{{APPROVAL_NOTE}}',catalog.approval==='approved'?'Редакция от '+ruDate(catalog.revisionDate)+'.':'Проект редакции для согласования с владельцем. Документ не опубликован и не заменяет действующую оферту.')
-    .replace('{{PLANS_INTRO}}',freeAvailable?'Платные тарифы — Обычный, Plus и Pro. Бесплатный тариф описан в пункте 3.1.':'Доступны тарифы Обычный, Plus и Pro.')
-    .replace('{{FREE_TITLE}}',freeAvailable?'Бесплатный тариф, пробный доступ и демонстрация':'Пробный доступ и демонстрация')
-    .replace('{{AFTER_TRIAL}}',freeAvailable?' По окончании пробного доступа аккаунт переходит на бесплатный тариф.':'')
-    .replace('{{AFTER_PERIOD}}',freeAvailable?'После окончания оплаченного срока аккаунт Invest Workspace переходит на бесплатный тариф; новый оплаченный срок начинается с подтверждённой активации.':'После истечения подписки новый срок начинается с подтверждённой активации.')
-    .replace('{{FREE_PLAN}}',freeAvailable
-      ?'Бесплатный тариф предоставляется без оплаты и без ограничения срока. В него входят обзор одного брокерского счёта, история сделок и операций и базовая аналитика за стандартные периоды, до трёх устройств. Заметки, план и расчёт риска, календарь и напоминания, оповещения, терминал, данные MOEX FUTOI, исследование инструментов и AI в него не входят. Оформлять бесплатный тариф не требуется: новый аккаунт начинает с него и возвращается на него, когда заканчивается пробный доступ, оплаченный срок или доступ, выданный на определённый срок. При отзыве доступа по разделу 5 бесплатный тариф не предоставляется. Исполнитель вправе изменить состав бесплатного тарифа новой редакцией оферты; оплаченные заказы это не затрагивает.'
-      :'Постоянный бесплатный тариф в эту линейку не входит.');
-  if(/\{\{[A-Z_]+\}\}/.test(md))throw new Error('Offer template has an unfilled placeholder');
-  const esc=s=>s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-  const inline=s=>esc(s).replace(/(https?:\/\/[^\s<]*[^\s<.,)])/g,'<a href="$1">$1</a>').replace(/support@vertux\.online/g,'<a href="mailto:support@vertux.online">support@vertux.online</a>');
-  const blocks=md.trim().split(/\r?\n\r?\n/);
-  const toc=[];
-  const html=blocks.map(block=>{
-    if(block.startsWith('# '))return '<h1>'+inline(block.slice(2))+'</h1>';
-    if(block.startsWith('## ')){
-      const title=block.slice(3),id='section-'+title.match(/^\d+/)[0];toc.push({id,title});
-      return '<h2 id="'+id+'">'+inline(title)+'</h2>';
-    }
-    if(block.startsWith('### '))return '<h3>'+inline(block.slice(4))+'</h3>';
-    if(block.startsWith('| ')){
-      const rows=block.split('\n').filter((_,i)=>i!==1).map(row=>row.split('|').slice(1,-1).map(s=>s.trim()));
-      return '<div class="legal-table" role="region" aria-label="Стоимость подписки" tabindex="0"><table><caption class="nx-visually-hidden">Полные цены подписки в рублях</caption><thead><tr>'+rows[0].map(c=>'<th scope="col">'+inline(c)+'</th>').join('')+'</tr></thead><tbody>'+rows.slice(1).map(row=>'<tr>'+row.map((c,i)=>i===0?'<th scope="row">'+inline(c)+'</th>':'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
-    }
-    return '<p'+(block.startsWith('Редакция')?' class="legal-revision"':'')+'>'+inline(block)+'</p>';
-  }).join('\n');
-  const nav='<nav class="legal-toc" aria-label="На этой странице"><strong>На этой странице</strong><ol>'+toc.map(t=>'<li><a href="#'+t.id+'">'+esc(t.title)+'</a></li>').join('')+'</ol></nav>';
-  const content=html.replace('</h1>','</h1>\n'+nav);
-  const htmlPath=new URL('../nexus/offer.html',import.meta.url);
-  const page=await readFile(htmlPath,'utf8');
-  if(!/<main class="legal-document"[\s\S]*?<\/main>/.test(page))throw new Error('Offer reader not found');
-  await writeFile(htmlPath,page.replace(/<main class="legal-document"[\s\S]*?<\/main>/,'<main class="legal-document" id="content" lang="ru">'+content+'</main>'));
-  await writeFile(new URL('../nexus/legal/offer.md',import.meta.url),md);
+  if (!freeAvailable) throw new Error('The legal documents describe the free plan as available');
+  // One approval covers the whole package: offer, payment terms, privacy policy and consent.
+  await buildLegalDocuments({
+    REVISION: catalog.revision, PRIVACY_REVISION: catalog.privacyRevision, CONSENT_REVISION: catalog.consentRevision,
+    PRIVACY_DATE: ruDate(catalog.revisionDate), PRICE_TABLE: table, PASTRY_TABLE: pastryTable, TERM_RULES: termRules,
+    APPROVAL_NOTE: catalog.approval==='approved'?'Редакция от '+ruDate(catalog.revisionDate)+'.':'Проект редакции для согласования с владельцем. Документ не опубликован и не заменяет действующую редакцию.',
+  });
 }

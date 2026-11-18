@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
-<link rel="stylesheet" href="styles.css?v=20261116-intake">
+<link rel="stylesheet" href="styles.css?v=20261118-legal">
 </head>
 <body>
 
@@ -712,7 +712,7 @@
         <input type="hidden" name="service" id="cfService">
       </div>
       <div class="cf-field"><label class="mono" data-i18n="ct.brief">Пара слов о задаче (опционально)</label><textarea name="brief" rows="3" placeholder="Например: сайт для студии маникюра + виджет записи" data-i18n-ph="ct.ph.brief"></textarea></div>
-      <label class="legal-check"><input type="checkbox" name="inquiryConsent" value="true" required><span>Даю <a href="/nexus/consent.html" target="_blank" rel="noopener noreferrer">согласие на обработку заявки</a>. <a href="/nexus/privacy.html" target="_blank" rel="noopener noreferrer">Политика конфиденциальности</a></span></label><input type="hidden" name="consentVersion" value="studio-inquiry-2026-09-17">
+      <label class="legal-check"><input type="checkbox" name="inquiryConsent" value="true" required><span>Даю <a href="/nexus/consent.html" target="_blank" rel="noopener noreferrer">согласие на обработку персональных данных</a>, в том числе на их передачу в США для обработки заявки, и ознакомлен с <a href="/nexus/privacy.html" target="_blank" rel="noopener noreferrer">политикой конфиденциальности</a></span></label><input type="hidden" name="consentVersion" value="studio-inquiry-2026-11-18-r1">
       <div class="hp-field" aria-hidden="true"><label>Не заполняйте это поле<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
       <button type="submit" class="btn btn-primary btn-lg btn-full magnetic" data-magnetic data-i18n="ct.send">Отправить заявку <span class="arr">→</span></button>
       <div class="cf-result" id="cfResult"></div>
@@ -760,9 +760,10 @@
     </div>
     <nav class="foot-col" aria-label="Документы">
       <div class="foot-label mono">Документы</div>
-      <a href="/nexus/offer.html">Оферта Invest</a>
+      <a href="/nexus/offer.html">Оферта Nexus</a>
+      <a href="/nexus/payment.html">Оплата и возврат</a>
       <a href="/nexus/privacy.html">Политика конфиденциальности</a>
-      <a href="/nexus/consent.html">Согласие на обработку заявки</a>
+      <a href="/nexus/consent.html">Согласие на обработку данных</a>
     </nav>
   </div>
   <div class="container footer-bottom mono">© 2026 Vertux · <span data-i18n="ft.made">собрано вручную</span>
@@ -784,6 +785,7 @@
     <div class="hp-field" aria-hidden="true"><label>Не заполняйте это поле<input type="text" name="website" id="chatHp" tabindex="-1" autocomplete="off"></label></div>
     <button type="submit" class="chat-send">→</button>
   </form>
+  <p class="chat-legal">Отправляя сообщение, вы даёте <a href="/nexus/consent.html" target="_blank" rel="noopener noreferrer">согласие на обработку данных</a>. Не отправляйте пароли и платёжные данные.</p>
 </div>
 
 <script src="legal-forms.js?v=20260917"></script>

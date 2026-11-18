@@ -57,7 +57,7 @@ footer = routes(footer).replace(/data-i18n="nav.subscription">[^<]+/g,'data-nx-e
   .replace('<span>ДОКУМЕНТЫ</span>','<span data-nx-en="DOCUMENTS">ДОКУМЕНТЫ</span>')
   .replace('href="offer.html">Публичная оферта','href="offer.html" data-nx-en="Public offer">Публичная оферта')
   .replace('href="privacy.html">Политика конфиденциальности','href="privacy.html" data-nx-en="Privacy policy">Политика конфиденциальности')
-  .replace('href="consent.html">Согласие на обработку заявки','href="consent.html" data-nx-en="Inquiry consent">Согласие на обработку заявки');
+  .replace('href="consent.html">Согласие на обработку данных','href="consent.html" data-nx-en="Personal data consent">Согласие на обработку данных');
 // Page identity remains visible in the same menu on every public page.
 header = header.replace(/data-i18n="newnav.business">[^<]+/g,'data-i18n="newnav.business">Custom Workspace')
   .replace(/data-i18n="newnav.businessNote">[^<]+/g,'data-i18n="newnav.businessNote">Для себя, проекта или команды');
@@ -116,9 +116,9 @@ const pages = [
 ];
 for (const page of pages.filter(page => !pricingOnly || page.key === 'plans')) await writeFile(resolve(root,page.file),wrapper(page));
 // Share site chrome and background while preserving document/release content.
-for (const file of pricingOnly ? [] : ['security.html','updates.html','offer.html','privacy.html','consent.html']) {
+for (const file of pricingOnly ? [] : ['security.html','updates.html','offer.html','payment.html','privacy.html','consent.html']) {
   let text=await readFile(resolve(root,file),'utf8');
-  const legal=['offer.html','privacy.html','consent.html'].includes(file);
+  const legal=['offer.html','payment.html','privacy.html','consent.html'].includes(file);
   const key=legal?'document':file.replace('.html',''), chrome=chromeFor(legal?null:'invest');
   text=routes(text)
     .replace(/<header class="(?:site-header|legal-header)"[\s\S]*?<\/header>/,()=>chrome.header)
@@ -138,4 +138,4 @@ for (const file of pricingOnly ? [] : ['security.html','updates.html','offer.htm
   text=text.replace('</body>','<script src="assets/site.js?v=20260920-navigation"></script>\n<script src="assets/product-site.js?v=20260919a"></script>\n<script src="assets/header-session.js?v=20260917a"></script>\n<script src="assets/experience.js?v=20261104a"></script><script src="assets/reference-effects.js?v=20260920d"></script>\n<script src="assets/site-effects.js?v=20261104c"></script><script src="assets/glass-fold.js?v=20261104i"></script>\n</body>');
   await writeFile(resolve(root,file),text);
 }
-console.log(pricingOnly ? 'Built pricing.html only. Other pages and legal documents were preserved.' : `Built ${pages.length} product pages and unified five public information pages. No publication or account changes.`);
+console.log(pricingOnly ? 'Built pricing.html only. Other pages and legal documents were preserved.' : `Built ${pages.length} product pages and unified six public information pages. No publication or account changes.`);
