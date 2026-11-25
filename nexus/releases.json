@@ -2,6 +2,28 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-subscription-terms-2026-11-26",
+      "date": "2026-11-26",
+      "versions": {},
+      "label": "NEXUS / СЕРВИС",
+      "title": {
+        "ru": "Условия оплаты в кабинете Nexus",
+        "en": "Payment terms in your Nexus account"
+      },
+      "changes": [
+        {
+          "type": "added",
+          "ru": "В разделе «Подписка» теперь можно открыть условия оплаты и возврата до выбора тарифа.",
+          "en": "You can now read the payment and refund terms in the Subscription section before choosing a plan."
+        },
+        {
+          "type": "added",
+          "ru": "Внизу страницы кабинета указаны реквизиты продавца и телефон для вопросов об оплате.",
+          "en": "The account page footer now lists the seller’s details and a phone number for payment questions."
+        }
+      ]
+    },
+    {
       "id": "invest-trial-on-demand-2026-11-17",
       "date": "2026-11-17",
       "versions": {},
