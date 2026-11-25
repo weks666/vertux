@@ -92,7 +92,7 @@ export function confectioneryPlansPage({tr, plan, tiers}) {
   ]);
   return hero({tr, product:'confectionery', current:'plans', title:[['Тарифы Pastry Workspace.', 'Pastry Workspace plans.'], ['Начните с базового.', 'Start with Basic.']],
     lede:['Один кабинет и одна витрина на всех тарифах. Цены указаны за месяц.', 'One workspace and storefront on every plan. Prices are per month.']})
-    + `<section class="nx-section-block shell"><div class="nx-cf-price-grid">${plan.tiers.map(tiers).join('')}</div></section>` + compare + steps + faq
+    + `<section class="nx-section-block shell"><div class="nx-cf-price-grid">${plan.tiers.map(tiers).join('')}</div><p class="nx-pricing-links"><a href="https://robokassa.com/" aria-label="Robokassa"><img src="assets/robokassa.svg" alt="Robokassa" width="134" height="20" style="box-sizing:content-box;background:white;padding:5px 8px;border-radius:4px;vertical-align:middle"></a> <a href="payment.html#section-3">${tr('Оплата и возврат', 'Payment and refunds')}</a></p></section>` + compare + steps + faq
     + `<section class="nx-cf-final shell"><h2>${tr('Выберите тариф.', 'Pick a plan.')}<br><em>${tr('Кабинет откроется после оплаты.', 'The workspace opens after payment.')}</em></h2><p>${tr('Создайте кабинет в личном кабинете Nexus. Если нужна помощь с первым запуском — напишите нам.', 'Create the workspace in your Nexus account. If you need help with the first launch, message us.')}</p><a class="nx-button nx-button-primary" href="https://nexus.vertux.online/account.html?product=pastry">${tr('Создать кабинет', 'Create your workspace')}${icon('arrow')}</a></section>`;
 }
 

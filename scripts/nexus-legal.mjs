@@ -16,7 +16,7 @@ export const LEGAL_DOCUMENTS = Object.freeze([
 const esc = s => s.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 const inline = s => esc(s)
   .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-  .replace(/(https?:\/\/[^\s<]*[^\s<.,;)])/g, '<a href="$1">$1</a>')
+  .replace(/(https?:\/\/[^\s<]*[^\s<.,;):])/g, '<a href="$1">$1</a>')
   .replace(/support@vertux\.online/g, '<a href="mailto:support@vertux.online">support@vertux.online</a>');
 
 function sectionId(title) {
