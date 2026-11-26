@@ -61,6 +61,11 @@ const faqBlock = (tr, title, items) => `<section class="nx-section-faq shell"><h
 const note = (tr, ru, en) => `<p class="nx-section-note">${tr(ru, en)}</p>`;
 
 // ---------- Кондитерская ----------
+export function subscriptionPaymentInfo(tr, links) {
+  const documents = links.map(([href, ru, en]) => `<a href="${href}">${tr(ru, en)}</a>`).join('');
+  return `<div class="nx-payment-info"><div class="nx-pricing-links">${documents}</div><div class="nx-payment-provider"><a href="https://robokassa.com/"><img src="assets/robokassa.svg" alt="Robokassa" width="134" height="20"></a><span>${tr('Онлайн-оплата подписок пока недоступна.', 'Online subscription payments are currently unavailable.')}</span></div></div>`;
+}
+
 export function confectioneryPlansPage({tr, plan, tiers}) {
   const marks = {yes:icon('check'), no:`<span class="nx-section-none">${icon('dash')}</span>`};
   const table = [
@@ -88,11 +93,11 @@ export function confectioneryPlansPage({tr, plan, tiers}) {
     ['Можно начать с Базового и перейти позже?', 'Can I start with Basic and upgrade later?', 'Да. Тариф меняется в личном кабинете Nexus; новый действует сразу после оплаты, остаток прежнего срока не переносится. Данные кабинета и витрины остаются прежними.', 'Yes. You change plans in your Nexus account; the new one applies right after payment and the rest of the previous term is not carried over. Your workspace and storefront data stay the same.'],
     ['Что будет со своим доменом, если вернуться на Базовый?', 'What happens to my domain if I go back to Basic?', 'Перед переходом домен нужно отключить: на Базовом витрина работает по адресу Nexus.', 'The domain has to be switched off first: on Basic the storefront works at its Nexus address.'],
     ['Покупатели платят через витрину?', 'Do customers pay through the storefront?', 'Да, если подключить свой магазин Робокассы: в заказе появляется ссылка на оплату согласованной суммы, покупатель платит на странице Робокассы, деньги приходят напрямую вам. Сама заявка ничего не списывает; без подключения расчёт — напрямую с клиентом.', 'Yes, if you connect your own Robokassa shop: an order gets a payment link for the agreed amount, the customer pays on the Robokassa page and the money goes straight to you. A request itself never charges anything; without a shop you settle with the customer directly.'],
-    ['Как оплатить подписку?', 'How do I pay for the subscription?', 'В личном кабинете Nexus: выберите тариф и срок, оплатите картой на странице Робокассы. Оплата разовая, без автоматических списаний; чек самозанятого приходит на почту.', 'In your Nexus account: pick a plan and term and pay by card on the Robokassa page. It is a one-off payment with no automatic charges; the self-employed receipt arrives by email.'],
+    ['Как оплатить подписку?', 'How do I pay for the subscription?', 'Тариф и срок выбирают в личном кабинете Nexus. Оплата картой появится после активации магазина в Робокассе.', 'Choose a plan and term in your Nexus account. Card payments will be available once Robokassa activates the store.'],
   ]);
   return hero({tr, product:'confectionery', current:'plans', title:[['Тарифы Pastry Workspace.', 'Pastry Workspace plans.'], ['Начните с базового.', 'Start with Basic.']],
     lede:['Один кабинет и одна витрина на всех тарифах. Цены указаны за месяц.', 'One workspace and storefront on every plan. Prices are per month.']})
-    + `<section class="nx-section-block shell"><div class="nx-cf-price-grid">${plan.tiers.map(tiers).join('')}</div><p class="nx-pricing-links"><a href="https://robokassa.com/" aria-label="Robokassa"><img src="assets/robokassa.svg" alt="Robokassa" width="134" height="20" style="box-sizing:content-box;background:white;padding:5px 8px;border-radius:4px;vertical-align:middle"></a> <a href="payment.html#section-3">${tr('Оплата и возврат', 'Payment and refunds')}</a></p></section>` + compare + steps + faq
+    + `<section class="nx-section-block shell"><div class="nx-cf-price-grid">${plan.tiers.map(tiers).join('')}</div>${subscriptionPaymentInfo(tr, [['payment.html#section-3', 'Оплата и возврат', 'Payment and refunds']])}</section>` + compare + steps + faq
     + `<section class="nx-cf-final shell"><h2>${tr('Выберите тариф.', 'Pick a plan.')}<br><em>${tr('Кабинет откроется после оплаты.', 'The workspace opens after payment.')}</em></h2><p>${tr('Создайте кабинет в личном кабинете Nexus. Если нужна помощь с первым запуском — напишите нам.', 'Create the workspace in your Nexus account. If you need help with the first launch, message us.')}</p><a class="nx-button nx-button-primary" href="https://nexus.vertux.online/account.html?product=pastry">${tr('Создать кабинет', 'Create your workspace')}${icon('arrow')}</a></section>`;
 }
 

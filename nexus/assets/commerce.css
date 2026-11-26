@@ -28,6 +28,16 @@
 .nx-tier-features small { display:block; font-size:10px; color:#c0bacf; margin-top:3px; }
 .nx-tier-features .is-no,.nx-tier-features .is-no .nx-icon { color:#a49bb4; }
 .nx-pricing-note { text-align:center; max-width:760px; margin:24px auto 15px; color:#c0bacf; font-size:13px; line-height:1.7; }
+.nx-payment-info { display:grid; justify-items:center; gap:12px; margin:32px auto 0; text-align:center; }
+.nx-payment-provider { display:flex; flex-direction:column; align-items:center; gap:4px; color:#c0bacf; font-size:13px; line-height:1.5; }
+.nx-payment-provider a { display:inline-flex; align-items:center; min-height:32px; }
+.nx-payment-provider img { display:block; box-sizing:content-box; width:108px; height:auto; background:#fff; padding:5px 8px; border-radius:4px; }
+.nx-confectionery .nx-payment-provider { color:var(--cf-muted); }
+.nx-confectionery .nx-payment-info .nx-pricing-links a { color:var(--cf-text); }
+@media (max-width:540px) {
+  .nx-payment-info .nx-pricing-links { gap:4px 16px; }
+  .nx-payment-info .nx-pricing-links a { display:inline-flex; align-items:center; min-height:32px; }
+}
 .nx-pricing-links { display:flex; justify-content:center; flex-wrap:wrap; gap:14px 25px; font-size:13px; }
 .nx-pricing-links a,.nx-screen-description a { text-decoration:underline; text-underline-offset:4px; color:#d7c3ff; }
 .nx-pricing-announcement { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); margin:0; }
