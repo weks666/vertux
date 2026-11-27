@@ -125,7 +125,7 @@ try {
             if (plan.id === 'free') {
               // An available free plan starts with registration; an announced one leads to the demo.
               assert.ok(['proposal', 'available'].includes(plan.status));
-              assert.equal(await action.getAttribute('href'), plan.status === 'available' ? 'https://nexus.vertux.online/account.html' : 'invest.html#demo');
+              assert.equal(await action.getAttribute('href'), plan.status === 'available' ? 'https://nexus.vertux.online/account.html?product=invest&register=1' : 'invest.html#demo');
               continue;
             }
             const link = new URL(await action.getAttribute('href'));

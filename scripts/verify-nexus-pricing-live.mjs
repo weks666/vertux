@@ -48,7 +48,7 @@ try{
         }
         assert.equal(await page.locator('[data-tier-card="free"] [data-price-rub]').getAttribute('data-price-rub'),'0');
         const freeStatus=await page.evaluate(()=>JSON.parse(document.getElementById('nexus-pricing-data').textContent).freePlan.status);
-        assert.equal(await page.locator('[data-tier-card="free"] > a').getAttribute('href'),freeStatus==='available'?'https://nexus.vertux.online/account.html':'invest.html#demo');
+        assert.equal(await page.locator('[data-tier-card="free"] > a').getAttribute('href'),freeStatus==='available'?'https://nexus.vertux.online/account.html?product=invest&register=1':'invest.html#demo');
       }
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
       report.cases.push({width,lang,plans:4,terms:[1,3,12],status:'PASS'});

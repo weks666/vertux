@@ -2,6 +2,28 @@
   "schemaVersion": 1,
   "releases": [
     {
+      "id": "nexus-one-account-2026-11-27",
+      "date": "2026-11-27",
+      "versions": {},
+      "label": "NEXUS / СЕРВИС",
+      "title": {
+        "ru": "Один аккаунт для всех продуктов",
+        "en": "One account for every product"
+      },
+      "changes": [
+        {
+          "type": "changed",
+          "ru": "Регистрация в кабинете Nexus теперь одна для всех продуктов: создаётся аккаунт, а Invest и Pastry Workspace подключаются к нему в разделе «Пространства».",
+          "en": "Signing up in your Nexus account is now the same for every product: you create one account, then add Invest or Pastry Workspace under Workspaces."
+        },
+        {
+          "type": "changed",
+          "ru": "Обновлено окно входа: «Забыли пароль?» — рядом с полем пароля, без лишних подписей.",
+          "en": "The sign-in screen is refreshed: “Forgot password?” sits next to the password field, without extra captions."
+        }
+      ]
+    },
+    {
       "id": "nexus-subscription-terms-2026-11-26",
       "date": "2026-11-26",
       "versions": {},
